@@ -1,0 +1,132 @@
+<!-- $Id: mount.html 677 2010-06-17 21:50:52Z ian $ -->
+<div id='vboxMount'>
+<form name='frmVboxMount'>
+<table>
+	<tr>
+		<th>
+			<img src='' id='vboxMountDrive' height='32' width='32' style='vertical-align: middle'/>
+			<span id='vboxMountController'></span>
+		</th>
+	</tr>
+	<tr style='vertical-align: middle'>
+		<td>
+			<select id='vboxMountMediums'>
+			</select>
+			<img src='images/vbox/select_file_16px.png' style='cursor:pointer' id='vboxMountVMM' />
+			<input type='button' value='mount' id='vboxMountButton' />
+		</td>
+	</tr>
+</table>
+</form>
+<script type='text/javascript'>
+function vboxMountPostInit(bus,port,device,onmount) {
+	
+	var vm = $('#vboxIndex').data('vboxMachineData');
+	var storage = new vboxStorage();
+	var busName = null;
+	var type = null;
+	var medium = null;
+	
+	for(var i = 0; i < vm.storageControllers.length; i++) {
+		if(vm.storageControllers[i].bus == bus) {
+			busName = vm.storageControllers[i].name;
+			for(var a = 0; a < vm.storageControllers[i].mediumAttachments.length; a++) {
+				if(vm.storageControllers[i].mediumAttachments[a].port == port && vm.storageControllers[i].mediumAttachments[a].device == device) {
+					type =  vm.storageControllers[i].mediumAttachments[a].type;
+					if(vm.storageControllers[i].mediumAttachments[a].medium && vm.storageControllers[i].mediumAttachments[a].medium.id) {
+						medium = vm.storageControllers[i].mediumAttachments[a].medium.id;
+					}
+					a = vm.storageControllers[i].mediumAttachments.length;
+				}
+			}
+			i = vm.storageControllers.length;
+		}
+	}
+
+
+	/* Controller port/device name */
+	$('#vboxMountController').html($('<div/>').text(busName + ' - ' + storage[bus].slotName(port,device)).html());
+	
+	/* Drive Image */
+	if(type == 'DVD') { var img = 'cd';
+	} else { var img = 'fd';}
+	$('#vboxMountDrive').attr('src','images/vbox/'+img+'_32px.png');
+
+	vboxMountFillMediums(type,medium);
+	
+	// Set button
+	$('#vboxMountButton').val(trans('Mount'));
+	$('#vboxMountButton').click(function(){ vboxMountMedium(bus,busName,port,device,onmount); });
+
+	// VMM button
+	$('#vboxMountVMM').click(function(){
+		vboxVMMDialogInit(function(f){
+			var l = new vboxLoader();
+			l.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
+			l.onLoad = function() {
+				vboxMountFillMediums(type,medium,(f && f.id ? f.id : null));
+			};
+			l.run();
+		},type);
+	});
+}
+
+function vboxMountMedium(bus,busName,port,device,onmount) {
+	
+	// get values
+	var vm = $('#vboxIndex').data('vboxMachineData');	
+	var medium = $('#vboxMountMediums').val();
+	var args = {'vm':vm.id,'medium':medium,'port':port,'device':device,'bus':bus,'controller':busName};
+
+	// Ajax request to mount medium
+	var mount = new vboxLoader();
+	mount.mode = 'save';
+	mount.add('mediumMount',function(ret,xtra){
+		var l = new vboxLoader();
+		l.add('VMDetails',function(d){$('#vboxIndex').data('vboxMachineData',d);},{'vm':xtra.vm});
+		l.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
+		l.onLoad = function() {
+			if(onmount) onmount($('#vboxIndex').data('vboxMachineData'));
+		}
+		l.run();		
+	},args);
+	mount.run();
+	$('#vboxMountDialog').remove();
+	
+}
+
+function vboxMountFillMediums(type,medium,selected) {
+
+	var storage = new vboxStorage();
+	
+	/* Mediums select box */
+	$('#vboxMountMediums').children().remove();
+
+	var sel = document.getElementById('vboxMountMediums');
+
+	if(!selected) selected = medium;
+	
+	// Eject?
+	if(medium) {
+		sel.options[sel.options.length] = new Option(trans('Empty'),0);
+	}
+
+	var mediums = storage.mediumsForAttachmentType(type);
+	// Sort mediums
+	mediums.sort(function(a,b){
+		
+		// Host drives are first
+		if(a.hostDrive && b.hostDrive) { return strnatcasecmp(b.location); }
+		else if(a.hostDrive && !b.hostDrive) { return -1; }
+		else if(!a.hostDrive && b.hostDrive) { return 1; }
+
+		return strnatcasecmp(a.name,b.name);
+	});
+
+	for(var i = 0; i < mediums.length; i++) {
+		sel.options[sel.options.length] = new Option(storage.getMediumName(mediums[i]),mediums[i].id,(selected == mediums[i].id));
+	}
+	
+}
+</script>
+</div>

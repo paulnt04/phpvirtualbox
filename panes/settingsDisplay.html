@@ -1,0 +1,164 @@
+<!--
+
+	Display
+	
+	$Id: settingsDisplay.html 677 2010-06-17 21:50:52Z ian $
+
+-->
+<ul>
+	<li><a href="#vboxSettingsTabDisplayVideo"><span class='translate'>Video</span></a></li>
+	<li><a href="#vboxSettingsTabDisplayRemote"><span class='translate'>Remote Display</span></a></li>
+</ul>
+
+<!-- Video Tab -->
+<div id='vboxSettingsTabDisplayVideo' title='Video'>
+<table style='width: 100%'>
+	<tr>
+		<th><span class='translate'>Video Memory</span>:</th>
+		<td style='width: 100%; white-space: nowrap'>
+		<table style='width: 100%'>
+			<tr>
+				<td style='width: 100%; border: 0px; margin: 0px; padding: 0px;'>
+				   <div style='margin-top: 4px' id='vboxSettingsDisplayMemory' class='slider'><div class='sliderScale'></div></div>
+				</td>
+				<td><input type='text' class='vboxText' name='vboxSettingsDisplayMemoryValue' size='2' class='sliderValue' /> <span class='translate'>MB</span></td>
+			</tr>
+			<tr style='vertical-align: top;'>
+				<td style='border: 0px; margin: 0px; padding: 0px;'>
+				<table width='100%; border: 0px; margin: 0px; padding: 0px;'>
+					<tr style='vertical-align: top'>
+						<td style='text-align: left;'><span class='vboxSliderMin'>1</span> <span class='translate'>MB</span></td>
+						<td style='text-align: right;'><span class='vboxSliderMax'>128</span> <span class='translate'>MB</span></td>
+					</tr>
+				</table>
+				</td>
+				<td></td>
+			</tr>
+		</table>
+
+		</td>
+	</tr>
+	<!-- Unsupported at this time
+	<tr>
+		<th><span class='translate'>Monitor Count</span>:</th>
+		<td style='width: 100%; white-space: nowrap'>
+		<table style='width: 100%'>
+			<tr>
+				<td style='width: 100%; border: 0px; margin: 0px; padding: 0px;'>
+				   <div style='margin-top: 4px' id='vboxSettingsDisplayMonitors' class='slider'><div class='sliderScale'></div></div>
+				</td>
+				<td><input type='text' class='vboxText' name='vboxSettingsDisplayMonitorsValue' size='2' class='sliderValue' /></td>
+			</tr>
+			<tr style='vertical-align: top;'>
+				<td style='border: 0px; margin: 0px; padding: 0px;'>
+				<table width='100%; border: 0px; margin: 0px; padding: 0px;'>
+					<tr style='vertical-align: top'>
+						<td style='text-align: left;'><span class='vboxSliderMin'>1</span></td>
+						<td style='text-align: right;'><span class='vboxSliderMax'>4</span></td>
+					</tr>
+				</table>
+				</td>
+				<td></td>
+			</tr>
+		</table>
+
+		</td>
+	</tr>
+	<tr>
+		<th><span class='translate'>Extended Features</span>:</th>
+		<td><input type='checkbox' class='vboxCheckbox' name='vboxSettingsDisplay3d' /> <span class='translate'>Enable 3d</span></td>
+	</tr>
+	<tr>
+		<th></th>
+		<td><input type='checkbox' class='vboxCheckbox' name='vboxSettingsDisplay2d' /> <span class='translate'>Enable 2d</span></td>
+	</tr>
+	-->
+</table>
+</div>
+
+<!-- Remote Display Tab -->
+<div id='vboxSettingsTabDisplayRemote' title='Remote Display'>
+<table class='vboxVertical'>
+	<tr>
+		<td colspan='2'><input type='checkbox' class='vboxCheckbox vboxEnablerCheckbox' name='vboxSettingsDisplayRDPEnabled' /> <span class='translate'>Enable Server</span></td>
+	</tr>
+	<tr>
+		<th><span class='translate'>Server Port</span>:</th>
+		<td><input type='text' class='vboxText' style='width: 100%' name='vboxSettingsDisplayRDPPort' /></td>
+	</tr>
+	<tr>
+		<th><span class='translate'>Authentication Method</span>:</th>
+		<td>
+             <select name='vboxSettingsDisplayRDPAuth' style='width: 100%'>
+              <option value='' class='translate'>None</option>
+				<option value='External' class='translate'>External</option>
+				<option value='Guest' class='translate'>Guest</option>
+             </select>
+          </td>
+	</tr>
+	<tr>
+		<th><span class='translate'>Authentication Timeout</span>:</th>
+		<td><input type='text' class='vboxText' style='width: 100%' name='vboxSettingsDisplayRDPAuthTimeout' /></td>
+	</tr>
+</table>
+</div>
+<script type='text/javascript'>
+
+/* Display */
+
+$('#vboxSettingsDisplayMemory').data('form','frmVboxSettings');
+$('#vboxSettingsDisplayMemory').slider({'min':parseInt($('#vboxIndex').data('vboxSystemProperties').minGuestVRAM),'max':parseInt($('#vboxIndex').data('vboxSystemProperties').maxGuestVRAM)});
+$('#vboxSettingsDisplayMemory').slider('value',parseInt($('#vboxSettingsDialog').data('vboxMachineData').VRAMSize));
+
+/* Unsupported at this time 
+
+$('#vboxSettingsDisplayMonitors').data('form','frmVboxSettings');
+$('#vboxSettingsDisplayMonitors').slider({'min':1,'max':parseInt($('#vboxIndex').data('vboxSystemProperties').maxGuestMonitors)});
+$('#vboxSettingsDisplayMonitors').slider('value',parseInt($('#vboxSettingsDialog').data('vboxMachineData').monitorCount));
+
+document.forms['frmVboxSettings'].vboxSettingsDisplay3d.checked = ($('#vboxSettingsDialog').data('vboxMachineData').accelerate3DEnabled);
+document.forms['frmVboxSettings'].vboxSettingsDisplay2d.checked = ($('#vboxSettingsDialog').data('vboxMachineData').accelerate2DVideoEnabled);
+*/
+
+/*
+ * No VRDP?
+ *
+ */
+if(!$('#vboxSettingsDialog').data('vboxMachineData').VRDPServer) {
+	
+	$('#vboxSettingsTabDisplayRemote').remove();
+	$('#vboxSettingsTabDisplayVideo').prev().children('li:eq(1)').remove();
+
+} else {
+	
+	document.forms['frmVboxSettings'].vboxSettingsDisplayRDPPort.value = $('#vboxSettingsDialog').data('vboxMachineData').VRDPServer.ports;
+	document.forms['frmVboxSettings'].vboxSettingsDisplayRDPAuth.value = $('#vboxSettingsDialog').data('vboxMachineData').VRDPServer.authType;
+	document.forms['frmVboxSettings'].vboxSettingsDisplayRDPAuthTimeout.value = $('#vboxSettingsDialog').data('vboxMachineData').VRDPServer.authTimeout;
+	
+	if(($('#vboxSettingsDialog').data('vboxMachineData').VRDPServer.enabled)) {
+		document.forms['frmVboxSettings'].vboxSettingsDisplayRDPEnabled.checked = true;
+	}
+}
+
+/* Change settings onSave() */
+$('#vboxSettingsDialog').bind('save',function(){
+
+	$('#vboxSettingsDialog').data('vboxMachineData').VRAMSize = $(document.forms['frmVboxSettings'].vboxSettingsDisplayMemoryValue).val();
+
+	/* Unsupported
+	$('#vboxSettingsDialog').data('vboxMachineData').monitorCount = $(document.forms['frmVboxSettings'].vboxSettingsDisplayMonitorsValue).val();	
+	$('#vboxSettingsDialog').data('vboxMachineData').accelerate3DEnabled = (document.forms['frmVboxSettings'].vboxSettingsDisplay3d.checked ? 1 : 0);
+	$('#vboxSettingsDialog').data('vboxMachineData').accelerate2DVideoEnabled = (document.forms['frmVboxSettings'].vboxSettingsDisplay2d.checked ? 1 : 0);
+	*/
+	
+	if($('#vboxSettingsDialog').data('vboxMachineData').VRDPServer) {
+		$('#vboxSettingsDialog').data('vboxMachineData').VRDPServer.ports = document.forms['frmVboxSettings'].vboxSettingsDisplayRDPPort.value;
+		$('#vboxSettingsDialog').data('vboxMachineData').VRDPServer.authType = document.forms['frmVboxSettings'].vboxSettingsDisplayRDPAuth.value;
+		$('#vboxSettingsDialog').data('vboxMachineData').VRDPServer.authTimeout = document.forms['frmVboxSettings'].vboxSettingsDisplayRDPAuthTimeout.value;
+		$('#vboxSettingsDialog').data('vboxMachineData').VRDPServer.enabled = (document.forms['frmVboxSettings'].vboxSettingsDisplayRDPEnabled.checked ? 1 : 0);
+	}
+});
+
+</script>
+
+

@@ -1,0 +1,262 @@
+<!--
+
+	System Settings
+	
+	$Id: settingsSystem.html 697 2010-07-08 02:31:17Z ian $
+
+-->
+
+<ul>
+	<li><a href="#vboxSettingsTabSystemMotherboard"><span class='translate'>Motherboard</span></a></li>
+	<li><a href="#vboxSettingsTabSystemProcessor"><span class='translate'>Processors</span></a></li>
+	<li id='settingsTabSystemAccelerationLink'><a href="#settingsTabSystemAcceleration"><span class='translate'>Acceleration</span></a></li>
+</ul>
+
+<!-- Motherboard Tab -->
+<div id='vboxSettingsTabSystemMotherboard' title='Motherboard'>
+<table style='width: 100%'>
+	<tr>
+		<th><span class='translate'>Base Memory</span>:</th>
+		<td style='width: 100%; white-space: nowrap'>
+		<table style='width: 100%'>
+			<tr>
+				<td style='width: 100%; border: 0px; margin: 0px; padding: 0px;'>
+				   <div style='margin-top: 4px' id='vboxSettingsSystemMemory' class='slider'><div class='sliderScale'></div></div>
+				</td>
+				<td><input type='text' class='vboxText' name='vboxSettingsSystemMemoryValue' size='5' class='sliderValue' /> <span class='translate'>MB</span></td>
+			</tr>
+			<tr style='vertical-align: top;'>
+				<td style='border: 0px; margin: 0px; padding: 0px;'>
+				<table width='100%; border: 0px; margin: 0px; padding: 0px;'>
+					<tr style='vertical-align: top'>
+						<td style='text-align: left;'><span class='vboxSliderMin'>2</span> <span class='translate'>MB</span></td>
+						<td style='text-align: right;'><span class='vboxSliderMax'>1024</span> <span class='translate'>MB</span></td>
+					</tr>
+				</table>
+				</td>
+				<td></td>
+			</tr>
+		</table>
+		</td>
+	</tr>
+	<tr style='vertical-align: top'>
+		<th><span class='translate'>Boot Order</span>:</th>
+		<td>
+			<table id='vboxVMBootOrder'>
+				<tr style='vertical-align: top'>
+					<td style='width: auto'>
+						<ul class='vboxList vboxBordered' id='vboxVMBootOrderList' style='margin: 0px; padding: 2px; width: auto; white-space: nowrap; width: 200px'>
+							<li id='HardDisk'><input type='checkbox' class='vboxCheckbox' name='vboxSettingsBootHardDisk' /><span class='translate'>HardDisk</span></li>
+							<li id='DVD'><input type='checkbox' class='vboxCheckbox' name='vboxSettingsBootDVD' /> <span class='translate'>DVD</span></li>
+							<li id='Floppy'><input type='checkbox' class='vboxCheckbox' name='vboxSettingsBootFloppy' /> <span class='translate'>Floppy</span></li>
+							<li id='Network'><input type='checkbox' class='vboxCheckbox' name='vboxSettingsBootNetwork' /> <span class='translate'>Network</span></li>
+						</ul>
+					</td>
+					<td style='text-align: left; width: 100%'>
+						<input disabled='disabled' class="imgMvUp vboxImgButton" style='background: url(images/vbox/list_moveup_disabled_16px.png) 1px 1px no-repeat; width: 18px; height: 18px; vertical-align:bottom' type="button" value="" />
+						<br />
+						<input disabled='disabled' class="imgMvDn vboxImgButton" style='background: url(images/vbox/list_movedown_disabled_16px.png) 1px 1px no-repeat; width: 18px; height: 18px; vertical-align:bottom' type="button" value="" />
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<th><span class='translate'>Extended Features</span>:</th>
+		<td><input type='checkbox' class='vboxCheckbox' name='vboxSettingsSystemIOAPIC' /> <span class='translate'>Enable IO APIC</span></td>
+	</tr>
+	<tr>
+		<th></th>
+		<td><input type='checkbox' class='vboxCheckbox' name='vboxSettingsSystemEFI' /> <span class='translate'>Enable EFI</span></td>
+	</tr>
+	<tr>
+		<th></th>
+		<td><input type='checkbox' class='vboxCheckbox' name='vboxSettingsSystemRTCUseUTC' /> <span class='translate'>Hardware clock in UTC time</span></td>
+	</tr>
+
+</table>
+</div>
+
+<!-- Processor Tab -->
+<div id='vboxSettingsTabSystemProcessor' title='Processors'>
+<table style='width: 100%'>
+	<tr>
+		<th><span class='translate'>Processors</span>:</th>
+		<td style='width: 100%; white-space: nowrap'>
+		<table style='width: 100%'>
+			<tr>
+				<td style='width: 100%; border: 0px; margin: 0px; padding: 0px;'>
+				   <div style='margin-top: 4px' id='vboxSettingsSystemProcessor' class='slider'><div class='sliderScale'></div></div>
+				</td>
+				<td><input type='text' class='vboxText' name='vboxSettingsSystemProcessorValue' size='2' class='sliderValue' /> <span class='translate'>CPUs</span></td>
+			</tr>
+			<tr style='vertical-align: top;'>
+				<td style='border: 0px; margin: 0px; padding: 0px;'>
+                   <table width='100%; border: 0px; margin: 0px; padding: 0px;'>
+					<tr style='vertical-align: top'>
+						<td style='text-align: left;'><span class='vboxSliderMin'>1</span> <span class='translate'>CPUs</span></td>
+						<td style='text-align: right;'><span class='vboxSliderMax'>8</span> <span class='translate'>CPUs</span></td>
+					</tr>
+				   </table>
+				</td>
+				<td></td>
+			</tr>
+		</table>
+
+		</td>
+	</tr>
+	<tr>
+		<th><span class='translate'>Extended Features</span>:</th>
+		<td><input type='checkbox' class='vboxCheckbox' name='vboxSettingsSystemPAE' /> <span class='translate'>Enable PAE/NX</span></td>
+	</tr>
+</table>
+</div>
+
+<!-- Acceleration Tab -->
+<div id='settingsTabSystemAcceleration' title='Acceleration'>
+<table>
+	<tr>
+		<th><span class='translate'>Hardware Virtualization</span>:</th>
+		<td><input type='checkbox' name='settingsSystemVT' /> <span class='translate'>Enable VCPU</span></td>
+	</tr>
+	<tr>
+		<th></th>
+		<td><input type='checkbox' name='settingsSystemPaging' /> <span class='translate'>Enable Nested Paging</span></td>
+	</tr>
+</table>
+</div>
+
+<script type='text/javascript'>
+
+$('#vboxSettingsSystemMemory').data('form','frmVboxSettings');
+$('#vboxSettingsSystemProcessor').data('form','frmVboxSettings');
+$('#vboxSettingsSystemMemory').slider({'min':parseInt($('#vboxIndex').data('vboxSystemProperties').minGuestRAM),'max':parseInt($('#vboxSettingsDialog').data('vboxHostDetails').memorySize)});
+$('#vboxSettingsSystemProcessor').slider({'min':1,'max':$('#vboxSettingsDialog').data('vboxHostDetails').cpus.length});
+
+
+/* System Default values from VM*/
+$('#vboxSettingsSystemMemory').slider('value', parseInt($('#vboxSettingsDialog').data('vboxMachineData').memorySize));
+document.forms['frmVboxSettings'].vboxSettingsSystemIOAPIC.checked = $('#vboxSettingsDialog').data('vboxMachineData').BIOSSettings.IOAPICEnabled;
+document.forms['frmVboxSettings'].vboxSettingsSystemEFI.checked = ($('#vboxSettingsDialog').data('vboxMachineData').firmwareType == 'EFI');
+document.forms['frmVboxSettings'].vboxSettingsSystemRTCUseUTC.checked = ($('#vboxSettingsDialog').data('vboxMachineData').RTCUseUTC);
+$('#vboxSettingsSystemProcessor').slider('value',parseInt($('#vboxSettingsDialog').data('vboxMachineData').CPUCount));
+document.forms['frmVboxSettings'].vboxSettingsSystemPAE.checked = ($('#vboxSettingsDialog').data('vboxMachineData').CpuProperties.PAE);
+
+/* Only if acceleration config is enabled */
+if($('#vboxIndex').data('vboxConfig').enableAccelerationConfig) {
+	
+	document.forms['frmVboxSettings'].settingsSystemVT.checked = ($('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.Enabled);
+	document.forms['frmVboxSettings'].settingsSystemPaging.checked = ($('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.NestedPaging);
+	
+/* Else, remove tab and tab link */
+} else {
+	$('#settingsTabSystemAccelerationLink').remove();
+	$('#settingsTabSystemAcceleration').remove();
+}
+
+/* Boot Order */
+var bootItems = {};
+var bootList = $('#vboxVMBootOrderList');
+$(bootList).children('li').each(function(){
+	bootItems[$(this).attr('id')] = $(this).clone(true);
+	$(this).remove();
+});
+for(var i in $('#vboxSettingsDialog').data('vboxMachineData').bootOrder) {
+	$(bootList).append(bootItems[$('#vboxSettingsDialog').data('vboxMachineData').bootOrder[i]]);
+	document.forms['frmVboxSettings'].elements['vboxSettingsBoot' + $('#vboxSettingsDialog').data('vboxMachineData').bootOrder[i]].checked = true;
+	delete bootItems[$('#vboxSettingsDialog').data('vboxMachineData').bootOrder[i]];
+}
+for(var i in bootItems) {
+	if(typeof i == 'function') continue;
+	$(bootList).append(bootItems[i]);
+	delete bootItems[i];
+}
+
+/*
+ * 
+ * Ordered lists (Boot order)
+ *
+ */
+$("#vboxVMBootOrderList").children("li").click(function() {
+
+	// Update class
+	$(this).siblings().attr('className','vboxListItem');
+	$(this).attr('className','vboxListItemSelected');
+
+	var isFirst = ($(this).parent().children().first().attr('id') == $(this).attr('id'));
+	var isLast = ($(this).parent().children().last().attr('id') == $(this).attr('id'));
+	
+	// update buttons
+	$(this).parentsUntil("table").parent().find('input.imgMvUp').css('background-image', 'url(images/vbox/list_moveup' + (isFirst ? '_disabled' : '') + '_16px.png)').attr('disabled', (isFirst ? 'disabled' : ''));
+	$(this).parentsUntil("table").parent().find('input.imgMvDn').css('background-image', 'url(images/vbox/list_movedown' + (isLast ? '_disabled' : '') + '_16px.png)').attr('disabled', (isLast ? 'disabled' : ''));
+					
+}).first().trigger('click');
+
+$("#vboxVMBootOrder").find("input.imgMvUp").click(function() {
+
+	var list = $('#vboxVMBootOrderList').children('li');
+
+	for(var i = 0; i < list.length; i++ ) {
+		if(list[i].className == 'vboxListItemSelected') {
+			if(i == 0) return;
+			var mv = $(list[i]).detach();
+			$(list[(i-1)]).before(mv);
+			i = list.length;
+			mv.click();
+		}
+	}
+	
+});
+
+$("#vboxVMBootOrder").find("input.imgMvDn").click(function() {
+
+	var list = $('#vboxVMBootOrderList').children('li');
+
+	for(var i = 0; i < list.length; i++ ) {
+
+		if(list[i].className == 'vboxListItemSelected') {
+			if(i == (list.length - 1)) return;
+			var mv = $(list[i]).detach();
+			$(list[(i+1)]).after(mv);
+			i = list.length;
+			mv.click();
+		}
+	}
+	
+});
+
+// Preload up / down images
+var a = new Image();
+a.src = "images/vbox/list_movedown_16px.png";
+var b = new Image();
+b.src = "images/vbox/list_moveup_16px.png";
+
+
+/* Change general settings onSave() */
+$('#vboxSettingsDialog').bind('save',function(){
+
+	$('#vboxSettingsDialog').data('vboxMachineData').memorySize = parseInt(document.forms['frmVboxSettings'].vboxSettingsSystemMemoryValue.value);
+	$('#vboxSettingsDialog').data('vboxMachineData').BIOSSettings.IOAPICEnabled = (document.forms['frmVboxSettings'].vboxSettingsSystemIOAPIC.checked ? 1 : 0);
+	$('#vboxSettingsDialog').data('vboxMachineData').firmwareType = (document.forms['frmVboxSettings'].vboxSettingsSystemEFI.checked ? 'EFI' : 'BIOS');
+	$('#vboxSettingsDialog').data('vboxMachineData').CPUCount = parseInt($('#vboxSettingsSystemProcessor').slider('value'));
+	$('#vboxSettingsDialog').data('vboxMachineData').CpuProperties.PAE = (document.forms['frmVboxSettings'].vboxSettingsSystemPAE.checked ? 1 : 0);
+	$('#vboxSettingsDialog').data('vboxMachineData').RTCUseUTC = (document.forms['frmVboxSettings'].vboxSettingsSystemRTCUseUTC.checked ? 1 : 0);
+
+	/* Only if acceleration config is enabled */
+	if($('#vboxIndex').data('vboxConfig').enableAccelerationConfig) {
+		$('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.Enabled = (document.forms['frmVboxSettings'].settingsSystemVT.checked ? 1 : 0);
+		$('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.NestedPaging = (document.forms['frmVboxSettings'].settingsSystemPaging.checked ? 1 : 0);
+	}
+	
+	// Boot order
+	$('#vboxSettingsDialog').data('vboxMachineData').bootOrder = new Array();
+	$('#vboxVMBootOrderList').find('input').each(function(){
+		if(!$(this).attr('checked')) return;
+		$('#vboxSettingsDialog').data('vboxMachineData').bootOrder[$('#vboxSettingsDialog').data('vboxMachineData').bootOrder.length] = $(this).attr('name').substring(16);
+	});
+		
+});
+
+
+
+</script>

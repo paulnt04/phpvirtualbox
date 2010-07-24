@@ -1,0 +1,295 @@
+<!--
+
+	Network
+	
+	$Id: settingsNetwork.html 692 2010-07-05 20:08:07Z ian $
+
+-->
+<div id='vboxSettingsTabNetAdapter' title='Adapter' style='display: none'>
+<table class='vboxVertical'>
+	<tr>
+		<td colspan='2'><input name='vboxSettingsNetEnabled' class='vboxCheckbox vboxEnablerCheckbox' type='checkbox' /> <span class='translate'>Enable Network Adapter</span></td>
+	</tr>
+	<tr>
+		<th style='min-width: 120px'><span class='translate'>Attached to</span>:</th>
+		<td style='width: 100%' class='vboxEnablerTrigger'>
+			<select name='vboxSettingsNetAttachedTo' onchange='vboxSettingsUpdateNetworkOptions(this);' style='width: 100%'>
+				<option value='Null' class='translate'>Not Attached</option>
+				<option value='NAT' class='translate'>NAT</option>
+				<option value='Bridged' class='translate'>Bridged Adapter</option>
+				<option value='Internal' class='translate'>Internal Network</option>
+				<option value='HostOnly' class='translate'>Host-only Adapter</option>			
+			</select>
+        </td>
+	</tr>
+	<tr>
+		<th class='vboxSettingsNetAdapterNamedLabel'><span class='translate'>Name</span>:</th>
+		<td>
+             <select name='vboxSettingsNetName' class='vboxSettingsNetAdapterNamed' style='width: 100%'>
+                <option value=''></option>
+                
+             </select>
+          </td>
+	</tr>
+	<tr>
+		<th>
+			<input class="netImgAdvanced vboxImgButton" style='background: url(images/rightArrow.png) 3px 2px no-repeat; width: 14px; height: 14px;' type="button" value="" />
+			<span class='translate'>Advanced</span></th>
+		<td></td>
+	</tr>
+	<tr class='vboxSettingsNetToggleAdvanced' style='display: none'>
+		<th><span class='translate'>Adapter Type</span>:</th>
+		<td>
+			<select name='vboxSettingsNetAdapter' style='width: 100%'>
+			</select>
+		</td>
+	</tr>
+	<tr class='vboxSettingsNetToggleAdvanced' style='display: none'>
+		<th><span class='translate'>Mac Address</span>: </th>
+		<td style='white-space: nowrap'><input type='text' class='vboxText' style='width: 200px' name='vboxSettingsNetMAC' size='40' />
+			<input class="vboxSettingsNetMacGen vboxImgButton" style='background: url(images/vbox/refresh_16px.png) 1px 1px no-repeat; width: 18px; height: 18px; vertical-align:bottom' type="button"  value="" />
+		</td>
+	</tr>
+	<tr class='vboxSettingsNetToggleAdvanced' style='display: none'>
+		<th></th>
+		<td><input type='checkbox' class='vboxCheckbox' class='vboxEnablerListen' name='vboxSettingsNetConnected' /> <span class='translate vboxEnablerListen'>Cable connected</span></td>
+	</tr>
+</table>
+</div>
+<script type='text/javascript'>
+
+/*
+ * 
+ * Setup data for networking options.
+ *
+ */
+var vboxSettingsNetAdaptersBridged = new Array();
+var vboxSettingsNetAdaptersHostOnly = new Array();
+var vboxSettingsNetNetworks = new Array();
+
+/*
+ * Fill Adapter Types
+ */
+var nics = $('#vboxSettingsDialog').data('vboxNetworkAdapterTypes');
+for(var i = 1; i < nics.length; i++) { // index 0 is 'Null' and not used
+	var opt = new Option(nics[i],nics[i]); // translated later
+	document.forms['frmVboxSettings'].vboxSettingsNetAdapter.options[document.forms['frmVboxSettings'].vboxSettingsNetAdapter.options.length] = opt;
+}
+
+
+// Shorthand
+var vboxHostNetworking = $('#vboxSettingsDialog').data('vboxHostNetworking');
+
+for(var i = 0; i < vboxHostNetworking.networkInterfaces.length; i++) {
+	if(vboxHostNetworking.networkInterfaces[i].interfaceType == 'Bridged') {
+		vboxSettingsNetAdaptersBridged[vboxSettingsNetAdaptersBridged.length] = vboxHostNetworking.networkInterfaces[i].name;
+	} else if(vboxHostNetworking.networkInterfaces[i].interfaceType == 'HostOnly') {
+		vboxSettingsNetAdaptersHostOnly[vboxSettingsNetAdaptersHostOnly.length] = vboxHostNetworking.networkInterfaces[i].name;
+	} else {
+		vboxAlert('Unknown interface type :' + vboxHostNetworking.networkInterfaces[i].interfaceType);
+	}
+}
+
+
+var vboxSettingsNetTemplate = document.getElementById('vboxSettingsTabNetAdapter');
+var vboxSettingsNetContainer = $(vboxSettingsNetTemplate).parent();
+
+/* translated adapter select values */
+for(var i = 0; i < document.forms['frmVboxSettings'].vboxSettingsNetAdapter.options.length; i++) {
+	document.forms['frmVboxSettings'].vboxSettingsNetAdapter.options[i].text = trans(document.forms['frmVboxSettings'].vboxSettingsNetAdapter.options[i].text) + ' (' + document.forms['frmVboxSettings'].vboxSettingsNetAdapter.options[i].text + ')';
+}
+
+/* Network advanced show / hide */
+$('#vboxSettingsTabNetAdapter').find('.netImgAdvanced').toggle(
+		function() {
+			$(this).parentsUntil('table').parent().find('.vboxSettingsNetToggleAdvanced').css('display','');
+			$(this).css('background-image','url(images/downArrow.png)');
+		},
+		function() {
+			$(this).parentsUntil('table').parent().find('.vboxSettingsNetToggleAdvanced').css('display','none');
+			$(this).css('background-image','url(images/rightArrow.png)');
+		}
+);
+
+/* Mac address generator */
+$('#vboxSettingsTabNetAdapter').find('.vboxSettingsNetMacGen').click(function(){
+	var prefix = '080027';
+	for(var i=0;i<6;i++) {
+		var m = Math.floor(Math.random()*16);
+		prefix += m.toString(16).toUpperCase();
+	}
+	$(this).siblings('input').val(prefix);
+});
+
+
+/* Network adapter tab links */
+var ul = document.createElement('ul');
+$(vboxSettingsNetContainer).append(ul);
+
+for(var i = 0; i < parseInt($('#vboxIndex').data('vboxConfig').nicMax); i++) {
+
+	
+	/* tab */
+	var li = document.createElement('li');
+	li.innerHTML = '<a href="#' + vboxSettingsNetTemplate.id + (i + 1) +'"><span>' + trans('Adapter') + ' ' + (i + 1) + '</span></a>';
+	ul.appendChild(li);
+
+	/* tab content */
+	var newTab = $("#vboxSettingsTabNetAdapter").clone(true);
+	newTab.attr('id',vboxSettingsNetTemplate.id + (i + 1));
+	newTab.css('display','block');
+
+	// Enable / disable trigger
+	newTab.find('.vboxEnablerTrigger').bind('enable',function(){
+		$(this).children('select').first().trigger('change');
+	});
+	
+	newTab.appendTo(vboxSettingsNetContainer);
+
+	/* Form elements must be unique */
+	$("#vboxSettingsTabNetAdapter" + (i + 1)).find('[name]').each(function() {
+		$(this).attr('name',$(this).attr('name') + (i + 1));
+	});
+
+}
+
+
+/* Remove Template */
+$("#vboxSettingsTabNetAdapter").remove();
+
+/* Net values */
+for(var i = 0; i < parseInt($('#vboxIndex').data('vboxConfig').nicMax); i++) {
+
+	var a = (i + 1); 
+
+	// attached to
+	$(document.forms['frmVboxSettings'].elements['vboxSettingsNetAttachedTo'+a]).val($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].attachmentType);
+	$(document.forms['frmVboxSettings'].elements['vboxSettingsNetAttachedTo'+a].options[document.forms['frmVboxSettings'].elements['vboxSettingsNetAttachedTo'+a].selectedIndex]).attr('selected','selected');
+	
+	$(document.forms['frmVboxSettings'].elements['vboxSettingsNetAttachedTo'+a]).change();
+	// Device or network name, depending on what 'attached to' is
+	var netName = '';
+	switch($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].attachmentType) {
+		case 'Bridged':
+		case 'HostOnly':
+			netName = $('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].hostInterface;
+			break;
+		case 'Internal':
+			netName = $('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].internalNetwork;
+			break;
+	}
+
+	// hold default value
+	$(document.forms['frmVboxSettings'].elements['vboxSettingsNetAttachedTo'+a]).data('vboxDefault', netName);
+	
+	document.forms['frmVboxSettings'].elements['vboxSettingsNetName'+a].value = netName;
+
+    document.forms['frmVboxSettings'].elements['vboxSettingsNetAdapter'+a].value = $('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].adapterType;
+	document.forms['frmVboxSettings'].elements['vboxSettingsNetMAC'+a].value = $('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].MACAddress;
+	document.forms['frmVboxSettings'].elements['vboxSettingsNetConnected'+a].checked = ($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].cableConnected);
+
+	if($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].enabled) {
+		document.forms['frmVboxSettings'].elements['vboxSettingsNetEnabled'+a].checked = true;
+	}
+
+
+}
+/* preload network 'advanced' down arrow image */
+var netDnAdvImg = new Image();
+netDnAdvImg.src = 'images/downArrow.png';
+
+/*
+ * Called when network adpater 'attached to' changes
+ */
+function vboxSettingsUpdateNetworkOptions(sel) {
+
+	var th = $(sel).parentsUntil('table').parent().find('th.vboxSettingsNetAdapterNamedLabel').first();
+	var nsel = $(sel).parentsUntil('table').parent().find('.vboxSettingsNetAdapterNamed').first();
+
+
+	if(sel.value == 'Null' || sel.value == 'NAT') {
+
+		$(th).addClass('vboxDisabled');
+		
+		$(nsel).children().remove();
+		$(nsel).attr('disabled','disabled');
+		
+	} else {
+
+		$(th).removeClass('vboxDisabled');
+		
+		$(nsel).children().remove();
+		$(nsel).attr('disabled','');
+
+		// Special case for Internal network select
+		if(sel.value == 'Internal') {
+			var isel = $(nsel).clone(false);
+			$(nsel).replaceWith(isel);
+			nsel = isel;
+		}
+
+		var defaultSel = $(sel).data('vboxDefault');
+		
+		switch(sel.value) {
+			case 'Bridged':
+				src = vboxSettingsNetAdaptersBridged;
+				break;
+			case 'HostOnly':
+				src = vboxSettingsNetAdaptersHostOnly;
+				break;
+			case 'Internal':
+				src = $('#vboxSettingsDialog').data('vboxHostNetworking').networks;
+				break;
+			default:
+				vboxAlert('Unknown network binding type: ' + sel.value);
+		}
+		
+		for(var i = 0; i < src.length; i++) {
+			var hSrc = $('<div />').text(src[i]).html();
+			$(nsel).append('<option name="' + hSrc + '" ' + (src[i] == defaultSel ? ' selected ' : '') + ' value="' + hSrc + '">' + hSrc + '</option>');
+		}
+	}
+
+	// Special case for Internal network select
+	if(sel.value == 'Internal') {
+		$(nsel).jec();
+	}
+	
+}
+
+/* Change settings onSave() */
+$('#vboxSettingsDialog').bind('save',function(){
+
+	/* Net */
+	for(var i = 0; i < parseInt($('#vboxIndex').data('vboxConfig').nicMax); i++) {
+
+		var a = (i + 1); 
+
+		// attached to
+		$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].attachmentType = document.forms['frmVboxSettings'].elements['vboxSettingsNetAttachedTo'+a].value;
+
+		// Device or network name, depending on what 'attached to' is
+		switch($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].attachmentType) {
+			case 'Bridged':
+			case 'HostOnly':
+				$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].hostInterface = document.forms['frmVboxSettings'].elements['vboxSettingsNetName'+a].value;;
+				break;
+			case 'Internal':
+				$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].internalNetwork = document.forms['frmVboxSettings'].elements['vboxSettingsNetName'+a].value;
+				break;
+		}
+		
+
+		$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].adapterType = document.forms['frmVboxSettings'].elements['vboxSettingsNetAdapter'+a].value;
+		$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].MACAddress = document.forms['frmVboxSettings'].elements['vboxSettingsNetMAC'+a].value;
+		$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].cableConnected = (document.forms['frmVboxSettings'].elements['vboxSettingsNetConnected'+a].checked ? 1 : 0);
+		$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].enabled = (document.forms['frmVboxSettings'].elements['vboxSettingsNetEnabled'+a].checked ? 1 : 0);
+
+	}
+
+});
+
+
+</script>
+
+

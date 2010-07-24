@@ -1,0 +1,193 @@
+<!-- 
+
+	Main Tabs
+	
+	$Id: tabs.html 687 2010-07-02 12:32:32Z ian $
+
+ -->
+<ul id='tablistMain' style='display: none'>
+</ul>
+<script type='text/javascript'>
+
+var tabs = [
+    {'name':'vboxTabVMDetails','content':'tabVMDetails','label':'Details','icon':'settings'},
+    {'name':'vboxTabVMConsole','content':'tabVMConsole','label':'Console','icon':'vrdp'},
+    {'name':'vboxTabVMSnapshots','content':'tabVMSnapshots','label':'Snapshots','icon':'take_snapshot'},
+    {'name':'vboxTabVMDescription','content':'tabVMDescription','label':'Description','icon':'description'}
+];
+
+var tabsMain = new vboxTabs('tabsMain');
+
+var tabLoader = new vboxLoader();
+
+for(var i = 0; i < tabs.length; i++) {
+
+	// Tab disabled?
+	if($('#vboxIndex').data('vboxConfig')['disable' + tabs[i].name.substring(4)])
+		continue;
+
+	// Tab link
+	var li = document.createElement('li');
+	li.innerHTML = '<a href="#'+tabs[i].name+'"><span><img style="vertical-align: middle" src="images/vbox/'+tabs[i].icon+'_16px.png" border="0" /> <span id="'+tabs[i].name+'Title">'+trans(tabs[i].label)+'</span></span></a>';					
+	$('#tablistMain').append(li);
+	
+	// Tab place holder in case tabs arrive out of order.
+	// jquery-ui tabs will get confused if they do.
+	var d = document.createElement('div');
+	d.setAttribute('id',tabs[i].name+'PlaceHolder');
+	$("#tabsMain").append(d);
+	
+	tabLoader.addFile('panes/'+tabs[i].content+'.html',function(f,tname){$('#'+tname+'PlaceHolder').replaceWith(f);},tabs[i].name);
+	
+}
+
+tabLoader.onLoad = function(){
+
+	for(var i = 0; i < tabs.length; i++) {
+
+		// Tab disabled?
+		if($('#vboxIndex').data('vboxConfig')['disable' + tabs[i].name.substring(4)])
+			continue;
+		
+		tabsMain.addTab(tabs[i]);
+		
+	}
+	
+	$("#tablistMain").css({'display':''});
+	
+	$("#tabsMain").tabs({'spinner':'','show':tabsMain.triggerShow});
+
+	$("#tabsMain").tabs('option','selected',0);
+
+	$('#vboxIndex').bind('vmselect',function(e,vm){tabsMain.update(vm);});
+
+	tabsMain.wrap();
+	tabsMain.updateTabs(null);
+
+};
+tabLoader.run();
+
+/*
+ * Tabs pane JavaScript code for main tabs. Actual "tabbed"
+ * functionality code comes from jquery and jqueryui. This
+ * class listens for a vmlist selection change and tells
+ * the tabs to update themselves with new data
+ * 
+ */
+
+function vboxTabs(id) {
+
+	this.selected = null;
+	this.ref = null;
+	this.tabs = new Array();
+	var self = this;
+	this.id = id;
+	
+	// Add a tab to list
+	this.addTab = function (tab) {
+		this.tabs[this.tabs.length] = tab;
+	}
+	
+	
+	// Update content to use specified vm
+	this.update = function (vm) {
+		
+		// Null Selection
+		if(!vm) {
+			$('#'+this.id+'Wrapper').data('machine',null);
+			$('#'+this.id+'Wrapper').trigger('vmloaded');
+			this.selected = null;
+			return;
+		}
+
+		$('#'+this.id+'Wrapper').trigger('vmloading');
+		
+		this.selected = vm.id;
+				
+		dataMediator.get('VMDetails', vm.id, this.updateTabs);
+		
+	}
+	
+	// Refresh info for particular machine
+	this.refresh = function(id) {
+		if(this.selected == id) {
+			this.update({'id':id});
+		}
+	}
+		
+	// Call update callback function for all tabs
+	this.updateTabs = function(vm) {
+
+		// No longer selected?
+		if(vm && vm.id && (self.selected != vm.id)) return;
+
+		// Check for valid data
+		if(!vm || !vm.id || vm.id == 'host' || !vm.accessible) {
+
+			$('#'+self.id).tabs('option','selected', 0);
+
+			for(var i = 1; i < self.tabs.length; i++)
+				$('#'+self.id).tabs('disable', i);
+			
+		} else {
+
+			for(var i = 1; i < self.tabs.length; i++)
+				$('#'+self.id).tabs('enable', i);
+			
+		}
+
+		
+		// Trigger loaded
+		$('#'+self.id+'Wrapper').data('machine',vm);
+		$('#'+self.id+'Wrapper').trigger('vmloaded',[vm]);
+
+		// Trigger show
+		$('#'+self.tabs[$('#'+self.id).tabs('option','selected')].name).trigger('show',[vm]);
+
+	}
+
+	this.triggerShow = function() {
+		// Trigger show
+		$('#'+self.tabs[$('#'+self.id).tabs('option','selected')].name).trigger('show',[$('#'+self.id+'Wrapper').data('machine')]);
+	}
+
+	self.wrap = function() {
+		
+		var elm = $('#'+self.id);
+		$(elm).css({'margin':'0px','padding':'0px'});
+		var tbl = document.createElement('table');
+		tbl.setAttribute('style',"padding: 0px; margin: 0px; border: 0px; border-spacing: 0px; height: 100%; width: 100%");
+		var tr = document.createElement('tr');
+		var td = document.createElement('td');
+		tr.setAttribute('style',"padding: 0px; margin: 0px; border-width: 0px; border-spacing: 0px; height: 1%; vertical-align: top");
+		$(td).append($(elm).children().first().detach());
+		td.setAttribute('style',"padding: 0px; margin: 0px; border-width: 0px; border-spacing: 0px;");
+		$(tr).append(td);
+		$(tbl).append(tr);
+
+		var tr = document.createElement('tr');
+		$(tr).css({'vertical-align':'top'});
+		var td = document.createElement('td');
+		td.setAttribute('class','vboxTabContent');
+		td.setAttribute('style',"padding: 0px; margin: 0px; border: 0px;");
+		var d = document.createElement('div');
+		d.setAttribute('style',"padding: 0px; margin: 0px; border: 0px;");
+		d.setAttribute('id',self.id+'Wrapper');		
+		d.setAttribute('class','vboxResize');
+		for(var i = 0; i < self.tabs.length; i++) {
+			$(d).append($('#'+self.tabs[i].name).detach());
+		}
+		$(td).append(d);
+		$(tr).append(td);
+		$(tbl).append(tr);
+		$(elm).append(tbl);
+
+		$(window).trigger('resize');
+
+	}
+	
+	
+}
+
+</script>
+

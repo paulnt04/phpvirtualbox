@@ -1,0 +1,35 @@
+#tipped {
+	/* position & display are necessary */
+	position:absolute;
+	display:none;
+	
+	/* The rest are just to make it look good & can be changed as you want */
+	border: 1px solid #000;
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+	-moz-box-shadow:1px 1px 3px rgba(0,0,0,0.7);
+	-webkit-box-shadow:1px 1px 3px rgba(0,0,0,0.7);
+	border-radius:5px;
+	box-shadow:1px 1px 3px rgba(0,0,0,0.7);
+	background-color:#fff;
+	padding:5px;
+	z-index: 99999;
+	font-size: 0.8em;
+	max-width: 50%;
+}
+
+/* The tip content gets inserted into this element */
+#tipped-content p, #tipped p { padding: 2px; margin: 0px; } 
+
+/* This is the <div> that holds the close button/link.  No styling is required, but you'll likely want some. */
+#tipped-closer-wrapper {
+	text-align:center;
+	margin:10px 0 5px;
+}
+
+/* The <span> that is the close button/link.  No styling is required, but you'll likely want some. */
+#tipped-closer {
+	padding:3px;
+	border:2px outset #999;
+	background-color:#CCC;
+}

@@ -1,0 +1,82 @@
+-------------------------------------
+		0.4 - 2010-07-24
+-------------------------------------
+Fixed numerous translation bugs.
+
+Fixed bug that would not allow the addition of more than 4
+storage controller types in VM Settings.
+
+Changed WSDL cache to use memory only instead of both memory
+and disk. (PHP SoapClient WSDL_CACHE_MEMORY option).
+
+RDP host (for console tab and details tab RDP links) is now
+selected in the following order:
+	1) VM Configured host (would have to be set with VboxManage)
+	2) rdpHost setting in config.php
+	3) host in location setting of config.php
+	*) if host is 'localhost' or '127.0.0.1' use web browser
+		location's URL host as last resort
+
+Fixed bug in file / folder browser that would display the full
+path of files / folders rather than just their names. This only
+affected *nix web servers connecting to VirtualBox running on
+Windows hosts. I can't imagine this is a very common scenario:)
+
+Better error handling and meaningful error message when there
+is a PHP error, and phpVirtualBox fails to load.
+
+Fixed bug that would not allow you to enter your own internal
+network name in VM network configurations where Attached To: is
+set to Internal Network.
+
+Fixed bug that would break phpVirtualBox when
+allow_call_time_pass_reference is set to Off in php.ini.
+
+Removed ReflectionClass dependency. This also changes all
+config options in config.php to use 'var' instead of 'const.'
+
+License changed from GPL to MIT.
+
+-------------------------------------
+        0.3 - 2010-07-05
+-------------------------------------
+Fixed bug in file/folder browser that would incorrectly display
+files as folders and folders as files in some cases.
+
+Added Console tab.
+
+Added OSE support. This effectively removes the console tab,
+USB, and VRDP support when OSE is detected.
+
+Fixed bug in Host-networking interfaces pane that would cause
+tabs to disappear if editing a host interface more than once
+without refreshing.
+
+Made VM list and main tab content scrollable.
+
+Added Guest Network Adapter info. This queries guest additions
+for network adapter IP information of a running VM.
+
+Added Clone, Make Immutable, and Make Normal functionality to
+Virtual Media Manager.
+
+Fixed bug in Virtual Media Manager that would allow a user to
+try to release a medium that is attached to a snapshot. This
+attempt would always fail.
+
+Fixed bug that would cause saving USB filters to fail.
+
+Added Import / Export Appliance. NOTE: Some configurable
+import settings are ignored (e.g. network interface type).
+These are also ignored when importing from the VirtualBox
+GUI, and so appears to be a bug in VirtualBox itself.
+
+Added file type icons to file / folder browser.
+
+Fixed ineternal network dropdown list in Virtual Machine
+settings.
+
+-------------------------------------
+        0.2 - 2010-06-14
+-------------------------------------
+Initial Release

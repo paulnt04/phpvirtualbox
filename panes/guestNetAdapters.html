@@ -1,0 +1,101 @@
+<!-- $Id: guestNetAdapters.html 677 2010-06-17 21:50:52Z ian $ -->
+<div id='vboxGuestNetAdapters'>
+	
+</div>
+<!-- Used as a Template -->
+<div id='vboxGuestNetAdapterTemplate' class='vboxDialogContent vboxTabContent' style='display: none'>
+	<table class="vboxVertical">
+		<tr>
+			<th><span class='translate'>IPv4Addr</span>:</th>
+			<td><span title='/V4/IP'></span></td>
+		</tr>
+		<tr>
+			<th><span class='translate'>IPv4Mask</span>:</th>
+			<td><span title='/V4/Netmask'></span></td>
+		</tr>
+		<tr class='vboxIPv6' style='display: none'>
+			<th><span class='translate'>IPv6Addr</span>:</th>
+			<td><span title='/V6/Ip'></span></td>
+		</tr>
+		<tr class='vboxIPv6' style='display: none'>
+			<th><span class='translate'>IPv6Mask</span>:</th>
+			<td><span title='/V6/Netmask'></span></td>
+		</tr>
+	</table>
+</div>
+	
+<script type='text/javascript'>
+
+
+/*
+ * Get data and pass to init function
+ */
+function vboxVMNetAdaptersInit(vm,index) {
+	
+	// Add spinner and remove tab list if it exists
+	$('#vboxGuestNetAdapterList').remove();
+	$('#vboxGuestNetAdapters').prepend("<div class='vboxTabLoading'><img src='images/spinner.gif'></div>");
+	
+	var pattern = '/VirtualBox/GuestInfo/Net/*';
+	vboxAjaxRequest('enumerateGuestProperties',{'vm':vm,'pattern':pattern},function(d){
+		vboxVMNetAdaptersDisplay(d,index);
+	});
+}
+
+function vboxVMNetAdaptersDisplay(d) {
+	
+	// Create hash / assoc array / mapping
+	var data = {};
+	for(var a = 0; a < d[0].length; a++) {
+		data[d[0][a].replace('/VirtualBox/GuestInfo/Net/','')] = d[1][a];
+	}
+
+	// Remove spinner
+	$('#vboxGuestNetAdapters').children().first().remove();
+
+	// Append tab list
+	var adl = document.createElement('div');
+	$(adl).attr('id','vboxGuestNetAdapterList');
+	$(adl).attr('class','vboxTabbed');
+
+	// Check for data
+	if(!data['Count'] || data['Count'] < 1) {
+		$(adl).html(trans('Unable to retrieve guest properties'));
+		$('#vboxGuestNetAdapters').prepend(adl);
+		return;
+	}
+
+	// Create list
+	var ul = document.createElement('ul');
+	
+	// Each net adapter
+	for(var i = 0; i < data['Count']; i++) {
+
+		// Tab link
+		var li = document.createElement('li');
+		li.innerHTML = '<a href="#vboxGuestNetAdapter' + (i + 1) +'"><span>' + trans('Adapter') + ' ' + (i + 1) + '</span></a>';
+		ul.appendChild(li);
+
+		// Tab content
+		var tmpl = $("#vboxGuestNetAdapterTemplate").clone(true);
+		$(tmpl).attr('id','vboxGuestNetAdapter'+(i+1));
+		tmpl.find('span[title]').each(function(){
+			$(this).html(data[i+$(this).attr('title')]);
+		});
+		$(tmpl).css({'display':''});
+		$(tmpl).appendTo(adl);
+		
+	}
+
+	// Tab links UL
+	$(adl).prepend(ul);
+	
+	// prepend tabs
+	$("#vboxGuestNetAdapters").prepend(adl);
+
+	// Update it all
+	vboxInitDisplay('vboxGuestNetAdapters');
+
+}
+
+</script>

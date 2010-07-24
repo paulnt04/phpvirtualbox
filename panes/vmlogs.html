@@ -1,0 +1,78 @@
+<!-- $Id$ -->
+<div id='vboxVMLogTabsContainer' style='height: 100%' />
+
+<script type='text/javascript'>
+
+function vboxShowLogsInit(vm) {
+
+	$('#vboxVMLogTabs').remove();
+
+	var ltabs = document.createElement('div');
+	ltabs.setAttribute('id','vboxVMLogTabs');
+	ltabs.setAttribute('style','height: 90%; margin-bottom: 0px; padding-bottom: 0px;');
+	$('#vboxVMLogTabsContainer').append(ltabs);
+	
+
+	var logs = $('#vboxVMLogsDialog').data('logs');
+
+	if(!logs || !logs.length) {
+		$('#vboxVMLogTabs').html(trans('No logs found.'));
+		return;
+	}
+
+	// Pattern for regexp replacement
+	var preg = new RegExp('.*'+$('#vboxIndex').data('vboxConfig').DSEP.replace('\\','\\\\'));
+
+	var ul = document.createElement('ul');
+	for(var i = 0; i < logs.length; i++) {
+
+		// Replace path with just file name
+		logs[i] = logs[i].replace(preg,'');
+
+		// Tab link
+		var li = document.createElement('li');
+		li.innerHTML = '<a href="#vboxVMLog'+i+'"><span>'+logs[i]+'</span></a>';
+		$(ul).append(li);					
+
+		var dlog = document.createElement('div');
+		$(dlog).css({'height':'100%'});
+		$(dlog).attr('id','vboxVMLog'+i);
+		$(dlog).attr('class','vboxVMLog vboxDialogContent');
+		$(dlog).data('logIndex',i);
+
+		$(dlog).bind('show',function(){
+
+			if($(this).data('load')) return;
+			$(this).data('load', 1);
+
+			$(this).html('<img src="images/spinner.gif" />');
+
+			vboxAjaxRequest('getVMLogFile',{'vm':vm,'log':$(this).data('logIndex')},function(d,x){
+				var frm = document.createElement('form');
+				var txt = document.createElement('textarea');
+				txt.setAttribute('id','vboxLogText'+x.logIndex);
+				txt.setAttribute('spellcheck','false');
+				txt.setAttribute('wrap','off');
+				$(txt).val(d.log);
+				$(txt).attr('readonly','true');
+				$(frm).append(txt);
+				$('#vboxVMLog'+x.logIndex).html('').append(frm);
+				$('#vboxLogText'+x.logIndex).attr('scrollTop',$('#vboxLogText'+x.logIndex).attr('scrollHeight'));
+				
+			},{'logIndex':$(this).data('logIndex')});
+
+			
+			
+		});
+			
+		$('#vboxVMLogTabs').append(dlog);
+		
+	}
+	$('#vboxVMLogTabs').prepend(ul);
+	
+	$('#vboxVMLogTabs').tabs({'show':function(e,i){
+		$('#vboxVMLogTabs').children('div:eq('+$('#vboxVMLogTabs').tabs('option','selected')+')').trigger('show');
+	}});
+	
+}
+</script>

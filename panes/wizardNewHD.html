@@ -1,0 +1,197 @@
+<!-- 
+
+	Panes for new hard disk wizard. Logic in vboxWizard()
+	
+	$Id: wizardNewHD.html 681 2010-06-24 00:04:38Z ian $
+
+ -->
+<!-- Step 1 -->
+<div id='wizardNewHDStep1' title='newDisk Welcome' style='display: none'>
+	<span class='translate'>newDisk Step1 Message1</span>
+	<p class='translate'>newDisk Step1 Message2</p>
+</div>
+
+
+<!-- Step 2 -->
+<div id='wizardNewHDStep2' title='Hard Disk Storage Type' style='display: none'>
+	<span class='translate'>newDisk Step2 Message1</span>
+	
+	<p class='translate'>newDisk Step2 dynamic</p>
+	
+	<p class='translate'>newDisk Step2 fixed</p>
+	
+	<div class='vboxBordered'>
+		<table>
+			<tr>
+				<th style='text-align: left' class='translate'>Storage Type</th>
+			</tr>
+			<tr>
+				<td><input type='radio' class='vboxRadio' checked='checked' name='newHardDiskType' value='dynamic' /><span class='translate'>Dynamically expanding storage</span></td>
+			</tr>
+			<tr>
+				<td><input type='radio' class='vboxRadio' name='newHardDiskType' value='fixed' /><span class='translate'>Fixed-size storage</span></td>
+			</tr>	
+		</table>
+	</div>
+</div>
+
+
+<!-- Step 3 -->
+<div id='wizardNewHDStep3' title='Virtual Disk Location and Size' style='display: none'>
+	<div class='translate'>newDisk Step3 Message1</div>
+	
+		<table width='100%'>
+			<tr>
+				<td style='width: 100%; white-space: nowrap'>
+					<input type='text' class='vboxText' name='wizardNewHDLocation' style='width: 100%'/>
+				</td>
+				<td style='width: auto; white-space: nowrap;' class='vboxFileFolderInput'>
+					<input type="button" class="vboxImgButton" style="background-image: url(images/vbox/select_file_16px.png)" onClick="wizardHDBrowseLocation()" />
+				</td>
+			</tr>
+		</table>
+	
+	<p class='translate'>newDisk Step3 Message2</p>
+
+	<table style='width: 100%'>
+		<tr>
+			<td style='width: 100%; border: 0px; margin: 0px; padding: 0px;'>
+			   <div style='margin-top: 4px' id='wizardNewHDSize' class='slider'><div class='sliderScale'></div></div>
+			</td>
+			<td><input type='text' class='vboxText' name='wizardNewHDSizeValue' size='8' class='sliderValue' /></td>
+		</tr>
+		<tr style='vertical-align: top;'>
+			<td style='border: 0px; margin: 0px; padding: 0px;'>
+				<table width='100%; border: 0px; margin: 0px; padding: 0px;'>
+					<tr style='vertical-align: top'>
+						<td style='text-align: left;'><span id='wizardNewHDMin'>1</span></td>
+						<td style='text-align: right;'><span id='wizardNewHDMax'>128</span></td>
+					</tr>
+				</table>
+			</td>
+			<td></td>
+		</tr>
+	</table>
+	
+</div>
+
+<!-- Step 4 -->
+<div id='wizardNewHDStep4' title='Summary' style='display: none'>
+
+	<div class='translate'>newDisk Step4 Message1</div>
+	
+	<div style='padding: 4px; margin: 2px;' class='vboxBordered'>
+		<table class='vboxVertical' style='padding: 4px;'>
+			<tr>
+				<th style='text-align: right'><span class='translate'>Type</span>:</th>
+				<td id='wizardNewHDTypeLabel'>Dynamically expanding storage</td>
+			</tr>
+			<tr>
+				<th style='text-align: right'><span class='translate'>Location</span>:</th>
+				<td id='wizardNewHDLocationLabel'></td>
+			</tr>
+			<tr>
+				<th style='text-align: right'><span class='translate'>Size</span>:</th>
+				<td id='wizardNewHDSizeLabel'></td>
+			</tr>		
+		</table>
+	</div>
+	<p class='translate'>newDisk Step4 Message2</p>
+
+</div>
+
+<script type='text/javascript'>
+
+/* Browse for new VDI location */
+function wizardHDBrowseLocation() {
+
+	// Get current location
+	var loc = document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value;
+	var os = null;
+	if(loc.indexOf(':') > 0) {
+		// windows
+		loc = loc.replace(/.*\\/,'');
+		os = 'win';
+	} else if(loc.indexOf('/') != -1) {
+		// *nix
+		loc = loc.replace(/.*\//,'');
+		os = 'unix';
+	} else {
+		// no path set
+		loc = $('#vboxIndex').data('vboxSystemProperties').defaultHardDiskFolder;
+	}
+		
+	vboxFileBrowser(loc,function(f){
+		if(!f) return;
+		// get file name
+		file = document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value;
+		document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value = f+$('#vboxIndex').data('vboxConfig').DSEP+file;
+	},true);
+
+}
+/* When showing summary */
+$('#wizardNewHDStep4').bind('show',function(){
+
+	
+	$('#wizardNewHDTypeLabel').html((document.forms['frmwizardNewHD'].elements.newHardDiskType[1].checked ? trans('Fixed-size storage') : trans('Dynamically expanding storage')));
+
+	var loc = document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value;
+	if(loc.search(/[\/|\\]/) < 0) {
+		loc = $('#vboxIndex').data('vboxSystemProperties').defaultHardDiskFolder + '/' + loc;
+	}
+	document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value = loc;
+	$('#wizardNewHDLocationLabel').html($('<div />').text(loc).html());
+
+	// Fix size if we need to
+	var mbytes = vboxConvertMbytes(document.forms['frmwizardNewHD'].elements.wizardNewHDSizeValue.value);
+	document.forms['frmwizardNewHD'].elements.wizardNewHDSizeValue.value = vboxMbytesConvert(mbytes);
+	$('#wizardNewHDSizeLabel').html(document.forms['frmwizardNewHD'].elements.wizardNewHDSizeValue.value + ' ('+mbytes+' '+trans('MB')+')');
+});
+
+/* Go through list of media and pick new hd name */
+var HDname = 'HardDisk99';
+for(var a = 1; a < 99; a++) {
+	var found = 0;
+	for(var i = 0; i < $('#vboxIndex').data('vboxMediums').length; i++) {
+		if($('#vboxIndex').data('vboxMediums')[i].name == 'HardDisk'+a+'.vdi') {
+			i = $('#vboxIndex').data('vboxMediums').length;
+			var found = 1;
+		}
+	}
+	if(!found) {
+		HDname = 'HardDisk'+a+'.vdi';
+		a = 100;
+	}
+}
+
+document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value = HDname;
+
+/* Size slider */
+var min = 1024;
+var max = Math.min(parseInt($('#vboxIndex').data('vboxSystemProperties').maxVDISize),(512*1024));
+$('#wizardNewHDSize').data('form','frmwizardNewHD');
+$('#wizardNewHDSize').data('display',vboxMbytesConvert);
+$('#wizardNewHDSize').slider({'min':min,'max':max,'step':1024});
+$('#wizardNewHDSize').slider('value',2048);
+
+$('#wizardNewHDMin').html(vboxMbytesConvert(min));
+$('#wizardNewHDMax').html(vboxMbytesConvert(max));
+
+ /* Suggested Data exists */
+$('#wizardNewHDStep1').bind('show',function(e,wiz){
+
+	// Already initialized?
+	if($('#wizardNewHDStep1').data('init') || !wiz.suggested) return;
+
+	if(wiz.suggested.name) {
+		document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value = wiz.suggested.name + '.vdi';
+	}
+
+	if(wiz.suggested.size) {
+		$('#wizardNewHDSize').slider('value',wiz.suggested.size);
+	}
+
+	$('#wizardNewHDStep1').data('init',true);
+	
+});
+</script>

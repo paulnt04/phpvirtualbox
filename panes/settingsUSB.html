@@ -1,0 +1,361 @@
+<!--
+
+	USB
+
+	$Id: settingsUSB.html 681 2010-06-24 00:04:38Z ian $
+	
+-->
+<table id='vboxSettingsUSBTable' style='width: 100%'>
+	<tr>
+		<td><input type='checkbox' class='vboxCheckbox vboxEnablerCheckbox' name='vboxSettingsUSBEnabled' /> <span class='translate'>Enable USB Controller</span></td>
+	</tr>
+	<tr>
+		<td style='width: 100%; padding-left: 20px;'><input type='checkbox' class='vboxCheckbox' name='vboxSettingsUSBEnabledEHCI' /> <span class='translate vboxEnablerListen'>Enable USB 2.0 Controller</span></td>
+	</tr>
+	<tr style='vertical-align: middle'>
+		<td style='width: 100%; padding-left: 20px;'>
+			<table class='vboxSettingsHeadingLine' style='width:100%;border-spacing:0;border:0px;margin:0px;padding:0px;'><tr style='vertical-align:middle'><td style='white-space: nowrap; width: auto'><span class='translate vboxEnablerListen'>USB Device Filters</span></td><td style='width: 100%'><hr style='width: 100%;'  class='vboxSeperatorLine'/></td></tr></table>
+		</td>
+	</tr>
+	<tr>
+		<td style='width: 100%; padding-left: 20px;'>
+		<table style='width: 100%'>
+			<tr>
+				<td id='vboxSettingsUSBFilters' style='width: 100%;' class='vboxBordered vboxEnablerListen'>
+					<ul id='vboxSettingsUSBFilterList' class='vboxList' style='width: 100%'>
+						<li class='vboxListItem'><input type='checkbox' class='vboxCheckbox' />a</li>
+					</ul>
+				</td>
+				<td id='vboxSettingsUSBButtons' class='vboxEnablerListen'></td>
+			</tr>
+		</table>
+		</td>
+	</tr>
+
+</table>
+<script type='text/javascript'>
+
+/*
+ * USB Buttons and Toolbar
+ */
+
+ var sButtons = new Array(
+
+	{
+		'name' : 'usbnew',
+		'label' : 'Add Empty Filter',
+		'icon' : 'usb_new',
+		'click' : function () {
+			var currUsbName = 1;
+			for(; currUsbName < 99; currUsbName++) {
+				if(!$(list).find('span.vboxSettingsUSBFilterTitle').filter(function(){
+					return ($(this).text() == trans('New Filter') + ' ' + currUsbName);
+				}).length) break;
+			}
+
+			vboxSettingsAddUSBFilter({'active':1,'name':trans('New Filter') + ' ' + currUsbName});
+
+			if(!$('#vboxSettingsUSBFilterList').find('.vboxListItemSelected').first().trigger('click').html()) {
+				$('#vboxSettingsUSBFilterList').trigger('select',null);		}
+			}
+	},
+
+	{
+		'name' : 'usbnewdevice',
+		'label' : 'Add Filter From Device',
+		'icon' : 'usb_add',
+		'click' : function (e) {
+
+			$("#vboxSettingsUSBAddDevice").children().remove();			
+
+			// Get list of USB Devices
+			var devices = $('#vboxSettingsDialog').data('vboxHostUSBDevices');
+			
+			for(var i = 0; i < devices.length; i++) {
+
+				var label = new Array();
+				if(devices[i].manufacturer) label[label.length] = devices[i].manufacturer;
+				label[label.length] = (devices[i].product ? devices[i].product : trans('Unknown Device')+' '+devices[i].vendorId+':'+devices[i].productId);
+				if(devices[i].revision) label[label.length] = '['+devices[i].revision+']';
+				label = label.join(' ');
+				
+				var li = document.createElement('li');
+				$(li).html("<a href='#usbAdd"+i+"'>"+label+"</a>");
+				$(li).css({'text-align':'left'});
+				$(li).data(devices[i]);
+				$("#vboxSettingsUSBAddDevice").append(li);
+
+			}
+			if(!devices.length) {
+				var li = document.createElement('li');
+				$(li).html("<a href='#usbNoop'>&lt;"+trans('no devices available')+"&gt;</a>");
+				$(li).css({'text-align':'center'});
+				$("#vboxSettingsUSBAddDevice").append(li);
+			}
+			
+			var md = jQuery.Event("mousedown");
+			var mu = jQuery.Event("mouseup");
+			for(var i in e) { (md[i] ? null : md[i] = mu[i] = e[i]); }
+			// Fix mouse button for MSIE
+			if(jQuery.browser.msie && e.button == 0) md.button = mu.button = 1;
+			
+			
+			$("#vboxSettingsUSBAddDeviceClick").trigger(md).trigger(mu);
+		}		
+	},
+	
+	{
+		'name' : 'usbedit',
+		'label' : 'Edit Filter',
+		'icon' : 'usb_filter_edit',
+		'enabled' : function (item) { return (item && $(item).data('filter') && $(item).data('filter').name); },
+		'click' : function () {
+
+          	var d = document.createElement('div');
+          	d.setAttribute('id','vboxSettingsUSBFilterEdit');
+          	d.setAttribute('style','display: none');
+          	d.setAttribute('class','vboxNonTabbed vboxDialogContent');
+          	var tbl = document.createElement('table');
+          	tbl.setAttribute('style','width: 100%');
+          	tbl.setAttribute('class','vboxSettingsTable');
+          	
+			var vboxSettingsUSBFilterProps = [
+				['Name','name'],['Vendor ID','vendorId'],['Product ID','productId'],
+				['Revision','revision'],['Manufacturer','manufacturer'],['Product','product'],
+				['Serial No','serialNumber'],['Port','port',]];
+			
+			/* Get Defaults */
+			var filter = $('#vboxSettingsUSBFilterList').find('li.vboxListItemSelected').first().data('filter');
+          	
+          	for(var i = 0; i < vboxSettingsUSBFilterProps.length; i++) {
+              	
+          		var tr = document.createElement('tr');
+          		var th = document.createElement('th');
+          		th.setAttribute('style','white-space: nowrap; width: auto; text-align: right;');
+          		th.innerHTML = trans(vboxSettingsUSBFilterProps[i][0]) + ':';
+          		tr.appendChild(th);
+          		var td = document.createElement('td');
+          		td.setAttribute('style','width: 100%');
+          		var val = (filter[vboxSettingsUSBFilterProps[i][1]]||'');
+          		td.innerHTML = '<input type="text" class="vboxText" style="width: 100%" id="vboxSettingsUSBF'+vboxSettingsUSBFilterProps[i][1]+'" value="'+$('<div />').text((filter[vboxSettingsUSBFilterProps[i][1]]||'')).html()+'"/>';
+          		tr.appendChild(td);
+          		tbl.appendChild(tr);
+          	}
+          	
+          	var tr = document.createElement('tr');
+          	var th = document.createElement('th');
+          	th.innerHTML = trans('Remote')+':';
+          	th.setAttribute('style','white-space: nowrap; width: auto; text-align: right;');
+          	tr.appendChild(th);
+          	var td = document.createElement('td');
+          	td.setAttribute('style','width: 100%');
+          	var sel = document.createElement('select');
+          	sel.setAttribute('id','vboxSettingsUSBFRemote');
+          	var opts = [['',trans('Any')],['yes',trans('Yes')],['no',trans('No')]];
+          	for(var i = 0; i < opts.length; i++) {
+              	var o = new Option(opts[i][1],opts[i][0],((filter['remote']||'')==opts[i][0]));
+              	sel.options.add(o);
+          	}
+          	td.appendChild(sel);
+          	tr.appendChild(td);
+          	tbl.appendChild(tr);
+          	
+          	d.appendChild(tbl);
+          	
+          	$('#vboxIndex').append(d);
+
+			var buttons = { };
+			buttons[trans('OK')] = function() {
+
+				var item = $('#vboxSettingsUSBFilterList').find('.vboxListItemSelected').first();
+
+				for(var i = 0; i < vboxSettingsUSBFilterProps.length; i++) {
+					$(item).data('filter')[vboxSettingsUSBFilterProps[i][1]] = $('#vboxSettingsUSBF'+(vboxSettingsUSBFilterProps[i][1])).val();
+				}
+				$(item).data('filter').remote = ($('#vboxSettingsUSBFRemote').val()||'');
+				// Change display name
+				$(item).find('span.vboxSettingsUSBFilterTitle').first().text($(item).data('filter').name);
+				$('#vboxSettingsUSBFilterEdit').remove();
+			};
+			buttons[trans('Cancel')] = function() { $('#vboxSettingsUSBFilterEdit').remove(); };
+
+			                  			
+          	$('#vboxSettingsUSBFilterEdit').dialog({'buttons':buttons,'closeOnEscape':false,'width':400,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxNonTabbed','title':trans('USB Filter')});
+			
+		}		
+	},
+
+	{
+		'name' : 'usbremove',
+		'label' : 'Remove Filter',
+		'icon' : 'usb_remove',
+		'enabled' : function (item) { return (item && $(item).data('filter') && $(item).data('filter').name); },
+		'click' : function () {
+			var item = $('#vboxSettingsUSBFilterList').find('.vboxListItemSelected').first();
+			// determine next target
+			var target = $(item).next();
+			if(!$(target).html()) target = $(item).prev();
+			if(!$(target).html()) target = $('#vboxSettingsUSBFilterList').children().first();
+			$(item).remove();
+
+			if(!$(target).trigger('click').html()) {
+				$('#vboxSettingsUSBFilterList').trigger('select',null);
+			}
+		}		
+	},
+	
+	{
+		'name' : 'usbup',
+		'label' : 'Move Filter Up',
+		'icon' : 'usb_moveup',
+		'enabled' : function (item) {
+			return (item && $(item).data('filter') && $(item).data('filter').name && $(item).attr('id') != $('#vboxSettingsUSBFilterList').children().first().attr('id'));
+		},
+		'click' : function () {
+
+			var item = $('#vboxSettingsUSBFilterList').find('.vboxListItemSelected').first();
+
+			var prev = $(item).prev();
+			if(!$(prev).html()) return;
+			var mv = $(item).detach();
+			$(prev).before(mv);
+
+			$('#vboxSettingsUSBFilterList').find('.vboxListItemSelected').first().trigger('click');
+			 
+		}		
+	},
+	
+	{
+		'name' : 'usbdown',
+		'label' : 'Move Filter Down',
+		'icon' : 'usb_movedown',
+		'enabled' : function (item) {
+			return (item && $(item).data('filter') && $(item).data('filter').name && $(item).attr('id') != $('#vboxSettingsUSBFilterList').children().last().attr('id'));
+		},
+		'click' : function () {
+			
+			var item = $('#vboxSettingsUSBFilterList').find('.vboxListItemSelected').first();
+
+			var next = $(item).next();
+			if(!$(next).html()) return;
+			var mv = $(item).detach();
+			$(next).after(mv);
+
+			$('#vboxSettingsUSBFilterList').find('.vboxListItemSelected').first().trigger('click');
+		}
+	}
+		
+			
+ );
+
+usbToolbar = new vboxToolbarSmall(sButtons);
+usbToolbar.addButtons('vboxSettingsUSBButtons');
+$('#vboxSettingsUSBFilterList').bind('select',usbToolbar.update);
+
+
+
+/* Adds a USB filter to list */
+function vboxSettingsAddUSBFilter(f) {
+	
+	var li = document.createElement('li');
+	$(li).data('filter',f);
+	$(li).click(function(){
+		$(this).parent().children().removeClass('vboxListItemSelected');
+		$(this).addClass('vboxListItemSelected');
+		$('#vboxSettingsUSBFilterList').trigger('select',this);
+	});
+	li.setAttribute('id','vboxSettingsUSBFilterNumber' + (Math.floor(Math.random()*1000)));
+	li.setAttribute('class','vboxListItem');
+
+	var chk = document.createElement('input');
+	chk.setAttribute('type','checkbox');	
+	chk.setAttribute('class','vboxCheckbox');
+	if(f.active) chk.setAttribute('checked','checked');
+	$(li).append(chk);
+	li.innerHTML += ' <span class="vboxSettingsUSBFilterTitle">'+$('<div/>').text(f.name).html()+'</span>';
+
+	$(li).css({'MozUserSelect' : 'none'});
+	$(li).dblclick(function(e){
+		e.preventDefault();
+		usbToolbar.click('usbedit');
+	});
+	$('#vboxSettingsUSBFilterList').append(li);
+}
+
+// clear list
+var list = $('#vboxSettingsUSBFilterList');
+$(list).children().remove();
+
+// add filters
+for(var i = 0; i < $('#vboxSettingsDialog').data('vboxMachineData').USBController.deviceFilters.length; i++) {
+	vboxSettingsAddUSBFilter($('#vboxSettingsDialog').data('vboxMachineData').USBController.deviceFilters[i]);
+}
+
+// set checkboxes for USB and EHCI
+document.forms['frmVboxSettings'].vboxSettingsUSBEnabled.checked = ($('#vboxSettingsDialog').data('vboxMachineData').USBController.enabled);
+document.forms['frmVboxSettings'].vboxSettingsUSBEnabledEHCI.checked = ($('#vboxSettingsDialog').data('vboxMachineData').USBController.enabledEhci);
+$(document.forms['frmVboxSettings'].vboxSettingsUSBEnabled).trigger('click');
+if(!$('#vboxSettingsUSBFilterList').find('li.vboxListItem').first().trigger('click')) {
+	$('#vboxSettingsUSBFilterList').trigger('select',null);
+}
+
+
+/* Menu for adding existing USB device */
+if($('#vboxSettingsUSBAddDevice').attr('id')) {
+	$('#vboxSettingsUSBAddDevice').html('');
+} else {
+	var ul = document.createElement('ul');
+	ul.setAttribute('class','contextMenu');
+	ul.setAttribute('style','display: none');
+	ul.setAttribute('id','vboxSettingsUSBAddDevice');
+	$('#vboxIndex').append(ul);
+}
+
+
+if(!$('#vboxSettingsUSBAddDeviceClick').attr('id')) {
+	var d = document.createElement('div');
+	d.setAttribute('style','display: none');
+	d.setAttribute('id','vboxSettingsUSBAddDeviceClick');
+	$('#vboxSettingsUSBFilters').append(d);
+}
+/* Add attachment button menu initialization  */
+$("#vboxSettingsUSBAddDeviceClick").contextMenu({
+		menu: 'vboxSettingsUSBAddDevice',
+		button: 0
+	},
+	function(action, el, pos, menuItem) {
+
+		if(action == 'usbNoop') return;
+
+		// usb data kept in elm
+		var usb = $(menuItem).parent().data();
+		delete usb.port, usb.version, usb.portVersion;
+		usb.name = $(menuItem).html();
+		usb.active = 1;
+		
+		vboxSettingsAddUSBFilter(usb);
+		
+		$('#vboxSettingsUSBFilterList').trigger('select',$('#vboxSettingsUSBFilterList').find('.vboxListItemSelected').first());
+
+	}
+);
+
+
+/* Change settings onSave() */
+$('#vboxSettingsDialog').bind('save',function(){
+
+	
+	$('#vboxSettingsDialog').data('vboxMachineData').USBController.enabled = (document.forms['frmVboxSettings'].vboxSettingsUSBEnabled.checked ? 1 : 0);
+	$('#vboxSettingsDialog').data('vboxMachineData').USBController.enabledEhci = (document.forms['frmVboxSettings'].vboxSettingsUSBEnabledEHCI.checked ? 1 : 0);
+
+	$('#vboxSettingsDialog').data('vboxMachineData').USBController.deviceFilters = new Array();
+
+	$('#vboxSettingsUSBFilterList').children('li').each(function(){
+		$(this).data('filter').active = ($(this).children('input:checkbox').first().attr('checked') ? 1 : 0);
+		$('#vboxSettingsDialog').data('vboxMachineData').USBController.deviceFilters[$('#vboxSettingsDialog').data('vboxMachineData').USBController.deviceFilters.length] = $(this).data('filter');
+	});
+	
+});
+
+
+</script>

@@ -1,0 +1,204 @@
+<!-- 
+
+	Main / Top menu
+
+	$Id: topmenu.html 678 2010-06-18 21:15:01Z ian $
+
+ -->
+<script type='text/javascript'>
+/*
+ * 
+ * Main menu at top of interface
+ * 
+ * 
+ */
+
+// Top menu
+var topMenu = new vboxMenuBar('vboxTop');
+
+var menu = {
+	'name':'vboxTopFile',
+	'title':'File',
+	'menu':[
+        {
+			'name':'fileImport',
+			'title':'Import Appliance',
+			'icon':'import',
+			'click':function(){vboxImportApplianceDialogInit();}
+        },
+        {
+			'name':'fileExport',
+			'title':'Export Appliance',
+			'icon':'export',
+			'click':function(){vboxExportApplianceDialogInit();}
+        },
+        {
+			'name':'fileVMM',
+			'title':'Virtual Media Manager',
+			'icon':'diskimage',
+			'click':function(){vboxVMMDialogInit();},
+			'separator': true
+        },
+        {
+			'name':'filePrefs',
+			'title':'Preferences',
+			'icon':'global_settings',
+			'click':function(){vboxPrefsInit();}					        
+        }
+	]
+};
+
+topMenu.addMenu(menu);
+
+var menu = {
+	'name':'vboxTopMachine',
+	'title':'Machine',
+	'menu':[
+        {
+			'name':'machineNew',
+			'title':'New',
+			'icon':'new',
+			'click':function(){vboxWizardNewVMInit(function(){$('#vboxIndex').trigger('vmlistrefresh');})}
+        },
+        {
+			'name':'machineSettings',
+			'title':'Settings',
+			'icon':'settings',
+			'click':function(){
+				vboxVMsettingsInit($('#vboxIndex').data('selectedVM').id,function(){
+					$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);
+				});
+			},
+			'enabled':function(vm){ return vm && (vm.state == 'PoweredOff' || vm.state == 'Aborted'); }
+        },
+        {
+			'name':'machineRefresh',
+			'title':'Refresh',
+			'icon':'refresh',
+			'icon_disabled':'refresh_disabled',
+			'click':function(){
+				var l = new vboxLoader();
+				l.add('VMDetails',function(){
+					$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);
+				},{'vm':$('#vboxIndex').data('selectedVM').id,'force_refresh':1});
+				l.run();
+        	},
+			'enabled':function(vm){ return vm; }
+        },        
+        {
+			'name':'machineDelete',
+			'title':'Delete',
+			'icon':'delete',
+			'click':function(){
+
+				var buttons = {};
+
+				/* Unregister Inaccessible or Delete? */
+				if($('#vboxIndex').data('selectedVM').state == 'Inaccessible') {
+					
+					buttons[trans('Unregister')] = function(){
+						$(this).remove();
+						var l = new vboxLoader();
+						l.add('removeVM',function(){},{'vm':$('#vboxIndex').data('selectedVM').id});
+						l.mode = 'save';
+						l.onLoad = function(){$('#vboxIndex').trigger('vmlistrefresh');};
+						l.run();
+					}
+					var q = trans('Unregister VM Message1').replace('%s','<b>'+$('#vboxIndex').data('selectedVM').name+'</b>') + '<p>'+trans('Unregister VM Message2')+'</p>';
+					
+				} else {
+					buttons[trans('Delete')] = function(){
+						$(this).remove();
+						var l = new vboxLoader();
+						l.add('removeVM',function(){},{'vm':$('#vboxIndex').data('selectedVM').id,'delete':1});
+						l.mode = 'save';
+						l.onLoad = function(){$('#vboxIndex').trigger('vmlistrefresh');};
+						l.run();
+					}
+					var q = trans('Delete VM Message1').replace('%s','<b>'+$('#vboxIndex').data('selectedVM').name+'</b>') + '<p><b>'+trans('Delete VM Message2')+'</b></p>';
+				}				
+				vboxConfirm(q,buttons);
+        	
+        	},
+			'enabled':function(vm){ return vm && (vm.state == 'PoweredOff' || vm.state == 'Aborted' || vm.state == 'Inaccessible'); }
+        },
+        {
+			'name':'machineDiscard',
+			'title':'Discard',
+			'icon':'discard',
+			'click':function(){
+				var buttons = {};
+				buttons[trans('Discard')] = function(){
+					$(this).remove();
+					var l = new vboxLoader();
+					l.add('setStateVMforgetSavedState',function(){},{'vm':$('#vboxIndex').data('selectedVM').id});
+					l.mode = 'save';
+					l.onLoad = function(){$('#vboxIndex').trigger('vmlistrefresh');};
+					l.run();
+				}
+				vboxConfirm(trans('Discard Message1').replace('%s','<b>'+$('#vboxIndex').data('selectedVM').name+'</b>') + '<p><b>'+trans('Discard Message2')+'</b></p>',buttons);
+			},
+			'enabled':function(vm){ return (vm && vm.state == 'Saved'); }
+        },
+        {
+			'name':'machineLogs',
+			'title':'Show Log',
+			'icon':'show_logs',
+			'icon_disabled':'show_logs_disabled',
+			'click':function(){
+        		vboxShowLogsDialogInit($('#vboxIndex').data('selectedVM').id);
+			},
+			'enabled':function(vm){ return (vm && vm.id && vm.id != 'host'); }
+        }
+        
+	]
+};
+	
+topMenu.addMenu(menu);
+
+var menu = {
+	'name':'vboxTopHelp',
+	'title':'Help',
+	'menu':[
+        {
+			'name':'helpvbox',
+			'title':'VirtualBox User Manual',
+			'icon':'images/vbox/OSE/about_16px.png',
+			'icon_absolute':true,
+			'click':function(){
+				window.open('http://www.virtualbox.org/manual/','manual');        	
+        	}
+        },
+        
+        {
+			'name':'helpAbout',
+			'title':'About',
+			'icon':'help',
+			'click':function(){
+        	
+	        	var div = document.createElement('div');
+	        	div.setAttribute('id','vboxAbout');
+	        	div.setAttribute('class','vboxDialogContent');
+	        	div.setAttribute('style','display: none; width: 500px;');
+	        	$('#vboxIndex').append(div);
+	
+	        	var l = new vboxLoader();
+	        	l.addFile('panes/about.html',function(f){$('#vboxAbout').append(f);});
+	        	l.onLoad = function() {
+		        	var buttons = {};
+		        	buttons[trans('OK')] = function() { $(this).remove(); };
+		
+		            $('#vboxAbout').dialog({'closeOnEscape':false,'width':500,'height':'auto','buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'phpVirtualBox'});			        	
+	        	}
+	        	l.run();
+        	}
+        }
+        
+    ]
+};
+topMenu.addMenu(menu);
+
+topMenu.addMenuBar('vboxMenu');
+$('#vboxIndex').bind('vmselect',topMenu.update);
+	
+</script>

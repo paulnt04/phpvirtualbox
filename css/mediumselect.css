@@ -1,0 +1,67 @@
+/*
+ * $Id$
+ */
+
+div.vboxMediumSelect {
+	background-color: #fff;
+	color: #000;
+	border: 1px solid #000;
+	border-right: 0px solid transparent;
+	padding: 2px;
+	height: 16px;
+	cursor: pointer;
+	overflow: hidden;
+	margin: 0px;
+	width: 100%;
+	
+}
+
+div.vboxMediumSelectReadOnly {
+	padding-left: 20px;
+	background-position: 2px 2px;
+}
+
+div.vboxMediumSelectHover {
+	color: #FFF;
+	background-color: #3399FF;
+}
+
+div.vboxMediumSelectImg {
+	border: 1px solid #000;
+	border-left: 0px;
+	height: 16px;
+	padding: 2px;
+	width: 16px;
+	background: url(../images/vbox/refresh_16px.png) 1px 2px no-repeat;
+	background-color: #fff;
+	margin: 0px;
+}
+
+table.vboxDisabled div.vboxMediumSelect, table.vboxDisabled div.vboxMediumSelectImg {
+	background-color: #efefef;
+	border-color: #aaa;
+	color: #aaa;
+	background-position: -20px -20px;
+	cursor: default;
+}
+
+ul.vboxMediumSelect {
+	list-style: none;
+	position: absolute;
+	background-color: #fff;
+	color: #000;
+	z-index: 9999;
+	padding-left: 2px;
+	margin: 0px;
+	cursor: pointer;
+	border: 1px solid #000;
+	border-top: 1px solid #99ccff;
+	border-left: 1px solid #99ccff;
+}
+
+ul.vboxMediumSelect ul { padding: 0px; margin-left: 8px; list-style: none; }
+ul.vboxMediumSelect li { padding: 0px 2px 0px 0px; margin: 0px; white-space: nowrap; }
+ul.vboxMediumSelect div { height: 16px; white-space: nowrap; padding: 1px 2px 1px 4px; }
+ul.vboxMediumSelect li.vboxMediumReadOnly { background-image: none; }
+ul.vboxMediumSelect li.vboxMediumReadOnly ul { padding: 0px 0px 0px 14px; background-image: none; }
+ul.vboxMediumSelect div.vboxMediumReadOnly { padding-left: 18px; background-position: 0px 0px; }

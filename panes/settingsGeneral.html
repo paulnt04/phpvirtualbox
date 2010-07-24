@@ -1,0 +1,155 @@
+<!--
+
+	General Machine Settings
+	
+	$Id: settingsGeneral.html 633 2010-06-02 18:58:03Z ian $
+
+ -->
+<ul>
+	<li><a href="#vboxSettingsTabGeneralBasic"><span class='translate'>Basic</span></a></li>
+	<li><a href="#vboxSettingsTabGeneralAdvanced"><span class='translate'>Advanced</span></a></li>
+	<li><a href="#vboxSettingsTabGeneralDescription"><span class='translate'>Description</span></a></li>
+</ul>
+
+<!-- Basic Tab -->
+<div id='vboxSettingsTabGeneralBasic' title='Basic'>
+<table class='vboxVertical'>
+	<tr>
+		<th><span class='translate'>Name</span>:</th>
+		<td colspan='2'><input type='text' class='vboxText' name='vboxSettingsGeneralName' /></td>
+	</tr>
+	<tr>
+		<th><span class='translate'>Operating System</span>:</th>
+		<td><select name='vboxSettingsGeneralOSFamily' id='vboxSettingsGeneralOSFamily' >
+			<option value='Linux'>Linux</option>
+		</select></td>
+		<td rowspan='2'><img name='vboxOSTypeImg' height='32' width='32' /></td>
+	</tr>
+	<tr>
+		<th><span class='translate'>Version</span>:</th>
+		<td><select id='vboxSettingsGeneralOSType' name='vboxSettingsGeneralOSType'>
+			<option value='Debian'>Debian</option>
+		</select></td>
+	</tr>
+</table>
+</div>
+
+<!-- Advanced Tab -->
+<div id='vboxSettingsTabGeneralAdvanced' title='Advanced'>
+<table class='vboxVertical'>
+	<tr>
+		<th><span class='translate'>Snapshot Folder</span>:</th>
+		<td class='vboxFileFolderInput'>
+					<input type='text' class='vboxText' name='vboxSettingsGeneralSnapshotFolder' /><input type="button" class="vboxImgButton" style="background-image: url(images/vbox/select_file_16px.png)"
+						onClick="browseFolder($('input[name=vboxSettingsGeneralSnapshotFolder]').first().val(),function(f){$('input[name=vboxSettingsGeneralSnapshotFolder]').first().val((f ? f : undefined));});" />
+		</td>
+	</tr>
+	<tr>
+		<th><span class='translate'>Removable Media</span>:</th>
+		<td><input type='checkbox' class='vboxCheckbox' name='vboxSettingsGeneralRemovableMedia' style='width: auto'/>
+		<span class='translate'>Remember Runtime Changes</span></td>
+	</tr>
+</table>
+</div>
+
+<!-- Description Tab -->
+<div id='vboxSettingsTabGeneralDescription' title='Description'>
+    <textarea rows='16' cols='20' name='vboxSettingsGeneralDescription'></textarea>
+</div>
+<script type='text/javascript'>
+
+
+/*
+ * Called when OS family type changes
+ */
+function vboxSettingsUpdateOSList(osfam) {
+	document.forms['frmVboxSettings'].vboxSettingsGeneralOSType.options.length = 0;
+	$(document.forms['frmVboxSettings'].vboxSettingsGeneralOSType).children().remove();
+	for(var i = 0; i < vboxSettingsOSTypes[osfam].osTypes.length; i++) {
+		document.forms['frmVboxSettings'].vboxSettingsGeneralOSType.options[i] = new Option(vboxSettingsOSTypes[osfam].osTypes[i].description, vboxSettingsOSTypes[osfam].osTypes[i].id);
+	}
+	// Update image
+	document.images["vboxOSTypeImg"].src = "images/vbox/" + vmGuestOSTypeIcon(vboxSettingsOSTypes[osfam].osTypes[0].id)
+}
+
+var vboxSettingsOSTypes = new Array();
+var vboxSettingsOSTypesObj = {};
+
+// shorthand
+var vboxOSTypes = $('#vboxIndex').data('vboxOSTypes');
+	
+// Default OS Type set to my fav :) Eventually will move to config.php
+var vboxDefaultOSTypeId = 'Debian';
+
+
+var dosfam = null; // holds defaultostype family id
+for(var i in vboxOSTypes) {
+
+	// create array of os family types
+	if(!vboxSettingsOSTypes[vboxOSTypes[i].familyId]) {
+		vboxSettingsOSTypes[vboxOSTypes[i].familyId] = {'id':vboxOSTypes[i].familyId,'description':vboxOSTypes[i].familyDescription,'osTypes':[]};
+	}
+	
+	// We're on the default os type, record family id and index number
+	// so that we can set it later on
+	if(vboxOSTypes[i].id == vboxDefaultOSTypeId) {
+		dosfam = vboxOSTypes[i].familyId;
+		vboxDefaultOSTypeId = vboxSettingsOSTypes[vboxOSTypes[i].familyId].osTypes.length;
+	}
+
+	vboxSettingsOSTypes[vboxOSTypes[i].familyId].osTypes[vboxSettingsOSTypes[vboxOSTypes[i].familyId].osTypes.length] = {'id':vboxOSTypes[i].id,'description':vboxOSTypes[i].description };
+
+	vboxSettingsOSTypesObj[vboxOSTypes[i].id] = vboxOSTypes[i];
+	
+	// Preload icons
+	vboxOSTypes[i].icon = new Image();
+	vboxOSTypes[i].icon.src = "images/vbox/" + vmGuestOSTypeIcon(vboxOSTypes[i].id);
+
+}
+// clear all options
+document.forms['frmVboxSettings'].vboxSettingsGeneralOSFamily.options.length = 0;
+$(document.forms['frmVboxSettings'].vboxSettingsGeneralOSFamily).children().remove();
+for(var i in vboxSettingsOSTypes) {
+	// default os type family? record in dosfam
+	if(i == dosfam) dosfam = document.forms['frmVboxSettings'].vboxSettingsGeneralOSFamily.options.length;
+	document.forms['frmVboxSettings'].vboxSettingsGeneralOSFamily.options[document.forms['frmVboxSettings'].vboxSettingsGeneralOSFamily.options.length] = new Option(vboxSettingsOSTypes[i].description, vboxSettingsOSTypes[i].id);
+}
+// OnChange, update os type list and icon
+document.getElementById('vboxSettingsGeneralOSFamily').setAttribute('onChange','vboxSettingsUpdateOSList(this.value)');
+document.getElementById('vboxSettingsGeneralOSType').setAttribute('onChange','document.images["vboxOSTypeImg"].src = "images/vbox/" + vmGuestOSTypeIcon(this.value)');
+
+document.forms['frmVboxSettings'].vboxSettingsGeneralOSFamily.selectedIndex = dosfam;
+vboxSettingsUpdateOSList(document.forms['frmVboxSettings'].vboxSettingsGeneralOSFamily.value);
+document.forms['frmVboxSettings'].vboxSettingsGeneralOSType.selectedIndex = vboxDefaultOSTypeId;
+
+
+
+
+/* Defaults from machine */
+document.forms['frmVboxSettings'].vboxSettingsGeneralName.value = $('#vboxSettingsDialog').data('vboxMachineData').name;
+document.forms['frmVboxSettings'].vboxSettingsGeneralOSFamily.value = vboxSettingsOSTypesObj[$('#vboxSettingsDialog').data('vboxMachineData').OSTypeId].familyId;
+$(document.forms['frmVboxSettings'].vboxSettingsGeneralOSFamily).change();
+document.forms['frmVboxSettings'].vboxSettingsGeneralOSType.value = $('#vboxSettingsDialog').data('vboxMachineData').OSTypeId;
+$(document.forms['frmVboxSettings'].vboxSettingsGeneralOSType).change();
+document.forms['frmVboxSettings'].vboxSettingsGeneralSnapshotFolder.value = $('#vboxSettingsDialog').data('vboxMachineData').snapshotFolder;
+document.forms['frmVboxSettings'].vboxSettingsGeneralRemovableMedia.checked = ($('#vboxSettingsDialog').data('vboxMachineData').GUI.SaveMountedAtRuntime == 'yes');
+document.forms['frmVboxSettings'].vboxSettingsGeneralDescription.innerHTML = $('#vboxSettingsDialog').data('vboxMachineData').description;
+
+
+/* Change general settings onSave() */
+$('#vboxSettingsDialog').bind('save',function(){
+
+	if(jQuery.trim(document.forms['frmVboxSettings'].vboxSettingsGeneralName.value))
+		$('#vboxSettingsDialog').data('vboxMachineData').name = jQuery.trim(document.forms['frmVboxSettings'].vboxSettingsGeneralName.value);
+		
+	$('#vboxSettingsDialog').data('vboxMachineData').OSTypeId = document.forms['frmVboxSettings'].vboxSettingsGeneralOSType.value;
+	$('#vboxSettingsDialog').data('vboxMachineData').snapshotFolder = document.forms['frmVboxSettings'].vboxSettingsGeneralSnapshotFolder.value;
+	$('#vboxSettingsDialog').data('vboxMachineData').GUI.SaveMountedAtRuntime = (document.forms['frmVboxSettings'].vboxSettingsGeneralRemovableMedia.checked ? 'yes' : 'no');
+	$('#vboxSettingsDialog').data('vboxMachineData').description = 	$(document.forms['frmVboxSettings'].vboxSettingsGeneralDescription).val();
+
+	
+});
+
+
+</script>
+

@@ -1,0 +1,335 @@
+/*
+ * $Id: layout.css 705 2010-07-09 20:47:20Z ian $
+ */
+
+html,body,#vboxIndex {
+   	  background: #d9d9e9;
+   	  height: 99%;
+      border:0px solid transparent;
+   	  margin:0px;
+   	  padding: 0px;
+}
+#vboxIndex { padding-left: 4px;  padding-right: 4px;}
+
+html,body,input,select,.ui-widget, .ui-tabs, .ui-widget-content,textarea {
+	  font: 12px Tahoma,"Trebuchet MS",Verdana,Arial,Sans-serif;
+}
+
+/* Common */
+#vboxIndex img, div.vboxDialogContent img { vertical-align: middle; border: 0px; }
+#vboxIndex textarea, div.vboxDialogContent textarea { width: 100%; }
+#vboxIndex input, div.vboxDialogContent input { vertical-align: middle; }
+#vboxIndex input.vboxCheckbox, div.vboxDialogContent input.vboxCheckbox,
+	#vboxIndex input.vboxRadio, div.vboxDialogContent input.vboxRadio { vertical-align: middle; }
+#vboxIndex th, div.vboxDialogContent th { white-space: nowrap; }
+#vboxIndex .vboxDisabled, div.vboxDialogContent .vboxDisabled { color: #999; cursor: default; }
+#vboxIndex a, div.vboxDialogContent a,
+	#vboxIndex a:visited, div.vboxDialogContent a:visited { text-decoration: none; }
+#vboxIndex hr, div.vboxDialogContent hr { padding: 1px; margin: 0px; border: 0px; }
+#vboxIndex .vboxSeperatorLine, div.vboxDialogContent .vboxSeperatorLine { background: #aaa; } 
+
+/* jQuery UI Components */
+.ui-widget-content div.vboxDialogContent, div.ui-dialog div.ui-dialog-content, div.ui-dialog div.ui-dialog-buttonpane { background: #fff; }
+div.ui-dialog div.ui-dialog-buttonpane { padding: 4px; margin: 0px; text-align: center; }
+div.ui-dialog div.ui-dialog-titlebar { color: #fff; background: #369; }
+div.ui-dialog .ui-button { background: #d9d9e9; color: #000; }
+div.ui-dialog .disabled { color: #aaa; }
+div.ui-dialog div.ui-dialog-buttonpane button {text-align: center; display: inline; float: none; }
+div.ui-dialog .ui-button .ui-button-text { display: block; line-height: 1;  }
+div.ui-dialog .ui-button-text-only .ui-button-text { padding: 4px; }
+div.ui-dialog .ui-button-text-icon .ui-button-text, .ui-button-text-icons .ui-button-text { padding: 0px; }
+div.ui-dialog div.vboxDialogContent th { width: auto; white-space: nowrap; text-align: right;}
+div.ui-dialog div.vboxDialogContent td { width: 100%; white-space: nowrap; text-align: left; }
+div.ui-progressbar div.ui-progressbar-value { background: #00CD00 }
+
+/* sliders and slider Scales */
+div.slider { margin-left: 8px; margin-right: 8px; }
+div.slider .ui-state-default { background: #ff8; border: 1px solid #000; }
+input.sliderValue { margin: 0px; padding: 2px; text-align: right; }
+div.sliderScale {  margin: 0px; padding-top: 10px; padding-left: 0px; padding-right: 0px; padding-bottom: 0px; }
+div.sliderScale table { width: 100%; margin: 0px; padding: 0px; border: 0px; border-spacing: 0px; }
+div.sliderScale tr { padding: 0px; margin: 0px; }
+div.sliderScale td { height: 8px; border-right: 1px solid #000; }
+div.sliderScale td:first-child { height: 8px; border-left: 1px solid #000; }
+
+input.vboxImgButton { border:none;padding:0px;vertical-align:middle;margin:2px;padding:0px;height:20px;width:20px;background-position:2px 2px;background-repeat:no-repeat;background-color:transparent;} 
+
+/* bordered item */
+.vboxBordered { border: 2px solid #999; }
+
+/* Lists and ListItems */
+.vboxList ul, ul.vboxList { list-style: none; margin: 0px; padding: 0px ; background: #fff; }
+.vboxList li { padding: 2px; }
+.vboxList li input { vertical-align: middle; }
+ul.vboxList li, ul.vboxList li table { line-height: 18px; }
+ul.vboxList li table { height: 18px; }
+ul.vboxList li table tr { vertical-align: middle; }
+ul.vboxList li table td { border: 1px solid #f00; }
+ul.vboxList li img { vertical-align: middle; }
+
+.vboxListItem, a.vboxListItem, .vboxListItem a { cursor: pointer; color: #000; }
+.vboxListItemSelected, .vboxListItemSelected a, a.vboxListItemSelected { background-color: #69F !important; cursor: default !important; color: #fff !important; }
+.vboxListItemTitle { font-weight: bold; }
+
+/* Tables */
+table.vboxVertical, table.vboxHorizontal { border: 0px; border-spacing: 0px; width: 100%; }
+table.vboxHorizontal th, table.vboxHorizontal td { white-space: nowrap; }
+table.vboxVertical tr { vertical-align: middle; }
+table.vboxVertical th { white-space: nowrap; text-align: right; font-weight: bold; width: auto; padding: 4px; }
+table.vboxVertical td { text-align: left; width: 100%; white-space: nowrap; padding: 4px; }
+table.vboxHorizontal th { border-bottom: 1px solid #666; background: #ccc; padding: 2px; white-space: nowrap; text-align: left; font-weight: bold; }
+table.vboxVertical input.vboxText, table.vboxVertical select { width: 100%; }
+table.vboxInvisible { padding: 0px; margin: 0px; border: 0px; border-spacing: 0px; }
+.vboxOddRow { background-color: #efefef; }
+
+/* File / Folder select tables */
+table tr td.vboxFileFolderInput { white-space: nowrap; }
+table tr td.vboxFileFolderInput input.vboxText { width: 95%; }
+table tr td.vboxFileFolderInput input.vboxImgButton { width: 20px;}
+
+/* Buttons and Toolbars */
+.vboxToolbarButton { border: 2px solid transparent; text-align: center; background-repeat:no-repeat;background-position: top center; padding: 4px;}
+.vboxToolbarButtonHover {
+	border-bottom: 2px solid #777;
+	border-right: 2px solid #777;
+	border-left: 2px solid #aaa;
+	border-top: 2px solid #aaa;
+	cursor: pointer;
+}
+/* Small Toolbar buttons */
+.vboxToolbarSmallButton { border: 1px solid transparent; }
+.vboxToolbarSmallButtonHover {
+	border-bottom: 1px solid #777;
+	border-right: 1px solid #777;
+	border-left: 1px solid #999;
+	border-top: 1px solid #999;
+	cursor: pointer;
+}
+table.vboxToolbar tr { vertical-align: bottom; }
+table.vboxToolbar .vboxToolbarSeparator { background: #aaa; margin: 0px; padding: 0px; border: 0px; width: 1px; }
+
+
+/* Loading screen */
+#vboxLoaderDialog { text-align: center; width: auto; }
+#vboxLoaderDialog table { width: 150px; }
+#vboxLoaderDialog td.vboxLoaderSpinner { width: auto; }
+#vboxLoaderDialog td.vboxLoaderSpinner img { vertical-align: middle; }
+#vboxLoaderDialog td.vboxLoaderText { width: 100%; text-align: left; }
+div.vboxLoaderDialog div.ui-dialog-buttonpane, div.vboxLoaderDialog div.ui-dialog-titlebar { display: none; }
+
+
+/* VM Logs and Ajax error text boxes*/
+div.vboxVMLog form, div.vboxAjaxErrorDetails form { height: 99%; margin: 0px; padding: 0px; border: 0px; display: block; }
+div.vboxVMLog form textarea, div.vboxAjaxErrorDetails form textarea {
+	font-family: courier, monospace;
+	font-size: 12px;
+	background: #fff;
+	margin: 0px;
+	height: 100%;
+	display: block;
+}
+
+
+/* Snapshots */
+#vboxSnapshotList, #vboxSnapshotList table { height: 100%; }
+#vboxSnapshotList img { padding-right: 4px; }
+#vboxSnapshotDetails table.vboxDetailsTable tr th.vboxDetailName,
+	#vboxSnapshotDetails table.vboxDetailsTable tr th.vboxDetailNameIndent { width: auto; padding-right: 20px; }
+#vboxSnapshotDetails tr { vertical-align: top; }
+#vboxSnapshotDetails table.vboxVertical td { white-space: normal; }
+#vboxSnapshotDetails td.vboxSnapshotDetailsMachine { height: 300px; }
+	
+/* Virtual Media Manager */
+#vboxVMMDialog { background: #d9d9e9; }
+#vboxVirtualMediaManager .ui-tabs { background: #d9d9e9; margin: 0px 6px 0px 6px;}
+#vboxVirtualMediaManager .ui-tabs-panel { background: #fff; }
+#vboxVirtualMediaManager .vboxListTable td { white-space: nowrap; padding: 2px; }
+.vboxVMMSpacer { width: 12px; height: 1px; margin: 0px; padding: 0px; }
+#vboxVirtualMediaManager table td input.vboxVMMMediaExpand { background-position:left center;height:16px;width:10px;margin:0px 2px 0px 0px;padding: 0px; border: 0px; }
+#vboxVirtualMediaManager table.vboxVMMList tr > th, #vboxVirtualMediaManager table.vboxVMMList tr > td { padding-left: 12px; }
+#vboxVirtualMediaManager table.vboxVMMList th { padding-left: 12px; padding-right: 12px; }
+#vboxVirtualMediaManager table.vboxVMMList tr,
+	#vboxVirtualMediaManager table.vboxVMMList span { vertical-align: middle; height: 18px; background-position: 0px 0px; }
+#vboxVirtualMediaManager table.vboxVMMList span { display: inline-block; } 
+
+#vboxVirtualMediaManager div.vboxVMMList { min-height: 200px; }
+#vboxVirtualMediaManager .vboxVMMMediumInfo table { border: 1px solid #000; margin-top: 12px; width: 100%; background: #fafafa; }
+#vboxVirtualMediaManager .vboxVMMMediumInfo th { padding-left: 18px; text-align: right; width: auto; white-space: nowrap; }
+#vboxVirtualMediaManager .vboxVMMMediumInfo td { padding-left: 10px; text-align: left; width: 100%; }
+
+/* Wizards */
+table.vboxWizard tr { vertical-align: top; }
+table td.vboxWizardImg img { border: 1px solid #000; margin: 0px; border: 0px; width: 145px; }
+td.vboxWizardContent { padding: 0px 8px 0px 8px; }
+div.vboxWizard h3 { border-bottom: 1px solid #aaa; }
+
+/* Export Appliance */
+#vboxExportProps tr,#vboxExportProps td, #vboxExportProps td div { vertical-align: middle; height: 22px; line-height: 22px;} 
+#vboxExportProps td.vboxHideOverflow, #vboxExportProps td.vboxHideOverflow div { text-wrap: unrestricted !important; word-wrap: break-word !important; overflow: hidden !important; white-space: wrap !important;}
+/* Import Appliance */
+#vboxImportProps tr,#vboxImportProps td, #vboxImportProps td div { vertical-align: middle; height: 22px; line-height: 22px;} 
+#vboxImportProps td.vboxHideOverflow, #vboxImportProps td.vboxHideOverflow div { text-wrap: unrestricted !important; word-wrap: break-word !important; overflow: hidden !important; white-space: wrap !important;}
+
+/* Main Tabs */
+#tabsMain { background: #d9d9e9; }
+#tabsMain .vboxTabContent { margin-left: 2px; background: #fff; }
+#tabsMain div.vboxTabContent { text-align: left; }
+#tabsMain div.vboxTabLoading { text-align: center; vertical-align: middle; height: 100%; }
+#tabsMain div.vboxTabLoading img { position: absolute; top: 45%; left: 45%; text-align: center; }
+
+/* Menu bars */
+#vboxIndex div.vboxMenuBar, div.vboxDialogContent div.vboxMenuBar { border-bottom: 1px solid #aaa; padding-top: 0px; margin-top: 0px; }
+#vboxIndex div.vboxMenuBar span, div.vboxDialogContent div.vboxMenuBar span { padding: 1px 8px 1px 4px; font-size: 1.1em; border: 1px solid transparent; cursor: default; }
+#vboxIndex div.vboxMenuBar span.vboxBordered, div.vboxDialogContent div.vboxMenuBar span.vboxBordered { border: 1px solid #aaa; }
+#vboxIndex ul.vboxMenuBar, div.vboxDialogContent ul.vboxMenuBar { font-size: 1.2em; background: #d9d9e9; border: 2px solid #aaa; margin: 0px; padding: 0px; }
+#vboxIndex ul.vboxMenuBar a,div.vboxDialogContent ul.vboxMenuBar a { padding: 2px 18px 2px 28px; }
+
+/* Tree Views */
+.vboxTreeView, .vboxTreeView ul { padding: 0; margin: 0; list-style: none; }
+.vboxTreeView img { vertical-align: middle; padding-right: 6px; padding-left: 2px; }
+.vboxTreeView .hitarea {
+	height: 16px;
+	width: 18px;
+	margin-left: -18px;
+	float: left;
+}
+
+* html .hitarea { display: inline; float:none;}
+.vboxTreeView li { margin: 0; padding: 3px 0pt 0px 16px; }
+.vboxTreeView li { background: url(../images/treeview-default-line.gif) 0 0 no-repeat; }
+.vboxTreeView li.last, .vboxTreeView li.lastCollapsable, .vboxTreeView li.lastExpandable { background-position: 0 -1764px }
+.vboxTreeView li.last .hitarea { background-position: 0; }
+.vboxTreeView div.lastCollapsable-hitarea, .vboxTreeView div.lastExpandable-hitarea,
+.vboxTreeView div.collapsable-hitarea, .vboxTreeView div.expandable-hitarea { background: url(../images/treeview-default.gif) 0 0 no-repeat; }  
+.vboxTreeView div.lastCollapsable-hitarea { background-position: 2px -112px }
+.vboxTreeView div.lastExpandable-hitarea { background-position: -30px -68px }
+.vboxTreeView div.collapsable-hitarea { background-position: -62px -25px }
+.vboxTreeView div.expandable-hitarea { background-position: -78px -3px }
+
+
+
+/* Virtual Machine List and Top Toolbar*/
+#vboxPaneToolbar { background: #d9d9e9; }
+#vboxPaneVMList { background: #fff; padding-top: 8px; padding-left: 4px; padding-right: 8px; }
+#vboxPaneVMList table, #vboxPaneVMList div { width: 100%; }
+#vboxPaneVMList td.vboxVMTitle { width: 100% }
+table.vboxVMListVM { margin-bottom: 10px; vertical-align: top; }
+table.vboxVMListVM td { padding: 2px; }
+table.vboxVMListVM td.vboxVMSessionOpen { font-style: italic; }
+
+/* Toolbar above vm list */
+#vboxPaneToolbar table { border-spacing: 14px; }
+#vboxPaneToolbar table td.buttonEnabled { cursor: pointer; }
+#vboxPaneToolbar table td.buttonDisabled { cursor: default; }
+
+/* Details Table */
+table.vboxDetailsTable { width: auto; }
+table.vboxDetailsTable a, table.vboxDetailsTable a:visited { color: #0000FF; }
+table.vboxDetailsTable tr th.vboxDetailsSection { text-align: left; font-weight: bold; padding-top: 10px }
+table.vboxDetailsTable tr th.vboxDetailName { text-align: left; width: 300px; padding-left: 20px; font-weight: normal; }
+table.vboxDetailsTable tr th.vboxDetailNameIndent { text-align: left; width: 300px; padding-left: 35px; font-weight: normal;}
+table.vboxDetailsTable tr td.vboxDetailsValue { text-align: left; white-space: normal; width: auto;  }
+table.vboxDetailsTableError { background: #eee; margin-top: 8px; }
+table.vboxDetailsTableError tr { vertical-align: top; }
+
+/* Description tab */
+#vboxTabVMDescription input { margin: 8px; }
+#vboxTabVMDescription textarea { width: 100%; display: block; }
+
+/* Settings Tables */
+#vboxSettingsDialog { background: #d9d9e9; }
+#vboxSettingsDialog tr { vertical-align: top; }
+#vboxSettingsPane { width: 100%; }
+
+/* Settings menu list (left hand list of sections) */
+#vboxSettingsMenu { text-align: left; background: #fff; width: auto; white-space: nowrap; border: 1px solid #000; }
+#vboxSettingsMenu img { vertical-align: bottom; margin-right: 4px; }
+#vboxSettingsMenu ul { list-style: none; padding: 0px; margin: 0px; }
+#vboxSettingsMenu li { padding: 6px; margin: 4px; cursor: pointer; }
+
+/* Settings section title */
+#vboxSettingsTitle { margin-top: 0px; border: 1px solid #000; background: #fff; display: block; text-align: left; padding: 6px; font-weight: bold; }
+
+/* Settings main section surrounding div */
+#vboxSettingsList { padding: 2px; margin-top: 8px; }
+
+/* Global Network Settings */
+#vboxSettingsGlobalNetList { background: #fff; height: 200px; padding: 0px; overflow: scroll; overflow-y: scroll; overflow-x: scroll; }
+#vboxSettingsGlobalNetList li { padding-left: 4px; }
+#vboxSettingsGlobalNetEditAdapter th { text-align: right; width: auto; white-space: nowrap;}
+#vboxSettingsGlobalNetEditAdapter td, #vboxSettingsGlobalNetEditAdapter td input { text-align: left; width: 100%; white-space: nowrap;}
+#vboxSettingsGlobalNetEditDialog { background: #d9d9e9; }
+#vboxSettingsGlobalNetEditDialog .ui-tabs { background: #d9d9e9; margin: 0px 6px 0px 6px;}
+#vboxSettingsGlobalNetEditDialog .ui-tabs-panel { background: #fff; }
+
+
+
+/* settings general tabs and panes */
+#vboxSettingsPane .vboxSettingsPaneSection { border: 2px solid #999; background: #d9d9f0; }
+#vboxSettingsPane .vboxSettingsPaneSection .ui-state-default { background: #aaa; }
+#vboxSettingsPane .vboxSettingsPaneSection .ui-tabs-selected,
+	#vboxSettingsPane .vboxNonTabbed,
+	#vboxSettingsPane .vboxSettingsPaneSection .ui-tabs-panel { background: #eee; }
+#vboxSettingsPane .vboxNonTabbed { padding: 6px; }
+#vboxSettingsPane .vboxSettingsPaneSection .vboxNonTabbed .vboxNonTabbed { background: #aaa; }
+#vboxSettingsPane div.slider .ui-state-default { background: #ff8; border: 1px solid #000; }
+
+
+/* Storage Settings */
+#vboxSettingsStorageTree { background: #fff; height: 250px; padding: 4px 0px 2px 6px; overflow: scroll; overflow-y: auto; overflow-x: hidden; }
+#vboxSettingsControllersButtons { text-align: right; }
+#vboxSettingsControllersButtons { width: 100%; text-align: right; }
+
+#vboxSettingsStorageTree table { width: 100%; margin: 0px; padding: 0px; }
+#vboxSettingsStorageTree table td { height: 20px; white-space: nowrap; border: 0px; padding: 0px; margin: 0px; width: auto; }
+#vboxSettingsStorageTree table td.vboxSettingsStorageTypeIcon { width: 20px; height: 20px; }
+#vboxSettingsStorageTree table tr { vertical-align: middle; }
+	
+#vboxSettingsStorageTree input { display: inline; }
+#vboxSettingsStorageTree ul, #vboxSettingsStorageTree ul li { margin: 0px; padding: 0px; list-style: none; }
+#vboxSettingsStorageTree ul ul li { padding: 0px 0px 0px 20px; background: url(../images/treeview-default-line.gif) 0px 2px no-repeat; }
+#vboxSettingsStorageTree ul ul li.last { background-position: 0 -1762px }
+#vboxSettingsStorageTree li .vboxListItem .vboxToolbarSmall { display: none; }
+#vboxSettingsStorageTree li input.vboxToolbarSmallButton,
+	#vboxSettingsStorageTree li input.vboxImgButton { border: 0px; padding: 0px; margin: 0px; height: 20px; }
+
+
+/* Storage Controllers */
+#vboxSettingsStorageTree td.vboxSettingsControllerIDEExpanded {background: url(../images/vbox/ide_collapse_16px.png) 0px 1px no-repeat; }
+#vboxSettingsStorageTree td.vboxSettingsControllerSATAExpanded {background: url(../images/vbox/sata_collapse_16px.png) 0px 1px no-repeat;}
+#vboxSettingsStorageTree td.vboxSettingsControllerSCSIExpanded {background: url(../images/vbox/scsi_collapse_16px.png) 0px 1px no-repeat;}
+#vboxSettingsStorageTree td.vboxSettingsControllerFloppyExpanded {background: url(../images/vbox/floppy_collapse_16px.png) 0px 1px no-repeat;}
+#vboxSettingsStorageTree td.vboxSettingsControllerSASExpanded {background: url(../images/vbox/sata_collapse_16px.png) 0px 1px no-repeat;}
+#vboxSettingsStorageTree td.vboxSettingsControllerIDE {background: url(../images/vbox/ide_expand_16px.png) 0px 1px no-repeat; }
+#vboxSettingsStorageTree td.vboxSettingsControllerSATA {background: url(../images/vbox/sata_expand_16px.png) 0px 1px no-repeat;}
+#vboxSettingsStorageTree td.vboxSettingsControllerSCSI {background: url(../images/vbox/scsi_expand_16px.png) 0px 1px no-repeat;}
+#vboxSettingsStorageTree td.vboxSettingsControllerFloppy {background: url(../images/vbox/floppy_expand_16px.png) 0px 1px no-repeat;}
+#vboxSettingsStorageTree td.vboxSettingsControllerSAS {background: url(../images/vbox/sata_expand_16px.png) 0px 1px no-repeat;}
+
+/* Storage Disks */
+#vboxSettingsStorageTree td.vboxSettingsMediaType { background: url(../images/vbox/attachment_16px.png) 0px 1px no-repeat; }
+#vboxSettingsStorageTree td.vboxSettingsMediaTypeHardDisk { background: url(../images/vbox/hd_16px.png) 0px 1px no-repeat; }
+#vboxSettingsStorageTree td.vboxSettingsMediaTypeFloppy { background: url(../images/vbox/fd_16px.png) 0px 1px no-repeat; }
+#vboxSettingsStorageTree td.vboxSettingsMediaTypeDVD { background: url(../images/vbox/cd_16px.png) 0px 1px no-repeat; }
+
+.vboxMediumReadOnly { background-image: url(../images/vbox/new_16px.png); background-position: 0px 0px; background-repeat: no-repeat; padding-left: 18px; }
+#vboxSettingsStorageTree td.vboxMediumReadOnly { background-image: url(../images/vbox/new_16px.png); }
+
+#vboxSettingsMediaInfo table th { text-align: right; white-space: nowrap; width: auto; }
+#vboxSettingsMediaInfo table td { text-align: left; width: 100%; white-space: normal; } 
+	
+/* Shared folder settings */
+#vboxSettingsSharedFolders { background: #fff; }
+#vboxSettingsSharedFolders td, #vboxSettingsSharedFolders th { padding-left: 8px; padding-right: 8px; }
+#vboxSettingsSharedFoldersList td { white-space: nowrap; }
+#vboxSettingsSharedFoldersList td.vboxSettingsSFPathCell { width: 100%; }
+#vboxSettingsSharedFoldersList td.vboxSettingsSFNameCell { width: auto; }
+#vboxSettingsSharedFoldersList td.vboxSettingsSFROCell { width: auto; }
+
+/* USB Settings */
+#vboxSettingsUSBFilters { background: #fff; }
+#vboxSettingsUSBFilters li { width: 100%; margin: 0px; padding: 2px }
+#vboxSettingsUSBFilters ul { list-style: none; margin: 0px; padding: 0px;}
+#vboxSettingsUSBFilters ul input { vertical-align: bottom; }
+
+

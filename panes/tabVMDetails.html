@@ -1,0 +1,373 @@
+<!-- 
+
+	VM Details
+	
+	$Id: tabVMDetails.html 697 2010-07-08 02:31:17Z ian $
+
+ -->
+<div id='vboxTabVMDetails' class='vboxTabContent'>
+	<div id='vboxVMDetails' style='height: 99%;'>
+		<div class='vboxTabLoading'><img src="images/vbox/welcome.png" /></div>
+	</div>
+<script type='text/javascript'>
+
+
+// Listen for events
+$('#vboxTabVMDetails').parent().bind('vmloading',function(){
+	$('#vboxVMDetails').css({'vertical-align':'middle'});
+	$('#vboxVMDetails').html("<div class='vboxTabLoading'><img src='images/spinner.gif'></div>");
+});
+
+$('#vboxTabVMDetails').parent().bind('vmloaded',function(e,vm){
+
+	// vboxTabVMDetails
+	if(vm && vm.id) {
+		$('#vboxVMDetails').css({'vertical-align':'top'});
+		__vboxTabVMDetails(vm);
+	} else {
+		$('#vboxVMDetails').css({'vertical-align':'middle'});
+		$('#vboxVMDetails').html('<div class="vboxTabLoading"><img src="images/vbox/welcome.png" /></div>');
+	}
+});
+
+
+
+//Called when VM selection changes
+function __vboxTabVMDetails(vm) {
+	
+	if(vm.id == 'host') {
+		__vboxDisplayHostDetailsData(vm);
+	} else {
+		__vboxDisplayDetailsData(vm);
+	}
+}
+
+// Returns link to settings
+function __vboxDetailSettingsLink(text,section,id) {
+	var link = document.createElement('a');
+	$(link).attr('href',"javascript:vboxVMsettingsInit('"+id+"',function(){$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);},'"+section+"');");
+	$(link).html(text);
+	return link;
+}
+
+//Returns table row (tr) element for details header
+function __vboxDetailHeader(icon,name,linkto,vm) {
+
+	var tr = document.createElement('tr');
+	var th = document.createElement('th');
+	th.setAttribute('class','vboxDetailsSection');
+	th.setAttribute('colspan', '2');
+	th.innerHTML = "<img src='images/vbox/" + icon + "' /> ";
+
+	// Create links to settings?
+	if(typeof linkto == "string") {
+		$(th).append(__vboxDetailSettingsLink(name,linkto,vm.id));
+	} else {
+		$(th).append(document.createTextNode(name));
+	}
+
+	tr.appendChild(th);
+
+	return tr;
+}
+
+//Base function that returns a table row of machine detail data
+//Called from other functions
+function __vboxDetailRowReal(name,value,cssClass,html) {
+	var tr = document.createElement('tr');
+	var th = document.createElement('th');
+	th.appendChild(document.createTextNode(name + (value.length && name.length ? ':' : '')));
+	th.setAttribute('class',cssClass);
+	
+	var td = document.createElement('td');
+	td.setAttribute('class','vboxDetailsValue');
+	if(html) {
+		td.innerHTML = value;
+	} else { 
+		td.appendChild(document.createTextNode(value));
+	}
+	tr.appendChild(th);
+	tr.appendChild(td);
+
+	return tr;
+}
+//Return normal detail row
+function __vboxDetailRow(name,value,html) {
+	return __vboxDetailRowReal(name,value,'vboxDetailName',html);
+}
+//Return indented detail row
+function __vboxDetailRowIndented(name,value,html) {
+	return __vboxDetailRowReal(name,value,'vboxDetailNameIndent',html);
+}
+
+//Display details data table for VM
+//////////////////////////////////
+function __vboxDisplayDetailsData(data,targetdiv,links) {
+
+	// Defaults
+	if(!targetdiv)
+		targetdiv = $('#vboxVMDetails');
+
+	if(links === undefined)
+		links = true;
+
+	var settings = (links == true && data.sessionState == 'Closed' && data.state != 'Saved');
+
+	 
+	// clear progress bar or existing data
+	$(targetdiv).html('');
+
+	// Accessibility check
+	if(data.state == 'Inaccessible') {
+
+		$(targetdiv).html('<div style="width: 50%">'+trans('VM Inaccessible')+'</div>');
+		
+		// Details Table
+		var vboxDetailsTable = document.createElement('table');
+		vboxDetailsTable.setAttribute('style','width: 50%');
+		vboxDetailsTable.setAttribute('class','vboxDetailsTable vboxDetailsTableError');
+		vboxDetailsTable.appendChild(__vboxDetailRow(trans("Error"), data.accessError['text']));
+		vboxDetailsTable.appendChild(__vboxDetailRow(trans("Result Code"), data.accessError['resultCode']));
+		vboxDetailsTable.appendChild(__vboxDetailRow(trans("Component"), data.accessError['component']));
+		$(targetdiv).append(vboxDetailsTable);
+
+		var d = document.createElement('div');
+		d.setAttribute('style','width: 50%; padding: 4px;');
+		
+		var btn = document.createElement('input');
+		btn.setAttribute('type','button');
+		btn.setAttribute('value',trans('Refresh'));
+		btn.setAttribute('style','background: url(images/vbox/refresh_16px.png) 2px 2px no-repeat; padding: 2px 2px 2px 18px; border: 1px solid #000; background-color: #eee; ');
+		$(btn).click(function(){
+			var l = new vboxLoader();
+			l.add('VMDetails',function(){
+				$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);
+			},{'vm':$('#vboxIndex').data('selectedVM').id,'force_refresh':1});
+			l.run();
+		});
+
+		$(d).append(btn);
+		
+		$(targetdiv).append(d);
+				
+		return;
+	}
+	
+	// Details Table
+	var vboxDetailsTable = document.createElement('table');
+	vboxDetailsTable.setAttribute('class','vboxDetailsTable');
+
+	// General
+	vboxDetailsTable.appendChild(__vboxDetailHeader("machine_16px.png",trans("General"),(settings ? 'General' : null),(settings ? data : null)));
+	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Name"), data['name']));
+	vboxDetailsTable.appendChild(__vboxDetailRow(trans("OS Type"), trans(data['OSTypeId'])));
+	
+	// System
+	vboxDetailsTable.appendChild(__vboxDetailHeader('chipset_16px.png',trans("System"),(settings ? 'System' : null),(settings ? data : null)));
+	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Base Memory"), data['memorySize'] + " " + trans('MB')));
+	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Processors"), data['CPUCount']));
+	
+	// Boot Order
+	var bo = new Array();
+	for(var i = 0; i < data['bootOrder'].length; i++) {
+		bo[i] = trans(data['bootOrder'][i]);
+	}
+	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Boot Order"), bo.join(trans('LIST_SEP'))));
+
+	// HW acceleration config enabled?
+	if($('#vboxIndex').data('vboxConfig').enableAccelerationConfig) {
+		vboxDetailsTable.appendChild(__vboxDetailRow(trans("VCPU"), (data['HWVirtExProperties'].Enabled ? trans('Enabled') : trans('Disabled'))));
+		vboxDetailsTable.appendChild(__vboxDetailRow(trans("Nested Paging"), (data['HWVirtExProperties'].NestedPaging ? trans('Enabled') : trans('Disabled'))));
+	}
+
+	
+	// Display 
+	vboxDetailsTable.appendChild(__vboxDetailHeader("fullscreen_16px.png",trans("Display"),(settings ? 'Display' : null),(settings ? data : null)));
+	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Video Memory"), data['VRAMSize'] + " " + trans('MB')));
+	/* Unsupported at this time. 
+	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Video 3d"), (data['accelerate3DEnabled'] ? trans("Enabled") : trans("Disabled"))));
+	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Video 2d"), (data['accelerate2DVideoEnabled'] ? trans("Enabled") : trans("Disabled"))));
+	*/
+	
+
+	// RDP
+	if(data['VRDPServer']) {
+		vboxDetailsTable.appendChild(__vboxDetailHeader("vrdp_16px.png",trans("Remote Console"),(settings ? 'Display' : null),(settings ? data : null)));
+		if(!data['VRDPServer']['enabled'] || !data['VRDPServer']['ports']) {
+			vboxDetailsTable.appendChild(__vboxDetailRow(trans("Disabled"), ''));
+		} else {
+			
+			if(data['VRDPServer']['netAddress']) {
+				vboxDetailsTable.appendChild(__vboxDetailRow(trans("Net Address"), data['VRDPServer']['netAddress']));
+			}
+
+			var chost = data['VRDPServer']['netAddress'];
+			if(!chost) chost = $('#vboxIndex').data('vboxConfig').rdpHost;
+			if(!chost || chost == 'localhost' || chost == '127.0.0.1') {chost = location.host;}
+			
+			if(links) {
+				tr = __vboxDetailRow(trans("Ports"), data['VRDPServer']['ports']);
+				tr.childNodes[1].innerHTML = "<a href='rdp.php?host=" + chost + '&port=' + data['VRDPServer']['ports'] + "&vm=" + encodeURIComponent(data['name']) + "'>" + data['VRDPServer']['ports'] + "</a>";
+				vboxDetailsTable.appendChild(tr);
+			} else {
+				vboxDetailsTable.appendChild(__vboxDetailRow(trans("Ports"), data['VRDPServer']['ports']));
+			}
+			
+		}
+	}
+		
+	// Storage
+	vboxDetailsTable.appendChild(__vboxDetailHeader("hd_16px.png",trans("Storage"),(settings ? 'Storage' : null),(settings ? data : null)));
+	storage = new vboxStorage();
+	for(var a = 0; a < data['storageControllers'].length; a++) {
+		
+		var con = data['storageControllers'][a];
+		
+		vboxDetailsTable.appendChild(__vboxDetailRow(con.name, ''));
+		
+		for(var b = 0; b < data['storageControllers'][a]['mediumAttachments'].length; b++) {
+			
+			var portName = storage[data['storageControllers'][a].bus].slotName(data['storageControllers'][a]['mediumAttachments'][b].port, data['storageControllers'][a]['mediumAttachments'][b].device);
+
+			// Medium / host device info
+			var medium = (data['storageControllers'][a]['mediumAttachments'][b].medium && data['storageControllers'][a]['mediumAttachments'][b].medium.id ? storage.getMediumById(data['storageControllers'][a]['mediumAttachments'][b].medium.id) : null);
+
+			// Get base medium (snapshot -> virtual disk file)
+			if(medium && medium.base && (medium.base != medium.id)) {
+				for(var x in $('#vboxIndex').data('vboxMediums')) {
+					if($('#vboxIndex').data('vboxMediums')[x].id == medium.base) {
+						medium = $('#vboxIndex').data('vboxMediums')[x];
+						break;
+					}
+				}
+			}
+
+			portDesc = storage.mediumPrint(medium);
+
+			// Link medium to mount?
+			if(links && data['storageControllers'][a]['mediumAttachments'][b].type != 'HardDisk' && (data.state == 'Running' || (data.state == 'PoweredOff' && data.sessionState == 'Closed'))) {
+				portDesc = $('<div />').text(portDesc).html();
+				portDesc = '<a href="javascript:vboxMountInit(\''+data['id']+'\',\''+data['storageControllers'][a].bus+'\','+data['storageControllers'][a]['mediumAttachments'][b].port+','+data['storageControllers'][a]['mediumAttachments'][b].device+',__vboxTabVMDetails)">'+portDesc+'</a>';
+			}
+			vboxDetailsTable.appendChild(__vboxDetailRowIndented(portName + (data['storageControllers'][a]['mediumAttachments'][b].type == 'DVD' ? ' (' + trans(data['storageControllers'][a]['mediumAttachments'][b].type) + ') ' : ''), portDesc,(data['storageControllers'][a]['mediumAttachments'][b].type != 'HardDisk' ? true : false)));
+			
+		}
+		
+	}
+	
+	
+	// Audio (uncomment here and in vboxconnector.php if you'd like 
+	vboxDetailsTable.appendChild(__vboxDetailHeader("sound_16px.png",trans("Audio"),(settings ? 'Audio' : null),(settings ? data : null)));
+	if(!data['audioAdapter']['enabled']) {
+		vboxDetailsTable.appendChild(__vboxDetailRow(trans("Disabled"), ""));
+	} else {
+		vboxDetailsTable.appendChild(__vboxDetailRow(trans("Host Audio Driver"), trans((data['audioAdapter']['audioDriver'] == 'Null' ? 'Null Audio Driver' : data['audioAdapter']['audioDriver']))));
+		vboxDetailsTable.appendChild(__vboxDetailRow(trans("Audio Controller"), trans(data['audioAdapter']['audioController'])));
+	}
+	
+	// Network
+	vboxDetailsTable.appendChild(__vboxDetailHeader("nw_16px.png",trans("Network"),(settings ? 'Network' : null),(settings ? data : null)));
+
+	for(var i = 0; i < data['networkAdapters'].length; i++) {
+		
+		nic = data['networkAdapters'][i];
+		
+		// compose extra info
+		var xtra = '';
+
+		if(nic.enabled) {
+			switch(nic.attachmentType) {
+				case 'Bridged':
+				case 'HostOnly':
+						xtra = ' ' + trans('adapter') + trans('LIST_SEP') + nic.hostInterface;
+					break;
+				case 'NAT':
+						// 'NATNetwork' ?
+					break;
+				case 'Internal':
+						xtra = ' ' + trans('network') + trans('LIST_SEP') + nic.internalNetwork;
+					break;
+				
+			}
+			if(!nic.attachmentType || nic.attachmentType == 'Null') nic.attachmentType = 'Not Attached';
+
+			vboxDetailsTable.appendChild(__vboxDetailRow(trans("Adapter") + " " + (i + 1), trans(nic.adapterType) + ' (' + trans(nic.attachmentType) + xtra + ')'));
+		}
+				
+	}
+
+	// Link nic to guest networking info?
+	if(links && data['state'] == 'Running') {
+		var n  = '<a href="javascript:vboxGuestNetworkAdaptersDialogInit(\''+data['id']+'\','+i+')">('+trans('Guest Network Adapters')+')</a>';
+		vboxDetailsTable.appendChild(__vboxDetailRow('',n,true));
+	}
+	
+
+	// USB
+	if(data['USBController'])
+		vboxDetailsTable.appendChild(__vboxDetailHeader("usb_16px.png",trans("USB"),(settings ? 'USB' : null),(settings ? data : null)));
+	if(data['USBController'] && data['USBController']['enabled']) {
+		var tot = 0;
+		var act = 0;
+		for(var i = 0; i < data['USBController'].deviceFilters.length; i++) {
+			tot++;
+			if(data['USBController'].deviceFilters[i].active) act++;
+		}
+		vboxDetailsTable.appendChild(__vboxDetailRow(trans("Device Filters"), tot + ' (' + act + ' ' + trans('active') + ')'));
+	} else if(data['USBController']) {
+		vboxDetailsTable.appendChild(__vboxDetailRow(trans("Disabled"),""));
+	}
+	
+	// Shared Folders
+	vboxDetailsTable.appendChild(__vboxDetailHeader("shared_folder_16px.png",trans("Shared Folders"),(settings ? 'SharedFolders' : null),(settings ? data : null)));
+	if(!data['sharedFolders'] || data['sharedFolders'].length < 1) {
+		vboxDetailsTable.appendChild(__vboxDetailRow(trans("None"), ''));
+	} else {
+		for(var i = 0; i < data['sharedFolders'].length; i++) {
+			vboxDetailsTable.appendChild(__vboxDetailRow(data['sharedFolders'][i].name + ' (' + trans(data['sharedFolders'][i].writable ? 'rw' : 'ro') + ')', data['sharedFolders'][i].hostPath));
+		}
+	}
+	
+	// Append Table
+	$(targetdiv).append(vboxDetailsTable);
+}
+
+//Display details data for VirtualBox Host
+/////////////////////////////////////////////
+function __vboxDisplayHostDetailsData(data) {
+	
+
+	// clear progress bar or existing data
+	$('#vboxVMDetails').html('');
+	
+	// Details Table
+	var vboxDetailsTable = document.createElement('table');
+	vboxDetailsTable.setAttribute('class','vboxDetailsTable');
+
+	// General
+	vboxDetailsTable.appendChild(__vboxDetailHeader("machine_16px.png",trans("General")));
+	vboxDetailsTable.appendChild(__vboxDetailRow(trans("OS Type"), data['operatingSystem'] + ' (' + data['OSVersion'] +')'));
+	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Base Memory"), data['memorySize'] + ' ' + trans('MB')));
+	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Processors"), data['cpus'][0] + ' (' + data['cpus'].length +')'));
+	
+	// Network
+	vboxDetailsTable.appendChild(__vboxDetailHeader("nw_16px.png","Network"));
+
+	for(var i = 0; i < data['networkInterfaces'].length; i++) {		
+		
+		vboxDetailsTable.appendChild(__vboxDetailRow(data['networkInterfaces'][i].name + ' (' + trans(data['networkInterfaces'][i].status) + ')',''));
+		vboxDetailsTable.appendChild(__vboxDetailRowIndented(trans('IPv4Addr'), data['networkInterfaces'][i].IPAddress + ' / ' + data['networkInterfaces'][i].networkMask));
+		if(data['networkInterfaces'][i].IPV6Supported) {
+			vboxDetailsTable.appendChild(__vboxDetailRowIndented(trans('IPv6Addr'), data['networkInterfaces'][i].IPV6Address + ' / ' + data['networkInterfaces'][i].IPV6NetworkMaskPrefixLength));
+		}
+		vboxDetailsTable.appendChild(__vboxDetailRowIndented(trans('netMediumType'),trans(data['networkInterfaces'][i].mediumType) + (data['networkInterfaces'][i].hardwareAddress ? ' (' + data['networkInterfaces'][i].hardwareAddress + ')' : '')));
+	}
+
+	
+	// Append Table
+	$('#vboxVMDetails').append(vboxDetailsTable);
+}
+
+
+</script>
+</div>

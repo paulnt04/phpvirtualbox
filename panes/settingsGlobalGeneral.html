@@ -1,0 +1,82 @@
+<!-- 
+
+	General Global Settings / Preferences
+	
+	$Id: settingsGlobalGeneral.html 676 2010-06-15 22:11:16Z ian $
+
+ -->
+<table style='width: 100%' class='vboxVertical'>
+	<tr style='vertical-align: middle'>
+		<th><span class='translate'>Default Hard Disk Folder</span>:</th>
+		<td>
+			<table style='width: 100%' class='vboxInvisible'>
+				<tr style='vertical-align: top'>
+					<td style='width: 100%'>
+						<input type='text' class='vboxText' name='vboxSettingsDefaultHDFolder' style='width: 100%' />
+					</td>
+					<td style="width: auto; white-space: nowrap;" class="vboxFileFolderInput">
+						<input type="button" class="vboxImgButton" style="background-image: url(images/vbox/select_file_16px.png)"
+							onClick="browseFolder($('input[name=vboxSettingsDefaultHDFolder]').first().val(),function(f){$('input[name=vboxSettingsDefaultHDFolder]').first().val((f ? f : undefined));});" />
+					</td>
+				</tr>
+			</table>		
+		</td>
+	</tr>
+
+	<tr style='vertical-align: middle'>
+		<th><span class='translate'>Default Machine Folder</span>:</th>
+		<td>
+			<table class="vboxInvisible" style='width: 100%'>
+			<tr style='vertical-align: top'>
+				<td style='width: 100%'>
+					<input type='text' class='vboxText' name='vboxSettingsDefaultMachineFolder' style='width: 100%'/>
+				</td>
+				<td style="width: auto; white-space: nowrap;" class="vboxFileFolderInput">
+					<input type="button" class="vboxImgButton" style="background-image: url(images/vbox/select_file_16px.png)"
+						onClick="browseFolder($('input[name=vboxSettingsDefaultMachineFolder]').first().val(),function(f){$('input[name=vboxSettingsDefaultMachineFolder]').first().val((f ? f : undefined));});" />
+				</td>
+			</tr>
+			</table>		
+		</td>
+	</tr>
+	
+	<tr><td colspan='2'><hr style='width: 100%' class='vboxSeperatorLine'/></td></tr>
+	
+	<tr style='vertical-align: middle'>
+		<th><span class='translate'>VRDP Authentication Library</span>:</th>
+		<td>
+			<table class="vboxInvisible" style='width: 100%'>
+			<tr style='vertical-align: top'>
+				<td style='width: 100%'>
+					<input type='text' class='vboxText' name='vboxSettingsVRDPAuthLibrary' style='width: 100%' />
+				</td>
+				<td style="width: auto; white-space: nowrap;" class="vboxFileFolderInput">
+					<input type="button" class="vboxImgButton" style="background-image: url(images/vbox/select_file_16px.png)"
+						onClick="browseFolder($('input[name=vboxSettingsVRDPAuthLibrary]').first().val(),function(f){$('input[name=vboxSettingsVRDPAuthLibrary]').first().val((f ? f : undefined));});" />
+				</td>
+			</tr>
+			</table>				
+		</td>
+	</tr>
+</table>
+<script type='text/javascript'>
+
+/* Set Defaults */
+
+document.frmVboxSettings.vboxSettingsDefaultHDFolder.value = $('#vboxSettingsDialog').data('vboxSystemProperties').defaultHardDiskFolder;
+document.frmVboxSettings.vboxSettingsDefaultMachineFolder.value = $('#vboxSettingsDialog').data('vboxSystemProperties').defaultMachineFolder;
+document.frmVboxSettings.vboxSettingsVRDPAuthLibrary.value = $('#vboxSettingsDialog').data('vboxSystemProperties').remoteDisplayAuthLibrary;
+
+/* 
+ * 
+ * Update Data onSave() 
+ * 
+ */
+$('#vboxSettingsDialog').bind('save',function(){
+
+	$('#vboxSettingsDialog').data('vboxSystemProperties').defaultHardDiskFolder = document.frmVboxSettings.vboxSettingsDefaultHDFolder.value;
+	$('#vboxSettingsDialog').data('vboxSystemProperties').defaultMachineFolder = document.frmVboxSettings.vboxSettingsDefaultMachineFolder.value;
+	$('#vboxSettingsDialog').data('vboxSystemProperties').remoteDisplayAuthLibrary = document.frmVboxSettings.vboxSettingsVRDPAuthLibrary.value;
+
+});
+</script>

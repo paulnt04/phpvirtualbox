@@ -1,0 +1,272 @@
+<!--
+
+	Shared Folders
+	
+	$Id: settingsSharedFolders.html 697 2010-07-08 02:31:17Z ian $
+	
+-->
+<table style='width: 100%'>
+	<tr style='vertical-align: middle'>
+		<td style='width: 100%'>
+		<table class='vboxSettingsHeadingLine' style='width:100%;border-spacing:0;border:0px;margin:0px;padding:0px;'><tr style='vertical-align:middle'><td style='white-space: nowrap; width: auto;'><span class='translate'>Folders List</span></td><td style='width: 100%'><hr style='width: 100%;'  class='vboxSeperatorLine'/></td></tr></table>
+		</td>
+	</tr>
+	<tr>
+		<td style='width: 100%'>
+		<table style='width: 100%'>
+			<tr>
+				<td style='width: 100%'>
+				<div style='overflow: auto;' class='vboxBordered' id='vboxSettingsSharedFolders'>
+				<table class='vboxHorizontal'>
+					<thead>
+						<tr id='vboxSettingsSharedFoldersHeading'>
+							<th><span class='translate'>Name</span></th>
+							<th style='width: 100%'><span class='translate'>Path</span></th>
+							<th><span class='translate'>Access</span></th>
+						</tr>
+					</thead>
+					<tbody id='vboxSettingsSharedFoldersList'>
+						<tr class='vboxListItem'>
+							<td style='white-space: nowrap'>space</td>
+							<td style='white-space: nowrap'>/SPACEHUB/space/some/other/path</td>
+							<td style='white-space: nowrap'>Full</td>
+						</tr>
+					</tbody>
+				</table>
+				</div>
+				</td>
+				<td id='vboxSettingsSFButtons'></td>
+			</tr>
+		</table>
+		</td>
+	</tr>
+
+</table>
+<script type='text/javascript'>
+
+/*
+ * Init Shared Folder buttons and toolbar
+ */
+
+var sButtons = new Array(
+
+	{
+		'name' : 'addshared',
+		'label' : 'Add Shared Folder',
+		'icon' : 'add_shared_folder',
+		'enabled' : function (item) { return true; },
+		'click' : function () {
+
+			var dialog = vboxSettingsSFEditDialog();
+			
+			$('#vboxSettingsSFPath').val('');
+			$('#vboxSettingsSFName').val('');
+			$('#vboxSettingsSFRO').attr('checked','');
+			var buttons = { };
+			buttons[trans('OK')] = function() {
+				if($('#vboxSettingsSFName').val() && $('#vboxSettingsSFPath').val()) {
+					var f = {'name':$('#vboxSettingsSFName').val(),'hostPath':$('#vboxSettingsSFPath').val(),'writable':!($('#vboxSettingsSFRO').attr('checked'))};
+					var row = vboxSettingsAddSharedFolder(f);
+					$(row).children('td').last().trigger('click');
+				}
+				$(dialog).remove();
+			};
+			buttons[trans('Cancel')] = function() { $(dialog).remove(); };
+			$(dialog).dialog({'buttons':buttons}).dialog('open');
+			
+		}
+	},
+
+	{
+		'name' : 'editshared',
+		'label' : 'Edit Shared Folder',
+		'icon' : 'edit_shared_folder',
+		'enabled' : function (item) { return $(item).hasClass('vboxListItemSelected');  },
+		'click' : function () {
+
+			var dialog = vboxSettingsSFEditDialog();
+			
+			var def = $('#vboxSettingsSharedFoldersList').children('tr.vboxListItemSelected').first();
+			$('#vboxSettingsSFPath').val(($(def).data('hostPath')||''));
+			$('#vboxSettingsSFName').val(($(def).data('name')||''));
+			$('#vboxSettingsSFRO').attr('checked',($(def).data('writable') ? '' : 'checked'));
+
+			var buttons = { };
+			buttons[trans('OK')] = function() {
+				if($('#vboxSettingsSFName').val() && $('#vboxSettingsSFPath').val()) {
+					var item = $('#vboxSettingsSharedFoldersList').children('tr.vboxListItemSelected').first();
+					$(item).data('hostPath',$('#vboxSettingsSFPath').val());
+					$(item).data('name',$('#vboxSettingsSFName').val());
+					$(item).data('writable',!($('#vboxSettingsSFRO').attr('checked')));
+					$(item).trigger('refresh');
+				}
+				$(dialog).remove();
+			};
+			buttons[trans('Cancel')] = function() { $(dialog).remove() };
+			$(dialog).dialog({'buttons':buttons}).dialog('open');
+		
+		}		
+	},
+	
+	{
+		'name' : 'removeshared',
+		'label' : 'Remove Shared Folder',
+		'icon' : 'revome_shared_folder',
+		'enabled' : function (item) { return $(item).hasClass('vboxListItemSelected'); },
+		'click' : function () {
+			var item = $('#vboxSettingsSharedFoldersList').children('.vboxListItemSelected').first();
+			var target = $(item).next();
+			if(!$(target).hasClass('vboxListItemSelected')) target = $(item).prev();
+			if(!$(target).hasClass('vboxListItemSelected')) target = $('#vboxSettingsSharedFoldersList').children('.vboxListItem').first();
+			$('#vboxSettingsSharedFoldersList').children('tr.vboxListItemSelected').first().remove();
+			if(!$(target).children().first().trigger('click').hasClass('vboxListItemSelected')) {
+				$('#vboxSettingsSharedFoldersList').trigger('select',null);
+			}
+		}		
+	}
+
+ );
+
+sfToolbar = new vboxToolbarSmall(sButtons);
+sfToolbar.addButtons('vboxSettingsSFButtons');
+$('#vboxSettingsSharedFoldersList').bind('select',sfToolbar.update);
+
+/* Add Shared Folder to list */
+
+function vboxSettingsAddSharedFolder(f) {
+	
+	var tr = document.createElement('tr');
+	tr.setAttribute('class','vboxListItem');
+
+	// Bind data
+	$(tr).data(f);
+	
+	var td = document.createElement('td');
+	td.setAttribute('class','vboxSettingsSFNameCell');
+	td.innerHTML = $('<div/>').text(f.name).html();
+	tr.appendChild(td);
+	var td = document.createElement('td');
+	td.setAttribute('class','vboxSettingsSFPathCell');
+	td.innerHTML = $('<div/>').text(f.hostPath).html();
+	tr.appendChild(td);
+	var td = document.createElement('td');
+	td.setAttribute('class','vboxSettingsSFROCell');
+	td.innerHTML = f.writable ? trans('Full Access') : trans('ro');
+	tr.appendChild(td);		
+
+	$(tr).children().click(function(){
+		$('#vboxSettingsSharedFoldersList').find('tr.vboxListItemSelected').removeClass('vboxListItemSelected').addClass('vboxListItem');
+		$(this).parent().removeClass('vboxListItem').addClass('vboxListItemSelected');
+		$('#vboxSettingsSharedFoldersList').trigger('select',$(this).parent());
+
+	}).dblclick(function(e){
+		sfToolbar.click('editshared');
+		e.preventDefault();
+	});
+
+	// bind refresh
+	$(tr).bind('refresh',function(){
+		$(this).children('.vboxSettingsSFNameCell').html($('<div/>').text($(this).data('name')).html());
+		$(this).children('.vboxSettingsSFPathCell').html($('<div/>').text($(this).data('hostPath')).html());
+		$(this).children('.vboxSettingsSFROCell').html($(this).data('writable') ? trans('Full Access') : trans('ro'));
+	});
+	
+	$('#vboxSettingsSharedFoldersList').append(tr);
+
+	return tr;
+}
+
+/* Shared Folders */
+var sfh = $('#vboxSettingsSharedFoldersList');
+$(sfh).children().remove(); // clear list
+
+// add each folder
+for(var i = 0; i < $('#vboxSettingsDialog').data('vboxMachineData').sharedFolders.length; i++) {
+	vboxSettingsAddSharedFolder($('#vboxSettingsDialog').data('vboxMachineData').sharedFolders[i]);
+}
+
+/* trigger select */
+if(!$('#vboxSettingsSharedFoldersList').children('tr.vboxListItem').first().children('td').first().trigger('click').html()) {
+	$('#vboxSettingsSharedFoldersList').trigger('select',null);	
+}
+
+/* Update Shared Folder path and name. Callback for folder browser */
+function vboxSettingsSFUpdatePath(f) {
+	if(!f) return;
+	$('#vboxSettingsSFPath').val(f);
+	if(!$('#vboxSettingsSFName').val()) {
+		f = f.replace(/.*\//,'');
+		f = f.replace(/.*\\/,'');
+		if(f) $('#vboxSettingsSFName').val(f);
+	}
+}
+/* 
+ * 
+ *
+ *		Shared Folder Properties Screen
+ *
+ *
+ */
+function vboxSettingsSFEditDialog() {
+	
+	var d = document.createElement('div');
+	d.setAttribute('id','vboxSettingsSFEdit');
+	d.setAttribute('class','vboxNonTabbed vboxDialogContent');
+	d.setAttribute('style','display: none;');
+	var tbl = document.createElement('table');
+	tbl.setAttribute('style','width: 100%');
+	tbl.setAttribute('class','vboxSettingsTable');
+	
+	var tr = document.createElement('tr');
+	var th = document.createElement('th');
+	th.innerHTML = trans('Path') + ':';
+	tr.appendChild(th);
+	var td = document.createElement('td');
+	td.setAttribute('style','white-space: nowrap');
+	td.innerHTML = '<table style="width: 100%"><tr><td style="width: 100%"><input type="text" class="vboxText" id="vboxSettingsSFPath" style="width: 100%"/></td><td style="width: auto" class="vboxFileFolderInput"><input type="button" class="vboxImgButton" style="background-image: url(images/vbox/select_file_16px.png)" onClick="browseFolder($(\'#vboxSettingsSFPath\').val(),vboxSettingsSFUpdatePath);" /></td></tr></table>';
+	tr.appendChild(td);
+	tbl.appendChild(tr);
+	
+	var tr = document.createElement('tr');
+	var th = document.createElement('th');
+	th.innerHTML = trans('Name') + ':';
+	tr.appendChild(th);
+	var td = document.createElement('td');
+	td.innerHTML = '<input type="text" class="vboxText" id="vboxSettingsSFName" style="width: 100%" />';
+	tr.appendChild(td);
+	tbl.appendChild(tr);
+	
+	var tr = document.createElement('tr');
+	var th = document.createElement('th');
+	tr.appendChild(th);
+	var td = document.createElement('td');
+	td.innerHTML = '<input type="checkbox" class="vboxCheckbox" id="vboxSettingsSFRO" /> ' + trans('ro'); // "Read-only"
+	tr.appendChild(td);
+	tbl.appendChild(tr);
+	
+	d.appendChild(tbl);
+	
+	$('#vboxIndex').append(d);
+	
+	$('#vboxSettingsSFEdit').dialog({'width':800,'modal':true,'autoOpen':false,'stack':true,'dialogClass':'vboxNonTabbed','title':trans('Shared Folder')});
+
+	return $('#vboxSettingsSFEdit');
+}
+
+
+
+/* Change settings onSave() */
+$('#vboxSettingsDialog').bind('save',function(){
+
+	$('#vboxSettingsDialog').data('vboxMachineData').sharedFolders = new Array();
+
+	var folders = new Array();	
+	$('#vboxSettingsSharedFoldersList').children('tr').each(function(){
+		folders[folders.length] = {'name':$(this).data('name'),'hostPath':$(this).data('hostPath'),'writable':($(this).data('writable') ? 1 : 0)};
+	});
+	$('#vboxSettingsDialog').data('vboxMachineData').sharedFolders = folders;
+
+});
+
+</script>
+

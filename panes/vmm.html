@@ -1,0 +1,726 @@
+<!-- 
+
+	Virtual Media Manager
+	
+	$Id: vmm.html 697 2010-07-08 02:31:17Z ian $
+
+ -->
+<div id='vboxVirtualMediaManager'>
+
+	<!-- Top menu -->
+	<div id='vboxMMMenu'></div>
+	
+	<!--  Toolbar Created by JavaScript below -->
+	<div id='vboxMMToolbar' style='padding: 4px'></div>
+
+	<!-- Tabs for Media -->
+	<div id='vboxMMTabs'>
+
+		<div id='vboxVMMTabs'>
+			<ul>
+				<li><a href="#vmmDisks"><span><img style="vertical-align: middle" src="images/vbox/hd_16px.png" border="0" /> <span class='translate'>Hard Disks</span></span></a></li>
+				<li><a href="#vmmCDs"><span><img style="vertical-align: middle" src="images/vbox/cd_16px.png" border="0" /> <span class='translate'>CD/DVD Images</span></span></a></li>
+				<li><a href="#vmmFloppys"><span><img style="vertical-align: middle" src="images/vbox/fd_16px.png" border="0" /> <span class='translate'>Floppy Images</span></span></a></li>
+				
+			</ul>
+			<!-- 
+			
+					HARD DISKS
+			
+			 -->
+			<div id='vmmDisks'>
+				<div class='vboxBordered vboxVMMList'>
+				<table width='100%' style='border-spacing: 0px; border: 0px;' class='vboxHorizontal vboxListTable vboxVMMList'>
+					<thead>
+						<tr>
+							<th style='width: 100%;'><span class='translate'>Name</span></th>
+							<th style='width: auto'><span class='translate'>Virtual Size</span></th>
+							<th style='width: auto'><span class='translate'>Actual Size</span></th>
+						</tr>
+					</thead>
+					<tbody id='vboxVMMHDList'>
+						<tr>
+							<td>Item 1</td>
+							<td>Item 2</td>
+							<td>Item 3</td>
+						</tr>
+					</tbody>
+				</table>
+				</div>
+				<div class='vboxVMMMediumInfo'>
+					<table>
+						<tr>
+							<th><span class='translate'>Location</span>:</th>
+							<td><span class='vmmMediumLocation'></span></td>
+						</tr>
+						<tr>
+							<th><span class='translate'>Type (Format)</span>:</th>
+							<td><span class='vmmMediumType'></span></td>
+						</tr>
+						<tr>
+							<th><span class='translate'>Attached to</span>:</th>
+							<td><span class='vmmMediumAttachedTo'></span></td>
+						</tr>
+						
+					</table>
+				</div>
+				
+			</div>
+			
+			
+			
+			<!-- 
+			
+					CD / DVD IMAGES
+			
+			 -->
+			<div id='vmmCDs'>
+				<div class='vboxVMMList vboxBordered'>
+				<table width='100%' style='border-spacing: 0px; border: 0px;' class='vboxHorizontal vboxListTable vboxVMMList'>
+					<thead>
+						<tr>
+							<th style='width: 100%'><span class='translate'>Name</span></th>
+							<th style='width: auto'><span class='translate'>Size</span></th>
+						</tr>
+					</thead>
+					
+					<tbody id='vboxVMMCDList'>
+						<tr>
+							<td>Item 1</td>
+							<td>Item 3</td>
+						</tr>
+						<tr>
+							<td>Item 1</td>
+							<td>Item 3</td>
+						</tr>
+					</tbody>
+				</table>
+				</div>
+				<div class='vboxVMMMediumInfo'>
+					<table>
+						<tr>
+							<th><span class='translate'>Location</span>:</th>
+							<td><span class='vmmMediumLocation'></span></td>
+						</tr>
+						<tr>
+							<th><span class='translate'>Attached to</span>:</th>
+							<td><span class='vmmMediumAttachedTo'></span></td>
+						</tr>
+						
+					</table>
+				</div>		
+			</div>
+			
+			
+			
+			
+			<!-- 
+			
+				FLOPPY IMAGES
+			
+			 -->
+			<div id='vmmFloppys'>
+				<div class='vboxVMMList vboxBordered'>
+				<table width='100%' style='border-spacing: 0px; border: 0px;' class='vboxHorizontal vboxListTable vboxVMMList'>
+					<thead>
+						<tr>
+							<th style='width: 100%'><span class='translate'>Name</span></th>
+							<th style='width: auto'><span class='translate'>Size</span></th>
+						</tr>
+					</thead>
+					<tbody id='vboxVMMFDList'>
+						<tr>
+							<td>Item 1</td>
+							<td>Item 2</td>
+						</tr>
+					</tbody>
+				</table>
+				</div>
+				<div class='vboxVMMMediumInfo'>
+					<table>
+						<tr>
+							<th><span class='translate'>Location</span>:</th>
+							<td><span class='vmmMediumLocation'></span></td>
+						</tr>
+						<tr>
+							<th><span class='translate'>Attached to</span>:</th>
+							<td><span class='vmmMediumAttachedTo'></span></td>
+						</tr>
+						
+					</table>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+	
+</div>
+<script type='text/javascript'>
+
+
+/*
+ * Setup Tabs
+ */
+$("#vboxVMMTabs").tabs().bind("tabsshow",function(ev,el){
+
+	if(!$('#'+el.panel.id).find('tbody').children('tr.vboxListItemSelected').first().children().first().click().html()) {
+		$('#vboxVirtualMediaManager').trigger('mediumselect',[null]);
+	}
+
+	
+	
+});
+
+/*
+ * Toolbar Buttons
+ */
+var vmmButtons = new Array(
+
+	{
+		/*
+		 *	Create new HardDisk
+		 */
+		'name' : 'vmmnew',
+		'label' : 'New',
+		'icon' : 'hd_new',
+		'enabled' : function (item) { return(!$("#vboxVMMTabs").tabs('option','selected')); },
+		'click' : function () {
+			vboxWizardNewHDInit(function(res,id){
+				var l = new vboxLoader();
+				l.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
+				l.onLoad = function() {
+					vboxVMMFillMediums(id);
+				};
+				l.run();
+			}); 
+		}
+	},
+
+	{
+		/*
+		 * Add existing medium to virtualbox
+		 */
+		'name' : 'vmmadd',
+		'label' : 'Add',
+		'icon' : 'hd_add',
+		'separator' : true,
+		'click' : function () {
+			
+			var d = document.createElement('div');
+			d.setAttribute('id','vboxVMMAddMediumImageDialog');
+			var tbl = document.createElement('table');
+			var tr = document.createElement('tr');
+			var td = document.createElement('td');
+			td.setAttribute('style',"width: 100%; white-space: nowrap;");
+			td.innerHTML = '<input type="text" class="vboxText" id="vboxVMMAddMediumImage" style="width: 100%"/>';
+			tr.appendChild(td);
+			
+			var td = document.createElement('td');
+			td.setAttribute('class','vboxFileFolderInput');
+			td.setAttribute('style','width: auto; white-space: nowrap;');
+			td.innerHTML = '<input type="button" class="vboxImgButton" style="background-image: url(images/vbox/select_file_16px.png); '+($('#vboxIndex').data('vboxConfig').browserDisable ? 'display: none;' : '')+'" onClick="vboxFileBrowser($(\'#vboxIndex\').data(\'vboxSystemProperties\').defaultHardDiskFolder,function(f){$(\'#vboxVMMAddMediumImage\').val((f ? f : undefined));},false);" />';
+			tr.appendChild(td);
+			tbl.appendChild(tr);
+
+			d.appendChild(tbl);
+
+			var buttons = {};
+			buttons[trans('OK')] = function() {
+				if($('#vboxVMMAddMediumImage').val()) {
+					// Get selected tab (0 == hard disks, 1 == DVD, 2 == Floppy)
+					switch($("#vboxVMMTabs").tabs('option','selected')) {
+						case 0:
+							type = 'HardDisk';
+							break;
+						case 1:
+							type = 'DVD';
+							break;
+						case 2:
+							type = 'Floppy';
+							break;
+					}
+					vboxAjaxRequest('mediumAdd',{'path':$('#vboxVMMAddMediumImage').val(),'type':type},function(ret){
+						var l = new vboxLoader();
+						l.add('Mediums',function(data){$('#vboxIndex').data('vboxMediums',data);});
+						l.onLoad = function() {
+							vboxVMMFillMediums((ret && ret.id ? ret.id : null));
+						}
+						l.run();
+					});
+				}
+				$('#vboxVMMAddMediumImageDialog').remove();
+				
+			};
+			buttons[trans('Cancel')] = function() { $('#vboxVMMAddMediumImageDialog').remove(); };
+
+			$('#vboxIndex').append(d);
+			
+		    $(d).dialog({'width':600,'height':130,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':trans('Select File')});			
+					
+			
+		}
+	},
+	
+	{
+		/*
+		 *	Remove a medium
+		 */
+		'name' : 'vmmremove',
+		'label' : 'Remove',
+		'icon' : 'hd_remove',
+		'enabled' : function (item) {return item && !item.target && ($(item).data('attachedTo').length == 0 && $(item).data('children').length == 0); },
+		'click' : function () {
+			switch($("#vboxVMMTabs").tabs('option','selected')) {
+				case 1:
+					var elm = $('#vboxVMMCDList');
+					break;
+				case 2:
+					var elm = $('#vboxVMMFDList');
+					break;
+				default:
+					var elm = $('#vboxVMMHDList');
+					break;
+			}
+			var m = $(elm).find('tr.vboxListItemSelected').first().data();
+
+			// If we are removing a hard disk and configured to allow deletions
+			if(m.deviceType == 'HardDisk' && $('#vboxIndex').data('vboxConfig').deleteOnRemove) {
+
+				var q = '<p>'+trans('VMM Remove Media Message1').replace('%s','<b>'+m.location+'</b>') + '</p><p>'+trans('VMM Remove Media Message2') + '</p><p>'+trans('VMM Remove Media Message3')+'</p>';
+
+				var buttons = {};
+				buttons[trans('Delete')] = function(){
+					vboxAjaxRequest('mediumRemove',{'id':m.id,'type':m.deviceType,'delete':1},function(ret){
+						vboxProgress(ret.progress,function(){
+							var l = new vboxLoader();
+							l.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
+							l.onLoad = vboxVMMFillMediums;
+							l.run();
+						});
+					});
+					$(this).remove();
+				};
+				
+				buttons[trans('Keep')] = function(){
+					vboxAjaxRequest('mediumRemove',{'id':m.id,'type':m.deviceType},function(ret){
+						var l = new vboxLoader();
+						l.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
+						l.onLoad = vboxVMMFillMediums;
+						l.run();
+					});
+					$(this).remove();
+				};
+				
+			} else {
+				
+				var q = trans('Are you sure remove medium').replace('%s','<br /><b>'+m.location+'</b><br />') + '<br /><br />'+trans('Medium remove note');
+
+				var buttons = {};
+				buttons[trans('Remove')] = function(){
+					var b = this;
+					vboxAjaxRequest('mediumRemove',{'id':m.id,'type':m.deviceType},function(ret){
+						var l = new vboxLoader();
+						l.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
+						l.onLoad = vboxVMMFillMediums;
+						$(b).remove();
+						l.run();
+					});
+				};
+					
+			}
+			vboxConfirm(q,buttons);
+
+		}
+	},
+
+	{
+		/*
+		 *	Release a medium from all attachments
+		 */
+		'name' : 'vmmrelease',
+		'label' : 'Release',
+		'icon' : 'hd_release',
+		'separator' : true,
+		'enabled' : function (item) {
+			return item && !item.target && ($(item).data('attachedTo').length > 0) && $(item).data('children').length == 0 && $(item).data('hasSnapshots') == 0;
+		},
+		'click' : function () {
+			switch($("#vboxVMMTabs").tabs('option','selected')) {
+				case 1:
+					var elm = $('#vboxVMMCDList');
+					break;
+				case 2:
+					var elm = $('#vboxVMMFDList');
+					break;
+				default:
+					var elm = $('#vboxVMMHDList');
+					break;
+			}
+			var m = $(elm).find('tr.vboxListItemSelected').first().data();
+			var q = trans('Are you sure release medium').replace('%s','<br /><b>'+m.location+'</b>');
+			var buttons = {};
+			buttons[trans('Release')] = function(){
+				var b = this;
+				vboxAjaxRequest('mediumRelease',{'id':m.id,'type':m.deviceType},function(ret){
+					var l = new vboxLoader();
+					l.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
+					l.onLoad = vboxVMMFillMediums;
+					$(b).remove();
+					l.run();
+				});
+			};
+		
+			if(m.attachedTo.length) {
+				var machines = new Array();
+				for(var i = 0; i < m.attachedTo.length; i++) {
+					machines[machines.length] = m.attachedTo[i].machine;
+				}
+				q += '<br /><br />' + trans('This will detach from').replace('%s','<b>'+machines.join('</b>'+trans('LIST_SEP')+'<b>') + '</b>');
+			};
+			vboxConfirm(q,buttons);
+				
+		}
+	},
+	
+	{
+		'name' : 'vmmrefresh',
+		'label' : 'Refresh',
+		'icon' : 'refresh',
+		'click' : function () {
+
+			// Force a refresh of mediums
+			var l = new vboxLoader();
+			l.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);},{'force_refresh':1});
+			l.onLoad = vboxVMMFillMediums;
+			l.run();
+			
+		}
+	}
+
+		
+);
+
+var vmmToolbar = new vboxToolbar(vmmButtons);
+vmmToolbar.addButtons('vboxMMToolbar');
+
+/* Actions Menu */
+var menu = {
+	'name':'vboxMMactions',
+	'title':'Actions',
+	'menu':[
+        {
+			'name':'vmmActionsClone',
+			'title':'Clone',
+			'icon':'vdm_add',
+			'click':function(){
+			
+				var d = document.createElement('div');
+				d.setAttribute('id','vboxVMMCloneMediumDialog');
+				var tbl = document.createElement('table');
+				var tr = document.createElement('tr');
+				var td = document.createElement('td');
+				td.setAttribute('style',"width: 100%; white-space: nowrap;");
+				td.innerHTML = '<input type="text" class="vboxText" id="vboxVMMCloneMedium" style="width: 100%"/>';
+				tr.appendChild(td);
+				
+				var td = document.createElement('td');
+				td.setAttribute('class','vboxFileFolderInput');
+				td.setAttribute('style','width: auto; white-space: nowrap;');
+				td.innerHTML = '<input type="button" class="vboxImgButton" style="background-image: url(images/vbox/select_file_16px.png); '+($('#vboxIndex').data('vboxConfig').browserDisable ? 'display: none;' : '')+'" onClick="vboxFileBrowser($(\'#vboxIndex\').data(\'vboxSystemProperties\').defaultHardDiskFolder,function(f){$(\'#vboxVMMCloneMedium\').val((f ? f : undefined));},false);" />';
+				tr.appendChild(td);
+				tbl.appendChild(tr);
+
+				tr = document.createElement('tr');
+				td = document.createElement('td');
+				$(td).append(trans("Storage Type") + ': ');
+
+				var s = document.createElement('select');
+				s.setAttribute('id','vboxVMMCloneMediumType');
+				s.options[0] = new Option(trans('Dynamically expanding storage'),'dynamic');
+				s.options[1] = new Option(trans('Fixed-size storage'),'fixed');
+				$(td).append(s);
+				$(tr).append(td);
+				td = document.createElement('td');
+				$(tr).append(td);
+				$(tbl).append(tr);
+	
+				d.appendChild(tbl);
+	
+				var buttons = {};
+				buttons[trans('OK')] = function() {
+					if($('#vboxVMMCloneMedium').val()) {
+
+		        		var m = $('#vboxVMMHDList').find('tr.vboxListItemSelected').first().data('id');
+						
+						vboxAjaxRequest('mediumCloneTo',{'file':$('#vboxVMMCloneMedium').val(),'id':m,'type':$('#vboxVMMCloneMediumType').val()},function(ret){
+							if(ret && ret.progress) {
+								vboxProgress(ret.progress,function(){
+									var l = new vboxLoader();
+									l.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
+									l.onLoad = vboxVMMFillMediums;
+									l.run();
+								});
+							}							
+						});
+					}
+					$('#vboxVMMCloneMediumDialog').remove();
+					
+				};
+				buttons[trans('Cancel')] = function() { $('#vboxVMMCloneMediumDialog').remove(); };
+	
+				$('#vboxIndex').append(d);
+				
+			    $(d).dialog({'width':600,'height':150,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':trans('Select File')});			
+			
+			},
+			'enabled':function(item){
+				if(!item) return false;
+				return($(item).data('deviceType') == 'HardDisk');
+			}
+        },
+        {
+			'name':'vmmActionsImmutable',
+			'title':'Immutable',
+			'icon':'hd_new',
+			'click':function(){
+
+        		var m = $('#vboxVMMHDList').find('tr.vboxListItemSelected').first().data('id');
+		
+				vboxAjaxRequest('mediumSetType',{'id':m,'type':'Immutable'},function(ret){
+					var l = new vboxLoader();
+					l.add('Mediums',function(data){$('#vboxIndex').data('vboxMediums',data);});
+					l.onLoad = function() {
+						vboxVMMFillMediums((ret && ret.id ? ret.id : null));
+					}
+					l.run();
+				});			
+			},
+			'enabled':function(item){
+				if(!item) return false;
+				var m = $(item).data();
+				return(m.deviceType == 'HardDisk' && m.attachedTo.length == 0 && m.type != 'Immutable' && !m.readOnly && !m.parent);
+			}
+        },
+        {
+			'name':'vmmActionsNormal',
+			'title':'Normal',
+			'icon':'vdm_release',
+			'click':function(){
+		   		var m = $('#vboxVMMHDList').find('tr.vboxListItemSelected').first().data('id');
+		
+				vboxAjaxRequest('mediumSetType',{'id':m,'type':'Normal'},function(ret){
+					var l = new vboxLoader();
+					l.add('Mediums',function(data){$('#vboxIndex').data('vboxMediums',data);});
+					l.onLoad = function() {
+						vboxVMMFillMediums((ret && ret.id ? ret.id : null));
+					}
+					l.run();
+				});			
+			},
+			'enabled':function(item){
+				if(!item) return false;
+				var m = $(item).data();
+				return(m.deviceType == 'HardDisk' && m.attachedTo.length == 0 && m.type != 'Normal' && !m.parent);
+			}					        
+        }        
+        
+	]
+};
+var vmmMenu = new vboxMenuBar('vboxMMMenu');
+vmmMenu.addMenu(menu);
+vmmMenu.iconStringDisabled = '_disabled';
+vmmMenu.addMenuBar('vboxMMMenu');
+
+/* Display selected media info */
+function vboxVMMMediaInfo(e,m) {
+	m = (m ? $(m).data() : null);
+	$('#vboxVirtualMediaManager').find('.vmmMediumLocation').html((m && m.location ? m.location : '--'));
+	$('#vboxVirtualMediaManager').find('.vmmMediumType').html((m && m.deviceType == 'HardDisk' ? vboxMediumType(m) + ' (' + m.format + ')' : '--'));
+	$('#vboxVirtualMediaManager').find('.vmmMediumAttachedTo').html(m ? vboxMediumAttachedTo(m) : '--');
+}
+
+
+/*
+ * Add medium to a table
+ */
+function vboxVMMAddMedium(d,depth,hideDiff,attached) {
+	
+	var tr = document.createElement('tr');
+	$(tr).data(d);
+	$(tr).attr('class','vboxListItem collapsed');
+	$(tr).attr('title',d.id);
+
+	$(tr).addClass('vboxVMMChild vboxVMMChildOf'+(d.parent ? d.parent : '0') +' vboxVMMChildDepth'+depth);
+	if(d.children && d.children.length && !hideDiff) $(tr).addClass('vboxVMMParent');
+	if(d.parent) $(tr).attr('style','display: none');
+
+	/* Expand / collapse button and/or spacers */
+	var td = document.createElement('td');
+	if(depth) {
+		for(var i = 0; i < depth; i++) {
+			var spc = document.createElement('img');
+			spc.setAttribute('class','vboxVMMSpacer');
+			spc.setAttribute('src','images/vbox/blank.gif');
+			td.appendChild(spc);
+		}
+	}
+	if(d.children && d.children.length && !hideDiff) {
+		var btn = document.createElement('input');
+		btn.setAttribute('type','button');
+		btn.setAttribute('class','vboxImgButton vboxVMMMediaExpand');
+		btn.setAttribute('style','background-image: url(images/vbox/arrow_right_10px.png)');
+		$(btn).toggle(function(){
+				$(this).css({'background-image':'url(images/vbox/arrow_down_10px.png)'});
+				$(this).parent().parent().toggleClass('collapsed').trigger('showChildren',true);
+			},function(){
+				$(this).css({'background-image':'url(images/vbox/arrow_right_10px.png)'});				
+				$(this).parent().parent().toggleClass('collapsed').trigger('hideChildren',true);
+		});
+		$(td).append(btn);
+	} else if(depth) {
+		var spc = document.createElement('img');
+		spc.setAttribute('class','vboxVMMSpacer');
+		spc.setAttribute('src','images/vbox/blank.gif');
+		td.appendChild(spc);
+	}
+
+	// Title div
+	var span = document.createElement('span');
+	$(span).html($('<div />').html(d.name).text() + (hideDiff === undefined && d.readOnly && d.deviceType == 'HardDisk' ? ' ('+trans('ro')+')' : ''));
+
+	// Add read-only class?
+	if(hideDiff !== undefined && d.readOnly && (!attached || (attached && !attached[d.id]))) {
+		$(span).addClass('vboxMediumReadOnly');
+	}
+	
+	$(td).append(span);
+	tr.appendChild(td);
+
+	switch(d.deviceType) {
+		case 'HardDisk': 
+			var td = document.createElement('td');
+			td.innerHTML = $('<div />').html(vboxMbytesConvert(d.logicalSize)).text();
+			tr.appendChild(td);
+			var target = '#vboxVMMHDList';
+			break;
+		case 'DVD':
+			var target = '#vboxVMMCDList';
+			break;
+		case 'Floppy':
+			var target = '#vboxVMMFDList';
+			break;
+	}
+	var td = document.createElement('td');
+	td.innerHTML = $('<div />').html(vboxBytesConvert(d.size)).text();
+	tr.appendChild(td);
+
+	$(tr).children().click(function(){
+		$(this).parent().siblings().removeClass('vboxListItemSelected').addClass('vboxListItem');
+		$(this).parent().removeClass('vboxListItem').addClass('vboxListItemSelected');
+		$('#vboxVirtualMediaManager').trigger('mediumselect',[$(this).parent()]);
+	});
+
+	/* Show / hide children of this medium */
+	$(tr).bind('showChildren',function(e,first){
+
+		var thisid = $(this).data('id');
+		var trTarget = this;
+
+		if($(this).hasClass('collapsed') || !$(this).hasClass('vboxVMMParent')) return;
+		
+		$(trTarget).siblings('tr.vboxVMMChildOf'+thisid).show().trigger('showChildren',false);
+
+		// Only set by original button click
+		if(first) { vboxColorRows($('#vboxVMMHDList'));}
+		
+	}).bind('hideChildren',function(e,first){
+
+		if(!$(this).hasClass('vboxVMMParent')) return;
+	
+		$(this).siblings('tr.vboxVMMChildOf'+$(this).data('id')).hide().trigger('hideChildren',false);
+
+		// Only set by original button click
+		if(first) { vboxColorRows($('#vboxVMMHDList'));}
+
+	});
+
+	$(target).append(tr);
+
+	if(d.children && d.children.length) {
+		if(depth) depth++;
+		else depth = 1;
+		for(var i = 0; i < d.children.length; i++) {
+			vboxVMMAddMedium(d.children[i],depth,hideDiff,attached);
+		}
+	}
+}
+
+/* Fill medium tables and info with Medium info */
+function vboxVMMFillMediums(sel) {
+	
+	// Remove stub items
+	$('#vboxVMMHDList').children().remove();
+	$('#vboxVMMCDList').children().remove();
+	$('#vboxVMMFDList').children().remove();
+	
+	var mediums = $('#vboxIndex').data('vboxMediums').sort(function(a,b) {
+		return strnatcasecmp(a.name,b.name);
+	});
+
+	var hideDiff = $('#vboxVirtualMediaManager').data('hideDiff');
+	var attached = $('#vboxVirtualMediaManager').data('attached');
+	
+	for(var i in mediums) {
+		vboxVMMAddMedium(mediums[i],0,hideDiff,attached);
+	}
+	
+
+	// Select medium?
+	if(sel) {
+		
+		switch($("#vboxVMMTabs").tabs('option','selected')) {
+			case 1:
+				var elm = $('#vboxVMMCDList');
+				break;
+			case 2:
+				var elm = $('#vboxVMMFDList');
+				break;
+			default:
+				var elm = $('#vboxVMMHDList');
+				break;
+		}
+		$(elm).find('tr.vboxListItem').each(function(i,e){
+			if($(e).data('id') == sel) {
+				$(e).children().first().click();
+				return false;
+			}
+		});
+
+		return;
+	}
+
+	vboxColorRows($('#vboxVMMHDList'));
+	vboxColorRows($('#vboxVMMFDList'));
+	vboxColorRows($('#vboxVMMCDList'));
+	
+	$('#vboxVirtualMediaManager').trigger('mediumselect',null);
+
+	
+}
+
+/* Init virtual media manager */
+function vboxVMMInit(hideDiff,attached) {
+
+	$('#vboxVirtualMediaManager').bind('mediumselect',vmmToolbar.update);
+	$('#vboxVirtualMediaManager').bind('mediumselect',vboxVMMMediaInfo);
+	$('#vboxVirtualMediaManager').bind('mediumselect',vmmMenu.update);
+	$('#vboxVirtualMediaManager').data('hideDiff', hideDiff);
+	$('#vboxVirtualMediaManager').data('attached', attached);
+
+	vboxVMMFillMediums();
+	
+}
+
+</script>
+
+
