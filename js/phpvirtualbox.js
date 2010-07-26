@@ -213,7 +213,7 @@ function vboxToolbar(buttons) {
 		td.setAttribute('id','vboxToolbarButton-' + self.id + '-' + b.name);
 		td.setAttribute('class','vboxToolbarButton buttonEnabled vboxToolbarButton'+self.size);
 		td.setAttribute('style',self.buttonStyle+'; padding: 0px; margin: 0px; min-width: '+(self.size+12)+'px; background-image: url(images/vbox/'+b.icon+'_'+self.size+'px.png);height:'+self.height+'px;');
-		td.innerHTML = $('<div />').html(b.label).text();
+		td.innerHTML = $('<div />').html(trans(b.label)).text();
 		
 		// bind click
 		td.onclick = function(){

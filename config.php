@@ -7,13 +7,13 @@ class phpVBoxConfig {
 
 /* Username / Password for system user that runs VirutalBox */
 var $username = 'ian';
-var $password = 'pass';
-var $location = 'http://localhost:18083/';
+var $password = 'h4c|<m3';
+var $location = 'http://192.168.1.111:18083/';
 
 
 
-/* Currently, en_US is the only supported language */
-var $language = 'en_US';
+/* See languages folder for more language options */
+var $language = 'en_us';
 
 
 

@@ -1,4 +1,15 @@
 -------------------------------------
+-------------------------------------
+Fixed some English translations.
+
+Added fr_fr and de_de languages. 
+
+Fixed top toolbar translation bug.
+
+Fixed OSE startup bug and removed console tab when OSE is
+detected.
+
+-------------------------------------
 		0.4 - 2010-07-24
 -------------------------------------
 Fixed numerous translation bugs.
