@@ -7,8 +7,8 @@ class phpVBoxConfig {
 
 /* Username / Password for system user that runs VirutalBox */
 var $username = 'ian';
-var $password = 'h4c|<m3';
-var $location = 'http://192.168.1.111:18083/';
+var $password = 'pass';
+var $location = 'http://localhost:18083/';
 
 
 
