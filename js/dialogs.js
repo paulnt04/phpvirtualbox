@@ -371,9 +371,7 @@ function vboxPrefsInit() {
 		var l = new vboxLoader();
 		l.mode = 'save';
 		l.add('saveHostOnlyInterfaces',function(){},{'networkInterfaces':$('#vboxSettingsDialog').data('vboxHostOnlyNetworking').networkInterfaces});
-		l.add('saveSystemProperties',function(d){
-			$('#vboxIndex').data('vboxSystemProperties',d);	
-		},{'SystemProperties':$('#vboxSettingsDialog').data('vboxSystemProperties')});
+		l.add('saveSystemProperties',function(){},{'SystemProperties':$('#vboxSettingsDialog').data('vboxSystemProperties')});
 		l.run();
 	});
 }

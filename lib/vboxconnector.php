@@ -804,6 +804,8 @@ class vboxconnector {
 		$this->vbox->systemProperties->defaultHardDiskFolder = $args['SystemProperties']['defaultHardDiskFolder'];
 		$this->vbox->systemProperties->remoteDisplayAuthLibrary = $args['SystemProperties']['remoteDisplayAuthLibrary'];
 
+		$this->cache->expire('getSystemProperties');
+
 		return ($response['data']['result'] = 1);
 
 	}

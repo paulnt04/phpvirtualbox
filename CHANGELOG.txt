@@ -12,6 +12,9 @@ detected.
 Fixed Host Details bug that would not display the VirtualBox
 host server's details when it is selected in the list of vms.
 
+Fixed bug in File -> Preferences that would not correctly
+reflect a change made to any prefrences on the General tab.
+
 -------------------------------------
 		0.4 - 2010-07-24
 -------------------------------------
