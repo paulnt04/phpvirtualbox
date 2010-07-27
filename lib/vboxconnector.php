@@ -1493,9 +1493,9 @@ class vboxconnector {
 	 *
 	 */
 	public function getVMDetails($args, &$response, $snapshot=null) {
-		// Host instead of vm info
-		if($args['vm'] == 'host') return @$this->getHostDetails($args, $response);
 
+		// Host instead of vm info
+		if($args['vm'] == 'host') return @$this->getHostDetails($args, array(&$response));
 
 
 		// Connect to vboxwebsrv

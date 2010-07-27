@@ -9,6 +9,9 @@ Fixed top toolbar translation bug.
 Fixed OSE startup bug and removed console tab when OSE is
 detected.
 
+Fixed Host Details bug that would not display the VirtualBox
+host server's details when it is selected in the list of vms.
+
 -------------------------------------
 		0.4 - 2010-07-24
 -------------------------------------
