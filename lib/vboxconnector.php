@@ -1490,9 +1490,9 @@ class vboxconnector {
 	 *
 	 */
 	public function getVMDetails($args, &$response, $snapshot=null) {
+
 		// Host instead of vm info
 		if($args['vm'] == 'host') return @$this->getHostDetails($args, array(&$response));
-
 
 
 		// Connect to vboxwebsrv
@@ -1578,38 +1578,38 @@ class vboxconnector {
 	 */
 	public function removeVM($args, &$response) {
 
-		throw new Exception("Unimplemented by phpVirtualBox");
-
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
 
 		$machine = $this->__getMachineRef($args['vm']);
 
-
-
-		/*
-		 * Catch22 in API.
-		 *
-		 * To delete a machine it must be:
-		 * 		unregistered
-		 * 		locked
-		 * But you cannot lock an unregistered machine.
-		 *
-		 */
-
 		// Only unregister or delete?
 		if($args['delete']) {
-			#$this->session = &$this->websessionManager->getSessionObject($this->vbox);
 
-			$e = $machine->unregister(true);
+			// Open session
+			$this->session = &$this->websessionManager->getSessionObject($this->vbox);
+			$machine->lockMachine($this->session,'Write');
 
-			ob_start();print_r($e); $e=ob_get_contents(); ob_end_clean();
+			// Detach any mediums
+			foreach($this->session->machine->mediumAttachments as $ma) {
+				try {
+					$mac = array('controller'=>$ma->controller,'port'=>$ma->port,'device'=>$ma->device);
+					$this->session->machine->detachDevice($mac['controller'],$mac['port'],$mac['device']);
+				} catch (Exception $e) { $this->errors[] = $e; }
+			}
 
-			throw new exception($e);
-			$this->session->machine->delete();
+			// Close session and save
+			$this->session->machine->saveSettings();
+			$this->session->unlockMachine();
+			$this->session = null;
+
+			$machine->unregister(false);
+			$machine->delete();
+
+		} else {
+			$machine->unregister(true);
 		}
 
-		$this->session->unlockMachine();
 		$machine->releaseRemote();
 
 		// Clear caches
