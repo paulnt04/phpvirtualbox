@@ -101,7 +101,7 @@ class vboxconnector {
 		        'trace'=>($this->settings['debugSoap']),
 				'connection_timeout' => ($this->settings['connectionTimeout'] ? $this->settings['connectionTimeout'] : 20),
 		        'location'=>$this->settings['location'],
-		        'soap_version'=>SOAP_1_2));
+		        'soap_version'=>SOAP_1_1));
 
 		/* Try / catch / throw here hides login credentials from exception if one is thrown */
 		try {
@@ -154,7 +154,7 @@ class vboxconnector {
 		if($this->connected && !$this->progressCreated && (string)$this->vbox) {
 
 			if((string)$this->session) {
-				try {$this->session->close();}
+				try {$this->session->unlockMachine();}
 				catch (Exception $e) { }
 			}
 
@@ -249,12 +249,15 @@ class vboxconnector {
 
 		$this->__vboxwebsrvConnect();
 
+		$machine = $this->__getMachineRef($args['vm']);
+
 		$this->session = $this->websessionManager->getSessionObject($this->vbox);
-		$this->vbox->openSession($this->session, $args['vm']);
+		$machine->lockMachine($this->session,'Write');
 		$this->session->machine->description = $args['description'];
 		$this->session->machine->saveSettings();
-		$this->session->close();
+		$this->session->unlockMachine();
 		$this->session = null;
+		$machine->releaseRemote();
 
 		$this->cache->expire('__getMachine'.$args['vm']);
 
@@ -284,9 +287,10 @@ class vboxconnector {
 
 		$this->__vboxwebsrvConnect();
 
-		// create session
+		// create session and lock machine
+		$machine = $this->__getMachineRef($args['id']);
 		$this->session = &$this->websessionManager->getSessionObject($this->vbox);
-		$this->vbox->openSession($this->session, $args['id']);
+		$machine->lockMachine($this->session, 'Write');
 
 		// Version (OSE) checks below
 		$version = $this->getVersion();
@@ -457,10 +461,10 @@ class vboxconnector {
 		$sharedEx = array();
 		$sharedNew = array();
 		foreach($this->__getCachedMachineData('__getSharedFolders',$args['id'],$m) as $s) {
-			$sharedEx[$s['name']] = array('name'=>$s['name'],'hostPath'=>$s['hostPath'],'writable'=>(bool)$s['writable']);
+			$sharedEx[$s['name']] = array('name'=>$s['name'],'hostPath'=>$s['hostPath'],'autoMount'=>(bool)$s['autoMount'],'writable'=>(bool)$s['writable']);
 		}
 		foreach($args['sharedFolders'] as $s) {
-			$sharedNew[$s['name']] = array('name'=>$s['name'],'hostPath'=>$s['hostPath'],'writable'=>(bool)$s['writable']);
+			$sharedNew[$s['name']] = array('name'=>$s['name'],'hostPath'=>$s['hostPath'],'autoMount'=>(bool)$s['autoMount'],'writable'=>(bool)$s['writable']);
 		}
 		// Compare
 		if(count($sharedEx) != count($sharedNew) || (@serialize($sharedEx) != @serialize($sharedNew))) {
@@ -468,7 +472,7 @@ class vboxconnector {
 			foreach($sharedEx as $s) { $m->removeSharedFolder($s['name']);}
 			try {
 				foreach($sharedNew as $s) {
-					$m->createSharedFolder($s['name'],$s['hostPath'],$s['writable']);
+					$m->createSharedFolder($s['name'],$s['hostPath'],(bool)$s['writable'],(bool)$s['autoMount']);
 				}
 			} catch (Exception $e) { $this->errors[] = $e; }
 		}
@@ -545,8 +549,10 @@ class vboxconnector {
 
 
 		$this->session->machine->saveSettings();
-		$this->session->close();
+		$this->session->unlockMachine();
+		$this->session->releaseRemote();
 		$this->session = null;
+		$machine->releaseRemote();
 
 		// Expire cache
 		foreach(array_unique($expire) as $ex)
@@ -695,7 +701,7 @@ class vboxconnector {
 
 			// Some progress operations seem to go away after completion
 			// probably the result of automatic session closure
-			if(!((string)$session && (string)$session->state == 'Closed'))
+			if(!((string)$session && (string)$session->state == 'Unlocked'))
 				$this->errors[] = $e;
 
 		}
@@ -760,8 +766,8 @@ class vboxconnector {
 
 				$session = $this->websessionManager->getSessionObject($vbox);
 
-				if((string)$session && (string)$session->state != 'Closed')
-					$session->close();
+				if((string)$session && (string)$session->state != 'Unlocked')
+					$session->unlockMachine();
 
 			} catch (Exception $null) { }
 
@@ -803,6 +809,8 @@ class vboxconnector {
 		$this->vbox->systemProperties->defaultMachineFolder = $args['SystemProperties']['defaultMachineFolder'];
 		$this->vbox->systemProperties->defaultHardDiskFolder = $args['SystemProperties']['defaultHardDiskFolder'];
 		$this->vbox->systemProperties->remoteDisplayAuthLibrary = $args['SystemProperties']['remoteDisplayAuthLibrary'];
+
+		$this->cache->expire('getSystemProperties');
 
 		return ($response['data']['result'] = 1);
 
@@ -1218,7 +1226,7 @@ class vboxconnector {
 			'pause' => array('result'=>'Paused','progress'=>false),
 			'resume' => array('result'=>'Running','progress'=>false),
 			'powerUp' => array('result'=>'Running'),
-			'forgetSavedState' => array('result'=>'poweredOff','session'=>'direct','force'=>true)
+			'forgetSavedState' => array('result'=>'poweredOff','lock'=>'write','force'=>true)
 		);
 
 		// Check for valid state
@@ -1231,15 +1239,15 @@ class vboxconnector {
 		$this->__vboxwebsrvConnect();
 
 		// Machine state
-		$m = $this->__getMachineRef($vm);
-		$mstate = $m->state;
-		$m->releaseRemote();
+		$machine = $this->__getMachineRef($vm);
+		$mstate = $machine->state;
 
 		// If state has an expected result, check
 		// that we are not already in it
 		if($states[$state]['result']) {
 			if($mstate == $states[$state]['result']) {
 				$response['data']['result'] = 0;
+				$machine->releaseRemote();
 				throw new Exception('Machine is already in requested state.');
 			}
 		}
@@ -1248,22 +1256,14 @@ class vboxconnector {
 		if($state == 'powerUp' && $mstate == 'Paused') {
 			return $this->__setVMState($vm,'resume',$response);
 		} else if($state == 'powerUp') {
-			return $this->__openRemoteSession($vm,$response);
+			return $this->__launchVMProcess($machine,$response);
 		}
 
 		// Open session to machine
 		$this->session = &$this->websessionManager->getSessionObject($this->vbox);
 
-		if($states[$state]['session'] == 'direct') {
-			$this->vbox->openSession($this->session, $vm);
-		} else {
-
-			// VRDP is not supported in OSE
-			$version = $this->getVersion();
-			$sessionType = ($version['ose'] ? 'headless' : 'vrdp');
-
-			$this->vbox->openExistingSession($this->session, $vm, $sessionType, '');
-		}
+		// Lock machine
+		$machine->lockMachine($this->session,($states[$state]['lock'] == 'write' ? 'Write' : 'Shared'));
 
 		// If this operation returns a progress object save progress
 		$progress = null;
@@ -1275,7 +1275,7 @@ class vboxconnector {
 
 				// should never get here
 				try {
-					$this->session->close();
+					$this->session->unlockMachine();
 					$this->session = null;
 				} catch (Exception $e) {};
 
@@ -1307,8 +1307,7 @@ class vboxconnector {
 		// Check for ACPI button
 		if($states[$state]['acpi'] && !$this->session->console->getPowerButtonHandled()) {
 			$this->session->console->releaseRemote();
-			$response['data']['result'] = 0;
-			$this->session->close();
+			$this->session->unlockMachine();
 			$this->session = null;
 			throw new Exception(trans('ACPI event not handled'));
 		}
@@ -1316,22 +1315,20 @@ class vboxconnector {
 
 		if(!(string)$progress) {
 			$this->session->console->releaseRemote();
-			$this->session->close();
+			$this->session->unlockMachine();
 			$this->session=null;
 		}
 
-		$response['data']['result'] = 1;
-
-		return true;
+		return ($response['data']['result'] = 1);
 
 	}
 
 	/*
 	 *
-	 * Open a remote session for machine. This starts a VM
+	 * This starts a VM
 	 *
 	 */
-	private function __openRemoteSession($vm, &$response) {
+	private function __launchVMProcess(&$machine, &$response) {
 
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
@@ -1345,7 +1342,7 @@ class vboxconnector {
 			$version = $this->getVersion();
 			$sessionType = ($version['ose'] ? 'headless' : 'vrdp');
 
-			$progress = $this->vbox->openRemoteSession($this->session, $vm, $sessionType, '');
+			$progress = $machine->launchVMProcess($this->session, $sessionType, '');
 
 		} catch (Exception $e) {
 			// Error opening session
@@ -1494,7 +1491,7 @@ class vboxconnector {
 	 */
 	public function getVMDetails($args, &$response, $snapshot=null) {
 		// Host instead of vm info
-		if($args['vm'] == 'host') return @$this->getHostDetails($args, $response);
+		if($args['vm'] == 'host') return @$this->getHostDetails($args, array(&$response));
 
 
 
@@ -1581,39 +1578,39 @@ class vboxconnector {
 	 */
 	public function removeVM($args, &$response) {
 
+		throw new Exception("Unimplemented by phpVirtualBox");
+
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
 
+		$machine = $this->__getMachineRef($args['vm']);
+
+
+
+		/*
+		 * Catch22 in API.
+		 *
+		 * To delete a machine it must be:
+		 * 		unregistered
+		 * 		locked
+		 * But you cannot lock an unregistered machine.
+		 *
+		 */
+
 		// Only unregister or delete?
 		if($args['delete']) {
+			#$this->session = &$this->websessionManager->getSessionObject($this->vbox);
 
-			// Open session
-			$this->session = &$this->websessionManager->getSessionObject($this->vbox);
-			$this->vbox->openSession($this->session, $args['vm']);
+			$e = $machine->unregister(true);
 
-			// Detach any mediums ( may not be needed? )
-			foreach($this->session->machine->mediumAttachments as $ma) {
-				try {
-					$mac = array('controller'=>$ma->controller,'port'=>$ma->port,'device'=>$ma->device);
-					$this->session->machine->detachDevice($mac['controller'],$mac['port'],$mac['device']);
-				} catch (Exception $e) { $this->errors[] = $e; }
-			}
+			ob_start();print_r($e); $e=ob_get_contents(); ob_end_clean();
 
-			// Close session and save
-			$this->session->machine->saveSettings();
-			$this->session->close();
-			$this->session = null;
-
-			$m = $this->vbox->unregisterMachine($args['vm']);
-			$m->deleteSettings();
-			$m->releaseRemote();
-
-		} else {
-
-			$m = $this->vbox->unregisterMachine($args['vm']);
-			$m->releaseRemote();
-
+			throw new exception($e);
+			$this->session->machine->delete();
 		}
+
+		$this->session->unlockMachine();
+		$machine->releaseRemote();
 
 		// Clear caches
 		foreach(array('getMachine','getNetworkAdapters','getStorageControllers','getSharedFolders','getUSBController') as $ex) {
@@ -1652,7 +1649,10 @@ class vboxconnector {
 		try {
 
 			$this->session = $this->websessionManager->getSessionObject($this->vbox);
-			$this->vbox->openSession($this->session, $vm);
+
+			// Lock VM
+			$machine = $this->__getMachineRef($vm);
+			$machine->lockMachine($this->session,'Write');
 
 			// OS defaults
 			$defaults = $this->vbox->getGuestOSType($args['ostype']);
@@ -1712,7 +1712,7 @@ class vboxconnector {
 			}
 
 			$this->session->machine->saveSettings();
-			$this->session->close();
+			$this->session->unlockMachine();
 			$this->session = null;
 
 			if($args['disk']) $this->cache->expire('getMediums');
@@ -1963,6 +1963,7 @@ class vboxconnector {
 				'hostPath' => $sf->hostPath,
 				'accessible' => $sf->accessible,
 				'writable' => $sf->writable,
+				'autoMount' => $sf->autoMount,
 				'lastAccessError' => $sf->lastAccessError
 			);
 		}
@@ -2051,7 +2052,9 @@ class vboxconnector {
 
 			// Open session to machine
 			$this->session = &$this->websessionManager->getSessionObject($this->vbox);
-			$this->vbox->openSession($this->session, $args['vm']);
+
+			$machine = $this->__getMachineRef($args['vm']);
+			$machine->lockMachine($this->session,'Write');
 
 			$snapshot = $this->session->machine->getSnapshot($args['snapshot']);
 
@@ -2072,7 +2075,7 @@ class vboxconnector {
 			$this->errors[] = $e;
 
 			if((string)$this->session) {
-				try{$this->session->close();}catch(Exception $e){}
+				try{$this->session->unlockMachine();}catch(Exception $e){}
 			}
 			return ($response['data']['result'] = 0);
 		}
@@ -2097,7 +2100,9 @@ class vboxconnector {
 
 			// Open session to machine
 			$this->session = $this->websessionManager->getSessionObject($this->vbox);
-			$this->vbox->openSession($this->session, $args['vm']);
+
+			$machine = $this->__getMachineRef($args['vm']);
+			$machine->lockMachine($this->session, 'Write');
 
 			$progress = $this->session->console->deleteSnapshot($args['snapshot']);
 
@@ -2117,7 +2122,7 @@ class vboxconnector {
 			$this->errors[] = $e;
 
 			if((string)$this->session) {
-				try{$this->session->close();$this->session=null;}catch(Exception $e){}
+				try{$this->session->unlockMachine();$this->session=null;}catch(Exception $e){}
 			}
 
 			$response['data']['result'] = 0;
@@ -2136,29 +2141,23 @@ class vboxconnector {
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
 
-		$m = $this->__getMachineRef($args['vm']);
-		$state = (string)$m->sessionState;
-		$m->releaseRemote();
+		$machine = $this->__getMachineRef($args['vm']);
 
-		$progress = $session = null;
+		$progress = $this->session = null;
 
 		try {
 
-			// VRDP is not supported in OSE
-			$version = $this->getVersion();
-			$sessionType = ($version['ose'] ? 'headless' : 'vrdp');
-
 			// Open session to machine
-			$session = &$this->websessionManager->getSessionObject($this->vbox);
-			if($state == 'Closed') $this->vbox->openSession($session, $args['vm']);
-			else $this->vbox->openExistingSession($session, $args['vm'], $sessionType, '');
+			$this->session = &$this->websessionManager->getSessionObject($this->vbox);
+			$machine->lockMachine($this->session, ((string)$machine->sessionState == 'Unlocked' ? 'Write' : 'Shared'));
 
-			$progress = $session->console->takeSnapshot($args['name'],$args['description']);
+			$progress = $this->session->console->takeSnapshot($args['name'],$args['description']);
 
 			// Does an exception exist?
 			try {
 				if((string)$progress->errorInfo) {
 					$this->errors[] = new Exception($progress->errorInfo->text);
+					try{$this->session->unlockMachine(); $this->session=null;}catch(Exception $e){}
 					return false;
 				}
 			} catch (Exception $null) {}
@@ -2173,8 +2172,8 @@ class vboxconnector {
 			$response['data']['progress'] = (string)$progress;
 			$response['data']['result'] = 0;
 
-			if(!(string)$progress && (string)$session) {
-				try{$session->close();}catch(Exception $e){}
+			if(!(string)$progress && (string)$this->session) {
+				try{$this->session->unlockMachine();$this->session=null;}catch(Exception $e){}
 			}
 
 			return;
@@ -2419,7 +2418,6 @@ class vboxconnector {
 			}
 			// save state
 			$state = (string)$mach->sessionState;
-			$mach->releaseRemote();
 
 			if(!count($remove)) continue;
 
@@ -2427,15 +2425,14 @@ class vboxconnector {
 			$this->session = &$this->websessionManager->getSessionObject($this->vbox);
 
 			// Hard disk requires machine to be stopped
-			if($args['type'] == 'HardDisk' || $state == 'Closed') {
-				$this->vbox->openSession($this->session, $uuid);
+			if($args['type'] == 'HardDisk' || $state == 'Unlocked') {
+
+				$mach->lockMachine($this->session, 'Write');
+
 			} else {
 
-				// VRDP is not supported in OSE
-				$version = $this->getVersion();
-				$sessionType = ($version['ose'] ? 'headless' : 'vrdp');
+				$mach->lockMachine($this->session, 'Shared');
 
-				$this->vbox->openExistingSession($this->session, $uuid, $sessionType, '');
 			}
 
 			foreach($remove as $r) {
@@ -2448,8 +2445,9 @@ class vboxconnector {
 
 			$this->session->machine->saveSettings();
 			$this->session->machine->releaseRemote();
-			$this->session->close();
+			$this->session->unlockMachine();
 			$this->session->releaseRemote();
+			$mach->releaseRemote();
 
 			$this->cache->expire('__getStorageControllers'.$uuid);
 		}
@@ -2495,7 +2493,7 @@ class vboxconnector {
 			$response['data']['progress'] = (string)$progress;
 
 		} else {
-			$m->close();
+			$m->unlockMachine();
 			$this->cache->expire('getMediums');
 		}
 
@@ -2511,33 +2509,28 @@ class vboxconnector {
 		$this->__vboxwebsrvConnect();
 
 		// Find medium attachment
-		$mach = $this->__getMachineRef($args['vm']);
-		$state = (string)$mach->sessionState;
-		$save = ($save || $mach->getExtraData('GUI/SaveMountedAtRuntime'));
-		$mach->releaseRemote();
+		$machine = $this->__getMachineRef($args['vm']);
+		$state = (string)$machine->sessionState;
+		$save = ($save || $machine->getExtraData('GUI/SaveMountedAtRuntime'));
 
 		// create session
 		$this->session = $this->websessionManager->getSessionObject($this->vbox);
 
-		if($state == 'Closed') {
-			$this->vbox->openSession($this->session, $args['vm']);
+		if($state == 'Unlocked') {
+			$machine->lockMachine($this->session,'Write');
 			$save = true; // force save on closed session as it is not a "run-time" change
 		} else {
 
-			// VRDP is not supported in OSE
-			$version = $this->getVersion();
-			$sessionType = ($version['ose'] ? 'headless' : 'vrdp');
-
-			$this->vbox->openExistingSession($this->session, $args['vm'], $sessionType, '');
+			$this->vbox->lockMachine($this->session, 'Shared');
 		}
 
 		$this->session->machine->mountMedium($args['controller'],$args['port'],$args['device'],$args['medium'],true);
 
 		if($save) $this->session->machine->saveSettings();
 
-		$this->session->machine->releaseRemote();
-		$this->session->close();
+		$this->session->unlockMachine();
 		$this->session->releaseRemote();
+		$machine->releaseRemote();
 
 		$this->cache->expire('getMediums');
 		$this->cache->expire('__getStorageControllers'.$args['vm']);

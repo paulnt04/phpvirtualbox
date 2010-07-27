@@ -269,6 +269,7 @@ public static $trans = array(
 // read only & read/write
 'ro' => 'Read-Only',
 'rw' => 'Writable',
+'Auto-Mount' => 'Auto-Mount', // 3.2.8
 'Full Access' => 'Full Access',
 'Add Shared Folder' => 'Add Shared Folder',
 'Edit Shared Folder' => 'Edit Shared Folder',
@@ -290,6 +291,7 @@ public static $trans = array(
 'Pulse' => 'Pulse Audio',
 'SolAudio' => 'Solaris Audio',
 
+'HDA' => 'Intel HD Audio', // 3.2.8
 'AC97' => 'ICH AC97',
 'SB16' => 'SoundBlaster 16',
 

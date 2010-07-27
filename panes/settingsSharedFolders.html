@@ -22,6 +22,7 @@
 						<tr id='vboxSettingsSharedFoldersHeading'>
 							<th><span class='translate'>Name</span></th>
 							<th style='width: 100%'><span class='translate'>Path</span></th>
+							<th><span class='translate'>Auto-Mount</span></th>
 							<th><span class='translate'>Access</span></th>
 						</tr>
 					</thead>
@@ -29,6 +30,7 @@
 						<tr class='vboxListItem'>
 							<td style='white-space: nowrap'>space</td>
 							<td style='white-space: nowrap'>/SPACEHUB/space/some/other/path</td>
+							<td style='white-space: nowrap'>No</td>
 							<td style='white-space: nowrap'>Full</td>
 						</tr>
 					</tbody>
@@ -61,11 +63,12 @@ var sButtons = new Array(
 			
 			$('#vboxSettingsSFPath').val('');
 			$('#vboxSettingsSFName').val('');
+			$('#vboxSettingsSFAM').attr('checked','');
 			$('#vboxSettingsSFRO').attr('checked','');
 			var buttons = { };
 			buttons[trans('OK')] = function() {
 				if($('#vboxSettingsSFName').val() && $('#vboxSettingsSFPath').val()) {
-					var f = {'name':$('#vboxSettingsSFName').val(),'hostPath':$('#vboxSettingsSFPath').val(),'writable':!($('#vboxSettingsSFRO').attr('checked'))};
+					var f = {'name':$('#vboxSettingsSFName').val(),'hostPath':$('#vboxSettingsSFPath').val(),'autoMount':($('#vboxSettingsSFAM').attr('checked')),'writable':!($('#vboxSettingsSFRO').attr('checked'))};
 					var row = vboxSettingsAddSharedFolder(f);
 					$(row).children('td').last().trigger('click');
 				}
@@ -89,6 +92,7 @@ var sButtons = new Array(
 			var def = $('#vboxSettingsSharedFoldersList').children('tr.vboxListItemSelected').first();
 			$('#vboxSettingsSFPath').val(($(def).data('hostPath')||''));
 			$('#vboxSettingsSFName').val(($(def).data('name')||''));
+			$('#vboxSettingsSFAM').attr('checked',($(def).data('autoMount') ? 'checked' : ''));
 			$('#vboxSettingsSFRO').attr('checked',($(def).data('writable') ? '' : 'checked'));
 
 			var buttons = { };
@@ -97,6 +101,7 @@ var sButtons = new Array(
 					var item = $('#vboxSettingsSharedFoldersList').children('tr.vboxListItemSelected').first();
 					$(item).data('hostPath',$('#vboxSettingsSFPath').val());
 					$(item).data('name',$('#vboxSettingsSFName').val());
+					$(item).data('autoMount',($('#vboxSettingsSFAM').attr('checked')));
 					$(item).data('writable',!($('#vboxSettingsSFRO').attr('checked')));
 					$(item).trigger('refresh');
 				}
@@ -150,6 +155,10 @@ function vboxSettingsAddSharedFolder(f) {
 	td.innerHTML = $('<div/>').text(f.hostPath).html();
 	tr.appendChild(td);
 	var td = document.createElement('td');
+	td.setAttribute('class','vboxSettingsSFAMCell');
+	td.innerHTML = f.autoMount ? trans('Yes') : trans('No');
+	tr.appendChild(td);			
+	var td = document.createElement('td');
 	td.setAttribute('class','vboxSettingsSFROCell');
 	td.innerHTML = f.writable ? trans('Full Access') : trans('ro');
 	tr.appendChild(td);		
@@ -168,6 +177,7 @@ function vboxSettingsAddSharedFolder(f) {
 	$(tr).bind('refresh',function(){
 		$(this).children('.vboxSettingsSFNameCell').html($('<div/>').text($(this).data('name')).html());
 		$(this).children('.vboxSettingsSFPathCell').html($('<div/>').text($(this).data('hostPath')).html());
+		$(this).children('.vboxSettingsSFAMCell').html($(this).data('autoMount') ? trans('Yes') : trans('No'));
 		$(this).children('.vboxSettingsSFROCell').html($(this).data('writable') ? trans('Full Access') : trans('ro'));
 	});
 	
@@ -243,6 +253,14 @@ function vboxSettingsSFEditDialog() {
 	td.innerHTML = '<input type="checkbox" class="vboxCheckbox" id="vboxSettingsSFRO" /> ' + trans('ro'); // "Read-only"
 	tr.appendChild(td);
 	tbl.appendChild(tr);
+
+	var tr = document.createElement('tr');
+	var th = document.createElement('th');
+	tr.appendChild(th);
+	var td = document.createElement('td');
+	td.innerHTML = '<input type="checkbox" class="vboxCheckbox" id="vboxSettingsSFAM" /> ' + trans('Auto-Mount');
+	tr.appendChild(td);
+	tbl.appendChild(tr);
 	
 	d.appendChild(tbl);
 	
@@ -262,7 +280,7 @@ $('#vboxSettingsDialog').bind('save',function(){
 
 	var folders = new Array();	
 	$('#vboxSettingsSharedFoldersList').children('tr').each(function(){
-		folders[folders.length] = {'name':$(this).data('name'),'hostPath':$(this).data('hostPath'),'writable':($(this).data('writable') ? 1 : 0)};
+		folders[folders.length] = {'name':$(this).data('name'),'hostPath':$(this).data('hostPath'),'autoMount':($(this).data('autoMount') ? 1 : 0),'writable':($(this).data('writable') ? 1 : 0)};
 	});
 	$('#vboxSettingsDialog').data('vboxMachineData').sharedFolders = folders;
 

@@ -450,17 +450,6 @@ class IVirtualBox extends VBox_ManagedObject {
        return new IMachine ($this->connection, $response->returnval);
   }
 
-   public function unregisterMachine($arg_id) { 
-       $request = new stdClass();
-       
-       $request->_this = $this->handle;
-       
-       $request->id = $arg_id;
-       $response = $this->connection->__soapCall('IVirtualBox_unregisterMachine', array((array)$request));
-       
-       return new IMachine ($this->connection, $response->returnval);
-  }
-
    public function createAppliance() { 
        $request = new stdClass();
        
@@ -600,7 +589,7 @@ class IVirtualBox extends VBox_ManagedObject {
        return new IGuestOSType ($this->connection, $response->returnval);
   }
 
-   public function createSharedFolder($arg_name, $arg_hostPath, $arg_writable) { 
+   public function createSharedFolder($arg_name, $arg_hostPath, $arg_writable, $arg_automount) { 
        $request = new stdClass();
        
        $request->_this = $this->handle;
@@ -608,6 +597,7 @@ class IVirtualBox extends VBox_ManagedObject {
        $request->name = $arg_name;
        $request->hostPath = $arg_hostPath;
        $request->writable = $arg_writable;
+       $request->automount = $arg_automount;
        $response = $this->connection->__soapCall('IVirtualBox_createSharedFolder', array((array)$request));
        
        return ;
@@ -653,44 +643,6 @@ class IVirtualBox extends VBox_ManagedObject {
        $request->key = $arg_key;
        $request->value = $arg_value;
        $response = $this->connection->__soapCall('IVirtualBox_setExtraData', array((array)$request));
-       
-       return ;
-  }
-
-   public function openSession($arg_session, $arg_machineId) { 
-       $request = new stdClass();
-       
-       $request->_this = $this->handle;
-       
-       $request->session = $arg_session;
-       $request->machineId = $arg_machineId;
-       $response = $this->connection->__soapCall('IVirtualBox_openSession', array((array)$request));
-       
-       return ;
-  }
-
-   public function openRemoteSession($arg_session, $arg_machineId, $arg_type, $arg_environment) { 
-       $request = new stdClass();
-       
-       $request->_this = $this->handle;
-       
-       $request->session = $arg_session;
-       $request->machineId = $arg_machineId;
-       $request->type = $arg_type;
-       $request->environment = $arg_environment;
-       $response = $this->connection->__soapCall('IVirtualBox_openRemoteSession', array((array)$request));
-       
-       return new IProgress ($this->connection, $response->returnval);
-  }
-
-   public function openExistingSession($arg_session, $arg_machineId) { 
-       $request = new stdClass();
-       
-       $request->_this = $this->handle;
-       
-       $request->session = $arg_session;
-       $request->machineId = $arg_machineId;
-       $response = $this->connection->__soapCall('IVirtualBox_openExistingSession', array((array)$request));
        
        return ;
   }
@@ -862,6 +814,13 @@ class IVirtualBox extends VBox_ManagedObject {
        $request->_this = $this->handle;
        $response = $this->connection->__soapCall('IVirtualBox_getDHCPServers', array((array)$request));
        return new IDHCPServerCollection ($this->connection, (array)$response->returnval);
+   }
+
+   public function getEventSource() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IVirtualBox_getEventSource', array((array)$request));
+       return new IEventSource ($this->connection, $response->returnval);
    }
 }
   
@@ -1050,6 +1009,13 @@ class IAppliance extends VBox_ManagedObject {
        $request->_this = $this->handle;
        $response = $this->connection->__soapCall('IAppliance_getVirtualSystemDescriptions', array((array)$request));
        return new IVirtualSystemDescriptionCollection ($this->connection, (array)$response->returnval);
+   }
+
+   public function getMachines() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IAppliance_getMachines', array((array)$request));
+       return (array)$response->returnval;
    }
 }
   
@@ -1337,6 +1303,31 @@ class IBIOSSettingsCollection extends VBox_ManagedObjectCollection {
 */
 class IMachine extends VBox_ManagedObject {
 
+   public function lockMachine($arg_session, $arg_lockType) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->session = $arg_session;
+       $request->lockType = $arg_lockType;
+       $response = $this->connection->__soapCall('IMachine_lockMachine', array((array)$request));
+       
+       return ;
+  }
+
+   public function launchVMProcess($arg_session, $arg_type, $arg_environment) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->session = $arg_session;
+       $request->type = $arg_type;
+       $request->environment = $arg_environment;
+       $response = $this->connection->__soapCall('IMachine_launchVMProcess', array((array)$request));
+       
+       return new IProgress ($this->connection, $response->returnval);
+  }
+
    public function setBootOrder($arg_position, $arg_device) { 
        $request = new stdClass();
        
@@ -1572,10 +1563,9 @@ class IMachine extends VBox_ManagedObject {
        
        $request->property = $arg_property;
        $response = $this->connection->__soapCall('IMachine_getCPUProperty', array((array)$request));
-
+       
        return (bool)$response->returnval;
   }
-
 
    public function setCPUProperty($arg_property, $arg_value) { 
        $request = new stdClass();
@@ -1584,8 +1574,7 @@ class IMachine extends VBox_ManagedObject {
        
        $request->property = $arg_property;
        $request->value = $arg_value;
-
-      	$response = $this->connection->__soapCall('IMachine_setCPUProperty', array((array)$request));
+       $response = $this->connection->__soapCall('IMachine_setCPUProperty', array((array)$request));
        
        return ;
   }
@@ -1680,12 +1669,23 @@ class IMachine extends VBox_ManagedObject {
        return ;
   }
 
-   public function deleteSettings() { 
+   public function unregister($arg_fCloseMedia) { 
        $request = new stdClass();
        
        $request->_this = $this->handle;
        
-       $response = $this->connection->__soapCall('IMachine_deleteSettings', array((array)$request));
+       $request->fCloseMedia = $arg_fCloseMedia;
+       $response = $this->connection->__soapCall('IMachine_unregister', array((array)$request));
+       
+       return (array)$response->returnval;
+  }
+
+   public function delete() { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $response = $this->connection->__soapCall('IMachine_delete', array((array)$request));
        
        return ;
   }
@@ -1734,7 +1734,7 @@ class IMachine extends VBox_ManagedObject {
        return ;
   }
 
-   public function createSharedFolder($arg_name, $arg_hostPath, $arg_writable) { 
+   public function createSharedFolder($arg_name, $arg_hostPath, $arg_writable, $arg_automount) { 
        $request = new stdClass();
        
        $request->_this = $this->handle;
@@ -1742,6 +1742,7 @@ class IMachine extends VBox_ManagedObject {
        $request->name = $arg_name;
        $request->hostPath = $arg_hostPath;
        $request->writable = $arg_writable;
+       $request->automount = $arg_automount;
        $response = $this->connection->__soapCall('IMachine_createSharedFolder', array((array)$request));
        
        return ;
@@ -2824,12 +2825,12 @@ class IConsole extends VBox_ManagedObject {
        return ;
   }
 
-   public function forgetSavedState($arg_remove) { 
+   public function forgetSavedState($arg_removeFile) { 
        $request = new stdClass();
        
        $request->_this = $this->handle;
        
-       $request->remove = $arg_remove;
+       $request->removeFile = $arg_removeFile;
        $response = $this->connection->__soapCall('IConsole_forgetSavedState', array((array)$request));
        
        return ;
@@ -2890,7 +2891,7 @@ class IConsole extends VBox_ManagedObject {
        return new IUSBDevice ($this->connection, $response->returnval);
   }
 
-   public function createSharedFolder($arg_name, $arg_hostPath, $arg_writable) { 
+   public function createSharedFolder($arg_name, $arg_hostPath, $arg_writable, $arg_automount) { 
        $request = new stdClass();
        
        $request->_this = $this->handle;
@@ -2898,6 +2899,7 @@ class IConsole extends VBox_ManagedObject {
        $request->name = $arg_name;
        $request->hostPath = $arg_hostPath;
        $request->writable = $arg_writable;
+       $request->automount = $arg_automount;
        $response = $this->connection->__soapCall('IConsole_createSharedFolder', array((array)$request));
        
        return ;
@@ -3030,6 +3032,13 @@ class IConsole extends VBox_ManagedObject {
        $request->_this = $this->handle;
        $response = $this->connection->__soapCall('IConsole_getRemoteDisplayInfo', array((array)$request));
        return new IRemoteDisplayInfo ($this->connection, $response->returnval);
+   }
+
+   public function getEventSource() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IConsole_getEventSource', array((array)$request));
+       return new IEventSource ($this->connection, $response->returnval);
    }
 }
   
@@ -4542,6 +4551,13 @@ class IMedium extends VBox_ManagedObject {
        $request->_this = $this->handle;
        $response = $this->connection->__soapCall('IMedium_getState', array((array)$request));
        return new MediumState ($this->connection, $response->returnval);
+   }
+
+   public function getVariant() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IMedium_getVariant', array((array)$request));
+       return new MediumVariant ($this->connection, $response->returnval);
    }
 
    public function getLocation() {
@@ -6282,12 +6298,12 @@ class IVRDPServerCollection extends VBox_ManagedObjectCollection {
 */
 class ISession extends VBox_ManagedObject {
 
-   public function close() { 
+   public function unlockMachine() { 
        $request = new stdClass();
        
        $request->_this = $this->handle;
        
-       $response = $this->connection->__soapCall('ISession_close', array((array)$request));
+       $response = $this->connection->__soapCall('ISession_unlockMachine', array((array)$request));
        
        return ;
   }
@@ -6957,6 +6973,949 @@ class INATEngineCollection extends VBox_ManagedObjectCollection {
 }
 
 /**
+* Generated VBoxWebService Interface Wrapper
+*/
+class IEventSource extends VBox_ManagedObject {
+
+   public function createListener() { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $response = $this->connection->__soapCall('IEventSource_createListener', array((array)$request));
+       
+       return new IEventListener ($this->connection, $response->returnval);
+  }
+
+   public function registerListener($arg_listener, $arg_interesting, $arg_active) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->listener = $arg_listener;
+       $request->interesting = $arg_interesting;
+       $request->active = $arg_active;
+       $response = $this->connection->__soapCall('IEventSource_registerListener', array((array)$request));
+       
+       return ;
+  }
+
+   public function unregisterListener($arg_listener) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->listener = $arg_listener;
+       $response = $this->connection->__soapCall('IEventSource_unregisterListener', array((array)$request));
+       
+       return ;
+  }
+
+   public function fireEvent($arg_event, $arg_timeout) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->event = $arg_event;
+       $request->timeout = $arg_timeout;
+       $response = $this->connection->__soapCall('IEventSource_fireEvent', array((array)$request));
+       
+       return (bool)$response->returnval;
+  }
+
+   public function getEvent($arg_listener, $arg_timeout) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->listener = $arg_listener;
+       $request->timeout = $arg_timeout;
+       $response = $this->connection->__soapCall('IEventSource_getEvent', array((array)$request));
+       
+       return new IEvent ($this->connection, $response->returnval);
+  }
+
+   public function eventProcessed($arg_listener, $arg_event) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->listener = $arg_listener;
+       $request->event = $arg_event;
+       $response = $this->connection->__soapCall('IEventSource_eventProcessed', array((array)$request));
+       
+       return ;
+  }
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class IEventSourceCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "IEventSource";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class IEventListener extends VBox_ManagedObject {
+
+   public function handleEvent($arg_event) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->event = $arg_event;
+       $response = $this->connection->__soapCall('IEventListener_handleEvent', array((array)$request));
+       
+       return ;
+  }
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class IEventListenerCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "IEventListener";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class IEvent extends VBox_ManagedObject {
+
+   public function setProcessed() { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $response = $this->connection->__soapCall('IEvent_setProcessed', array((array)$request));
+       
+       return ;
+  }
+
+   public function waitProcessed($arg_timeout) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->timeout = $arg_timeout;
+       $response = $this->connection->__soapCall('IEvent_waitProcessed', array((array)$request));
+       
+       return (bool)$response->returnval;
+  }
+
+   public function getType() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IEvent_getType', array((array)$request));
+       return new VBoxEventType ($this->connection, $response->returnval);
+   }
+
+   public function getSource() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IEvent_getSource', array((array)$request));
+       return new IEventSource ($this->connection, $response->returnval);
+   }
+
+   public function getWaitable() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IEvent_getWaitable', array((array)$request));
+       return (bool)$response->returnval;
+   }
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class IEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "IEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class IMachineEvent extends IEvent {
+
+   public function getMachineId() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IMachineEvent_getMachineId', array((array)$request));
+       return (string)$response->returnval;
+   }
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class IMachineEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "IMachineEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class IMachineStateChangedEvent extends IMachineEvent {
+
+   public function getState() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IMachineStateChangedEvent_getState', array((array)$request));
+       return new MachineState ($this->connection, $response->returnval);
+   }
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class IMachineStateChangedEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "IMachineStateChangedEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class IMachineDataChangedEvent extends IMachineEvent {
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class IMachineDataChangedEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "IMachineDataChangedEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class IMachineRegisteredEvent extends IMachineEvent {
+
+   public function getRegistered() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IMachineRegisteredEvent_getRegistered', array((array)$request));
+       return (bool)$response->returnval;
+   }
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class IMachineRegisteredEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "IMachineRegisteredEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class ISessionStateChangedEvent extends IMachineEvent {
+
+   public function getState() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('ISessionStateChangedEvent_getState', array((array)$request));
+       return new SessionState ($this->connection, $response->returnval);
+   }
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class ISessionStateChangedEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "ISessionStateChangedEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class IGuestPropertyChangedEvent extends IMachineEvent {
+
+   public function getName() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IGuestPropertyChangedEvent_getName', array((array)$request));
+       return (string)$response->returnval;
+   }
+
+   public function getValue() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IGuestPropertyChangedEvent_getValue', array((array)$request));
+       return (string)$response->returnval;
+   }
+
+   public function getFlags() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IGuestPropertyChangedEvent_getFlags', array((array)$request));
+       return (string)$response->returnval;
+   }
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class IGuestPropertyChangedEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "IGuestPropertyChangedEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class ISnapshotEvent extends IMachineEvent {
+
+   public function getSnapshotId() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('ISnapshotEvent_getSnapshotId', array((array)$request));
+       return (string)$response->returnval;
+   }
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class ISnapshotEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "ISnapshotEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class ISnapshotTakenEvent extends ISnapshotEvent {
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class ISnapshotTakenEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "ISnapshotTakenEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class ISnapshotDeletedEvent extends ISnapshotEvent {
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class ISnapshotDeletedEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "ISnapshotDeletedEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class ISnapshotChangedEvent extends ISnapshotEvent {
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class ISnapshotChangedEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "ISnapshotChangedEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class IMousePointerShapeChangedEvent extends IEvent {
+
+   public function getVisible() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IMousePointerShapeChangedEvent_getVisible', array((array)$request));
+       return (bool)$response->returnval;
+   }
+
+   public function getAlpha() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IMousePointerShapeChangedEvent_getAlpha', array((array)$request));
+       return (bool)$response->returnval;
+   }
+
+   public function getXhot() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IMousePointerShapeChangedEvent_getXhot', array((array)$request));
+       return (float)$response->returnval;
+   }
+
+   public function getYhot() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IMousePointerShapeChangedEvent_getYhot', array((array)$request));
+       return (float)$response->returnval;
+   }
+
+   public function getWidth() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IMousePointerShapeChangedEvent_getWidth', array((array)$request));
+       return (float)$response->returnval;
+   }
+
+   public function getHeight() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IMousePointerShapeChangedEvent_getHeight', array((array)$request));
+       return (float)$response->returnval;
+   }
+
+   public function getShape() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IMousePointerShapeChangedEvent_getShape', array((array)$request));
+       return (array)$response->returnval;
+   }
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class IMousePointerShapeChangedEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "IMousePointerShapeChangedEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class IMouseCapabilityChangedEvent extends IEvent {
+
+   public function getSupportsAbsolute() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IMouseCapabilityChangedEvent_getSupportsAbsolute', array((array)$request));
+       return (bool)$response->returnval;
+   }
+
+   public function getSupportsRelative() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IMouseCapabilityChangedEvent_getSupportsRelative', array((array)$request));
+       return (bool)$response->returnval;
+   }
+
+   public function getNeedsHostCursor() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IMouseCapabilityChangedEvent_getNeedsHostCursor', array((array)$request));
+       return (bool)$response->returnval;
+   }
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class IMouseCapabilityChangedEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "IMouseCapabilityChangedEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class IKeyboardLedsChangedEvent extends IEvent {
+
+   public function getNumLock() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IKeyboardLedsChangedEvent_getNumLock', array((array)$request));
+       return (bool)$response->returnval;
+   }
+
+   public function getCapsLock() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IKeyboardLedsChangedEvent_getCapsLock', array((array)$request));
+       return (bool)$response->returnval;
+   }
+
+   public function getScrollLock() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IKeyboardLedsChangedEvent_getScrollLock', array((array)$request));
+       return (bool)$response->returnval;
+   }
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class IKeyboardLedsChangedEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "IKeyboardLedsChangedEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class IStateChangedEvent extends IEvent {
+
+   public function getState() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IStateChangedEvent_getState', array((array)$request));
+       return new MachineState ($this->connection, $response->returnval);
+   }
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class IStateChangedEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "IStateChangedEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class IAdditionsStateChangedEvent extends IEvent {
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class IAdditionsStateChangedEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "IAdditionsStateChangedEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class INetworkAdapterChangedEvent extends IEvent {
+
+   public function getNetworkAdapter() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('INetworkAdapterChangedEvent_getNetworkAdapter', array((array)$request));
+       return new INetworkAdapter ($this->connection, $response->returnval);
+   }
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class INetworkAdapterChangedEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "INetworkAdapterChangedEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class ISerialPortChangedEvent extends IEvent {
+
+   public function getSerialPort() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('ISerialPortChangedEvent_getSerialPort', array((array)$request));
+       return new ISerialPort ($this->connection, $response->returnval);
+   }
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class ISerialPortChangedEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "ISerialPortChangedEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class IParallelPortChangedEvent extends IEvent {
+
+   public function getParallelPort() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IParallelPortChangedEvent_getParallelPort', array((array)$request));
+       return new IParallelPort ($this->connection, $response->returnval);
+   }
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class IParallelPortChangedEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "IParallelPortChangedEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class IStorageControllerChangedEvent extends IEvent {
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class IStorageControllerChangedEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "IStorageControllerChangedEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class IMediumChangedEvent extends IEvent {
+
+   public function getMediumAttachment() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IMediumChangedEvent_getMediumAttachment', array((array)$request));
+       return new IMediumAttachment ($this->connection, $response->returnval);
+   }
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class IMediumChangedEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "IMediumChangedEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class ICPUChangedEvent extends IEvent {
+
+   public function getCpu() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('ICPUChangedEvent_getCpu', array((array)$request));
+       return (float)$response->returnval;
+   }
+
+   public function getAdd() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('ICPUChangedEvent_getAdd', array((array)$request));
+       return (bool)$response->returnval;
+   }
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class ICPUChangedEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "ICPUChangedEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class IVRDPServerChangedEvent extends IEvent {
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class IVRDPServerChangedEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "IVRDPServerChangedEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class IRemoteDisplayInfoChangedEvent extends IEvent {
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class IRemoteDisplayInfoChangedEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "IRemoteDisplayInfoChangedEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class IUSBControllerChangedEvent extends IEvent {
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class IUSBControllerChangedEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "IUSBControllerChangedEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class IUSBDeviceStateChangedEvent extends IEvent {
+
+   public function getDevice() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IUSBDeviceStateChangedEvent_getDevice', array((array)$request));
+       return new IUSBDevice ($this->connection, $response->returnval);
+   }
+
+   public function getAttached() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IUSBDeviceStateChangedEvent_getAttached', array((array)$request));
+       return (bool)$response->returnval;
+   }
+
+   public function getError() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IUSBDeviceStateChangedEvent_getError', array((array)$request));
+       return new IVirtualBoxErrorInfo ($this->connection, $response->returnval);
+   }
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class IUSBDeviceStateChangedEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "IUSBDeviceStateChangedEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class ISharedFolderChangedEvent extends IEvent {
+
+   public function getScope() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('ISharedFolderChangedEvent_getScope', array((array)$request));
+       return new Scope ($this->connection, $response->returnval);
+   }
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class ISharedFolderChangedEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "ISharedFolderChangedEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class IRuntimeErrorEvent extends IEvent {
+
+   public function getFatal() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IRuntimeErrorEvent_getFatal', array((array)$request));
+       return (bool)$response->returnval;
+   }
+
+   public function getId() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IRuntimeErrorEvent_getId', array((array)$request));
+       return (string)$response->returnval;
+   }
+
+   public function getMessage() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IRuntimeErrorEvent_getMessage', array((array)$request));
+       return (string)$response->returnval;
+   }
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class IRuntimeErrorEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "IRuntimeErrorEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class IEventSourceChangedEvent extends IEvent {
+
+   public function getListener() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IEventSourceChangedEvent_getListener', array((array)$request));
+       return new IEventListener ($this->connection, $response->returnval);
+   }
+
+   public function getAdd() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IEventSourceChangedEvent_getAdd', array((array)$request));
+       return (bool)$response->returnval;
+   }
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class IEventSourceChangedEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "IEventSourceChangedEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class IExtraDataChangedEvent extends IEvent {
+
+   public function getMachineId() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IExtraDataChangedEvent_getMachineId', array((array)$request));
+       return (string)$response->returnval;
+   }
+
+   public function getKey() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IExtraDataChangedEvent_getKey', array((array)$request));
+       return (string)$response->returnval;
+   }
+
+   public function getValue() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IExtraDataChangedEvent_getValue', array((array)$request));
+       return (string)$response->returnval;
+   }
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class IExtraDataChangedEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "IExtraDataChangedEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class IVetoEvent extends IEvent {
+
+   public function addVeto($arg_reason) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->reason = $arg_reason;
+       $response = $this->connection->__soapCall('IVetoEvent_addVeto', array((array)$request));
+       
+       return ;
+  }
+
+   public function isVetoed() { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $response = $this->connection->__soapCall('IVetoEvent_isVetoed', array((array)$request));
+       
+       return (bool)$response->returnval;
+  }
+
+   public function getVetos() { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $response = $this->connection->__soapCall('IVetoEvent_getVetos', array((array)$request));
+       
+       return (array)$response->returnval;
+  }
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class IVetoEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "IVetoEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class IExtraDataCanChangeEvent extends IVetoEvent {
+
+   public function getMachineId() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IExtraDataCanChangeEvent_getMachineId', array((array)$request));
+       return (string)$response->returnval;
+   }
+
+   public function getKey() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IExtraDataCanChangeEvent_getKey', array((array)$request));
+       return (string)$response->returnval;
+   }
+
+   public function getValue() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IExtraDataCanChangeEvent_getValue', array((array)$request));
+       return (string)$response->returnval;
+   }
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class IExtraDataCanChangeEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "IExtraDataCanChangeEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class ICanShowWindowEvent extends IVetoEvent {
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class ICanShowWindowEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "ICanShowWindowEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class IShowWindowEvent extends IEvent {
+
+   public function getWinId() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IShowWindowEvent_getWinId', array((array)$request));
+       return (float)$response->returnval;
+   }
+
+   public function setWinId($value) {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       if (is_int($value) || is_string($value) || is_bool($value)) {
+            $request->winId = $value;
+       }
+       else
+       {
+            $request->winId = $value->handle;
+       }
+       $this->connection->__soapCall('IShowWindowEvent_setWinId', array((array)$request));
+   }
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class IShowWindowEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "IShowWindowEvent";
+}
+
+/**
 * Generated VBoxWebService Struct
 */
 class IRemoteDisplayInfo extends VBox_Struct {
@@ -7326,6 +8285,8 @@ class ISharedFolder extends VBox_Struct {
     
        protected $writable;
     
+       protected $autoMount;
+    
        protected $lastAccessError;
     
     public function __construct($connection, $values) {
@@ -7335,6 +8296,7 @@ class ISharedFolder extends VBox_Struct {
        $this->hostPath = $values->hostPath;
        $this->accessible = $values->accessible;
        $this->writable = $values->writable;
+       $this->autoMount = $values->autoMount;
        $this->lastAccessError = $values->lastAccessError;
     }
 
@@ -7355,6 +8317,10 @@ class ISharedFolder extends VBox_Struct {
         return (bool)$this->writable;
     }
     
+    public function getAutoMount() {
+        return (bool)$this->autoMount;
+    }
+    
     public function getLastAccessError() {
         return (string)$this->lastAccessError;
     }
@@ -7373,8 +8339,8 @@ class ISharedFolderCollection extends VBox_StructCollection {
 * Generated VBoxWebService ENUM
 */
 class SettingsVersion extends VBox_Enum {
-   public $NameMap = array(0 => 'Null', 1 => 'v1_0', 2 => 'v1_1', 3 => 'v1_2', 4 => 'v1_3pre', 5 => 'v1_3', 6 => 'v1_4', 7 => 'v1_5', 8 => 'v1_6', 9 => 'v1_7', 10 => 'v1_8', 11 => 'v1_9', 12 => 'v1_10', 13 => 'Future');
-   public $ValueMap = array('Null' => 0, 'v1_0' => 1, 'v1_1' => 2, 'v1_2' => 3, 'v1_3pre' => 4, 'v1_3' => 5, 'v1_4' => 6, 'v1_5' => 7, 'v1_6' => 8, 'v1_7' => 9, 'v1_8' => 10, 'v1_9' => 11, 'v1_10' => 12, 'Future' => 13);
+   public $NameMap = array(0 => 'Null', 1 => 'v1_0', 2 => 'v1_1', 3 => 'v1_2', 4 => 'v1_3pre', 5 => 'v1_3', 6 => 'v1_4', 7 => 'v1_5', 8 => 'v1_6', 9 => 'v1_7', 10 => 'v1_8', 11 => 'v1_9', 12 => 'v1_10', 13 => 'v1_11', 99999 => 'Future');
+   public $ValueMap = array('Null' => 0, 'v1_0' => 1, 'v1_1' => 2, 'v1_2' => 3, 'v1_3pre' => 4, 'v1_3' => 5, 'v1_4' => 6, 'v1_5' => 7, 'v1_6' => 8, 'v1_7' => 9, 'v1_8' => 10, 'v1_9' => 11, 'v1_10' => 12, 'v1_11' => 13, 'Future' => 99999);
 }
 
 /**
@@ -7418,8 +8384,8 @@ class MachineStateCollection extends VBox_EnumCollection {
 * Generated VBoxWebService ENUM
 */
 class SessionState extends VBox_Enum {
-   public $NameMap = array(0 => 'Null', 1 => 'Closed', 2 => 'Open', 3 => 'Spawning', 4 => 'Closing');
-   public $ValueMap = array('Null' => 0, 'Closed' => 1, 'Open' => 2, 'Spawning' => 3, 'Closing' => 4);
+   public $NameMap = array(0 => 'Null', 1 => 'Unlocked', 2 => 'Locked', 3 => 'Spawning', 4 => 'Unlocking');
+   public $ValueMap = array('Null' => 0, 'Unlocked' => 1, 'Locked' => 2, 'Spawning' => 3, 'Unlocking' => 4);
 }
 
 /**
@@ -7462,9 +8428,24 @@ class HWVirtExPropertyTypeCollection extends VBox_EnumCollection {
 /**
 * Generated VBoxWebService ENUM
 */
+class LockType extends VBox_Enum {
+   public $NameMap = array(2 => 'Write', 1 => 'Shared');
+   public $ValueMap = array('Write' => 2, 'Shared' => 1);
+}
+
+/**
+* Generated VBoxWebService Enum Collection
+*/
+class LockTypeCollection extends VBox_EnumCollection {
+   protected $_interfaceName = "LockType";
+}
+
+/**
+* Generated VBoxWebService ENUM
+*/
 class SessionType extends VBox_Enum {
-   public $NameMap = array(0 => 'Null', 1 => 'Direct', 2 => 'Remote', 3 => 'Existing');
-   public $ValueMap = array('Null' => 0, 'Direct' => 1, 'Remote' => 2, 'Existing' => 3);
+   public $NameMap = array(0 => 'Null', 1 => 'WriteLock', 2 => 'Remote', 3 => 'Shared');
+   public $ValueMap = array('Null' => 0, 'WriteLock' => 1, 'Remote' => 2, 'Shared' => 3);
 }
 
 /**
@@ -7928,8 +8909,8 @@ class AudioDriverTypeCollection extends VBox_EnumCollection {
 * Generated VBoxWebService ENUM
 */
 class AudioControllerType extends VBox_Enum {
-   public $NameMap = array(0 => 'AC97', 1 => 'SB16');
-   public $ValueMap = array('AC97' => 0, 'SB16' => 1);
+   public $NameMap = array(0 => 'AC97', 1 => 'SB16', 2 => 'HDA');
+   public $ValueMap = array('AC97' => 0, 'SB16' => 1, 'HDA' => 2);
 }
 
 /**
@@ -8012,4 +8993,19 @@ class NATProtocol extends VBox_Enum {
 */
 class NATProtocolCollection extends VBox_EnumCollection {
    protected $_interfaceName = "NATProtocol";
+}
+
+/**
+* Generated VBoxWebService ENUM
+*/
+class VBoxEventType extends VBox_Enum {
+   public $NameMap = array(0 => 'Invalid', 1 => 'Any', 2 => 'MachineEvent', 3 => 'SnapshotEvent', 4 => 'InputEvent', 31 => 'LastWildcard', 32 => 'OnMachineStateChanged', 33 => 'OnMachineDataChanged', 34 => 'OnExtraDataChanged', 35 => 'OnExtraDataCanChange', 36 => 'OnMediumRegistered', 37 => 'OnMachineRegistered', 38 => 'OnSessionStateChanged', 39 => 'OnSnapshotTaken', 40 => 'OnSnapshotDeleted', 41 => 'OnSnapshotChanged', 42 => 'OnGuestPropertyChanged', 43 => 'OnMousePointerShapeChanged', 44 => 'OnMouseCapabilityChanged', 45 => 'OnKeyboardLedsChanged', 46 => 'OnStateChanged', 47 => 'OnAdditionsStateChanged', 48 => 'OnNetworkAdapterChanged', 49 => 'OnSerialPortChanged', 50 => 'OnParallelPortChanged', 51 => 'OnStorageControllerChanged', 52 => 'OnMediumChanged', 53 => 'OnVRDPServerChanged', 54 => 'OnUSBControllerChanged', 55 => 'OnUSBDeviceStateChanged', 56 => 'OnSharedFolderChanged', 57 => 'OnRuntimeError', 58 => 'OnCanShowWindow', 59 => 'OnShowWindow', 60 => 'OnCPUChanged', 61 => 'OnRemoteDisplayInfoChanged', 62 => 'OnEventSourceChanged', 63 => 'Last');
+   public $ValueMap = array('Invalid' => 0, 'Any' => 1, 'MachineEvent' => 2, 'SnapshotEvent' => 3, 'InputEvent' => 4, 'LastWildcard' => 31, 'OnMachineStateChanged' => 32, 'OnMachineDataChanged' => 33, 'OnExtraDataChanged' => 34, 'OnExtraDataCanChange' => 35, 'OnMediumRegistered' => 36, 'OnMachineRegistered' => 37, 'OnSessionStateChanged' => 38, 'OnSnapshotTaken' => 39, 'OnSnapshotDeleted' => 40, 'OnSnapshotChanged' => 41, 'OnGuestPropertyChanged' => 42, 'OnMousePointerShapeChanged' => 43, 'OnMouseCapabilityChanged' => 44, 'OnKeyboardLedsChanged' => 45, 'OnStateChanged' => 46, 'OnAdditionsStateChanged' => 47, 'OnNetworkAdapterChanged' => 48, 'OnSerialPortChanged' => 49, 'OnParallelPortChanged' => 50, 'OnStorageControllerChanged' => 51, 'OnMediumChanged' => 52, 'OnVRDPServerChanged' => 53, 'OnUSBControllerChanged' => 54, 'OnUSBDeviceStateChanged' => 55, 'OnSharedFolderChanged' => 56, 'OnRuntimeError' => 57, 'OnCanShowWindow' => 58, 'OnShowWindow' => 59, 'OnCPUChanged' => 60, 'OnRemoteDisplayInfoChanged' => 61, 'OnEventSourceChanged' => 62, 'Last' => 63);
+}
+
+/**
+* Generated VBoxWebService Enum Collection
+*/
+class VBoxEventTypeCollection extends VBox_EnumCollection {
+   protected $_interfaceName = "VBoxEventType";
 }

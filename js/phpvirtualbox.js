@@ -647,7 +647,7 @@ function vboxVMList(anchorid) {
 		var tr = document.createElement('tr');
 		
 		var td = document.createElement('td');
-		if(vmn.id != 'host' && vmn.sessionState != 'Closed') td.setAttribute('class','vboxVMSessionOpen');
+		if(vmn.id != 'host' && vmn.sessionState != 'Unlocked') td.setAttribute('class','vboxVMSessionOpen');
 		td.innerHTML = "<img src='images/vbox/" + machineStateIcon(vmn.state) +"' /> " + trans(vmn.state);
 		
 		tr.appendChild(td);

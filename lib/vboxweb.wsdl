@@ -33,7 +33,8 @@
             v1_8: 10 -
             v1_9: 11 -
             v1_10: 12 -
-            Future: 13 -
+            v1_11: 13 -
+            Future: 99999 -
             -->
       <xsd:simpleType name="SettingsVersion">
         <xsd:restriction base="xsd:string">
@@ -50,6 +51,7 @@
           <xsd:enumeration value="v1_8"/>
           <xsd:enumeration value="v1_9"/>
           <xsd:enumeration value="v1_10"/>
+          <xsd:enumeration value="v1_11"/>
           <xsd:enumeration value="Future"/>
         </xsd:restriction>
       </xsd:simpleType>
@@ -121,18 +123,18 @@
       </xsd:simpleType>
       <!-- enum: SessionState -
             Null: 0 -
-            Closed: 1 -
-            Open: 2 -
+            Unlocked: 1 -
+            Locked: 2 -
             Spawning: 3 -
-            Closing: 4 -
+            Unlocking: 4 -
             -->
       <xsd:simpleType name="SessionState">
         <xsd:restriction base="xsd:string">
           <xsd:enumeration value="Null"/>
-          <xsd:enumeration value="Closed"/>
-          <xsd:enumeration value="Open"/>
+          <xsd:enumeration value="Unlocked"/>
+          <xsd:enumeration value="Locked"/>
           <xsd:enumeration value="Spawning"/>
-          <xsd:enumeration value="Closing"/>
+          <xsd:enumeration value="Unlocking"/>
         </xsd:restriction>
       </xsd:simpleType>
       <!-- enum: CPUPropertyType -
@@ -165,18 +167,28 @@
           <xsd:enumeration value="LargePages"/>
         </xsd:restriction>
       </xsd:simpleType>
+      <!-- enum: LockType -
+            Write: 2 -
+            Shared: 1 -
+            -->
+      <xsd:simpleType name="LockType">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Write"/>
+          <xsd:enumeration value="Shared"/>
+        </xsd:restriction>
+      </xsd:simpleType>
       <!-- enum: SessionType -
             Null: 0 -
-            Direct: 1 -
+            WriteLock: 1 -
             Remote: 2 -
-            Existing: 3 -
+            Shared: 3 -
             -->
       <xsd:simpleType name="SessionType">
         <xsd:restriction base="xsd:string">
           <xsd:enumeration value="Null"/>
-          <xsd:enumeration value="Direct"/>
+          <xsd:enumeration value="WriteLock"/>
           <xsd:enumeration value="Remote"/>
-          <xsd:enumeration value="Existing"/>
+          <xsd:enumeration value="Shared"/>
         </xsd:restriction>
       </xsd:simpleType>
       <!-- enum: DeviceType -
@@ -696,11 +708,13 @@
       <!-- enum: AudioControllerType -
             AC97: 0 -
             SB16: 1 -
+            HDA: 2 -
             -->
       <xsd:simpleType name="AudioControllerType">
         <xsd:restriction base="xsd:string">
           <xsd:enumeration value="AC97"/>
           <xsd:enumeration value="SB16"/>
+          <xsd:enumeration value="HDA"/>
         </xsd:restriction>
       </xsd:simpleType>
       <!-- enum: VRDPAuthType -
@@ -779,6 +793,88 @@
           <xsd:enumeration value="TCP"/>
         </xsd:restriction>
       </xsd:simpleType>
+      <!-- enum: VBoxEventType -
+            Invalid: 0 -
+            Any: 1 -
+            MachineEvent: 2 -
+            SnapshotEvent: 3 -
+            InputEvent: 4 -
+            LastWildcard: 31 -
+            OnMachineStateChanged: 32 -
+            OnMachineDataChanged: 33 -
+            OnExtraDataChanged: 34 -
+            OnExtraDataCanChange: 35 -
+            OnMediumRegistered: 36 -
+            OnMachineRegistered: 37 -
+            OnSessionStateChanged: 38 -
+            OnSnapshotTaken: 39 -
+            OnSnapshotDeleted: 40 -
+            OnSnapshotChanged: 41 -
+            OnGuestPropertyChanged: 42 -
+            OnMousePointerShapeChanged: 43 -
+            OnMouseCapabilityChanged: 44 -
+            OnKeyboardLedsChanged: 45 -
+            OnStateChanged: 46 -
+            OnAdditionsStateChanged: 47 -
+            OnNetworkAdapterChanged: 48 -
+            OnSerialPortChanged: 49 -
+            OnParallelPortChanged: 50 -
+            OnStorageControllerChanged: 51 -
+            OnMediumChanged: 52 -
+            OnVRDPServerChanged: 53 -
+            OnUSBControllerChanged: 54 -
+            OnUSBDeviceStateChanged: 55 -
+            OnSharedFolderChanged: 56 -
+            OnRuntimeError: 57 -
+            OnCanShowWindow: 58 -
+            OnShowWindow: 59 -
+            OnCPUChanged: 60 -
+            OnRemoteDisplayInfoChanged: 61 -
+            OnEventSourceChanged: 62 -
+            Last: 63 -
+            -->
+      <xsd:simpleType name="VBoxEventType">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Invalid"/>
+          <xsd:enumeration value="Any"/>
+          <xsd:enumeration value="MachineEvent"/>
+          <xsd:enumeration value="SnapshotEvent"/>
+          <xsd:enumeration value="InputEvent"/>
+          <xsd:enumeration value="LastWildcard"/>
+          <xsd:enumeration value="OnMachineStateChanged"/>
+          <xsd:enumeration value="OnMachineDataChanged"/>
+          <xsd:enumeration value="OnExtraDataChanged"/>
+          <xsd:enumeration value="OnExtraDataCanChange"/>
+          <xsd:enumeration value="OnMediumRegistered"/>
+          <xsd:enumeration value="OnMachineRegistered"/>
+          <xsd:enumeration value="OnSessionStateChanged"/>
+          <xsd:enumeration value="OnSnapshotTaken"/>
+          <xsd:enumeration value="OnSnapshotDeleted"/>
+          <xsd:enumeration value="OnSnapshotChanged"/>
+          <xsd:enumeration value="OnGuestPropertyChanged"/>
+          <xsd:enumeration value="OnMousePointerShapeChanged"/>
+          <xsd:enumeration value="OnMouseCapabilityChanged"/>
+          <xsd:enumeration value="OnKeyboardLedsChanged"/>
+          <xsd:enumeration value="OnStateChanged"/>
+          <xsd:enumeration value="OnAdditionsStateChanged"/>
+          <xsd:enumeration value="OnNetworkAdapterChanged"/>
+          <xsd:enumeration value="OnSerialPortChanged"/>
+          <xsd:enumeration value="OnParallelPortChanged"/>
+          <xsd:enumeration value="OnStorageControllerChanged"/>
+          <xsd:enumeration value="OnMediumChanged"/>
+          <xsd:enumeration value="OnVRDPServerChanged"/>
+          <xsd:enumeration value="OnUSBControllerChanged"/>
+          <xsd:enumeration value="OnUSBDeviceStateChanged"/>
+          <xsd:enumeration value="OnSharedFolderChanged"/>
+          <xsd:enumeration value="OnRuntimeError"/>
+          <xsd:enumeration value="OnCanShowWindow"/>
+          <xsd:enumeration value="OnShowWindow"/>
+          <xsd:enumeration value="OnCPUChanged"/>
+          <xsd:enumeration value="OnRemoteDisplayInfoChanged"/>
+          <xsd:enumeration value="OnEventSourceChanged"/>
+          <xsd:enumeration value="Last"/>
+        </xsd:restriction>
+      </xsd:simpleType>
       <!--
       ******************************************************
       * structs
@@ -848,6 +944,7 @@
           <xsd:element name="hostPath" type="xsd:string"/>
           <xsd:element name="accessible" type="xsd:boolean"/>
           <xsd:element name="writable" type="xsd:boolean"/>
+          <xsd:element name="autoMount" type="xsd:boolean"/>
           <xsd:element name="lastAccessError" type="xsd:string"/>
         </xsd:sequence>
       </xsd:complexType>
@@ -1328,6 +1425,21 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
+      <!-- readonly attribute IVirtualBox::eventSource-->
+      <xsd:element name="IVirtualBox_getEventSource">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IVirtualBox_getEventSourceResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
       <!-- method IVirtualBox::createMachine-->
       <xsd:element name="IVirtualBox_createMachine">
         <xsd:complexType>
@@ -1423,22 +1535,6 @@
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="IVirtualBox_findMachineResponse">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="returnval" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <!-- method IVirtualBox::unregisterMachine-->
-      <xsd:element name="IVirtualBox_unregisterMachine">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="id" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="IVirtualBox_unregisterMachineResponse">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="returnval" type="xsd:string"/>
@@ -1652,6 +1748,7 @@
             <xsd:element name="name" type="xsd:string"/>
             <xsd:element name="hostPath" type="xsd:string"/>
             <xsd:element name="writable" type="xsd:boolean"/>
+            <xsd:element name="automount" type="xsd:boolean"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -1720,59 +1817,6 @@
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
-      <!-- method IVirtualBox::openSession-->
-      <xsd:element name="IVirtualBox_openSession">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="session" type="xsd:string"/>
-            <xsd:element name="machineId" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="IVirtualBox_openSessionResponse">
-        <xsd:complexType>
-          <xsd:sequence/>
-        </xsd:complexType>
-      </xsd:element>
-      <!-- method IVirtualBox::openRemoteSession-->
-      <xsd:element name="IVirtualBox_openRemoteSession">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="session" type="xsd:string"/>
-            <xsd:element name="machineId" type="xsd:string"/>
-            <xsd:element name="type" type="xsd:string"/>
-            <xsd:element name="environment" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="IVirtualBox_openRemoteSessionResponse">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="returnval" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <!-- method IVirtualBox::openExistingSession-->
-      <xsd:element name="IVirtualBox_openExistingSession">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="session" type="xsd:string"/>
-            <xsd:element name="machineId" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="IVirtualBox_openExistingSessionResponse">
-        <xsd:complexType>
-          <xsd:sequence/>
-        </xsd:complexType>
-      </xsd:element>
-      <!-- method IVirtualBox::registerCallback-->
-      <!--skipping method registerCallback for it has parameters with suppressed types-->
-      <!-- method IVirtualBox::unregisterCallback-->
-      <!--skipping method unregisterCallback for it has parameters with suppressed types-->
       <!-- method IVirtualBox::waitForPropertyChange-->
       <xsd:element name="IVirtualBox_waitForPropertyChange">
         <xsd:complexType>
@@ -2021,6 +2065,21 @@
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="IAppliance_getVirtualSystemDescriptionsResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" minOccurs="0" maxOccurs="unbounded" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IAppliance::machines-->
+      <xsd:element name="IAppliance_getMachines">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IAppliance_getMachinesResponse">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="returnval" minOccurs="0" maxOccurs="unbounded" type="xsd:string"/>
@@ -3634,6 +3693,39 @@
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
+      <!-- method IMachine::lockMachine-->
+      <xsd:element name="IMachine_lockMachine">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="session" type="xsd:string"/>
+            <xsd:element name="lockType" type="vbox:LockType"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_lockMachineResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IMachine::launchVMProcess-->
+      <xsd:element name="IMachine_launchVMProcess">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="session" type="xsd:string"/>
+            <xsd:element name="type" type="xsd:string"/>
+            <xsd:element name="environment" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_launchVMProcessResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
       <!-- method IMachine::setBootOrder-->
       <xsd:element name="IMachine_setBootOrder">
         <xsd:complexType>
@@ -4095,15 +4187,31 @@
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
-      <!-- method IMachine::deleteSettings-->
-      <xsd:element name="IMachine_deleteSettings">
+      <!-- method IMachine::unregister-->
+      <xsd:element name="IMachine_unregister">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="fCloseMedia" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_unregisterResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" minOccurs="0" maxOccurs="unbounded" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IMachine::delete-->
+      <xsd:element name="IMachine_delete">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IMachine_deleteSettingsResponse">
+      <xsd:element name="IMachine_deleteResponse">
         <xsd:complexType>
           <xsd:sequence/>
         </xsd:complexType>
@@ -4178,6 +4286,7 @@
             <xsd:element name="name" type="xsd:string"/>
             <xsd:element name="hostPath" type="xsd:string"/>
             <xsd:element name="writable" type="xsd:boolean"/>
+            <xsd:element name="automount" type="xsd:boolean"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -4633,6 +4742,21 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
+      <!-- readonly attribute IConsole::eventSource-->
+      <xsd:element name="IConsole_getEventSource">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IConsole_getEventSourceResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
       <!-- method IConsole::powerUp-->
       <xsd:element name="IConsole_powerUp">
         <xsd:complexType>
@@ -4807,7 +4931,7 @@
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="remove" type="xsd:boolean"/>
+            <xsd:element name="removeFile" type="xsd:boolean"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -4902,6 +5026,7 @@
             <xsd:element name="name" type="xsd:string"/>
             <xsd:element name="hostPath" type="xsd:string"/>
             <xsd:element name="writable" type="xsd:boolean"/>
+            <xsd:element name="automount" type="xsd:boolean"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -4992,10 +5117,6 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <!-- method IConsole::registerCallback-->
-      <!--skipping method registerCallback for it has parameters with suppressed types-->
-      <!-- method IConsole::unregisterCallback-->
-      <!--skipping method unregisterCallback for it has parameters with suppressed types-->
       <!--Interface IHostNetworkInterface-->
       <!-- readonly attribute IHostNetworkInterface::name-->
       <xsd:element name="IHostNetworkInterface_getName">
@@ -7065,6 +7186,21 @@
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="returnval" type="vbox:MediumState"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IMedium::variant-->
+      <xsd:element name="IMedium_getVariant">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMedium_getVariantResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="vbox:MediumVariant"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -9809,15 +9945,15 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <!-- method ISession::close-->
-      <xsd:element name="ISession_close">
+      <!-- method ISession::unlockMachine-->
+      <xsd:element name="ISession_unlockMachine">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="ISession_closeResponse">
+      <xsd:element name="ISession_unlockMachineResponse">
         <xsd:complexType>
           <xsd:sequence/>
         </xsd:complexType>
@@ -10684,6 +10820,941 @@
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
+      <!--Interface IEventSource-->
+      <!-- method IEventSource::createListener-->
+      <xsd:element name="IEventSource_createListener">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IEventSource_createListenerResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IEventSource::registerListener-->
+      <xsd:element name="IEventSource_registerListener">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="listener" type="xsd:string"/>
+            <xsd:element name="interesting" minOccurs="0" maxOccurs="unbounded" type="vbox:VBoxEventType"/>
+            <xsd:element name="active" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IEventSource_registerListenerResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IEventSource::unregisterListener-->
+      <xsd:element name="IEventSource_unregisterListener">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="listener" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IEventSource_unregisterListenerResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IEventSource::fireEvent-->
+      <xsd:element name="IEventSource_fireEvent">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="event" type="xsd:string"/>
+            <xsd:element name="timeout" type="xsd:int"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IEventSource_fireEventResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IEventSource::getEvent-->
+      <xsd:element name="IEventSource_getEvent">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="listener" type="xsd:string"/>
+            <xsd:element name="timeout" type="xsd:int"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IEventSource_getEventResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IEventSource::eventProcessed-->
+      <xsd:element name="IEventSource_eventProcessed">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="listener" type="xsd:string"/>
+            <xsd:element name="event" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IEventSource_eventProcessedResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
+        </xsd:complexType>
+      </xsd:element>
+      <!--Interface IEventListener-->
+      <!-- method IEventListener::handleEvent-->
+      <xsd:element name="IEventListener_handleEvent">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="event" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IEventListener_handleEventResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
+        </xsd:complexType>
+      </xsd:element>
+      <!--Interface IEvent-->
+      <!-- readonly attribute IEvent::type-->
+      <xsd:element name="IEvent_getType">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IEvent_getTypeResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="vbox:VBoxEventType"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IEvent::source-->
+      <xsd:element name="IEvent_getSource">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IEvent_getSourceResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IEvent::waitable-->
+      <xsd:element name="IEvent_getWaitable">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IEvent_getWaitableResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IEvent::setProcessed-->
+      <xsd:element name="IEvent_setProcessed">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IEvent_setProcessedResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IEvent::waitProcessed-->
+      <xsd:element name="IEvent_waitProcessed">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="timeout" type="xsd:int"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IEvent_waitProcessedResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!--Interface IMachineEvent-->
+      <!-- readonly attribute IMachineEvent::machineId-->
+      <xsd:element name="IMachineEvent_getMachineId">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachineEvent_getMachineIdResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!--Interface IMachineStateChangedEvent-->
+      <!-- readonly attribute IMachineStateChangedEvent::state-->
+      <xsd:element name="IMachineStateChangedEvent_getState">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachineStateChangedEvent_getStateResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="vbox:MachineState"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!--Interface IMachineDataChangedEvent-->
+      <!--Interface IMachineRegisteredEvent-->
+      <!-- readonly attribute IMachineRegisteredEvent::registered-->
+      <xsd:element name="IMachineRegisteredEvent_getRegistered">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachineRegisteredEvent_getRegisteredResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!--Interface ISessionStateChangedEvent-->
+      <!-- readonly attribute ISessionStateChangedEvent::state-->
+      <xsd:element name="ISessionStateChangedEvent_getState">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ISessionStateChangedEvent_getStateResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="vbox:SessionState"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!--Interface IGuestPropertyChangedEvent-->
+      <!-- readonly attribute IGuestPropertyChangedEvent::name-->
+      <xsd:element name="IGuestPropertyChangedEvent_getName">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IGuestPropertyChangedEvent_getNameResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IGuestPropertyChangedEvent::value-->
+      <xsd:element name="IGuestPropertyChangedEvent_getValue">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IGuestPropertyChangedEvent_getValueResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IGuestPropertyChangedEvent::flags-->
+      <xsd:element name="IGuestPropertyChangedEvent_getFlags">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IGuestPropertyChangedEvent_getFlagsResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!--Interface ISnapshotEvent-->
+      <!-- readonly attribute ISnapshotEvent::snapshotId-->
+      <xsd:element name="ISnapshotEvent_getSnapshotId">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ISnapshotEvent_getSnapshotIdResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!--Interface ISnapshotTakenEvent-->
+      <!--Interface ISnapshotDeletedEvent-->
+      <!--Interface ISnapshotChangedEvent-->
+      <!--Interface IMousePointerShapeChangedEvent-->
+      <!-- readonly attribute IMousePointerShapeChangedEvent::visible-->
+      <xsd:element name="IMousePointerShapeChangedEvent_getVisible">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMousePointerShapeChangedEvent_getVisibleResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IMousePointerShapeChangedEvent::alpha-->
+      <xsd:element name="IMousePointerShapeChangedEvent_getAlpha">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMousePointerShapeChangedEvent_getAlphaResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IMousePointerShapeChangedEvent::xhot-->
+      <xsd:element name="IMousePointerShapeChangedEvent_getXhot">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMousePointerShapeChangedEvent_getXhotResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:unsignedInt"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IMousePointerShapeChangedEvent::yhot-->
+      <xsd:element name="IMousePointerShapeChangedEvent_getYhot">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMousePointerShapeChangedEvent_getYhotResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:unsignedInt"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IMousePointerShapeChangedEvent::width-->
+      <xsd:element name="IMousePointerShapeChangedEvent_getWidth">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMousePointerShapeChangedEvent_getWidthResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:unsignedInt"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IMousePointerShapeChangedEvent::height-->
+      <xsd:element name="IMousePointerShapeChangedEvent_getHeight">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMousePointerShapeChangedEvent_getHeightResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:unsignedInt"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IMousePointerShapeChangedEvent::shape-->
+      <xsd:element name="IMousePointerShapeChangedEvent_getShape">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMousePointerShapeChangedEvent_getShapeResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" minOccurs="0" maxOccurs="unbounded" type="xsd:unsignedByte"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!--Interface IMouseCapabilityChangedEvent-->
+      <!-- readonly attribute IMouseCapabilityChangedEvent::supportsAbsolute-->
+      <xsd:element name="IMouseCapabilityChangedEvent_getSupportsAbsolute">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMouseCapabilityChangedEvent_getSupportsAbsoluteResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IMouseCapabilityChangedEvent::supportsRelative-->
+      <xsd:element name="IMouseCapabilityChangedEvent_getSupportsRelative">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMouseCapabilityChangedEvent_getSupportsRelativeResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IMouseCapabilityChangedEvent::needsHostCursor-->
+      <xsd:element name="IMouseCapabilityChangedEvent_getNeedsHostCursor">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMouseCapabilityChangedEvent_getNeedsHostCursorResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!--Interface IKeyboardLedsChangedEvent-->
+      <!-- readonly attribute IKeyboardLedsChangedEvent::numLock-->
+      <xsd:element name="IKeyboardLedsChangedEvent_getNumLock">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IKeyboardLedsChangedEvent_getNumLockResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IKeyboardLedsChangedEvent::capsLock-->
+      <xsd:element name="IKeyboardLedsChangedEvent_getCapsLock">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IKeyboardLedsChangedEvent_getCapsLockResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IKeyboardLedsChangedEvent::scrollLock-->
+      <xsd:element name="IKeyboardLedsChangedEvent_getScrollLock">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IKeyboardLedsChangedEvent_getScrollLockResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!--Interface IStateChangedEvent-->
+      <!-- readonly attribute IStateChangedEvent::state-->
+      <xsd:element name="IStateChangedEvent_getState">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IStateChangedEvent_getStateResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="vbox:MachineState"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!--Interface IAdditionsStateChangedEvent-->
+      <!--Interface INetworkAdapterChangedEvent-->
+      <!-- readonly attribute INetworkAdapterChangedEvent::networkAdapter-->
+      <xsd:element name="INetworkAdapterChangedEvent_getNetworkAdapter">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="INetworkAdapterChangedEvent_getNetworkAdapterResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!--Interface ISerialPortChangedEvent-->
+      <!-- readonly attribute ISerialPortChangedEvent::serialPort-->
+      <xsd:element name="ISerialPortChangedEvent_getSerialPort">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ISerialPortChangedEvent_getSerialPortResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!--Interface IParallelPortChangedEvent-->
+      <!-- readonly attribute IParallelPortChangedEvent::parallelPort-->
+      <xsd:element name="IParallelPortChangedEvent_getParallelPort">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IParallelPortChangedEvent_getParallelPortResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!--Interface IStorageControllerChangedEvent-->
+      <!--Interface IMediumChangedEvent-->
+      <!-- readonly attribute IMediumChangedEvent::mediumAttachment-->
+      <xsd:element name="IMediumChangedEvent_getMediumAttachment">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMediumChangedEvent_getMediumAttachmentResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="vbox:IMediumAttachment"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!--Interface ICPUChangedEvent-->
+      <!-- readonly attribute ICPUChangedEvent::cpu-->
+      <xsd:element name="ICPUChangedEvent_getCpu">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ICPUChangedEvent_getCpuResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:unsignedInt"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute ICPUChangedEvent::add-->
+      <xsd:element name="ICPUChangedEvent_getAdd">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ICPUChangedEvent_getAddResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!--Interface IVRDPServerChangedEvent-->
+      <!--Interface IRemoteDisplayInfoChangedEvent-->
+      <!--Interface IUSBControllerChangedEvent-->
+      <!--Interface IUSBDeviceStateChangedEvent-->
+      <!-- readonly attribute IUSBDeviceStateChangedEvent::device-->
+      <xsd:element name="IUSBDeviceStateChangedEvent_getDevice">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IUSBDeviceStateChangedEvent_getDeviceResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IUSBDeviceStateChangedEvent::attached-->
+      <xsd:element name="IUSBDeviceStateChangedEvent_getAttached">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IUSBDeviceStateChangedEvent_getAttachedResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IUSBDeviceStateChangedEvent::error-->
+      <xsd:element name="IUSBDeviceStateChangedEvent_getError">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IUSBDeviceStateChangedEvent_getErrorResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!--Interface ISharedFolderChangedEvent-->
+      <!-- readonly attribute ISharedFolderChangedEvent::scope-->
+      <xsd:element name="ISharedFolderChangedEvent_getScope">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ISharedFolderChangedEvent_getScopeResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="vbox:Scope"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!--Interface IRuntimeErrorEvent-->
+      <!-- readonly attribute IRuntimeErrorEvent::fatal-->
+      <xsd:element name="IRuntimeErrorEvent_getFatal">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IRuntimeErrorEvent_getFatalResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IRuntimeErrorEvent::id-->
+      <xsd:element name="IRuntimeErrorEvent_getId">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IRuntimeErrorEvent_getIdResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IRuntimeErrorEvent::message-->
+      <xsd:element name="IRuntimeErrorEvent_getMessage">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IRuntimeErrorEvent_getMessageResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!--Interface IEventSourceChangedEvent-->
+      <!-- readonly attribute IEventSourceChangedEvent::listener-->
+      <xsd:element name="IEventSourceChangedEvent_getListener">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IEventSourceChangedEvent_getListenerResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IEventSourceChangedEvent::add-->
+      <xsd:element name="IEventSourceChangedEvent_getAdd">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IEventSourceChangedEvent_getAddResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!--Interface IExtraDataChangedEvent-->
+      <!-- readonly attribute IExtraDataChangedEvent::machineId-->
+      <xsd:element name="IExtraDataChangedEvent_getMachineId">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IExtraDataChangedEvent_getMachineIdResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IExtraDataChangedEvent::key-->
+      <xsd:element name="IExtraDataChangedEvent_getKey">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IExtraDataChangedEvent_getKeyResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IExtraDataChangedEvent::value-->
+      <xsd:element name="IExtraDataChangedEvent_getValue">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IExtraDataChangedEvent_getValueResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!--Interface IVetoEvent-->
+      <!-- method IVetoEvent::addVeto-->
+      <xsd:element name="IVetoEvent_addVeto">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="reason" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IVetoEvent_addVetoResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IVetoEvent::isVetoed-->
+      <xsd:element name="IVetoEvent_isVetoed">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IVetoEvent_isVetoedResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IVetoEvent::getVetos-->
+      <xsd:element name="IVetoEvent_getVetos">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IVetoEvent_getVetosResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" minOccurs="0" maxOccurs="unbounded" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!--Interface IExtraDataCanChangeEvent-->
+      <!-- readonly attribute IExtraDataCanChangeEvent::machineId-->
+      <xsd:element name="IExtraDataCanChangeEvent_getMachineId">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IExtraDataCanChangeEvent_getMachineIdResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IExtraDataCanChangeEvent::key-->
+      <xsd:element name="IExtraDataCanChangeEvent_getKey">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IExtraDataCanChangeEvent_getKeyResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IExtraDataCanChangeEvent::value-->
+      <xsd:element name="IExtraDataCanChangeEvent_getValue">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IExtraDataCanChangeEvent_getValueResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!--Interface ICanShowWindowEvent-->
+      <!--Interface IShowWindowEvent-->
+      <!-- read/write attribute IShowWindowEvent::winId-->
+      <xsd:element name="IShowWindowEvent_getWinId">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IShowWindowEvent_getWinIdResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:unsignedLong"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IShowWindowEvent_setWinId">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="winId" type="xsd:unsignedLong"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IShowWindowEvent_setWinIdResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
+        </xsd:complexType>
+      </xsd:element>
       <!--
       ******************************************************
       * faults
@@ -10761,16 +11832,6 @@
   <message name="IVirtualBoxErrorInfo_getNextResultMsg">
     <part name="parameters" element="vbox:IVirtualBoxErrorInfo_getNextResponse"/>
   </message>
-  <!--
-        *************************************
-        messages for interface ILocalOwner
-        *************************************
-      -->
-  <!--
-        *************************************
-        messages for interface IVirtualBoxCallback
-        *************************************
-      -->
   <!--
         *************************************
         messages for interface IDHCPServer
@@ -10962,6 +12023,13 @@
   <message name="IVirtualBox_getDHCPServersResultMsg">
     <part name="parameters" element="vbox:IVirtualBox_getDHCPServersResponse"/>
   </message>
+  <!-- readonly attribute IVirtualBox::eventSource-->
+  <message name="IVirtualBox_getEventSourceRequestMsg">
+    <part name="parameters" element="vbox:IVirtualBox_getEventSource"/>
+  </message>
+  <message name="IVirtualBox_getEventSourceResultMsg">
+    <part name="parameters" element="vbox:IVirtualBox_getEventSourceResponse"/>
+  </message>
   <!-- method IVirtualBox::createMachine-->
   <message name="IVirtualBox_createMachineRequestMsg">
     <part name="parameters" element="vbox:IVirtualBox_createMachine"/>
@@ -11003,13 +12071,6 @@
   </message>
   <message name="IVirtualBox_findMachineResultMsg">
     <part name="parameters" element="vbox:IVirtualBox_findMachineResponse"/>
-  </message>
-  <!-- method IVirtualBox::unregisterMachine-->
-  <message name="IVirtualBox_unregisterMachineRequestMsg">
-    <part name="parameters" element="vbox:IVirtualBox_unregisterMachine"/>
-  </message>
-  <message name="IVirtualBox_unregisterMachineResultMsg">
-    <part name="parameters" element="vbox:IVirtualBox_unregisterMachineResponse"/>
   </message>
   <!-- method IVirtualBox::createAppliance-->
   <message name="IVirtualBox_createApplianceRequestMsg">
@@ -11130,31 +12191,6 @@
   <message name="IVirtualBox_setExtraDataResultMsg">
     <part name="parameters" element="vbox:IVirtualBox_setExtraDataResponse"/>
   </message>
-  <!-- method IVirtualBox::openSession-->
-  <message name="IVirtualBox_openSessionRequestMsg">
-    <part name="parameters" element="vbox:IVirtualBox_openSession"/>
-  </message>
-  <message name="IVirtualBox_openSessionResultMsg">
-    <part name="parameters" element="vbox:IVirtualBox_openSessionResponse"/>
-  </message>
-  <!-- method IVirtualBox::openRemoteSession-->
-  <message name="IVirtualBox_openRemoteSessionRequestMsg">
-    <part name="parameters" element="vbox:IVirtualBox_openRemoteSession"/>
-  </message>
-  <message name="IVirtualBox_openRemoteSessionResultMsg">
-    <part name="parameters" element="vbox:IVirtualBox_openRemoteSessionResponse"/>
-  </message>
-  <!-- method IVirtualBox::openExistingSession-->
-  <message name="IVirtualBox_openExistingSessionRequestMsg">
-    <part name="parameters" element="vbox:IVirtualBox_openExistingSession"/>
-  </message>
-  <message name="IVirtualBox_openExistingSessionResultMsg">
-    <part name="parameters" element="vbox:IVirtualBox_openExistingSessionResponse"/>
-  </message>
-  <!-- method IVirtualBox::registerCallback-->
-  <!--skipping method registerCallback for it has parameters with suppressed types-->
-  <!-- method IVirtualBox::unregisterCallback-->
-  <!--skipping method unregisterCallback for it has parameters with suppressed types-->
   <!-- method IVirtualBox::waitForPropertyChange-->
   <message name="IVirtualBox_waitForPropertyChangeRequestMsg">
     <part name="parameters" element="vbox:IVirtualBox_waitForPropertyChange"/>
@@ -11276,6 +12312,13 @@
   </message>
   <message name="IAppliance_getVirtualSystemDescriptionsResultMsg">
     <part name="parameters" element="vbox:IAppliance_getVirtualSystemDescriptionsResponse"/>
+  </message>
+  <!-- readonly attribute IAppliance::machines-->
+  <message name="IAppliance_getMachinesRequestMsg">
+    <part name="parameters" element="vbox:IAppliance_getMachines"/>
+  </message>
+  <message name="IAppliance_getMachinesResultMsg">
+    <part name="parameters" element="vbox:IAppliance_getMachinesResponse"/>
   </message>
   <!-- method IAppliance::read-->
   <message name="IAppliance_readRequestMsg">
@@ -12036,6 +13079,20 @@
   <message name="IMachine_setIoBandwidthMaxResultMsg">
     <part name="parameters" element="vbox:IMachine_setIoBandwidthMaxResponse"/>
   </message>
+  <!-- method IMachine::lockMachine-->
+  <message name="IMachine_lockMachineRequestMsg">
+    <part name="parameters" element="vbox:IMachine_lockMachine"/>
+  </message>
+  <message name="IMachine_lockMachineResultMsg">
+    <part name="parameters" element="vbox:IMachine_lockMachineResponse"/>
+  </message>
+  <!-- method IMachine::launchVMProcess-->
+  <message name="IMachine_launchVMProcessRequestMsg">
+    <part name="parameters" element="vbox:IMachine_launchVMProcess"/>
+  </message>
+  <message name="IMachine_launchVMProcessResultMsg">
+    <part name="parameters" element="vbox:IMachine_launchVMProcessResponse"/>
+  </message>
   <!-- method IMachine::setBootOrder-->
   <message name="IMachine_setBootOrderRequestMsg">
     <part name="parameters" element="vbox:IMachine_setBootOrder"/>
@@ -12239,12 +13296,19 @@
   <message name="IMachine_discardSettingsResultMsg">
     <part name="parameters" element="vbox:IMachine_discardSettingsResponse"/>
   </message>
-  <!-- method IMachine::deleteSettings-->
-  <message name="IMachine_deleteSettingsRequestMsg">
-    <part name="parameters" element="vbox:IMachine_deleteSettings"/>
+  <!-- method IMachine::unregister-->
+  <message name="IMachine_unregisterRequestMsg">
+    <part name="parameters" element="vbox:IMachine_unregister"/>
   </message>
-  <message name="IMachine_deleteSettingsResultMsg">
-    <part name="parameters" element="vbox:IMachine_deleteSettingsResponse"/>
+  <message name="IMachine_unregisterResultMsg">
+    <part name="parameters" element="vbox:IMachine_unregisterResponse"/>
+  </message>
+  <!-- method IMachine::delete-->
+  <message name="IMachine_deleteRequestMsg">
+    <part name="parameters" element="vbox:IMachine_delete"/>
+  </message>
+  <message name="IMachine_deleteResultMsg">
+    <part name="parameters" element="vbox:IMachine_deleteResponse"/>
   </message>
   <!-- method IMachine::export-->
   <message name="IMachine_exportRequestMsg">
@@ -12409,11 +13473,6 @@
   </message>
   <!--
         *************************************
-        messages for interface IConsoleCallback
-        *************************************
-      -->
-  <!--
-        *************************************
         messages for interface IRemoteDisplayInfo
         *************************************
       -->
@@ -12492,6 +13551,13 @@
   </message>
   <message name="IConsole_getRemoteDisplayInfoResultMsg">
     <part name="parameters" element="vbox:IConsole_getRemoteDisplayInfoResponse"/>
+  </message>
+  <!-- readonly attribute IConsole::eventSource-->
+  <message name="IConsole_getEventSourceRequestMsg">
+    <part name="parameters" element="vbox:IConsole_getEventSource"/>
+  </message>
+  <message name="IConsole_getEventSourceResultMsg">
+    <part name="parameters" element="vbox:IConsole_getEventSourceResponse"/>
   </message>
   <!-- method IConsole::powerUp-->
   <message name="IConsole_powerUpRequestMsg">
@@ -12661,10 +13727,6 @@
   <message name="IConsole_teleportResultMsg">
     <part name="parameters" element="vbox:IConsole_teleportResponse"/>
   </message>
-  <!-- method IConsole::registerCallback-->
-  <!--skipping method registerCallback for it has parameters with suppressed types-->
-  <!-- method IConsole::unregisterCallback-->
-  <!--skipping method unregisterCallback for it has parameters with suppressed types-->
   <!--
         *************************************
         messages for interface IHostNetworkInterface
@@ -13651,6 +14713,13 @@
   </message>
   <message name="IMedium_getStateResultMsg">
     <part name="parameters" element="vbox:IMedium_getStateResponse"/>
+  </message>
+  <!-- readonly attribute IMedium::variant-->
+  <message name="IMedium_getVariantRequestMsg">
+    <part name="parameters" element="vbox:IMedium_getVariant"/>
+  </message>
+  <message name="IMedium_getVariantResultMsg">
+    <part name="parameters" element="vbox:IMedium_getVariantResponse"/>
   </message>
   <!-- read/write attribute IMedium::location-->
   <message name="IMedium_getLocationRequestMsg">
@@ -15020,12 +16089,12 @@
   <message name="ISession_getConsoleResultMsg">
     <part name="parameters" element="vbox:ISession_getConsoleResponse"/>
   </message>
-  <!-- method ISession::close-->
-  <message name="ISession_closeRequestMsg">
-    <part name="parameters" element="vbox:ISession_close"/>
+  <!-- method ISession::unlockMachine-->
+  <message name="ISession_unlockMachineRequestMsg">
+    <part name="parameters" element="vbox:ISession_unlockMachine"/>
   </message>
-  <message name="ISession_closeResultMsg">
-    <part name="parameters" element="vbox:ISession_closeResponse"/>
+  <message name="ISession_unlockMachineResultMsg">
+    <part name="parameters" element="vbox:ISession_unlockMachineResponse"/>
   </message>
   <!--
         *************************************
@@ -15444,6 +16513,605 @@
     <part name="parameters" element="vbox:INATEngine_removeRedirectResponse"/>
   </message>
   <!--
+        *************************************
+        messages for interface IEventSource
+        *************************************
+      -->
+  <!-- method IEventSource::createListener-->
+  <message name="IEventSource_createListenerRequestMsg">
+    <part name="parameters" element="vbox:IEventSource_createListener"/>
+  </message>
+  <message name="IEventSource_createListenerResultMsg">
+    <part name="parameters" element="vbox:IEventSource_createListenerResponse"/>
+  </message>
+  <!-- method IEventSource::registerListener-->
+  <message name="IEventSource_registerListenerRequestMsg">
+    <part name="parameters" element="vbox:IEventSource_registerListener"/>
+  </message>
+  <message name="IEventSource_registerListenerResultMsg">
+    <part name="parameters" element="vbox:IEventSource_registerListenerResponse"/>
+  </message>
+  <!-- method IEventSource::unregisterListener-->
+  <message name="IEventSource_unregisterListenerRequestMsg">
+    <part name="parameters" element="vbox:IEventSource_unregisterListener"/>
+  </message>
+  <message name="IEventSource_unregisterListenerResultMsg">
+    <part name="parameters" element="vbox:IEventSource_unregisterListenerResponse"/>
+  </message>
+  <!-- method IEventSource::fireEvent-->
+  <message name="IEventSource_fireEventRequestMsg">
+    <part name="parameters" element="vbox:IEventSource_fireEvent"/>
+  </message>
+  <message name="IEventSource_fireEventResultMsg">
+    <part name="parameters" element="vbox:IEventSource_fireEventResponse"/>
+  </message>
+  <!-- method IEventSource::getEvent-->
+  <message name="IEventSource_getEventRequestMsg">
+    <part name="parameters" element="vbox:IEventSource_getEvent"/>
+  </message>
+  <message name="IEventSource_getEventResultMsg">
+    <part name="parameters" element="vbox:IEventSource_getEventResponse"/>
+  </message>
+  <!-- method IEventSource::eventProcessed-->
+  <message name="IEventSource_eventProcessedRequestMsg">
+    <part name="parameters" element="vbox:IEventSource_eventProcessed"/>
+  </message>
+  <message name="IEventSource_eventProcessedResultMsg">
+    <part name="parameters" element="vbox:IEventSource_eventProcessedResponse"/>
+  </message>
+  <!--
+        *************************************
+        messages for interface IEventListener
+        *************************************
+      -->
+  <!-- method IEventListener::handleEvent-->
+  <message name="IEventListener_handleEventRequestMsg">
+    <part name="parameters" element="vbox:IEventListener_handleEvent"/>
+  </message>
+  <message name="IEventListener_handleEventResultMsg">
+    <part name="parameters" element="vbox:IEventListener_handleEventResponse"/>
+  </message>
+  <!--
+        *************************************
+        messages for interface IEvent
+        *************************************
+      -->
+  <!-- readonly attribute IEvent::type-->
+  <message name="IEvent_getTypeRequestMsg">
+    <part name="parameters" element="vbox:IEvent_getType"/>
+  </message>
+  <message name="IEvent_getTypeResultMsg">
+    <part name="parameters" element="vbox:IEvent_getTypeResponse"/>
+  </message>
+  <!-- readonly attribute IEvent::source-->
+  <message name="IEvent_getSourceRequestMsg">
+    <part name="parameters" element="vbox:IEvent_getSource"/>
+  </message>
+  <message name="IEvent_getSourceResultMsg">
+    <part name="parameters" element="vbox:IEvent_getSourceResponse"/>
+  </message>
+  <!-- readonly attribute IEvent::waitable-->
+  <message name="IEvent_getWaitableRequestMsg">
+    <part name="parameters" element="vbox:IEvent_getWaitable"/>
+  </message>
+  <message name="IEvent_getWaitableResultMsg">
+    <part name="parameters" element="vbox:IEvent_getWaitableResponse"/>
+  </message>
+  <!-- method IEvent::setProcessed-->
+  <message name="IEvent_setProcessedRequestMsg">
+    <part name="parameters" element="vbox:IEvent_setProcessed"/>
+  </message>
+  <message name="IEvent_setProcessedResultMsg">
+    <part name="parameters" element="vbox:IEvent_setProcessedResponse"/>
+  </message>
+  <!-- method IEvent::waitProcessed-->
+  <message name="IEvent_waitProcessedRequestMsg">
+    <part name="parameters" element="vbox:IEvent_waitProcessed"/>
+  </message>
+  <message name="IEvent_waitProcessedResultMsg">
+    <part name="parameters" element="vbox:IEvent_waitProcessedResponse"/>
+  </message>
+  <!--
+        *************************************
+        messages for interface IMachineEvent
+        *************************************
+      -->
+  <!-- readonly attribute IMachineEvent::machineId-->
+  <message name="IMachineEvent_getMachineIdRequestMsg">
+    <part name="parameters" element="vbox:IMachineEvent_getMachineId"/>
+  </message>
+  <message name="IMachineEvent_getMachineIdResultMsg">
+    <part name="parameters" element="vbox:IMachineEvent_getMachineIdResponse"/>
+  </message>
+  <!--
+        *************************************
+        messages for interface IMachineStateChangedEvent
+        *************************************
+      -->
+  <!-- readonly attribute IMachineStateChangedEvent::state-->
+  <message name="IMachineStateChangedEvent_getStateRequestMsg">
+    <part name="parameters" element="vbox:IMachineStateChangedEvent_getState"/>
+  </message>
+  <message name="IMachineStateChangedEvent_getStateResultMsg">
+    <part name="parameters" element="vbox:IMachineStateChangedEvent_getStateResponse"/>
+  </message>
+  <!--
+        *************************************
+        messages for interface IMachineDataChangedEvent
+        *************************************
+      -->
+  <!--
+        *************************************
+        messages for interface IMachineRegisteredEvent
+        *************************************
+      -->
+  <!-- readonly attribute IMachineRegisteredEvent::registered-->
+  <message name="IMachineRegisteredEvent_getRegisteredRequestMsg">
+    <part name="parameters" element="vbox:IMachineRegisteredEvent_getRegistered"/>
+  </message>
+  <message name="IMachineRegisteredEvent_getRegisteredResultMsg">
+    <part name="parameters" element="vbox:IMachineRegisteredEvent_getRegisteredResponse"/>
+  </message>
+  <!--
+        *************************************
+        messages for interface ISessionStateChangedEvent
+        *************************************
+      -->
+  <!-- readonly attribute ISessionStateChangedEvent::state-->
+  <message name="ISessionStateChangedEvent_getStateRequestMsg">
+    <part name="parameters" element="vbox:ISessionStateChangedEvent_getState"/>
+  </message>
+  <message name="ISessionStateChangedEvent_getStateResultMsg">
+    <part name="parameters" element="vbox:ISessionStateChangedEvent_getStateResponse"/>
+  </message>
+  <!--
+        *************************************
+        messages for interface IGuestPropertyChangedEvent
+        *************************************
+      -->
+  <!-- readonly attribute IGuestPropertyChangedEvent::name-->
+  <message name="IGuestPropertyChangedEvent_getNameRequestMsg">
+    <part name="parameters" element="vbox:IGuestPropertyChangedEvent_getName"/>
+  </message>
+  <message name="IGuestPropertyChangedEvent_getNameResultMsg">
+    <part name="parameters" element="vbox:IGuestPropertyChangedEvent_getNameResponse"/>
+  </message>
+  <!-- readonly attribute IGuestPropertyChangedEvent::value-->
+  <message name="IGuestPropertyChangedEvent_getValueRequestMsg">
+    <part name="parameters" element="vbox:IGuestPropertyChangedEvent_getValue"/>
+  </message>
+  <message name="IGuestPropertyChangedEvent_getValueResultMsg">
+    <part name="parameters" element="vbox:IGuestPropertyChangedEvent_getValueResponse"/>
+  </message>
+  <!-- readonly attribute IGuestPropertyChangedEvent::flags-->
+  <message name="IGuestPropertyChangedEvent_getFlagsRequestMsg">
+    <part name="parameters" element="vbox:IGuestPropertyChangedEvent_getFlags"/>
+  </message>
+  <message name="IGuestPropertyChangedEvent_getFlagsResultMsg">
+    <part name="parameters" element="vbox:IGuestPropertyChangedEvent_getFlagsResponse"/>
+  </message>
+  <!--
+        *************************************
+        messages for interface ISnapshotEvent
+        *************************************
+      -->
+  <!-- readonly attribute ISnapshotEvent::snapshotId-->
+  <message name="ISnapshotEvent_getSnapshotIdRequestMsg">
+    <part name="parameters" element="vbox:ISnapshotEvent_getSnapshotId"/>
+  </message>
+  <message name="ISnapshotEvent_getSnapshotIdResultMsg">
+    <part name="parameters" element="vbox:ISnapshotEvent_getSnapshotIdResponse"/>
+  </message>
+  <!--
+        *************************************
+        messages for interface ISnapshotTakenEvent
+        *************************************
+      -->
+  <!--
+        *************************************
+        messages for interface ISnapshotDeletedEvent
+        *************************************
+      -->
+  <!--
+        *************************************
+        messages for interface ISnapshotChangedEvent
+        *************************************
+      -->
+  <!--
+        *************************************
+        messages for interface IMousePointerShapeChangedEvent
+        *************************************
+      -->
+  <!-- readonly attribute IMousePointerShapeChangedEvent::visible-->
+  <message name="IMousePointerShapeChangedEvent_getVisibleRequestMsg">
+    <part name="parameters" element="vbox:IMousePointerShapeChangedEvent_getVisible"/>
+  </message>
+  <message name="IMousePointerShapeChangedEvent_getVisibleResultMsg">
+    <part name="parameters" element="vbox:IMousePointerShapeChangedEvent_getVisibleResponse"/>
+  </message>
+  <!-- readonly attribute IMousePointerShapeChangedEvent::alpha-->
+  <message name="IMousePointerShapeChangedEvent_getAlphaRequestMsg">
+    <part name="parameters" element="vbox:IMousePointerShapeChangedEvent_getAlpha"/>
+  </message>
+  <message name="IMousePointerShapeChangedEvent_getAlphaResultMsg">
+    <part name="parameters" element="vbox:IMousePointerShapeChangedEvent_getAlphaResponse"/>
+  </message>
+  <!-- readonly attribute IMousePointerShapeChangedEvent::xhot-->
+  <message name="IMousePointerShapeChangedEvent_getXhotRequestMsg">
+    <part name="parameters" element="vbox:IMousePointerShapeChangedEvent_getXhot"/>
+  </message>
+  <message name="IMousePointerShapeChangedEvent_getXhotResultMsg">
+    <part name="parameters" element="vbox:IMousePointerShapeChangedEvent_getXhotResponse"/>
+  </message>
+  <!-- readonly attribute IMousePointerShapeChangedEvent::yhot-->
+  <message name="IMousePointerShapeChangedEvent_getYhotRequestMsg">
+    <part name="parameters" element="vbox:IMousePointerShapeChangedEvent_getYhot"/>
+  </message>
+  <message name="IMousePointerShapeChangedEvent_getYhotResultMsg">
+    <part name="parameters" element="vbox:IMousePointerShapeChangedEvent_getYhotResponse"/>
+  </message>
+  <!-- readonly attribute IMousePointerShapeChangedEvent::width-->
+  <message name="IMousePointerShapeChangedEvent_getWidthRequestMsg">
+    <part name="parameters" element="vbox:IMousePointerShapeChangedEvent_getWidth"/>
+  </message>
+  <message name="IMousePointerShapeChangedEvent_getWidthResultMsg">
+    <part name="parameters" element="vbox:IMousePointerShapeChangedEvent_getWidthResponse"/>
+  </message>
+  <!-- readonly attribute IMousePointerShapeChangedEvent::height-->
+  <message name="IMousePointerShapeChangedEvent_getHeightRequestMsg">
+    <part name="parameters" element="vbox:IMousePointerShapeChangedEvent_getHeight"/>
+  </message>
+  <message name="IMousePointerShapeChangedEvent_getHeightResultMsg">
+    <part name="parameters" element="vbox:IMousePointerShapeChangedEvent_getHeightResponse"/>
+  </message>
+  <!-- readonly attribute IMousePointerShapeChangedEvent::shape-->
+  <message name="IMousePointerShapeChangedEvent_getShapeRequestMsg">
+    <part name="parameters" element="vbox:IMousePointerShapeChangedEvent_getShape"/>
+  </message>
+  <message name="IMousePointerShapeChangedEvent_getShapeResultMsg">
+    <part name="parameters" element="vbox:IMousePointerShapeChangedEvent_getShapeResponse"/>
+  </message>
+  <!--
+        *************************************
+        messages for interface IMouseCapabilityChangedEvent
+        *************************************
+      -->
+  <!-- readonly attribute IMouseCapabilityChangedEvent::supportsAbsolute-->
+  <message name="IMouseCapabilityChangedEvent_getSupportsAbsoluteRequestMsg">
+    <part name="parameters" element="vbox:IMouseCapabilityChangedEvent_getSupportsAbsolute"/>
+  </message>
+  <message name="IMouseCapabilityChangedEvent_getSupportsAbsoluteResultMsg">
+    <part name="parameters" element="vbox:IMouseCapabilityChangedEvent_getSupportsAbsoluteResponse"/>
+  </message>
+  <!-- readonly attribute IMouseCapabilityChangedEvent::supportsRelative-->
+  <message name="IMouseCapabilityChangedEvent_getSupportsRelativeRequestMsg">
+    <part name="parameters" element="vbox:IMouseCapabilityChangedEvent_getSupportsRelative"/>
+  </message>
+  <message name="IMouseCapabilityChangedEvent_getSupportsRelativeResultMsg">
+    <part name="parameters" element="vbox:IMouseCapabilityChangedEvent_getSupportsRelativeResponse"/>
+  </message>
+  <!-- readonly attribute IMouseCapabilityChangedEvent::needsHostCursor-->
+  <message name="IMouseCapabilityChangedEvent_getNeedsHostCursorRequestMsg">
+    <part name="parameters" element="vbox:IMouseCapabilityChangedEvent_getNeedsHostCursor"/>
+  </message>
+  <message name="IMouseCapabilityChangedEvent_getNeedsHostCursorResultMsg">
+    <part name="parameters" element="vbox:IMouseCapabilityChangedEvent_getNeedsHostCursorResponse"/>
+  </message>
+  <!--
+        *************************************
+        messages for interface IKeyboardLedsChangedEvent
+        *************************************
+      -->
+  <!-- readonly attribute IKeyboardLedsChangedEvent::numLock-->
+  <message name="IKeyboardLedsChangedEvent_getNumLockRequestMsg">
+    <part name="parameters" element="vbox:IKeyboardLedsChangedEvent_getNumLock"/>
+  </message>
+  <message name="IKeyboardLedsChangedEvent_getNumLockResultMsg">
+    <part name="parameters" element="vbox:IKeyboardLedsChangedEvent_getNumLockResponse"/>
+  </message>
+  <!-- readonly attribute IKeyboardLedsChangedEvent::capsLock-->
+  <message name="IKeyboardLedsChangedEvent_getCapsLockRequestMsg">
+    <part name="parameters" element="vbox:IKeyboardLedsChangedEvent_getCapsLock"/>
+  </message>
+  <message name="IKeyboardLedsChangedEvent_getCapsLockResultMsg">
+    <part name="parameters" element="vbox:IKeyboardLedsChangedEvent_getCapsLockResponse"/>
+  </message>
+  <!-- readonly attribute IKeyboardLedsChangedEvent::scrollLock-->
+  <message name="IKeyboardLedsChangedEvent_getScrollLockRequestMsg">
+    <part name="parameters" element="vbox:IKeyboardLedsChangedEvent_getScrollLock"/>
+  </message>
+  <message name="IKeyboardLedsChangedEvent_getScrollLockResultMsg">
+    <part name="parameters" element="vbox:IKeyboardLedsChangedEvent_getScrollLockResponse"/>
+  </message>
+  <!--
+        *************************************
+        messages for interface IStateChangedEvent
+        *************************************
+      -->
+  <!-- readonly attribute IStateChangedEvent::state-->
+  <message name="IStateChangedEvent_getStateRequestMsg">
+    <part name="parameters" element="vbox:IStateChangedEvent_getState"/>
+  </message>
+  <message name="IStateChangedEvent_getStateResultMsg">
+    <part name="parameters" element="vbox:IStateChangedEvent_getStateResponse"/>
+  </message>
+  <!--
+        *************************************
+        messages for interface IAdditionsStateChangedEvent
+        *************************************
+      -->
+  <!--
+        *************************************
+        messages for interface INetworkAdapterChangedEvent
+        *************************************
+      -->
+  <!-- readonly attribute INetworkAdapterChangedEvent::networkAdapter-->
+  <message name="INetworkAdapterChangedEvent_getNetworkAdapterRequestMsg">
+    <part name="parameters" element="vbox:INetworkAdapterChangedEvent_getNetworkAdapter"/>
+  </message>
+  <message name="INetworkAdapterChangedEvent_getNetworkAdapterResultMsg">
+    <part name="parameters" element="vbox:INetworkAdapterChangedEvent_getNetworkAdapterResponse"/>
+  </message>
+  <!--
+        *************************************
+        messages for interface ISerialPortChangedEvent
+        *************************************
+      -->
+  <!-- readonly attribute ISerialPortChangedEvent::serialPort-->
+  <message name="ISerialPortChangedEvent_getSerialPortRequestMsg">
+    <part name="parameters" element="vbox:ISerialPortChangedEvent_getSerialPort"/>
+  </message>
+  <message name="ISerialPortChangedEvent_getSerialPortResultMsg">
+    <part name="parameters" element="vbox:ISerialPortChangedEvent_getSerialPortResponse"/>
+  </message>
+  <!--
+        *************************************
+        messages for interface IParallelPortChangedEvent
+        *************************************
+      -->
+  <!-- readonly attribute IParallelPortChangedEvent::parallelPort-->
+  <message name="IParallelPortChangedEvent_getParallelPortRequestMsg">
+    <part name="parameters" element="vbox:IParallelPortChangedEvent_getParallelPort"/>
+  </message>
+  <message name="IParallelPortChangedEvent_getParallelPortResultMsg">
+    <part name="parameters" element="vbox:IParallelPortChangedEvent_getParallelPortResponse"/>
+  </message>
+  <!--
+        *************************************
+        messages for interface IStorageControllerChangedEvent
+        *************************************
+      -->
+  <!--
+        *************************************
+        messages for interface IMediumChangedEvent
+        *************************************
+      -->
+  <!-- readonly attribute IMediumChangedEvent::mediumAttachment-->
+  <message name="IMediumChangedEvent_getMediumAttachmentRequestMsg">
+    <part name="parameters" element="vbox:IMediumChangedEvent_getMediumAttachment"/>
+  </message>
+  <message name="IMediumChangedEvent_getMediumAttachmentResultMsg">
+    <part name="parameters" element="vbox:IMediumChangedEvent_getMediumAttachmentResponse"/>
+  </message>
+  <!--
+        *************************************
+        messages for interface ICPUChangedEvent
+        *************************************
+      -->
+  <!-- readonly attribute ICPUChangedEvent::cpu-->
+  <message name="ICPUChangedEvent_getCpuRequestMsg">
+    <part name="parameters" element="vbox:ICPUChangedEvent_getCpu"/>
+  </message>
+  <message name="ICPUChangedEvent_getCpuResultMsg">
+    <part name="parameters" element="vbox:ICPUChangedEvent_getCpuResponse"/>
+  </message>
+  <!-- readonly attribute ICPUChangedEvent::add-->
+  <message name="ICPUChangedEvent_getAddRequestMsg">
+    <part name="parameters" element="vbox:ICPUChangedEvent_getAdd"/>
+  </message>
+  <message name="ICPUChangedEvent_getAddResultMsg">
+    <part name="parameters" element="vbox:ICPUChangedEvent_getAddResponse"/>
+  </message>
+  <!--
+        *************************************
+        messages for interface IVRDPServerChangedEvent
+        *************************************
+      -->
+  <!--
+        *************************************
+        messages for interface IRemoteDisplayInfoChangedEvent
+        *************************************
+      -->
+  <!--
+        *************************************
+        messages for interface IUSBControllerChangedEvent
+        *************************************
+      -->
+  <!--
+        *************************************
+        messages for interface IUSBDeviceStateChangedEvent
+        *************************************
+      -->
+  <!-- readonly attribute IUSBDeviceStateChangedEvent::device-->
+  <message name="IUSBDeviceStateChangedEvent_getDeviceRequestMsg">
+    <part name="parameters" element="vbox:IUSBDeviceStateChangedEvent_getDevice"/>
+  </message>
+  <message name="IUSBDeviceStateChangedEvent_getDeviceResultMsg">
+    <part name="parameters" element="vbox:IUSBDeviceStateChangedEvent_getDeviceResponse"/>
+  </message>
+  <!-- readonly attribute IUSBDeviceStateChangedEvent::attached-->
+  <message name="IUSBDeviceStateChangedEvent_getAttachedRequestMsg">
+    <part name="parameters" element="vbox:IUSBDeviceStateChangedEvent_getAttached"/>
+  </message>
+  <message name="IUSBDeviceStateChangedEvent_getAttachedResultMsg">
+    <part name="parameters" element="vbox:IUSBDeviceStateChangedEvent_getAttachedResponse"/>
+  </message>
+  <!-- readonly attribute IUSBDeviceStateChangedEvent::error-->
+  <message name="IUSBDeviceStateChangedEvent_getErrorRequestMsg">
+    <part name="parameters" element="vbox:IUSBDeviceStateChangedEvent_getError"/>
+  </message>
+  <message name="IUSBDeviceStateChangedEvent_getErrorResultMsg">
+    <part name="parameters" element="vbox:IUSBDeviceStateChangedEvent_getErrorResponse"/>
+  </message>
+  <!--
+        *************************************
+        messages for interface ISharedFolderChangedEvent
+        *************************************
+      -->
+  <!-- readonly attribute ISharedFolderChangedEvent::scope-->
+  <message name="ISharedFolderChangedEvent_getScopeRequestMsg">
+    <part name="parameters" element="vbox:ISharedFolderChangedEvent_getScope"/>
+  </message>
+  <message name="ISharedFolderChangedEvent_getScopeResultMsg">
+    <part name="parameters" element="vbox:ISharedFolderChangedEvent_getScopeResponse"/>
+  </message>
+  <!--
+        *************************************
+        messages for interface IRuntimeErrorEvent
+        *************************************
+      -->
+  <!-- readonly attribute IRuntimeErrorEvent::fatal-->
+  <message name="IRuntimeErrorEvent_getFatalRequestMsg">
+    <part name="parameters" element="vbox:IRuntimeErrorEvent_getFatal"/>
+  </message>
+  <message name="IRuntimeErrorEvent_getFatalResultMsg">
+    <part name="parameters" element="vbox:IRuntimeErrorEvent_getFatalResponse"/>
+  </message>
+  <!-- readonly attribute IRuntimeErrorEvent::id-->
+  <message name="IRuntimeErrorEvent_getIdRequestMsg">
+    <part name="parameters" element="vbox:IRuntimeErrorEvent_getId"/>
+  </message>
+  <message name="IRuntimeErrorEvent_getIdResultMsg">
+    <part name="parameters" element="vbox:IRuntimeErrorEvent_getIdResponse"/>
+  </message>
+  <!-- readonly attribute IRuntimeErrorEvent::message-->
+  <message name="IRuntimeErrorEvent_getMessageRequestMsg">
+    <part name="parameters" element="vbox:IRuntimeErrorEvent_getMessage"/>
+  </message>
+  <message name="IRuntimeErrorEvent_getMessageResultMsg">
+    <part name="parameters" element="vbox:IRuntimeErrorEvent_getMessageResponse"/>
+  </message>
+  <!--
+        *************************************
+        messages for interface IEventSourceChangedEvent
+        *************************************
+      -->
+  <!-- readonly attribute IEventSourceChangedEvent::listener-->
+  <message name="IEventSourceChangedEvent_getListenerRequestMsg">
+    <part name="parameters" element="vbox:IEventSourceChangedEvent_getListener"/>
+  </message>
+  <message name="IEventSourceChangedEvent_getListenerResultMsg">
+    <part name="parameters" element="vbox:IEventSourceChangedEvent_getListenerResponse"/>
+  </message>
+  <!-- readonly attribute IEventSourceChangedEvent::add-->
+  <message name="IEventSourceChangedEvent_getAddRequestMsg">
+    <part name="parameters" element="vbox:IEventSourceChangedEvent_getAdd"/>
+  </message>
+  <message name="IEventSourceChangedEvent_getAddResultMsg">
+    <part name="parameters" element="vbox:IEventSourceChangedEvent_getAddResponse"/>
+  </message>
+  <!--
+        *************************************
+        messages for interface IExtraDataChangedEvent
+        *************************************
+      -->
+  <!-- readonly attribute IExtraDataChangedEvent::machineId-->
+  <message name="IExtraDataChangedEvent_getMachineIdRequestMsg">
+    <part name="parameters" element="vbox:IExtraDataChangedEvent_getMachineId"/>
+  </message>
+  <message name="IExtraDataChangedEvent_getMachineIdResultMsg">
+    <part name="parameters" element="vbox:IExtraDataChangedEvent_getMachineIdResponse"/>
+  </message>
+  <!-- readonly attribute IExtraDataChangedEvent::key-->
+  <message name="IExtraDataChangedEvent_getKeyRequestMsg">
+    <part name="parameters" element="vbox:IExtraDataChangedEvent_getKey"/>
+  </message>
+  <message name="IExtraDataChangedEvent_getKeyResultMsg">
+    <part name="parameters" element="vbox:IExtraDataChangedEvent_getKeyResponse"/>
+  </message>
+  <!-- readonly attribute IExtraDataChangedEvent::value-->
+  <message name="IExtraDataChangedEvent_getValueRequestMsg">
+    <part name="parameters" element="vbox:IExtraDataChangedEvent_getValue"/>
+  </message>
+  <message name="IExtraDataChangedEvent_getValueResultMsg">
+    <part name="parameters" element="vbox:IExtraDataChangedEvent_getValueResponse"/>
+  </message>
+  <!--
+        *************************************
+        messages for interface IVetoEvent
+        *************************************
+      -->
+  <!-- method IVetoEvent::addVeto-->
+  <message name="IVetoEvent_addVetoRequestMsg">
+    <part name="parameters" element="vbox:IVetoEvent_addVeto"/>
+  </message>
+  <message name="IVetoEvent_addVetoResultMsg">
+    <part name="parameters" element="vbox:IVetoEvent_addVetoResponse"/>
+  </message>
+  <!-- method IVetoEvent::isVetoed-->
+  <message name="IVetoEvent_isVetoedRequestMsg">
+    <part name="parameters" element="vbox:IVetoEvent_isVetoed"/>
+  </message>
+  <message name="IVetoEvent_isVetoedResultMsg">
+    <part name="parameters" element="vbox:IVetoEvent_isVetoedResponse"/>
+  </message>
+  <!-- method IVetoEvent::getVetos-->
+  <message name="IVetoEvent_getVetosRequestMsg">
+    <part name="parameters" element="vbox:IVetoEvent_getVetos"/>
+  </message>
+  <message name="IVetoEvent_getVetosResultMsg">
+    <part name="parameters" element="vbox:IVetoEvent_getVetosResponse"/>
+  </message>
+  <!--
+        *************************************
+        messages for interface IExtraDataCanChangeEvent
+        *************************************
+      -->
+  <!-- readonly attribute IExtraDataCanChangeEvent::machineId-->
+  <message name="IExtraDataCanChangeEvent_getMachineIdRequestMsg">
+    <part name="parameters" element="vbox:IExtraDataCanChangeEvent_getMachineId"/>
+  </message>
+  <message name="IExtraDataCanChangeEvent_getMachineIdResultMsg">
+    <part name="parameters" element="vbox:IExtraDataCanChangeEvent_getMachineIdResponse"/>
+  </message>
+  <!-- readonly attribute IExtraDataCanChangeEvent::key-->
+  <message name="IExtraDataCanChangeEvent_getKeyRequestMsg">
+    <part name="parameters" element="vbox:IExtraDataCanChangeEvent_getKey"/>
+  </message>
+  <message name="IExtraDataCanChangeEvent_getKeyResultMsg">
+    <part name="parameters" element="vbox:IExtraDataCanChangeEvent_getKeyResponse"/>
+  </message>
+  <!-- readonly attribute IExtraDataCanChangeEvent::value-->
+  <message name="IExtraDataCanChangeEvent_getValueRequestMsg">
+    <part name="parameters" element="vbox:IExtraDataCanChangeEvent_getValue"/>
+  </message>
+  <message name="IExtraDataCanChangeEvent_getValueResultMsg">
+    <part name="parameters" element="vbox:IExtraDataCanChangeEvent_getValueResponse"/>
+  </message>
+  <!--
+        *************************************
+        messages for interface ICanShowWindowEvent
+        *************************************
+      -->
+  <!--
+        *************************************
+        messages for interface IShowWindowEvent
+        *************************************
+      -->
+  <!-- read/write attribute IShowWindowEvent::winId-->
+  <message name="IShowWindowEvent_getWinIdRequestMsg">
+    <part name="parameters" element="vbox:IShowWindowEvent_getWinId"/>
+  </message>
+  <message name="IShowWindowEvent_getWinIdResultMsg">
+    <part name="parameters" element="vbox:IShowWindowEvent_getWinIdResponse"/>
+  </message>
+  <message name="IShowWindowEvent_setWinIdRequestMsg">
+    <part name="parameters" element="vbox:IShowWindowEvent_setWinId"/>
+  </message>
+  <message name="IShowWindowEvent_setWinIdResultMsg">
+    <part name="parameters" element="vbox:IShowWindowEvent_setWinIdResponse"/>
+  </message>
+  <!--
       ******************************************************
       *
       * one portType for all interfaces
@@ -15486,16 +17154,6 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <!--
-          *************************************
-          operations in portType for interface ILocalOwner
-          *************************************
-        -->
-    <!--
-          *************************************
-          operations in portType for interface IVirtualBoxCallback
-          *************************************
-        -->
     <!--
           *************************************
           operations in portType for interface IDHCPServer
@@ -15662,6 +17320,12 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
+    <operation name="IVirtualBox_getEventSource">
+      <input message="vbox:IVirtualBox_getEventSourceRequestMsg"/>
+      <output message="vbox:IVirtualBox_getEventSourceResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
     <operation name="IVirtualBox_createMachine">
       <input message="vbox:IVirtualBox_createMachineRequestMsg"/>
       <output message="vbox:IVirtualBox_createMachineResultMsg"/>
@@ -15695,12 +17359,6 @@
     <operation name="IVirtualBox_findMachine">
       <input message="vbox:IVirtualBox_findMachineRequestMsg"/>
       <output message="vbox:IVirtualBox_findMachineResultMsg"/>
-      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
-      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
-    </operation>
-    <operation name="IVirtualBox_unregisterMachine">
-      <input message="vbox:IVirtualBox_unregisterMachineRequestMsg"/>
-      <output message="vbox:IVirtualBox_unregisterMachineResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -15806,26 +17464,6 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IVirtualBox_openSession">
-      <input message="vbox:IVirtualBox_openSessionRequestMsg"/>
-      <output message="vbox:IVirtualBox_openSessionResultMsg"/>
-      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
-      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
-    </operation>
-    <operation name="IVirtualBox_openRemoteSession">
-      <input message="vbox:IVirtualBox_openRemoteSessionRequestMsg"/>
-      <output message="vbox:IVirtualBox_openRemoteSessionResultMsg"/>
-      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
-      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
-    </operation>
-    <operation name="IVirtualBox_openExistingSession">
-      <input message="vbox:IVirtualBox_openExistingSessionRequestMsg"/>
-      <output message="vbox:IVirtualBox_openExistingSessionResultMsg"/>
-      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
-      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
-    </operation>
-    <!--skipping method registerCallback for it has parameters with suppressed types-->
-    <!--skipping method unregisterCallback for it has parameters with suppressed types-->
     <operation name="IVirtualBox_waitForPropertyChange">
       <input message="vbox:IVirtualBox_waitForPropertyChangeRequestMsg"/>
       <output message="vbox:IVirtualBox_waitForPropertyChangeResultMsg"/>
@@ -15929,6 +17567,12 @@
     <operation name="IAppliance_getVirtualSystemDescriptions">
       <input message="vbox:IAppliance_getVirtualSystemDescriptionsRequestMsg"/>
       <output message="vbox:IAppliance_getVirtualSystemDescriptionsResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IAppliance_getMachines">
+      <input message="vbox:IAppliance_getMachinesRequestMsg"/>
+      <output message="vbox:IAppliance_getMachinesResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -16618,6 +18262,18 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
+    <operation name="IMachine_lockMachine">
+      <input message="vbox:IMachine_lockMachineRequestMsg"/>
+      <output message="vbox:IMachine_lockMachineResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IMachine_launchVMProcess">
+      <input message="vbox:IMachine_launchVMProcessRequestMsg"/>
+      <output message="vbox:IMachine_launchVMProcessResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
     <operation name="IMachine_setBootOrder">
       <input message="vbox:IMachine_setBootOrderRequestMsg"/>
       <output message="vbox:IMachine_setBootOrderResultMsg"/>
@@ -16792,9 +18448,15 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IMachine_deleteSettings">
-      <input message="vbox:IMachine_deleteSettingsRequestMsg"/>
-      <output message="vbox:IMachine_deleteSettingsResultMsg"/>
+    <operation name="IMachine_unregister">
+      <input message="vbox:IMachine_unregisterRequestMsg"/>
+      <output message="vbox:IMachine_unregisterResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IMachine_delete">
+      <input message="vbox:IMachine_deleteRequestMsg"/>
+      <output message="vbox:IMachine_deleteResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -16938,11 +18600,6 @@
     </operation>
     <!--
           *************************************
-          operations in portType for interface IConsoleCallback
-          *************************************
-        -->
-    <!--
-          *************************************
           operations in portType for interface IRemoteDisplayInfo
           *************************************
         -->
@@ -17009,6 +18666,12 @@
     <operation name="IConsole_getRemoteDisplayInfo">
       <input message="vbox:IConsole_getRemoteDisplayInfoRequestMsg"/>
       <output message="vbox:IConsole_getRemoteDisplayInfoResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IConsole_getEventSource">
+      <input message="vbox:IConsole_getEventSourceRequestMsg"/>
+      <output message="vbox:IConsole_getEventSourceResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -17156,8 +18819,6 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <!--skipping method registerCallback for it has parameters with suppressed types-->
-    <!--skipping method unregisterCallback for it has parameters with suppressed types-->
     <!--
           *************************************
           operations in portType for interface IHostNetworkInterface
@@ -18022,6 +19683,12 @@
     <operation name="IMedium_getState">
       <input message="vbox:IMedium_getStateRequestMsg"/>
       <output message="vbox:IMedium_getStateResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IMedium_getVariant">
+      <input message="vbox:IMedium_getVariantRequestMsg"/>
+      <output message="vbox:IMedium_getVariantResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -19252,9 +20919,9 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="ISession_close">
-      <input message="vbox:ISession_closeRequestMsg"/>
-      <output message="vbox:ISession_closeResultMsg"/>
+    <operation name="ISession_unlockMachine">
+      <input message="vbox:ISession_unlockMachineRequestMsg"/>
+      <output message="vbox:ISession_unlockMachineResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -19630,6 +21297,546 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
+    <!--
+          *************************************
+          operations in portType for interface IEventSource
+          *************************************
+        -->
+    <operation name="IEventSource_createListener">
+      <input message="vbox:IEventSource_createListenerRequestMsg"/>
+      <output message="vbox:IEventSource_createListenerResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IEventSource_registerListener">
+      <input message="vbox:IEventSource_registerListenerRequestMsg"/>
+      <output message="vbox:IEventSource_registerListenerResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IEventSource_unregisterListener">
+      <input message="vbox:IEventSource_unregisterListenerRequestMsg"/>
+      <output message="vbox:IEventSource_unregisterListenerResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IEventSource_fireEvent">
+      <input message="vbox:IEventSource_fireEventRequestMsg"/>
+      <output message="vbox:IEventSource_fireEventResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IEventSource_getEvent">
+      <input message="vbox:IEventSource_getEventRequestMsg"/>
+      <output message="vbox:IEventSource_getEventResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IEventSource_eventProcessed">
+      <input message="vbox:IEventSource_eventProcessedRequestMsg"/>
+      <output message="vbox:IEventSource_eventProcessedResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IEventListener
+          *************************************
+        -->
+    <operation name="IEventListener_handleEvent">
+      <input message="vbox:IEventListener_handleEventRequestMsg"/>
+      <output message="vbox:IEventListener_handleEventResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IEvent
+          *************************************
+        -->
+    <operation name="IEvent_getType">
+      <input message="vbox:IEvent_getTypeRequestMsg"/>
+      <output message="vbox:IEvent_getTypeResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IEvent_getSource">
+      <input message="vbox:IEvent_getSourceRequestMsg"/>
+      <output message="vbox:IEvent_getSourceResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IEvent_getWaitable">
+      <input message="vbox:IEvent_getWaitableRequestMsg"/>
+      <output message="vbox:IEvent_getWaitableResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IEvent_setProcessed">
+      <input message="vbox:IEvent_setProcessedRequestMsg"/>
+      <output message="vbox:IEvent_setProcessedResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IEvent_waitProcessed">
+      <input message="vbox:IEvent_waitProcessedRequestMsg"/>
+      <output message="vbox:IEvent_waitProcessedResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IMachineEvent
+          *************************************
+        -->
+    <operation name="IMachineEvent_getMachineId">
+      <input message="vbox:IMachineEvent_getMachineIdRequestMsg"/>
+      <output message="vbox:IMachineEvent_getMachineIdResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IMachineStateChangedEvent
+          *************************************
+        -->
+    <operation name="IMachineStateChangedEvent_getState">
+      <input message="vbox:IMachineStateChangedEvent_getStateRequestMsg"/>
+      <output message="vbox:IMachineStateChangedEvent_getStateResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IMachineDataChangedEvent
+          *************************************
+        -->
+    <!--
+          *************************************
+          operations in portType for interface IMachineRegisteredEvent
+          *************************************
+        -->
+    <operation name="IMachineRegisteredEvent_getRegistered">
+      <input message="vbox:IMachineRegisteredEvent_getRegisteredRequestMsg"/>
+      <output message="vbox:IMachineRegisteredEvent_getRegisteredResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface ISessionStateChangedEvent
+          *************************************
+        -->
+    <operation name="ISessionStateChangedEvent_getState">
+      <input message="vbox:ISessionStateChangedEvent_getStateRequestMsg"/>
+      <output message="vbox:ISessionStateChangedEvent_getStateResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IGuestPropertyChangedEvent
+          *************************************
+        -->
+    <operation name="IGuestPropertyChangedEvent_getName">
+      <input message="vbox:IGuestPropertyChangedEvent_getNameRequestMsg"/>
+      <output message="vbox:IGuestPropertyChangedEvent_getNameResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IGuestPropertyChangedEvent_getValue">
+      <input message="vbox:IGuestPropertyChangedEvent_getValueRequestMsg"/>
+      <output message="vbox:IGuestPropertyChangedEvent_getValueResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IGuestPropertyChangedEvent_getFlags">
+      <input message="vbox:IGuestPropertyChangedEvent_getFlagsRequestMsg"/>
+      <output message="vbox:IGuestPropertyChangedEvent_getFlagsResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface ISnapshotEvent
+          *************************************
+        -->
+    <operation name="ISnapshotEvent_getSnapshotId">
+      <input message="vbox:ISnapshotEvent_getSnapshotIdRequestMsg"/>
+      <output message="vbox:ISnapshotEvent_getSnapshotIdResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface ISnapshotTakenEvent
+          *************************************
+        -->
+    <!--
+          *************************************
+          operations in portType for interface ISnapshotDeletedEvent
+          *************************************
+        -->
+    <!--
+          *************************************
+          operations in portType for interface ISnapshotChangedEvent
+          *************************************
+        -->
+    <!--
+          *************************************
+          operations in portType for interface IMousePointerShapeChangedEvent
+          *************************************
+        -->
+    <operation name="IMousePointerShapeChangedEvent_getVisible">
+      <input message="vbox:IMousePointerShapeChangedEvent_getVisibleRequestMsg"/>
+      <output message="vbox:IMousePointerShapeChangedEvent_getVisibleResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IMousePointerShapeChangedEvent_getAlpha">
+      <input message="vbox:IMousePointerShapeChangedEvent_getAlphaRequestMsg"/>
+      <output message="vbox:IMousePointerShapeChangedEvent_getAlphaResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IMousePointerShapeChangedEvent_getXhot">
+      <input message="vbox:IMousePointerShapeChangedEvent_getXhotRequestMsg"/>
+      <output message="vbox:IMousePointerShapeChangedEvent_getXhotResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IMousePointerShapeChangedEvent_getYhot">
+      <input message="vbox:IMousePointerShapeChangedEvent_getYhotRequestMsg"/>
+      <output message="vbox:IMousePointerShapeChangedEvent_getYhotResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IMousePointerShapeChangedEvent_getWidth">
+      <input message="vbox:IMousePointerShapeChangedEvent_getWidthRequestMsg"/>
+      <output message="vbox:IMousePointerShapeChangedEvent_getWidthResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IMousePointerShapeChangedEvent_getHeight">
+      <input message="vbox:IMousePointerShapeChangedEvent_getHeightRequestMsg"/>
+      <output message="vbox:IMousePointerShapeChangedEvent_getHeightResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IMousePointerShapeChangedEvent_getShape">
+      <input message="vbox:IMousePointerShapeChangedEvent_getShapeRequestMsg"/>
+      <output message="vbox:IMousePointerShapeChangedEvent_getShapeResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IMouseCapabilityChangedEvent
+          *************************************
+        -->
+    <operation name="IMouseCapabilityChangedEvent_getSupportsAbsolute">
+      <input message="vbox:IMouseCapabilityChangedEvent_getSupportsAbsoluteRequestMsg"/>
+      <output message="vbox:IMouseCapabilityChangedEvent_getSupportsAbsoluteResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IMouseCapabilityChangedEvent_getSupportsRelative">
+      <input message="vbox:IMouseCapabilityChangedEvent_getSupportsRelativeRequestMsg"/>
+      <output message="vbox:IMouseCapabilityChangedEvent_getSupportsRelativeResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IMouseCapabilityChangedEvent_getNeedsHostCursor">
+      <input message="vbox:IMouseCapabilityChangedEvent_getNeedsHostCursorRequestMsg"/>
+      <output message="vbox:IMouseCapabilityChangedEvent_getNeedsHostCursorResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IKeyboardLedsChangedEvent
+          *************************************
+        -->
+    <operation name="IKeyboardLedsChangedEvent_getNumLock">
+      <input message="vbox:IKeyboardLedsChangedEvent_getNumLockRequestMsg"/>
+      <output message="vbox:IKeyboardLedsChangedEvent_getNumLockResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IKeyboardLedsChangedEvent_getCapsLock">
+      <input message="vbox:IKeyboardLedsChangedEvent_getCapsLockRequestMsg"/>
+      <output message="vbox:IKeyboardLedsChangedEvent_getCapsLockResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IKeyboardLedsChangedEvent_getScrollLock">
+      <input message="vbox:IKeyboardLedsChangedEvent_getScrollLockRequestMsg"/>
+      <output message="vbox:IKeyboardLedsChangedEvent_getScrollLockResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IStateChangedEvent
+          *************************************
+        -->
+    <operation name="IStateChangedEvent_getState">
+      <input message="vbox:IStateChangedEvent_getStateRequestMsg"/>
+      <output message="vbox:IStateChangedEvent_getStateResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IAdditionsStateChangedEvent
+          *************************************
+        -->
+    <!--
+          *************************************
+          operations in portType for interface INetworkAdapterChangedEvent
+          *************************************
+        -->
+    <operation name="INetworkAdapterChangedEvent_getNetworkAdapter">
+      <input message="vbox:INetworkAdapterChangedEvent_getNetworkAdapterRequestMsg"/>
+      <output message="vbox:INetworkAdapterChangedEvent_getNetworkAdapterResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface ISerialPortChangedEvent
+          *************************************
+        -->
+    <operation name="ISerialPortChangedEvent_getSerialPort">
+      <input message="vbox:ISerialPortChangedEvent_getSerialPortRequestMsg"/>
+      <output message="vbox:ISerialPortChangedEvent_getSerialPortResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IParallelPortChangedEvent
+          *************************************
+        -->
+    <operation name="IParallelPortChangedEvent_getParallelPort">
+      <input message="vbox:IParallelPortChangedEvent_getParallelPortRequestMsg"/>
+      <output message="vbox:IParallelPortChangedEvent_getParallelPortResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IStorageControllerChangedEvent
+          *************************************
+        -->
+    <!--
+          *************************************
+          operations in portType for interface IMediumChangedEvent
+          *************************************
+        -->
+    <operation name="IMediumChangedEvent_getMediumAttachment">
+      <input message="vbox:IMediumChangedEvent_getMediumAttachmentRequestMsg"/>
+      <output message="vbox:IMediumChangedEvent_getMediumAttachmentResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface ICPUChangedEvent
+          *************************************
+        -->
+    <operation name="ICPUChangedEvent_getCpu">
+      <input message="vbox:ICPUChangedEvent_getCpuRequestMsg"/>
+      <output message="vbox:ICPUChangedEvent_getCpuResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="ICPUChangedEvent_getAdd">
+      <input message="vbox:ICPUChangedEvent_getAddRequestMsg"/>
+      <output message="vbox:ICPUChangedEvent_getAddResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IVRDPServerChangedEvent
+          *************************************
+        -->
+    <!--
+          *************************************
+          operations in portType for interface IRemoteDisplayInfoChangedEvent
+          *************************************
+        -->
+    <!--
+          *************************************
+          operations in portType for interface IUSBControllerChangedEvent
+          *************************************
+        -->
+    <!--
+          *************************************
+          operations in portType for interface IUSBDeviceStateChangedEvent
+          *************************************
+        -->
+    <operation name="IUSBDeviceStateChangedEvent_getDevice">
+      <input message="vbox:IUSBDeviceStateChangedEvent_getDeviceRequestMsg"/>
+      <output message="vbox:IUSBDeviceStateChangedEvent_getDeviceResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IUSBDeviceStateChangedEvent_getAttached">
+      <input message="vbox:IUSBDeviceStateChangedEvent_getAttachedRequestMsg"/>
+      <output message="vbox:IUSBDeviceStateChangedEvent_getAttachedResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IUSBDeviceStateChangedEvent_getError">
+      <input message="vbox:IUSBDeviceStateChangedEvent_getErrorRequestMsg"/>
+      <output message="vbox:IUSBDeviceStateChangedEvent_getErrorResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface ISharedFolderChangedEvent
+          *************************************
+        -->
+    <operation name="ISharedFolderChangedEvent_getScope">
+      <input message="vbox:ISharedFolderChangedEvent_getScopeRequestMsg"/>
+      <output message="vbox:ISharedFolderChangedEvent_getScopeResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IRuntimeErrorEvent
+          *************************************
+        -->
+    <operation name="IRuntimeErrorEvent_getFatal">
+      <input message="vbox:IRuntimeErrorEvent_getFatalRequestMsg"/>
+      <output message="vbox:IRuntimeErrorEvent_getFatalResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IRuntimeErrorEvent_getId">
+      <input message="vbox:IRuntimeErrorEvent_getIdRequestMsg"/>
+      <output message="vbox:IRuntimeErrorEvent_getIdResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IRuntimeErrorEvent_getMessage">
+      <input message="vbox:IRuntimeErrorEvent_getMessageRequestMsg"/>
+      <output message="vbox:IRuntimeErrorEvent_getMessageResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IEventSourceChangedEvent
+          *************************************
+        -->
+    <operation name="IEventSourceChangedEvent_getListener">
+      <input message="vbox:IEventSourceChangedEvent_getListenerRequestMsg"/>
+      <output message="vbox:IEventSourceChangedEvent_getListenerResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IEventSourceChangedEvent_getAdd">
+      <input message="vbox:IEventSourceChangedEvent_getAddRequestMsg"/>
+      <output message="vbox:IEventSourceChangedEvent_getAddResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IExtraDataChangedEvent
+          *************************************
+        -->
+    <operation name="IExtraDataChangedEvent_getMachineId">
+      <input message="vbox:IExtraDataChangedEvent_getMachineIdRequestMsg"/>
+      <output message="vbox:IExtraDataChangedEvent_getMachineIdResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IExtraDataChangedEvent_getKey">
+      <input message="vbox:IExtraDataChangedEvent_getKeyRequestMsg"/>
+      <output message="vbox:IExtraDataChangedEvent_getKeyResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IExtraDataChangedEvent_getValue">
+      <input message="vbox:IExtraDataChangedEvent_getValueRequestMsg"/>
+      <output message="vbox:IExtraDataChangedEvent_getValueResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IVetoEvent
+          *************************************
+        -->
+    <operation name="IVetoEvent_addVeto">
+      <input message="vbox:IVetoEvent_addVetoRequestMsg"/>
+      <output message="vbox:IVetoEvent_addVetoResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IVetoEvent_isVetoed">
+      <input message="vbox:IVetoEvent_isVetoedRequestMsg"/>
+      <output message="vbox:IVetoEvent_isVetoedResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IVetoEvent_getVetos">
+      <input message="vbox:IVetoEvent_getVetosRequestMsg"/>
+      <output message="vbox:IVetoEvent_getVetosResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IExtraDataCanChangeEvent
+          *************************************
+        -->
+    <operation name="IExtraDataCanChangeEvent_getMachineId">
+      <input message="vbox:IExtraDataCanChangeEvent_getMachineIdRequestMsg"/>
+      <output message="vbox:IExtraDataCanChangeEvent_getMachineIdResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IExtraDataCanChangeEvent_getKey">
+      <input message="vbox:IExtraDataCanChangeEvent_getKeyRequestMsg"/>
+      <output message="vbox:IExtraDataCanChangeEvent_getKeyResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IExtraDataCanChangeEvent_getValue">
+      <input message="vbox:IExtraDataCanChangeEvent_getValueRequestMsg"/>
+      <output message="vbox:IExtraDataCanChangeEvent_getValueResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface ICanShowWindowEvent
+          *************************************
+        -->
+    <!--
+          *************************************
+          operations in portType for interface IShowWindowEvent
+          *************************************
+        -->
+    <operation name="IShowWindowEvent_getWinId">
+      <input message="vbox:IShowWindowEvent_getWinIdRequestMsg"/>
+      <output message="vbox:IShowWindowEvent_getWinIdResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IShowWindowEvent_setWinId">
+      <input message="vbox:IShowWindowEvent_setWinIdRequestMsg"/>
+      <output message="vbox:IShowWindowEvent_setWinIdResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
   </portType>
   <!--
       ******************************************************
@@ -19720,16 +21927,6 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <!--
-          *************************************
-          operations in portType for interface ILocalOwner
-          *************************************
-        -->
-    <!--
-          *************************************
-          operations in portType for interface IVirtualBoxCallback
-          *************************************
-        -->
     <!--
           *************************************
           operations in portType for interface IDHCPServer
@@ -20130,6 +22327,21 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
+    <operation name="IVirtualBox_getEventSource">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
     <operation name="IVirtualBox_createMachine">
       <soap:operation soapAction="" style="document"/>
       <input>
@@ -20206,21 +22418,6 @@
       </fault>
     </operation>
     <operation name="IVirtualBox_findMachine">
-      <soap:operation soapAction="" style="document"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="InvalidObjectFault">
-        <soap:fault name="InvalidObjectFault" use="literal"/>
-      </fault>
-      <fault name="RuntimeFault">
-        <soap:fault name="RuntimeFault" use="literal"/>
-      </fault>
-    </operation>
-    <operation name="IVirtualBox_unregisterMachine">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -20490,53 +22687,6 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IVirtualBox_openSession">
-      <soap:operation soapAction="" style="document"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="InvalidObjectFault">
-        <soap:fault name="InvalidObjectFault" use="literal"/>
-      </fault>
-      <fault name="RuntimeFault">
-        <soap:fault name="RuntimeFault" use="literal"/>
-      </fault>
-    </operation>
-    <operation name="IVirtualBox_openRemoteSession">
-      <soap:operation soapAction="" style="document"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="InvalidObjectFault">
-        <soap:fault name="InvalidObjectFault" use="literal"/>
-      </fault>
-      <fault name="RuntimeFault">
-        <soap:fault name="RuntimeFault" use="literal"/>
-      </fault>
-    </operation>
-    <operation name="IVirtualBox_openExistingSession">
-      <soap:operation soapAction="" style="document"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="InvalidObjectFault">
-        <soap:fault name="InvalidObjectFault" use="literal"/>
-      </fault>
-      <fault name="RuntimeFault">
-        <soap:fault name="RuntimeFault" use="literal"/>
-      </fault>
-    </operation>
-    <!--skipping method registerCallback for it has parameters with suppressed types-->
-    <!--skipping method unregisterCallback for it has parameters with suppressed types-->
     <operation name="IVirtualBox_waitForPropertyChange">
       <soap:operation soapAction="" style="document"/>
       <input>
@@ -20773,6 +22923,21 @@
       </fault>
     </operation>
     <operation name="IAppliance_getVirtualSystemDescriptions">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IAppliance_getMachines">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -22472,6 +24637,36 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
+    <operation name="IMachine_lockMachine">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IMachine_launchVMProcess">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
     <operation name="IMachine_setBootOrder">
       <soap:operation soapAction="" style="document"/>
       <input>
@@ -22907,7 +25102,22 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IMachine_deleteSettings">
+    <operation name="IMachine_unregister">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IMachine_delete">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -23269,11 +25479,6 @@
     </operation>
     <!--
           *************************************
-          operations in portType for interface IConsoleCallback
-          *************************************
-        -->
-    <!--
-          *************************************
           operations in portType for interface IRemoteDisplayInfo
           *************************************
         -->
@@ -23419,6 +25624,21 @@
       </fault>
     </operation>
     <operation name="IConsole_getRemoteDisplayInfo">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IConsole_getEventSource">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -23793,8 +26013,6 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <!--skipping method registerCallback for it has parameters with suppressed types-->
-    <!--skipping method unregisterCallback for it has parameters with suppressed types-->
     <!--
           *************************************
           operations in portType for interface IHostNetworkInterface
@@ -25881,6 +28099,21 @@
       </fault>
     </operation>
     <operation name="IMedium_getState">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IMedium_getVariant">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -28805,7 +31038,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="ISession_close">
+    <operation name="ISession_unlockMachine">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -29691,6 +31924,1086 @@
       </fault>
     </operation>
     <operation name="INATEngine_removeRedirect">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IEventSource
+          *************************************
+        -->
+    <operation name="IEventSource_createListener">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IEventSource_registerListener">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IEventSource_unregisterListener">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IEventSource_fireEvent">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IEventSource_getEvent">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IEventSource_eventProcessed">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IEventListener
+          *************************************
+        -->
+    <operation name="IEventListener_handleEvent">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IEvent
+          *************************************
+        -->
+    <operation name="IEvent_getType">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IEvent_getSource">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IEvent_getWaitable">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IEvent_setProcessed">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IEvent_waitProcessed">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IMachineEvent
+          *************************************
+        -->
+    <operation name="IMachineEvent_getMachineId">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IMachineStateChangedEvent
+          *************************************
+        -->
+    <operation name="IMachineStateChangedEvent_getState">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IMachineDataChangedEvent
+          *************************************
+        -->
+    <!--
+          *************************************
+          operations in portType for interface IMachineRegisteredEvent
+          *************************************
+        -->
+    <operation name="IMachineRegisteredEvent_getRegistered">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface ISessionStateChangedEvent
+          *************************************
+        -->
+    <operation name="ISessionStateChangedEvent_getState">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IGuestPropertyChangedEvent
+          *************************************
+        -->
+    <operation name="IGuestPropertyChangedEvent_getName">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IGuestPropertyChangedEvent_getValue">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IGuestPropertyChangedEvent_getFlags">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface ISnapshotEvent
+          *************************************
+        -->
+    <operation name="ISnapshotEvent_getSnapshotId">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface ISnapshotTakenEvent
+          *************************************
+        -->
+    <!--
+          *************************************
+          operations in portType for interface ISnapshotDeletedEvent
+          *************************************
+        -->
+    <!--
+          *************************************
+          operations in portType for interface ISnapshotChangedEvent
+          *************************************
+        -->
+    <!--
+          *************************************
+          operations in portType for interface IMousePointerShapeChangedEvent
+          *************************************
+        -->
+    <operation name="IMousePointerShapeChangedEvent_getVisible">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IMousePointerShapeChangedEvent_getAlpha">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IMousePointerShapeChangedEvent_getXhot">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IMousePointerShapeChangedEvent_getYhot">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IMousePointerShapeChangedEvent_getWidth">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IMousePointerShapeChangedEvent_getHeight">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IMousePointerShapeChangedEvent_getShape">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IMouseCapabilityChangedEvent
+          *************************************
+        -->
+    <operation name="IMouseCapabilityChangedEvent_getSupportsAbsolute">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IMouseCapabilityChangedEvent_getSupportsRelative">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IMouseCapabilityChangedEvent_getNeedsHostCursor">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IKeyboardLedsChangedEvent
+          *************************************
+        -->
+    <operation name="IKeyboardLedsChangedEvent_getNumLock">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IKeyboardLedsChangedEvent_getCapsLock">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IKeyboardLedsChangedEvent_getScrollLock">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IStateChangedEvent
+          *************************************
+        -->
+    <operation name="IStateChangedEvent_getState">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IAdditionsStateChangedEvent
+          *************************************
+        -->
+    <!--
+          *************************************
+          operations in portType for interface INetworkAdapterChangedEvent
+          *************************************
+        -->
+    <operation name="INetworkAdapterChangedEvent_getNetworkAdapter">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface ISerialPortChangedEvent
+          *************************************
+        -->
+    <operation name="ISerialPortChangedEvent_getSerialPort">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IParallelPortChangedEvent
+          *************************************
+        -->
+    <operation name="IParallelPortChangedEvent_getParallelPort">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IStorageControllerChangedEvent
+          *************************************
+        -->
+    <!--
+          *************************************
+          operations in portType for interface IMediumChangedEvent
+          *************************************
+        -->
+    <operation name="IMediumChangedEvent_getMediumAttachment">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface ICPUChangedEvent
+          *************************************
+        -->
+    <operation name="ICPUChangedEvent_getCpu">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="ICPUChangedEvent_getAdd">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IVRDPServerChangedEvent
+          *************************************
+        -->
+    <!--
+          *************************************
+          operations in portType for interface IRemoteDisplayInfoChangedEvent
+          *************************************
+        -->
+    <!--
+          *************************************
+          operations in portType for interface IUSBControllerChangedEvent
+          *************************************
+        -->
+    <!--
+          *************************************
+          operations in portType for interface IUSBDeviceStateChangedEvent
+          *************************************
+        -->
+    <operation name="IUSBDeviceStateChangedEvent_getDevice">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IUSBDeviceStateChangedEvent_getAttached">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IUSBDeviceStateChangedEvent_getError">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface ISharedFolderChangedEvent
+          *************************************
+        -->
+    <operation name="ISharedFolderChangedEvent_getScope">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IRuntimeErrorEvent
+          *************************************
+        -->
+    <operation name="IRuntimeErrorEvent_getFatal">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IRuntimeErrorEvent_getId">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IRuntimeErrorEvent_getMessage">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IEventSourceChangedEvent
+          *************************************
+        -->
+    <operation name="IEventSourceChangedEvent_getListener">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IEventSourceChangedEvent_getAdd">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IExtraDataChangedEvent
+          *************************************
+        -->
+    <operation name="IExtraDataChangedEvent_getMachineId">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IExtraDataChangedEvent_getKey">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IExtraDataChangedEvent_getValue">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IVetoEvent
+          *************************************
+        -->
+    <operation name="IVetoEvent_addVeto">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IVetoEvent_isVetoed">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IVetoEvent_getVetos">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IExtraDataCanChangeEvent
+          *************************************
+        -->
+    <operation name="IExtraDataCanChangeEvent_getMachineId">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IExtraDataCanChangeEvent_getKey">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IExtraDataCanChangeEvent_getValue">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface ICanShowWindowEvent
+          *************************************
+        -->
+    <!--
+          *************************************
+          operations in portType for interface IShowWindowEvent
+          *************************************
+        -->
+    <operation name="IShowWindowEvent_getWinId">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IShowWindowEvent_setWinId">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>

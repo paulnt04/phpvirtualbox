@@ -111,7 +111,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links) {
 	if(links === undefined)
 		links = true;
 
-	var settings = (links == true && data.sessionState == 'Closed' && data.state != 'Saved');
+	var settings = (links == true && data.sessionState == 'Unlocked' && data.state != 'Saved');
 
 	 
 	// clear progress bar or existing data
@@ -245,7 +245,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links) {
 			portDesc = storage.mediumPrint(medium);
 
 			// Link medium to mount?
-			if(links && data['storageControllers'][a]['mediumAttachments'][b].type != 'HardDisk' && (data.state == 'Running' || (data.state == 'PoweredOff' && data.sessionState == 'Closed'))) {
+			if(links && data['storageControllers'][a]['mediumAttachments'][b].type != 'HardDisk' && (data.state == 'Running' || (data.state == 'PoweredOff' && data.sessionState == 'Unlocked'))) {
 				portDesc = $('<div />').text(portDesc).html();
 				portDesc = '<a href="javascript:vboxMountInit(\''+data['id']+'\',\''+data['storageControllers'][a].bus+'\','+data['storageControllers'][a]['mediumAttachments'][b].port+','+data['storageControllers'][a]['mediumAttachments'][b].device+',__vboxTabVMDetails)">'+portDesc+'</a>';
 			}
