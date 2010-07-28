@@ -351,7 +351,7 @@ function __vboxDisplayHostDetailsData(data) {
 	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Processors"), data['cpus'][0] + ' (' + data['cpus'].length +')'));
 	
 	// Network
-	vboxDetailsTable.appendChild(__vboxDetailHeader("nw_16px.png","Network"));
+	vboxDetailsTable.appendChild(__vboxDetailHeader("nw_16px.png",trans("Network")));
 
 	for(var i = 0; i < data['networkInterfaces'].length; i++) {		
 		

@@ -366,7 +366,7 @@ public static $trans = array(
 
 // Virtual Media Manager
 'Open Virtual Media Manager' => 'Manager für virtuelle Medien öffnen',
-'Virtual Media Manager' => 'Manager für virtuelle Medien', 
+'Virtual Media Manager' => 'Manager für virtuelle Medien',
 'Are you sure remove medium' => 'Sind Sie sicher, dass Sie das Medium %s aus der Liste der bekannten Medien löschen möchten?',
 'Medium remove note' => 'Beachten Sie, dass das Medium nicht vom Datenträger gelöscht wird. Sie können es zu einem späteren Zeitpunkt wieder zur Liste hinzufügen.',
 'Are you sure release medium' => 'Sind Sie sicher, dass Sie das Medium %s freigeben möchten?',
@@ -380,6 +380,13 @@ public static $trans = array(
 'Immutable' => 'Nicht veränderbar',
 'Actions' => 'Aktionen',
 'Clone' => 'Klonen',
+/* New */
+'Remove' => 'Remove',
+'Release' => 'Release',
+'Hard Disks' => 'Hard Disks',
+'CD/DVD Images' => 'CD/DVD Images',
+'Floppy Images' => 'Floppy Images',
+
 
 /* New hard disk wizard */
 'Create New Virtual Disk' => 'Neue virtuelle Festplatte anlegen',

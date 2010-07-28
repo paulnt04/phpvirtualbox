@@ -4,7 +4,7 @@ Fixed some English translations.
 
 Added fr_fr and de_de languages. 
 
-Fixed top toolbar translation bug.
+Fixed top toolbar and Virtual Media Manger translation bugs.
 
 Fixed OSE startup bug and removed console tab when OSE is
 detected.

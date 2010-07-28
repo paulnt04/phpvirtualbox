@@ -379,6 +379,11 @@ public static $trans = array(
 'Immutable' => 'Immutable',
 'Actions' => 'Actions',
 'Clone' => 'Clone',
+'Remove' => 'Remove',
+'Release' => 'Release',
+'Hard Disks' => 'Hard Disks',
+'CD/DVD Images' => 'CD/DVD Images',
+'Floppy Images' => 'Floppy Images',
 
 /* New hard disk wizard */
 'Create New Virtual Disk' => 'Create New Virtual Disk',
