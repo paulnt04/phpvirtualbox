@@ -180,6 +180,10 @@ function RDPWebEventLoaded(flashId) {
 	    });
 	    vboxConsoleDetached = true;
 	    vboxRDPConnect();
+	} else {
+	    $(window).bind('resize',function(){
+	    	setTimeout("vboxRDPConnect()",1000);
+	    });		
 	}
 }
    

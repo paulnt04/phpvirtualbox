@@ -31,6 +31,7 @@ public static $trans = array(
 'None' => 'Keine',
 'Any' => 'Alle',
 'New' => 'Neu',
+'Add' => 'Add', /* New */
 'Delete' => 'Löschen',
 'Keep' => 'Behalten',
 'Settings' => 'Einstellungen',
