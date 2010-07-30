@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: vboxconnector.php 718 2010-07-24 18:19:33Z ian $
+ * $Id$
  */
 
 class vboxconnector {

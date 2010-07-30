@@ -15,6 +15,10 @@ host server's details when it is selected in the list of vms.
 Fixed bug in File -> Preferences that would not correctly
 reflect a change made to any prefrences on the General tab.
 
+UI and back-end changes to match new version of VirtualBox.
+
+Updated jquery-ui to 1.8.2.
+
 -------------------------------------
 		0.4 - 2010-07-24
 -------------------------------------

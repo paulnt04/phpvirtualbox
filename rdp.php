@@ -2,7 +2,7 @@
 /*
  * Simple RDP connection file generator
  *
- * $Id: rdp.php 696 2010-07-08 00:46:41Z ian $
+ * $Id$
  *
  */
 header("Content-type: application/x-rdp",true);

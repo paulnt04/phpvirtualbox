@@ -2,12 +2,16 @@
 
 	Main Tabs
 	
-	$Id: tabs.html 687 2010-07-02 12:32:32Z ian $
+	$Id$
 
  -->
-<ul id='tablistMain' style='display: none'>
-</ul>
+<div id='tabMainContent'></div>
 <script type='text/javascript'>
+
+// Create UL
+var ul = document.createElement('ul');
+ul.setAttribute('id','tablistMain');
+$('#vboxTabsList').append(ul);
 
 var tabs = [
     {'name':'vboxTabVMDetails','content':'tabVMDetails','label':'Details','icon':'settings'},
@@ -16,7 +20,7 @@ var tabs = [
     {'name':'vboxTabVMDescription','content':'tabVMDescription','label':'Description','icon':'description'}
 ];
 
-var tabsMain = new vboxTabs('tabsMain');
+var tabsMain = new vboxTabs('tabMainContent');
 
 var tabLoader = new vboxLoader();
 
@@ -33,16 +37,12 @@ for(var i = 0; i < tabs.length; i++) {
 
 	// Tab link
 	var li = document.createElement('li');
+	$(li).attr('class','ui-corner-all');
 	li.innerHTML = '<a href="#'+tabs[i].name+'"><span><img style="vertical-align: middle" src="images/vbox/'+tabs[i].icon+'_16px.png" border="0" /> <span id="'+tabs[i].name+'Title">'+trans(tabs[i].label)+'</span></span></a>';					
 	$('#tablistMain').append(li);
 	
-	// Tab place holder in case tabs arrive out of order.
-	// jquery-ui tabs will get confused if they do.
-	var d = document.createElement('div');
-	d.setAttribute('id',tabs[i].name+'PlaceHolder');
-	$("#tabsMain").append(d);
 	
-	tabLoader.addFile('panes/'+tabs[i].content+'.html',function(f,tname){$('#'+tname+'PlaceHolder').replaceWith(f);},tabs[i].name);
+	tabLoader.addFile('panes/'+tabs[i].content+'.html',function(f,tname){$('#tabMainContent').append(f);},tabs[i].name);
 	
 }
 
@@ -62,16 +62,20 @@ tabLoader.onLoad = function(){
 		
 	}
 	
-	$("#tablistMain").css({'display':''});
-	
-	$("#tabsMain").tabs({'spinner':'','show':tabsMain.triggerShow});
-
-	$("#tabsMain").tabs('option','selected',0);
-
 	$('#vboxIndex').bind('vmselect',function(e,vm){tabsMain.update(vm);});
 
-	tabsMain.wrap();
+	$('#tablistMain').children().click(function(){
+		if(!$(this).hasClass('disabled')) tabsMain.showTab($(this).children().first().attr('href'));
+		return false;
+	}).hover(function(){
+		if($(this).hasClass('disabled')) return false;
+		$(this).addClass('hover');
+	},function(){
+		$(this).removeClass('hover');
+	});
+
 	tabsMain.updateTabs(null);
+
 
 };
 tabLoader.run();
@@ -90,26 +94,40 @@ function vboxTabs(id) {
 	this.ref = null;
 	this.tabs = new Array();
 	var self = this;
+	this.tabSelected = null;
 	this.id = id;
 	
 	// Add a tab to list
 	this.addTab = function (tab) {
+		if(!this.tabSelected) this.tabSelected = '#'+tab.name;
 		this.tabs[this.tabs.length] = tab;
 	}
 	
+	// Show a tab
+	this.showTab = function (tab) {
+		for(var i = 0; i < self.tabs.length; i++) {
+			$('#'+self.tabs[i].name).css('display','none');
+		}
+		$(''+tab).css('display','').trigger('show',$('#'+self.id).data('machine'));
+		self.tabSelected = tab;
+		$('#tablistMain').children().removeClass('selected');
+		$('#tablistMain').find('a[href='+tab+']').parent().addClass('selected');
+
+		
+	}
 	
 	// Update content to use specified vm
 	this.update = function (vm) {
 		
 		// Null Selection
 		if(!vm) {
-			$('#'+this.id+'Wrapper').data('machine',null);
-			$('#'+this.id+'Wrapper').trigger('vmloaded');
+			$('#'+this.id).data('machine',null);
+			$('#'+this.id).trigger('vmloaded');
 			this.selected = null;
 			return;
 		}
 
-		$('#'+this.id+'Wrapper').trigger('vmloading');
+		$('#'+this.id).trigger('vmloading');
 		
 		this.selected = vm.id;
 				
@@ -133,69 +151,29 @@ function vboxTabs(id) {
 		// Check for valid data
 		if(!vm || !vm.id || vm.id == 'host' || !vm.accessible) {
 
-			$('#'+self.id).tabs('option','selected', 0);
+			self.showTab('#'+self.tabs[0].name);
 
-			for(var i = 1; i < self.tabs.length; i++)
-				$('#'+self.id).tabs('disable', i);
+			$('#tablistMain').children().addClass('disabled');
+			$('#tablistMain').children().first().removeClass('disabled');
+			
 			
 		} else {
 
-			for(var i = 1; i < self.tabs.length; i++)
-				$('#'+self.id).tabs('enable', i);
+			$('#tablistMain').children().removeClass('disabled');
 			
 		}
 
 		
 		// Trigger loaded
-		$('#'+self.id+'Wrapper').data('machine',vm);
-		$('#'+self.id+'Wrapper').trigger('vmloaded',[vm]);
+		$('#'+self.id).data('machine',vm);
+		$('#'+self.id).trigger('vmloaded',[vm]);
 
 		// Trigger show
-		$('#'+self.tabs[$('#'+self.id).tabs('option','selected')].name).trigger('show',[vm]);
+		$(''+self.tabSelected).trigger('show',[vm]);
 
 	}
 
-	this.triggerShow = function() {
-		// Trigger show
-		$('#'+self.tabs[$('#'+self.id).tabs('option','selected')].name).trigger('show',[$('#'+self.id+'Wrapper').data('machine')]);
-	}
 
-	self.wrap = function() {
-		
-		var elm = $('#'+self.id);
-		$(elm).css({'margin':'0px','padding':'0px'});
-		var tbl = document.createElement('table');
-		tbl.setAttribute('style',"padding: 0px; margin: 0px; border: 0px; border-spacing: 0px; height: 100%; width: 100%");
-		var tr = document.createElement('tr');
-		var td = document.createElement('td');
-		tr.setAttribute('style',"padding: 0px; margin: 0px; border-width: 0px; border-spacing: 0px; height: 1%; vertical-align: top");
-		$(td).append($(elm).children().first().detach());
-		td.setAttribute('style',"padding: 0px; margin: 0px; border-width: 0px; border-spacing: 0px;");
-		$(tr).append(td);
-		$(tbl).append(tr);
-
-		var tr = document.createElement('tr');
-		$(tr).css({'vertical-align':'top'});
-		var td = document.createElement('td');
-		td.setAttribute('class','vboxTabContent');
-		td.setAttribute('style',"padding: 0px; margin: 0px; border: 0px;");
-		var d = document.createElement('div');
-		d.setAttribute('style',"padding: 0px; margin: 0px; border: 0px;");
-		d.setAttribute('id',self.id+'Wrapper');		
-		d.setAttribute('class','vboxResize');
-		for(var i = 0; i < self.tabs.length; i++) {
-			$(d).append($('#'+self.tabs[i].name).detach());
-		}
-		$(td).append(d);
-		$(tr).append(td);
-		$(tbl).append(tr);
-		$(elm).append(tbl);
-
-		$(window).trigger('resize');
-
-	}
-	
-	
 }
 
 </script>

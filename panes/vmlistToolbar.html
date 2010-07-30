@@ -1,0 +1,185 @@
+<!-- 
+
+	Top Toolbar to manipulate virtual machines
+	
+	$Id$
+
+-->
+<script type='text/javascript'>
+/*
+ * JS objects for actions that can be performed on a VM
+ * from this toolbar
+ */
+var tButtons = [
+	
+	/* Top toolbar buttons / actions */
+	{
+		'name' : 'vmnew',
+		'label' : 'New',
+		'icon' : 'vm_new',
+		'click' : function(){
+			vboxWizardNewVMInit(function(){
+				$('#vboxIndex').trigger('vmlistrefresh');
+			});
+		}
+	},
+	
+	{
+		'name' : 'vmsettings',
+		'label' : 'Settings',
+		'icon' : 'vm_settings',
+		'click' : function () {
+			vboxVMsettingsInit($('#vboxIndex').data('selectedVM').id,function(){$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);});
+		},
+		'enabled' : function (vm) { return vm && (vm.sessionState == 'Unlocked'); }
+	},
+	{
+		'name' : 'vmstart',
+		'label' : 'Start',
+		'icon' : 'vm_start',
+		'click' : function (btn) {
+		
+			btn.toolbar.disableButton(btn);
+			vboxAjaxRequest('setStateVMpowerUp',{'vm':$('#vboxIndex').data('selectedVM').id},function(d){
+				// check for progress operation
+				if(d && d.progress) {
+					vboxProgress(d.progress,function(){$('#vboxIndex').trigger('vmlistrefresh');});
+					return;
+				}
+				$('#vboxIndex').trigger('vmlistrefresh');
+			});
+			
+		},
+		'enabled' : function (vm) { return (vm && (jQuery.inArray(vm.state,['PoweredOff','Paused','Saved','Aborted']) > -1));}	
+	},
+	{
+		'name' : 'vmstop',
+		'label' : 'Stop',
+		'icon' : 'vm_poweroff',
+		'click' : function () { return true; /* handled by stop menu */ },
+		'enabled' : function (vm) { return (vm && (jQuery.inArray(vm.state,['Running','Paused']) > -1));}
+	}
+];
+
+/* 'Stop' menu items / actions */
+var vboxVMListStopMenu = {
+		
+	'savestate' : {
+		'label' : 'Save State',
+		'icon' : 'fd',
+		'states' : ['Running']
+	},
+	'sleep' : {
+		'label' : 'ACPI Sleep Button',
+		'icon' : 'acpi',
+		'states' : ['Running']
+	},
+	'powerbutton' : {
+		'label' : 'ACPI Power Button',
+		'icon' : 'acpi',
+		'states' : ['Running']
+	},
+	'pause' : {
+		'label' : 'Pause',
+		'icon' : 'pause',
+		'states' : ['Running']
+	},
+	'powerdown' : {
+		'label' : 'Power Off',
+		'icon' : 'poweroff',
+		'states' : ['Running','Paused']
+	},	
+	'reset' : {
+		'label' : 'Reset',
+		'icon' : 'refresh',
+		'states' : ['Running']
+	}
+	
+};
+
+/* Append Top Toolbar */
+toolbarTop = new vboxToolbar(tButtons);
+toolbarTop.size = 32;
+toolbarTop.addButtons('vboxPaneToolbar');
+$('#vboxIndex').bind('vmselect',toolbarTop.update);
+
+
+
+/* 'Stop' menu */
+var ul = document.createElement('ul');
+ul.setAttribute('class','contextMenu');
+ul.setAttribute('style','display: none');
+ul.setAttribute('id','vboxStopMenu');
+for(var i in vboxVMListStopMenu) {
+	
+	// add name
+	vboxVMListStopMenu[i].name = i;
+
+	var li = document.createElement('li');
+	li.innerHTML = "<a href='#" + vboxVMListStopMenu[i].name + "' style='background-image: url(images/vbox/" + vboxVMListStopMenu[i].icon +"_16px.png);' >"+trans(vboxVMListStopMenu[i].label)+"</a>";
+	ul.appendChild(li);
+	
+}
+
+
+/* Append 'Stop' button Menu */
+$('#vboxIndex').append(ul);
+
+
+
+/* 'Stop' button menu initialization  */
+$("#vboxToolbarButton-vboxPaneToolbar-vmstop").contextMenu({
+		menu: 'vboxStopMenu',
+		button: 0,
+		mode: 'menu'
+	},
+	function(a, el, pos) {
+		var fn = null;
+		switch(a) {
+			case 'powerdown': fn = 'setStateVMpowerDown'; break;
+			case 'powerbutton': fn = 'setStateVMpowerButton'; break;
+			case 'sleep': fn = 'setStateVMsleepButton'; break;
+			case 'savestate': fn = 'setStateVMsaveState'; break;
+			case 'pause': fn = 'setStateVMpause'; break;
+			case 'reset': fn = 'setStateVMreset'; break;
+		}
+		if(fn == null) return;
+		vboxAjaxRequest(fn,{'vm':$('#vboxIndex').data('selectedVM').id},function(d){
+			// check for progress operation
+			if(d && d.progress) {
+				vboxProgress(d.progress,function(){$('#vboxIndex').trigger('vmlistrefresh');});
+				return;
+			}
+			$('#vboxIndex').trigger('vmlistrefresh');
+		});
+		if(a != 'reset') toolbarTop.disableButton(toolbarTop.getButtonByName('vmstop'));
+	}
+);
+
+
+/*
+ *  
+ * Update vboxVMListStopMenu items. Called when 
+ * vboxVMList selection changes $('#vboxIndex').onvmselect
+ *
+ */
+function vboxUpdateStopMenu(e,vm) {
+
+	for(var i in vboxVMListStopMenu) {
+		
+		// enable or disable
+		if(vm && jQuery.inArray(vm.state,vboxVMListStopMenu[i].states) > -1) {
+			$('#vboxStopMenu').enableContextMenuItems('#'+i);
+			$('#vboxStopMenu').find('a[href=#'+i+']').css('background-image','url(images/vbox/'+vboxVMListStopMenu[i].icon+'_16px.png)');
+			continue;
+		}
+
+		$('#vboxStopMenu').disableContextMenuItems('#'+i);
+		$('#vboxStopMenu').find('a[href=#'+i+']').css('background-image','url(images/vbox/'+vboxVMListStopMenu[i].icon+'_disabled_16px.png)');
+	}
+	
+}
+// Run this function when the vm selection changes
+$('#vboxIndex').bind('vmselect',vboxUpdateStopMenu);
+
+</script>

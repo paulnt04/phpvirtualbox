@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: language.php 698 2010-07-08 02:45:39Z ian $
+ * $Id$
  */
 require_once(dirname(dirname(__FILE__)).'/lib/language.php');
 

@@ -17,7 +17,7 @@
 //
 //	]--- Modified by Ian Moore for phpVirtualBox
 //
-// $Id: jqueryFileTree.php 709 2010-07-22 16:49:46Z ian $
+// $Id$
 //
 //
 

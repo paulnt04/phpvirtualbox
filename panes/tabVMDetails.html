@@ -2,15 +2,16 @@
 
 	VM Details
 	
-	$Id: tabVMDetails.html 697 2010-07-08 02:31:17Z ian $
+	$Id$
 
  -->
-<div id='vboxTabVMDetails' class='vboxTabContent'>
-	<div id='vboxVMDetails' style='height: 99%;'>
-		<div class='vboxTabLoading'><img src="images/vbox/welcome.png" /></div>
+<div id='vboxTabVMDetails' style='height: 99%;'>
+	<div id='vboxVMDetails' style='height: 100%;'>
 	</div>
 <script type='text/javascript'>
 
+// Cookies used for show/hide boxes
+vboxParseCookies();
 
 // Listen for events
 $('#vboxTabVMDetails').parent().bind('vmloading',function(){
@@ -26,7 +27,7 @@ $('#vboxTabVMDetails').parent().bind('vmloaded',function(e,vm){
 		__vboxTabVMDetails(vm);
 	} else {
 		$('#vboxVMDetails').css({'vertical-align':'middle'});
-		$('#vboxVMDetails').html('<div class="vboxTabLoading"><img src="images/vbox/welcome.png" /></div>');
+		$('#vboxVMDetails').html('<div class="vboxTabLoading" style="height: 100%; background: #fff;"><img src="images/vbox/welcome.png" /></div>');
 	}
 });
 
@@ -38,7 +39,7 @@ function __vboxTabVMDetails(vm) {
 	if(vm.id == 'host') {
 		__vboxDisplayHostDetailsData(vm);
 	} else {
-		__vboxDisplayDetailsData(vm);
+		__vboxDisplayDetailsData(vm,null,true,true);
 	}
 }
 
@@ -54,6 +55,7 @@ function __vboxDetailSettingsLink(text,section,id) {
 function __vboxDetailHeader(icon,name,linkto,vm) {
 
 	var tr = document.createElement('tr');
+	tr.setAttribute('class','vboxDetailsHead');
 	var th = document.createElement('th');
 	th.setAttribute('class','vboxDetailsSection');
 	th.setAttribute('colspan', '2');
@@ -61,9 +63,9 @@ function __vboxDetailHeader(icon,name,linkto,vm) {
 
 	// Create links to settings?
 	if(typeof linkto == "string") {
-		$(th).append(__vboxDetailSettingsLink(name,linkto,vm.id));
+		$(th).append(__vboxDetailSettingsLink(trans(name),linkto,vm.id));
 	} else {
-		$(th).append(document.createTextNode(name));
+		$(th).append(document.createTextNode(trans(name)));
 	}
 
 	tr.appendChild(th);
@@ -77,7 +79,7 @@ function __vboxDetailRowReal(name,value,cssClass,html) {
 	var tr = document.createElement('tr');
 	var th = document.createElement('th');
 	th.appendChild(document.createTextNode(name + (value.length && name.length ? ':' : '')));
-	th.setAttribute('class',cssClass);
+	th.setAttribute('class','vboxDetailContent ' + cssClass);
 	
 	var td = document.createElement('td');
 	td.setAttribute('class','vboxDetailsValue');
@@ -102,7 +104,7 @@ function __vboxDetailRowIndented(name,value,html) {
 
 //Display details data table for VM
 //////////////////////////////////
-function __vboxDisplayDetailsData(data,targetdiv,links) {
+function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 
 	// Defaults
 	if(!targetdiv)
@@ -152,18 +154,31 @@ function __vboxDisplayDetailsData(data,targetdiv,links) {
 				
 		return;
 	}
-	
+
 	// Details Table
 	var vboxDetailsTable = document.createElement('table');
-	vboxDetailsTable.setAttribute('class','vboxDetailsTable');
+	vboxDetailsTable.setAttribute('id','vboxDetailsTable' + (boxes ? 'BoxGeneral' : 'General'));
+	vboxDetailsTable.setAttribute('class','vboxDetailsTable' + (boxes ? ' vboxDetailsTableBox ui-corner-all' : ''));
 
 	// General
-	vboxDetailsTable.appendChild(__vboxDetailHeader("machine_16px.png",trans("General"),(settings ? 'General' : null),(settings ? data : null)));
+	vboxDetailsTable.appendChild(__vboxDetailHeader("machine_16px.png","General",(settings ? 'General' : null),(settings ? data : null)));
 	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Name"), data['name']));
 	vboxDetailsTable.appendChild(__vboxDetailRow(trans("OS Type"), trans(data['OSTypeId'])));
-	
+
+	if(boxes) {
+		vboxDetailsTable.appendChild(__vboxDetailRow('',''));
+		if($('#vboxIndex').data('vboxCookies')["vboxSectionShowGeneral"] == 0) {
+			vboxDetailsTable.setAttribute('style','display: none;');
+		}
+		
+		$(targetdiv).append(vboxDetailsTable);
+		var vboxDetailsTable = document.createElement('table');
+		vboxDetailsTable.setAttribute('id','vboxDetailsTableBoxSystem');
+		vboxDetailsTable.setAttribute('class','vboxDetailsTable vboxDetailsTableBox ui-corner-all');
+	}		
+
 	// System
-	vboxDetailsTable.appendChild(__vboxDetailHeader('chipset_16px.png',trans("System"),(settings ? 'System' : null),(settings ? data : null)));
+	vboxDetailsTable.appendChild(__vboxDetailHeader('chipset_16px.png',"System",(settings ? 'System' : null),(settings ? data : null)));
 	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Base Memory"), data['memorySize'] + " " + trans('MB')));
 	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Processors"), data['CPUCount']));
 	
@@ -180,9 +195,19 @@ function __vboxDisplayDetailsData(data,targetdiv,links) {
 		vboxDetailsTable.appendChild(__vboxDetailRow(trans("Nested Paging"), (data['HWVirtExProperties'].NestedPaging ? trans('Enabled') : trans('Disabled'))));
 	}
 
+	if(boxes) {
+		vboxDetailsTable.appendChild(__vboxDetailRow('',''));
+		if($('#vboxIndex').data('vboxCookies')["vboxSectionShowSystem"] == 0) {
+			vboxDetailsTable.setAttribute('style','display: none;');
+		}		
+		$(targetdiv).append(vboxDetailsTable);
+		var vboxDetailsTable = document.createElement('table');
+		vboxDetailsTable.setAttribute('id','vboxDetailsTableBoxDisplay');
+		vboxDetailsTable.setAttribute('class','vboxDetailsTable vboxDetailsTableBox ui-corner-all');
+	}		
 	
 	// Display 
-	vboxDetailsTable.appendChild(__vboxDetailHeader("fullscreen_16px.png",trans("Display"),(settings ? 'Display' : null),(settings ? data : null)));
+	vboxDetailsTable.appendChild(__vboxDetailHeader("fullscreen_16px.png","Display",(settings ? 'Display' : null),(settings ? data : null)));
 	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Video Memory"), data['VRAMSize'] + " " + trans('MB')));
 	/* Unsupported at this time. 
 	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Video 3d"), (data['accelerate3DEnabled'] ? trans("Enabled") : trans("Disabled"))));
@@ -191,33 +216,38 @@ function __vboxDisplayDetailsData(data,targetdiv,links) {
 	
 
 	// RDP
-	if(data['VRDPServer']) {
-		vboxDetailsTable.appendChild(__vboxDetailHeader("vrdp_16px.png",trans("Remote Console"),(settings ? 'Display' : null),(settings ? data : null)));
-		if(!data['VRDPServer']['enabled'] || !data['VRDPServer']['ports']) {
-			vboxDetailsTable.appendChild(__vboxDetailRow(trans("Disabled"), ''));
-		} else {
-			
-			if(data['VRDPServer']['netAddress']) {
-				vboxDetailsTable.appendChild(__vboxDetailRow(trans("Net Address"), data['VRDPServer']['netAddress']));
-			}
-
-			var chost = data['VRDPServer']['netAddress'];
-			if(!chost) chost = $('#vboxIndex').data('vboxConfig').rdpHost;
-			if(!chost || chost == 'localhost' || chost == '127.0.0.1') {chost = location.host;}
-			
-			if(links) {
-				tr = __vboxDetailRow(trans("Ports"), data['VRDPServer']['ports']);
-				tr.childNodes[1].innerHTML = "<a href='rdp.php?host=" + chost + '&port=' + data['VRDPServer']['ports'] + "&vm=" + encodeURIComponent(data['name']) + "'>" + data['VRDPServer']['ports'] + "</a>";
-				vboxDetailsTable.appendChild(tr);
-			} else {
-				vboxDetailsTable.appendChild(__vboxDetailRow(trans("Ports"), data['VRDPServer']['ports']));
-			}
-			
+	if(data['VRDPServer'] && data['VRDPServer']['enabled'] && data['VRDPServer']['ports']) {
+		if(data['VRDPServer']['netAddress']) {
+			vboxDetailsTable.appendChild(__vboxDetailRow(trans("Remote Console")+ ': ' +trans("Net Address"), data['VRDPServer']['netAddress']));
 		}
-	}
+
+		var chost = data['VRDPServer']['netAddress'];
+		if(!chost) chost = $('#vboxIndex').data('vboxConfig').rdpHost;
+		if(!chost || chost == 'localhost' || chost == '127.0.0.1') {chost = location.host;}
 		
+		if(links) {
+			tr = __vboxDetailRow(trans("Ports"), data['VRDPServer']['ports']);
+			tr.childNodes[1].innerHTML = "<a href='rdp.php?host=" + chost + '&port=' + data['VRDPServer']['ports'] + "&vm=" + encodeURIComponent(data['name']) + "'>" + data['VRDPServer']['ports'] + "</a>";
+			vboxDetailsTable.appendChild(tr);
+		} else {
+			vboxDetailsTable.appendChild(__vboxDetailRow(trans("Remote Console")+ ': ' +trans("Ports"), data['VRDPServer']['ports']));
+		}
+		
+	}
+
+	if(boxes) {
+		vboxDetailsTable.appendChild(__vboxDetailRow('',''));
+		if($('#vboxIndex').data('vboxCookies')["vboxSectionShowDisplay"] == 0) {
+			vboxDetailsTable.setAttribute('style','display: none;');
+		}		
+		$(targetdiv).append(vboxDetailsTable);
+		var vboxDetailsTable = document.createElement('table');
+		vboxDetailsTable.setAttribute('id','vboxDetailsTableBoxStorage');
+		vboxDetailsTable.setAttribute('class','vboxDetailsTable vboxDetailsTableBox ui-corner-all');
+	}		
+	
 	// Storage
-	vboxDetailsTable.appendChild(__vboxDetailHeader("hd_16px.png",trans("Storage"),(settings ? 'Storage' : null),(settings ? data : null)));
+	vboxDetailsTable.appendChild(__vboxDetailHeader("hd_16px.png","Storage",(settings ? 'Storage' : null),(settings ? data : null)));
 	storage = new vboxStorage();
 	for(var a = 0; a < data['storageControllers'].length; a++) {
 		
@@ -255,18 +285,39 @@ function __vboxDisplayDetailsData(data,targetdiv,links) {
 		
 	}
 	
+	if(boxes) {
+		vboxDetailsTable.appendChild(__vboxDetailRow('',''));
+		if($('#vboxIndex').data('vboxCookies')["vboxSectionShowStorage"] == 0) {
+			vboxDetailsTable.setAttribute('style','display: none;');
+		}
+		$(targetdiv).append(vboxDetailsTable);
+		var vboxDetailsTable = document.createElement('table');
+		vboxDetailsTable.setAttribute('id','vboxDetailsTableBoxAudio');
+		vboxDetailsTable.setAttribute('class','vboxDetailsTable vboxDetailsTableBox ui-corner-all');
+	}		
 	
 	// Audio (uncomment here and in vboxconnector.php if you'd like 
-	vboxDetailsTable.appendChild(__vboxDetailHeader("sound_16px.png",trans("Audio"),(settings ? 'Audio' : null),(settings ? data : null)));
+	vboxDetailsTable.appendChild(__vboxDetailHeader("sound_16px.png","Audio",(settings ? 'Audio' : null),(settings ? data : null)));
 	if(!data['audioAdapter']['enabled']) {
 		vboxDetailsTable.appendChild(__vboxDetailRow(trans("Disabled"), ""));
 	} else {
 		vboxDetailsTable.appendChild(__vboxDetailRow(trans("Host Audio Driver"), trans((data['audioAdapter']['audioDriver'] == 'Null' ? 'Null Audio Driver' : data['audioAdapter']['audioDriver']))));
 		vboxDetailsTable.appendChild(__vboxDetailRow(trans("Audio Controller"), trans(data['audioAdapter']['audioController'])));
 	}
+
+	if(boxes) {
+		vboxDetailsTable.appendChild(__vboxDetailRow('',''));
+		if($('#vboxIndex').data('vboxCookies')["vboxSectionShowAudio"] == 0) {
+			vboxDetailsTable.setAttribute('style','display: none;');
+		}		
+		$(targetdiv).append(vboxDetailsTable);
+		var vboxDetailsTable = document.createElement('table');
+		vboxDetailsTable.setAttribute('id','vboxDetailsTableBoxNetwork');
+		vboxDetailsTable.setAttribute('class','vboxDetailsTable vboxDetailsTableBox ui-corner-all');
+	}		
 	
 	// Network
-	vboxDetailsTable.appendChild(__vboxDetailHeader("nw_16px.png",trans("Network"),(settings ? 'Network' : null),(settings ? data : null)));
+	vboxDetailsTable.appendChild(__vboxDetailHeader("nw_16px.png","Network",(settings ? 'Network' : null),(settings ? data : null)));
 
 	for(var i = 0; i < data['networkAdapters'].length; i++) {
 		
@@ -301,11 +352,22 @@ function __vboxDisplayDetailsData(data,targetdiv,links) {
 		var n  = '<a href="javascript:vboxGuestNetworkAdaptersDialogInit(\''+data['id']+'\','+i+')">('+trans('Guest Network Adapters')+')</a>';
 		vboxDetailsTable.appendChild(__vboxDetailRow('',n,true));
 	}
-	
+		
+	if(boxes) {
+		vboxDetailsTable.appendChild(__vboxDetailRow('',''));
+		if($('#vboxIndex').data('vboxCookies')["vboxSectionShowNetwork"] == 0) {
+			vboxDetailsTable.setAttribute('style','display: none;');
+		}		
+		$(targetdiv).append(vboxDetailsTable);
+		var vboxDetailsTable = document.createElement('table');
+		vboxDetailsTable.setAttribute('class','vboxDetailsTable vboxDetailsTableBox ui-corner-all');
+	}		
 
 	// USB
-	if(data['USBController'])
-		vboxDetailsTable.appendChild(__vboxDetailHeader("usb_16px.png",trans("USB"),(settings ? 'USB' : null),(settings ? data : null)));
+	if(data['USBController']) {
+		if(boxes) vboxDetailsTable.setAttribute('id','vboxDetailsTableBoxUSB');
+		vboxDetailsTable.appendChild(__vboxDetailHeader("usb_16px.png","USB",(settings ? 'USB' : null),(settings ? data : null)));
+	}
 	if(data['USBController'] && data['USBController']['enabled']) {
 		var tot = 0;
 		var act = 0;
@@ -317,9 +379,22 @@ function __vboxDisplayDetailsData(data,targetdiv,links) {
 	} else if(data['USBController']) {
 		vboxDetailsTable.appendChild(__vboxDetailRow(trans("Disabled"),""));
 	}
+
+	if(data['USBController'] && boxes) {
+		vboxDetailsTable.appendChild(__vboxDetailRow('',''));
+		if($('#vboxIndex').data('vboxCookies')["vboxSectionShowUSB"] == 0) {
+			vboxDetailsTable.setAttribute('style','display: none;');
+		}		
+		$(targetdiv).append(vboxDetailsTable);
+		var vboxDetailsTable = document.createElement('table');
+		vboxDetailsTable.setAttribute('id','vboxDetailsTableBoxSharedFolders');
+		vboxDetailsTable.setAttribute('class','vboxDetailsTable vboxDetailsTableBox ui-corner-all');
+	} else if(boxes) {
+		vboxDetailsTable.setAttribute('id','vboxDetailsTableBoxSharedFolders');
+	}
 	
 	// Shared Folders
-	vboxDetailsTable.appendChild(__vboxDetailHeader("shared_folder_16px.png",trans("Shared Folders"),(settings ? 'SharedFolders' : null),(settings ? data : null)));
+	vboxDetailsTable.appendChild(__vboxDetailHeader("shared_folder_16px.png","Shared Folders",(settings ? 'SharedFolders' : null),(settings ? data : null)));
 	if(!data['sharedFolders'] || data['sharedFolders'].length < 1) {
 		vboxDetailsTable.appendChild(__vboxDetailRow(trans("None"), ''));
 	} else {
@@ -327,9 +402,39 @@ function __vboxDisplayDetailsData(data,targetdiv,links) {
 			vboxDetailsTable.appendChild(__vboxDetailRow(data['sharedFolders'][i].name + ' (' + trans(data['sharedFolders'][i].writable ? 'rw' : 'ro') + ')', data['sharedFolders'][i].hostPath));
 		}
 	}
+
+	if(boxes) {
+		if($('#vboxIndex').data('vboxCookies')["vboxSectionShowSharedFolders"] == 0) {
+			vboxDetailsTable.setAttribute('style','display: none;');
+		}
+		vboxDetailsTable.appendChild(__vboxDetailRow('',''));
+	}
 	
 	// Append Table
 	$(targetdiv).append(vboxDetailsTable);
+
+	// Toggle show / hide
+	if(boxes) {
+		$(targetdiv).find('tr.vboxDetailsHead').each(function(){
+			$(this).children('th').first().dblclick(function(e){
+				if($(this).data('vboxHidden')) {
+					$(this).parent().siblings().css('display','');
+					$(this).data('vboxHidden',false);
+				} else {
+					$(this).parent().siblings().css('display','none');
+					$(this).data('vboxHidden',true);				
+				}
+				e.stopPropagation();
+				e.preventDefault();				
+				return false;
+			}).hover(function(){
+				$(this).addClass('hover');},
+				function(){$(this).removeClass('hover');}
+			).bind('onselectstart',function(){
+				return false;
+			}).attr('unselectable','on').css('MozUserSelect','none');
+		});
+	}
 }
 
 //Display details data for VirtualBox Host
@@ -343,12 +448,20 @@ function __vboxDisplayHostDetailsData(data) {
 	// Details Table
 	var vboxDetailsTable = document.createElement('table');
 	vboxDetailsTable.setAttribute('class','vboxDetailsTable');
+	vboxDetailsTable.setAttribute('class','vboxDetailsTable vboxDetailsTableBox ui-corner-all');
 
 	// General
-	vboxDetailsTable.appendChild(__vboxDetailHeader("machine_16px.png",trans("General")));
+	vboxDetailsTable.appendChild(__vboxDetailHeader("machine_16px.png","General"));
 	vboxDetailsTable.appendChild(__vboxDetailRow(trans("OS Type"), data['operatingSystem'] + ' (' + data['OSVersion'] +')'));
 	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Base Memory"), data['memorySize'] + ' ' + trans('MB')));
 	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Processors"), data['cpus'][0] + ' (' + data['cpus'].length +')'));
+
+	vboxDetailsTable.appendChild(__vboxDetailRow('',''));
+	$('#vboxVMDetails').append(vboxDetailsTable);
+	
+	var vboxDetailsTable = document.createElement('table');
+	vboxDetailsTable.setAttribute('class','vboxDetailsTable');
+	vboxDetailsTable.setAttribute('class','vboxDetailsTable vboxDetailsTableBox ui-corner-all');
 	
 	// Network
 	vboxDetailsTable.appendChild(__vboxDetailHeader("nw_16px.png","Network"));
@@ -365,9 +478,60 @@ function __vboxDisplayHostDetailsData(data) {
 
 	
 	// Append Table
+	vboxDetailsTable.appendChild(__vboxDetailRow('',''));
 	$('#vboxVMDetails').append(vboxDetailsTable);
 }
 
 
+/* Show / Hide boxes menu */
+var ul = document.createElement('ul');
+ul.setAttribute('class','contextMenu');
+ul.setAttribute('style','display: none');
+ul.setAttribute('id','vboxDetailsShowMenu');
+var sections = new Array('General','System','Display','Storage','Audio','Network','USB','Shared Folders');
+for(var i = 0; i < sections.length; i++) {
+
+	if($('#vboxIndex').data('vboxConfig').version.ose && sections[i] == 'USB')
+		continue;
+
+	// checked?
+	var checked = 'checked';
+	if($('#vboxIndex').data('vboxCookies')["vboxSectionShow"+sections[i].replace(' ','')] == 0)
+		checked = '';
+	
+	var li = document.createElement('li');
+	var cb = document.createElement('input');
+	$(cb).attr({'type':'checkbox','name':sections[i].replace(' ','')})
+	if(checked) $(cb).attr('checked',checked);
+	$(cb).click(function(){
+		var exp = new Date(2020,12,24);
+		document.cookie = "vboxSectionShow"+$(this).attr('name')+"="+(this.checked ? 1 : 0)+"; expires="+exp.toGMTString()+"; path=/";
+		$('#vboxDetailsTableBox'+$(this).attr('name')).css('display',(this.checked ? '' : 'none'));
+		$('#vboxIndex').data('vboxCookies')["vboxSectionShow"+$(this).attr('name')] = (this.checked ? 1 : 0);
+	});
+	$(li).append(cb);
+	var sp = document.createElement('span');
+	$(sp).append(' ' + trans(sections[i]));
+	$(li).append(sp);
+	ul.appendChild(li);
+}
+$('#vboxIndex').append(ul);
+$('#vboxDetailsShowMenu').bind('contextmenu', function() { return false; })
+
+$("#vboxVMDetails").mouseup( function(e) {
+
+	if(e.button == 2) {
+		vboxPositionEvent($('#vboxDetailsShowMenu'), e);
+		$('#vboxDetailsShowMenu').show();
+		e.preventDefault();
+		e.stopPropagation();
+		return false;
+	} else {
+		$('#vboxDetailsShowMenu').hide();
+	}
+});
+$("#vboxVMDetails").bind('contextmenu', function() { return false; }).bind('click',function(e){return e.button!=2;});
+
 </script>
+
 </div>

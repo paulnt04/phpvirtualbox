@@ -7,7 +7,7 @@
  * was made in case the PHP back-end needs to inject translated
  * messages into the interface.
  *
- * $Id: en_us.php 697 2010-07-08 02:31:17Z ian $
+ * $Id$
  *
  */
 
@@ -143,6 +143,7 @@ public static $trans = array(
 'Base Memory' => 'Mémoire vive',
 'Memory' => 'Mémoire',
 'free' => 'libre', // as in free/available memory
+
 'Enable IO APIC' => 'Activer les IO APIC',
 'Enable EFI' => 'Activer EFI (OS spéciaux seulement)',
 'Hardware clock in UTC time' => 'Horloge interne en UTC',

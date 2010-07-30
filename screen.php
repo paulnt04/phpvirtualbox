@@ -37,7 +37,7 @@
  * </Sun license>
  *
  * SLIGHTLY modified by Ian Moore
- * $Id: screen.php 709 2010-07-22 16:49:46Z ian $
+ * $Id$
  */
 
 // Clean request

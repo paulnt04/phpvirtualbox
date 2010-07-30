@@ -7,7 +7,7 @@
  * was made in case the PHP back-end needs to inject translated
  * messages into the interface.
  *
- * $Id: en_us.php 697 2010-07-08 02:31:17Z ian $
+ * $Id$
  *
  */
 

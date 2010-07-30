@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:xi="http://www.w3.org/2001/XInclude">
 <head>
 
-	<!-- $Id: index.html 706 2010-07-12 14:23:51Z ian $ -->
+	<!-- $Id$ -->
 	<title>phpVirtualBox - VirtualBox Web Console</title>
 
 	<!-- Icon -->
@@ -28,7 +28,7 @@
        
     <!-- External / vendor scripts -->
     <script type="text/javascript" src="js/jquery-1-4-2.js"></script>
-    <script type="text/javascript" src="js/jqueryui-1-8-1.js"></script>
+    <script type="text/javascript" src="js/jquery-ui-1.8.2.min.js"></script>
     <script type="text/javascript" src="js/jquery.contextMenu.js"></script>
 	<script type="text/javascript" src="js/jquery.tipped-1.5.min.js"></script>
 	<script type="text/javascript" src="js/jqueryFileTree.js"></script>	
@@ -81,30 +81,28 @@
 			l.add('HostDetails',function(d){$('#vboxIndex').data('vboxHostDetails',d);});
 
 			l.addFile('panes/topmenu.html',function(f){$('#vboxIndex').append(f);},{});
-			l.addFile('panes/tabs.html',function(f){$('#tabsMain').append(f);},{})
-			l.addFile('panes/vmlist.html',function(f){$('#vboxVMListColumn').append(f);},{});
+			l.addFile('panes/tabs.html',function(f){$('#vboxPaneTabContent').append(f);},{})
+			l.addFile('panes/vmlistToolbar.html',function(f){$('#vboxIndex').append(f);},{});
+			l.addFile('panes/vmlist.html',function(f){$('#vboxPaneVMList').append(f);},{});
 
 			l.onLoad = function() {
 				
 				// Check supported version
 				vboxVersionCheck($('#vboxIndex').data('vboxConfig').version);
+				
+
 			}
+			l.onShow = function() { $(window).trigger('resize'); }
 
 			l.hideRoot = true;
 			l.run();
 
 			// Resize table elements
 			$(window).resize(function(){
-				$('#vboxTableMain').find('.vboxResize').css({'display':'none'}).each(function(){
-					var h = $(this).parent().innerHeight();
-					// Does browser include padding?
-					if(jQuery.browser.msie || jQuery.browser.opera) {
-						h -= (parseInt($(this).css('padding-top')) + parseInt($(this).css('padding-bottom')));
-					}
-					$(this).css({'height':h+'px','overflow':'auto'});
-					$(this).css({'display':''});
-				});
+				$('#vboxResize').children().children().css({'display':'none'});
 				
+				var h = $('#vboxResize').find('td').first().innerHeight();
+				$('#vboxResize').children().children().css({'height':h+'px','overflow':'auto','display':''});
 			});
 			
 		});
@@ -113,7 +111,7 @@
 </head>
 <body>
 <div id='vboxIndex'>
-<table id='vboxTableMain' cellpadding=0 cellspacing=0 style="width: 100%; height: 100%; padding: 0px; margin: 0px; border: 0px; border-spacing: 0px;">
+<table id='vboxTableMain' cellpadding=0 cellspacing=0 style="width: 100%; padding: 0px; margin: 0px; border: 0px; border-spacing: 0px;">
 	<tr style='vertical-align: top;'>
 		<td colspan='2' id='vboxMenu'>
 			<!--
@@ -121,23 +119,32 @@
 			 -->
 		</td>
 	</tr>
-	<tr style='vertical-align: top;'>
-		<td id='vboxVMListColumn' style='height: 100%; '>
-				<!--
-				
-				VM Toolbar and List
-				
-				-->
+	<tr>
+		<!-- VMList toolbar -->
+		<td class='vboxPaneTop'>
+			<div id='vboxPaneToolbar'></div>
 		</td>
-		<td style="width: 100%; height: 100%; padding-left: 8px; padding-right: 8px;">
-			<div id="tabsMain" style='height: 100%'>
-				<!--
-				
-					Tab content will go here
-				
-				 -->
-			</div>
+		<!-- Tabs / Buttons -->
+		<td class='vboxPaneTop' id='vboxTabsList'>
 		</td>
 	</tr>
-</table></div></body>
+	<tr style='vertical-align: top;' id='vboxResize'>
+		<td id="vboxPaneVMList" class='vboxBordered'>
+			<!--
+			
+			VM List
+				
+			-->
+		</td>
+		<td id="vboxPaneTabContent">
+			<!--
+			
+				Tab content will go here
+			
+			 -->
+		</td>
+	</tr>
+</table>
+</div>
+</body>
 </html>

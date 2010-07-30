@@ -2,7 +2,7 @@
  * 
  * phpVirtualBox tree view for snapshots
  * 
- * $Id: jquery.vbtree.js 633 2010-06-02 18:58:03Z ian $
+ * $Id$
  * 
  */
 

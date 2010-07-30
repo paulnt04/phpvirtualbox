@@ -5,7 +5,7 @@
  * This script simply catches errors and returns json data. This
  * depends on methods' public / private attributes being set correctly.
  *
- * $Id: ajax.php 714 2010-07-24 15:58:22Z ian $
+ * $Id$
  *
 */
 

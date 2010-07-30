@@ -2,11 +2,11 @@
 
 	VM Description
 	
-	$Id: tabVMDescription.html 680 2010-06-21 23:20:03Z ian $
+	$Id$
 
  -->
-<div id='vboxTabVMDescription' class='vboxTabContent'>
-	<div id='vboxVMDescription'>
+<div id='vboxTabVMDescription' style='height: 100%'>
+	<div id='vboxVMDescription' style='height: 100%'>
 	</div>
 	
 <script type='text/javascript'>
@@ -21,7 +21,7 @@ $('#vboxTabVMDescription').parent().bind('vmloaded',function(e,vm){
 	if(vm && vm.id) {
 		__tabDescription(vm);
 	} else {
-		$('#vboxVMDescription').html('<div  class="vboxTabLoading"><img src="images/vbox/welcome.png" /></div>');
+		$('#vboxVMDescription').html('<div class="vboxTabLoading"><img src="images/vbox/welcome.png" /></div>');
 	}
 });
 

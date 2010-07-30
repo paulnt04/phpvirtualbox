@@ -1,5 +1,5 @@
 /*
- * $Id: utils.js 706 2010-07-12 14:23:51Z ian $
+ * $Id$
  */
 
 /*
@@ -481,6 +481,80 @@ function vboxProgressUpdate(d,e) {
 	
 }
 
+/* Position element to mouse event */
+function vboxPositionEvent(elm,e) {
+	
+	var d = {}, posX, posY;
+	
+	if( self.innerHeight ) {
+		d.pageYOffset = self.pageYOffset;
+		d.pageXOffset = self.pageXOffset;
+		d.innerHeight = self.innerHeight;
+		d.innerWidth = self.innerWidth;
+	} else if( document.documentElement &&
+		document.documentElement.clientHeight ) {
+		d.pageYOffset = document.documentElement.scrollTop;
+		d.pageXOffset = document.documentElement.scrollLeft;
+		d.innerHeight = document.documentElement.clientHeight;
+		d.innerWidth = document.documentElement.clientWidth;
+	} else if( document.body ) {
+		d.pageYOffset = document.body.scrollTop;
+		d.pageXOffset = document.body.scrollLeft;
+		d.innerHeight = document.body.clientHeight;
+		d.innerWidth = document.body.clientWidth;
+	}
+
+	$(elm).css({'left':0,'top':0});
+
+	(e.pageX) ? x = e.pageX : x = e.clientX + d.scrollLeft;
+	(e.pageY) ? y = e.pageY : y = e.clientY + d.scrollTop;
+	
+	//adjust to ensure element is inside viewable screen
+	var right = x + $(elm).outerWidth();
+	var bottom = y + $(elm).outerHeight();
+	
+	var windowWidth = $(window).width() + $(window).scrollLeft()-5;
+	var windowHeight = $(window).height() + $(window).scrollTop()-5;
+	
+	x = (right > windowWidth) ? x - (right - windowWidth) : x;
+	y = (bottom > windowHeight) ? y - (bottom - windowHeight) : y;
+	
+	$(elm).css({ top: y, left: x });
+}
+
+/* Add gradient to element background */
+function vboxGradient(elm,c1,c2) {
+	switch(true) {
+		case jQuery.browser.opera:
+			break;
+	
+	}
+	/*
+	background: -webkit-gradient(
+		    linear,
+		    left bottom,
+		    left top,
+		    color-stop(0.45, #cccccc),
+		    color-stop(0.85, rgb(245,245,245))
+		);
+
+			background: -moz-linear-gradient(bottom, #cccccc, rgb(245,245,245));
+	*/
+}
+
+/* Parse Cookies */
+function vboxParseCookies() {
+	if($('#vboxIndex').data('vboxCookiesParsed')) return;
+	var cookies = {};
+	var c = document.cookie.split('; ');
+	for(var i = 0; i < c.length; i++) {
+		var nv = c[i].split('=');
+		cookies[nv[0]] = nv[1];
+	}	
+	$('#vboxIndex').data('vboxCookies', cookies);
+	$('#vboxIndex').data('vboxCookiesParsed',true);
+}
+
 /* Check version against supported versions */
 function vboxVersionCheck(ver) {
 	
@@ -489,11 +563,9 @@ function vboxVersionCheck(ver) {
 	// No ver passed?
 	if(ver && !supported[ver.major][ver.minor]) {
 		
-		var c = document.cookie.split('; ');
-		for(var i = 0; i < c.length; i++) {
-			var nv = c[i].split('=');
-			if(nv[0] == "vboxIgnoreVersion"+ver.string && nv[1] == '1') return;
-		}
+		vboxParseCookies();
+		
+		if($('#vboxIndex').data('vboxCookies')["vboxIgnoreVersion"+ver.string]) return;
 		
 		var d = document.createElement('span');
 		

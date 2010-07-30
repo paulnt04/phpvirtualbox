@@ -2,7 +2,7 @@
 
 	USB
 
-	$Id: settingsUSB.html 681 2010-06-24 00:04:38Z ian $
+	$Id$
 	
 -->
 <table id='vboxSettingsUSBTable' style='width: 100%'>
@@ -274,11 +274,11 @@ function vboxSettingsAddUSBFilter(f) {
 	$(li).append(chk);
 	li.innerHTML += ' <span class="vboxSettingsUSBFilterTitle">'+$('<div/>').text(f.name).html()+'</span>';
 
-	$(li).css({'MozUserSelect' : 'none'});
 	$(li).dblclick(function(e){
 		e.preventDefault();
 		usbToolbar.click('usbedit');
-	});
+	}).attr('unselectable','on').css('MozUserSelect','none');
+	
 	$('#vboxSettingsUSBFilterList').append(li);
 }
 
