@@ -4,7 +4,7 @@ Fixed some English translations.
 
 Added fr_fr and de_de languages. 
 
-Fixed top toolbar translation bug.
+Fixed top toolbar and Virtual Media Manger translation bugs.
 
 Fixed OSE startup bug and removed console tab when OSE is
 detected.
@@ -18,6 +18,19 @@ reflect a change made to any prefrences on the General tab.
 UI and back-end changes to match new version of VirtualBox.
 
 Updated jquery-ui to 1.8.2.
+
+Workaround for Console tab resize bug that would disconnect from
+an existing console session when the window was resized. Now, it
+automatically reconnects after a window resize event.
+
+browserLocal is forced in jqueryFileTree.php if SunOS is
+detected or the $location setting contains 'localhost.'
+
+Fixed bug that would not allow console connections if accessing
+phpVirtualBox through a URL where a port is specified. E.g.
+http://myhost:8080/phpVirtualBox
+
+Added json_encode() for PHP compiled with --disable-json
 
 -------------------------------------
 		0.4 - 2010-07-24

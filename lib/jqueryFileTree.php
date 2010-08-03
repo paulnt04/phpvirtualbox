@@ -29,11 +29,6 @@ require_once(dirname(__FILE__).'/vboxconnector.php');
 $vbox = new vboxconnector();
 $vbox->connect();
 
-if(stripos($vbox->vbox->host->operatingSystem,'windows') === false) {
-	define('DSEP','/');
-} else {
-	define('DSEP','\\');
-}
 
 $settings = new phpVBoxConfig();
 
@@ -50,7 +45,17 @@ error_reporting(E_ALL ^ E_NOTICE);
 
 $dir = urldecode($_REQUEST['dir']);
 
-$localbrowser = $settings->browserLocal;
+// Force localbrowser if we're on the same host or sunos is detected
+$vbhost = parse_url($settings->location,PHP_URL_HOST);
+$localbrowser = ($vbhost == 'localhost' || $vbhost == '127.0.0.1' || $settings->browserLocal || stripos($vbox->vbox->host->operatingSystem,'sunos') !== false);
+
+if($localbrowser) {
+	define('DSEP', DIRECTORY_SEPARATOR);
+} else if(stripos($vbox->vbox->host->operatingSystem,'windows') === false) {
+	define('DSEP','/');
+} else {
+	define('DSEP','\\');
+}
 
 /* Check that folder restriction validates if it exists */
 if($_REQUEST['dir'] != '/' && count($folders)) {

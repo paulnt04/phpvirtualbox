@@ -83,7 +83,7 @@ $('#vboxTabVMConsole').bind('show',function(e,vm){
 	if(vboxConsoleDetached) window.status = $("#vboxRDPStatus").text();
 	
 	var chost = (vm.VRDPServer.netAddress ? vm.VRDPServer.netAddress : $('#vboxIndex').data('vboxConfig').rdpHost);
-	if(chost == 'localhost' || chost == '127.0.0.1') { chost = location.host;}
+	if(chost == 'localhost' || chost == '127.0.0.1') { chost = location.hostname;}
 	chost+=':'+vm.VRDPServer.ports;
 	$(document.vboxRDPForm.serverAddress).val(chost);
 
@@ -180,6 +180,10 @@ function RDPWebEventLoaded(flashId) {
 	    });
 	    vboxConsoleDetached = true;
 	    vboxRDPConnect();
+	} else {
+	    $(window).bind('resize',function(){
+	    	setTimeout("vboxRDPConnect()",1000);
+	    });		
 	}
 }
    

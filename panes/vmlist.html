@@ -5,15 +5,11 @@
 	$Id$
 
  -->
-<!-- 
-
-	Virtual Machine List
-
- -->
 <div id='vboxVMList'>
-	<div style='text-align: center'><img src='images/spinner.gif' /></div>
+	<div id='vboxVMListSpinner' style='text-align: center'><img src='images/spinner.gif' /></div>
 </div>
 <script type='text/javascript'>
+
 
 /*
  * 
@@ -49,6 +45,7 @@ function vboxVMList(anchorid) {
 	this.vms = null;
 	this.anchorid = anchorid;
 	this.sortDefault = function(a,b){return strnatcasecmp(a.name,b.name);}
+	this.lastUpdatedDiv = null;
 	
 	// Update list of VMs
 	/////////////////////////
@@ -66,7 +63,7 @@ function vboxVMList(anchorid) {
 			
 		// First time run?
 		if(self.vms === null) {
-			$('#'+self.anchorid).children().first().remove();
+			$('#'+self.anchorid).children().remove();
 			self.vms = {};
 		}
 
@@ -116,13 +113,19 @@ function vboxVMList(anchorid) {
 			}
 		}
 		
-		var hours = currTime.getHours()
-		var minutes = currTime.getMinutes()
-		var secs = currTime.getSeconds();
-		if (minutes < 10) minutes = "0" + minutes;
-		if (secs < 10) secs = "0" + secs;
+		// Update "Last Updated" ?
+		if(self.lastUpdatedDiv) {
+			var hours = currTime.getHours()
+			var minutes = currTime.getMinutes()
+			var secs = currTime.getSeconds();
+			if (minutes < 10) minutes = "0" + minutes;
+			if (secs < 10) secs = "0" + secs;
+			
+			$(self.lastUpdatedDiv).html(hours+':'+minutes+':'+secs);
+		}
+
+		$('#vboxVMListFader').css('left',($('#'+self.anchorid).parent().innerWidth() - 33));
 		
-		$('#lastUpdated').html(hours+':'+minutes+':'+secs);
 	}
 	
 
@@ -270,5 +273,7 @@ function vboxVMList(anchorid) {
 	}
 
 }
+
+
 
 </script>

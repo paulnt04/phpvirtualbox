@@ -5,7 +5,7 @@
 	$Id$
 
  -->
-<div id='tabMainContent'></div>
+<div id='tabMainContent' class='vboxInvisible' style='overflow: auto;'></div>
 <script type='text/javascript'>
 
 // Create UL
@@ -65,10 +65,10 @@ tabLoader.onLoad = function(){
 	$('#vboxIndex').bind('vmselect',function(e,vm){tabsMain.update(vm);});
 
 	$('#tablistMain').children().click(function(){
-		if(!$(this).hasClass('disabled')) tabsMain.showTab($(this).children().first().attr('href'));
+		if(!$(this).hasClass('vboxDisabled')) tabsMain.showTab($(this).children().first().attr('href'));
 		return false;
 	}).hover(function(){
-		if($(this).hasClass('disabled')) return false;
+		if($(this).hasClass('vboxDisabled')) return false;
 		$(this).addClass('hover');
 	},function(){
 		$(this).removeClass('hover');
@@ -153,13 +153,13 @@ function vboxTabs(id) {
 
 			self.showTab('#'+self.tabs[0].name);
 
-			$('#tablistMain').children().addClass('disabled');
-			$('#tablistMain').children().first().removeClass('disabled');
+			$('#tablistMain').children().addClass('vboxDisabled');
+			$('#tablistMain').children().first().removeClass('vboxDisabled');
 			
 			
 		} else {
 
-			$('#tablistMain').children().removeClass('disabled');
+			$('#tablistMain').children().removeClass('vboxDisabled');
 			
 		}
 

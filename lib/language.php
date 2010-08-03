@@ -19,6 +19,7 @@ error_reporting(0);
 
 // Settings contains language
 require_once(dirname(dirname(__FILE__)) .'/config.php');
+require_once(dirname(__FILE__).'/utils.php');
 
 $settings = new phpVBoxConfig();
 $lang = strtolower($settings->language);

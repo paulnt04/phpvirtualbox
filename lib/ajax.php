@@ -25,6 +25,7 @@ if(get_magic_quotes_gpc()) {
 }
 
 require_once(dirname(dirname(__FILE__)).'/config.php');
+require_once(dirname(__FILE__).'/utils.php');
 require_once(dirname(__FILE__).'/vboxconnector.php');
 
 $response = array('data'=>array(),'errors'=>array(),'persist'=>array());

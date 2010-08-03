@@ -5,8 +5,8 @@
 	$Id$
 
  -->
-<div id='vboxTabVMDetails' style='height: 99%;'>
-	<div id='vboxVMDetails' style='height: 100%;'>
+<div id='vboxTabVMDetails' style='height: 100%;' class='vboxInvisible'>
+	<div id='vboxVMDetails' style='height: 100%;' class='vboxInvisible'>
 	</div>
 <script type='text/javascript'>
 
@@ -155,6 +155,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		return;
 	}
 
+
 	// Details Table
 	var vboxDetailsTable = document.createElement('table');
 	vboxDetailsTable.setAttribute('id','vboxDetailsTable' + (boxes ? 'BoxGeneral' : 'General'));
@@ -166,6 +167,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	vboxDetailsTable.appendChild(__vboxDetailRow(trans("OS Type"), trans(data['OSTypeId'])));
 
 	if(boxes) {
+		//$(targetdiv).append('<img src="images/vbox/monitor.png" style="position: relative; float: right;" /> ');
 		vboxDetailsTable.appendChild(__vboxDetailRow('',''));
 		if($('#vboxIndex').data('vboxCookies')["vboxSectionShowGeneral"] == 0) {
 			vboxDetailsTable.setAttribute('style','display: none;');
@@ -464,7 +466,7 @@ function __vboxDisplayHostDetailsData(data) {
 	vboxDetailsTable.setAttribute('class','vboxDetailsTable vboxDetailsTableBox ui-corner-all');
 	
 	// Network
-	vboxDetailsTable.appendChild(__vboxDetailHeader("nw_16px.png","Network"));
+	vboxDetailsTable.appendChild(__vboxDetailHeader("nw_16px.png",trans("Network")));
 
 	for(var i = 0; i < data['networkInterfaces'].length; i++) {		
 		
@@ -501,7 +503,7 @@ for(var i = 0; i < sections.length; i++) {
 	
 	var li = document.createElement('li');
 	var cb = document.createElement('input');
-	$(cb).attr({'type':'checkbox','name':sections[i].replace(' ','')})
+	$(cb).attr({'type':'checkbox','class':'vboxCheckbox','name':sections[i].replace(' ','')})
 	if(checked) $(cb).attr('checked',checked);
 	$(cb).click(function(){
 		var exp = new Date(2020,12,24);
