@@ -171,6 +171,7 @@ div.vboxWizard h3 { border-bottom: 1px solid #aaa; }
 #vboxImportProps td.vboxHideOverflow, #vboxImportProps td.vboxHideOverflow div { text-wrap: unrestricted !important; word-wrap: break-word !important; overflow: hidden !important; white-space: wrap !important;}
 
 /* Main Tabs */
+#tablistMain { padding: 0.2em 0 0; }
 #tabsMain { background: #d9d9e9; }
 #tabsMain .vboxTabContent { margin-left: 2px; background: #fff; }
 #tabsMain div.vboxTabContent { text-align: left; }
@@ -178,7 +179,7 @@ div.vboxWizard h3 { border-bottom: 1px solid #aaa; }
 #tabsMain div.vboxTabLoading img { position: absolute; top: 45%; left: 45%; text-align: center; }
 
 /* Menu bars */
-#vboxIndex div.vboxMenuBar, div.vboxDialogContent div.vboxMenuBar { border-bottom: 1px solid #aaa; padding-top: 0px; margin-top: 0px; }
+#vboxIndex div.vboxMenuBar, div.vboxDialogContent div.vboxMenuBar { border-bottom: 1px solid #aaa; padding: 2px 0; margin-top: 0px; }
 #vboxIndex div.vboxMenuBar span, div.vboxDialogContent div.vboxMenuBar span { padding: 1px 8px 1px 4px; font-size: 1.1em; border: 1px solid transparent; cursor: default; }
 #vboxIndex div.vboxMenuBar span.vboxBordered, div.vboxDialogContent div.vboxMenuBar span.vboxBordered { border: 1px solid #aaa; }
 #vboxIndex ul.vboxMenuBar, div.vboxDialogContent ul.vboxMenuBar { font-size: 1.2em; background: #d9d9e9; border: 2px solid #aaa; margin: 0px; padding: 0px; }
@@ -210,15 +211,15 @@ div.vboxWizard h3 { border-bottom: 1px solid #aaa; }
 
 /* Virtual Machine List and Top Toolbar*/
 #vboxPaneToolbar { background: #d9d9e9; }
-#vboxPaneVMList { background: #fff; padding-top: 8px; padding-left: 4px; padding-right: 8px; }
+#vboxPaneVMList { background: #fff; padding: 0; }
 #vboxPaneVMList table, #vboxPaneVMList div { width: 100%; }
 #vboxPaneVMList td.vboxVMTitle { width: 100% }
-table.vboxVMListVM { margin-bottom: 10px; vertical-align: top; }
+table.vboxVMListVM { vertical-align: top; padding: 5px 0 5px 4px; }
 table.vboxVMListVM td { padding: 2px; }
 table.vboxVMListVM td.vboxVMSessionOpen { font-style: italic; }
 
 /* Toolbar above vm list */
-#vboxPaneToolbar table { border-spacing: 14px; }
+#vboxPaneToolbar table { border-spacing: 14px 5px; }
 #vboxPaneToolbar table td.buttonEnabled { cursor: pointer; }
 #vboxPaneToolbar table td.buttonDisabled { cursor: default; }
 
@@ -331,5 +332,3 @@ table.vboxDetailsTableError tr { vertical-align: top; }
 #vboxSettingsUSBFilters li { width: 100%; margin: 0px; padding: 2px }
 #vboxSettingsUSBFilters ul { list-style: none; margin: 0px; padding: 0px;}
 #vboxSettingsUSBFilters ul input { vertical-align: bottom; }
-
-
