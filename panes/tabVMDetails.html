@@ -347,6 +347,7 @@ function __vboxDisplayHostDetailsData(data) {
 	// General
 	vboxDetailsTable.appendChild(__vboxDetailHeader("machine_16px.png",trans("General")));
 	vboxDetailsTable.appendChild(__vboxDetailRow(trans("OS Type"), data['operatingSystem'] + ' (' + data['OSVersion'] +')'));
+	vboxDetailsTable.appendChild(__vboxDetailRow("VirtualBox", $('#vboxIndex').data('vboxConfig').version.string));
 	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Base Memory"), data['memorySize'] + ' ' + trans('MB')));
 	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Processors"), data['cpus'][0] + ' (' + data['cpus'].length +')'));
 	
