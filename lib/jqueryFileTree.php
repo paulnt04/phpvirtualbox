@@ -24,6 +24,7 @@
 global $vbox, $localbrowser, $allowed;
 
 require_once(dirname(dirname(__FILE__)).'/config.php');
+require_once(dirname(__FILE__).'/utils.php');
 require_once(dirname(__FILE__).'/vboxconnector.php');
 
 $vbox = new vboxconnector();
@@ -33,7 +34,7 @@ $vbox->connect();
 $settings = new phpVBoxConfig();
 
 
-$allowed = explode(',',$settings->browserRestrictFiles);
+$allowed = explode(',',strtolower($settings->browserRestrictFiles));
 if($allowed[0]) $allowed = array_combine($allowed,$allowed);
 else $allowed = array();
 
@@ -43,7 +44,11 @@ else $folders = array();
 
 error_reporting(E_ALL ^ E_NOTICE);
 
-$dir = urldecode($_REQUEST['dir']);
+/*
+ * Clean request
+ */
+$vboxRequest = clean_request();
+
 
 // Force localbrowser if we're on the same host or sunos is detected
 $vbhost = parse_url($settings->location,PHP_URL_HOST);
@@ -57,8 +62,13 @@ if($localbrowser) {
 	define('DSEP','\\');
 }
 
+/* In some cases, "dir" passed is just a file name */
+if(strpos($vboxRequest['dir'],DSEP)===false) $vboxRequest['dir'] = DSEP;
+
+
+$dir = $vboxRequest['dir'];
 /* Check that folder restriction validates if it exists */
-if($_REQUEST['dir'] != '/' && count($folders)) {
+if($vboxRequest['dir'] != '/' && count($folders)) {
 	$valid = false;
 	foreach($folders as $f) {
 		if(strpos(strtoupper($dir),strtoupper($f)) === 0) {
@@ -68,14 +78,14 @@ if($_REQUEST['dir'] != '/' && count($folders)) {
 	}
 	if(!$valid) {
 		folder_start();
-		echo('<li>Access denied to '.htmlentities($dir).' (' . htmlentities(urldecode($_REQUEST['dir'])).')</li>');
+		echo('<li>Access denied to '.htmlentities($dir).' (' . htmlentities(urldecode($vboxRequest['dir'])).')</li>');
 		folder_end();
-		$_REQUEST['dir'] = '/';
+		$vboxRequest['dir'] = '/';
 	}
 }
 
 /* Folder Restriction with root '/' requested */
-if($_REQUEST['dir'] == '/' && count($folders)) {
+if($vboxRequest['dir'] == '/' && count($folders)) {
 	folder_start();
 	foreach($folders as $f) folder_folder($f,true);
 	folder_end();
@@ -83,7 +93,7 @@ if($_REQUEST['dir'] == '/' && count($folders)) {
 }
 
 /* Full, expanded path to $dir */
-if($_REQUEST['fullpath']) {
+if($vboxRequest['fullpath']) {
 	folder_start();
 	if(count($folders)) {
 		folder_start();
@@ -174,7 +184,7 @@ function printdir($dir, $recurse=array()) {
 			}
 		}
 	}
-	if(!$_REQUEST['dirsOnly']) {
+	if(!$vboxRequest['dirsOnly']) {
 		// All files
 		for($i = 0; $i < count($files); $i++) {
 			$file = $files[$i];
@@ -184,7 +194,7 @@ function printdir($dir, $recurse=array()) {
 
 				$ext = preg_replace('/^.*\./', '', $file);
 
-				if(count($allowed) && !@$allowed['.'.$ext]) continue;
+				if(count($allowed) && !@$allowed['.'.strtolower($ext)]) continue;
 
 				folder_file($file);
 			}
@@ -224,7 +234,7 @@ function printdirlocal($dir, $recurse=array()) {
 			}
 		}
 	}
-	if(!$_REQUEST['dirsOnly']) {
+	if(!$vboxRequest['dirsOnly']) {
 		// All files
 		foreach( $files as $file ) {
 			$file = $dir.DSEP.$file;
@@ -244,7 +254,7 @@ function printdirlocal($dir, $recurse=array()) {
 
 function vbox_basename($b) { return substr($b,strrpos($b,DSEP)+1); }
 function folder_file($f) {
-	$ext = preg_replace('/^.*\./', '', $f);
+	$ext = strtolower(preg_replace('/^.*\./', '', $f));
 	echo "<li class=\"file file_{$ext} vboxListItem\"><a href=\"#\" name='".htmlentities($f)."' rel=\"".htmlentities($f)."\">".htmlentities(vbox_basename($f))."</a></li>";
 }
 function folder_folder($f,$full=false,$expanded=false,$selected=false) {

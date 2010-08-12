@@ -1,5 +1,34 @@
 -------------------------------------
 -------------------------------------
+UI and back-end changes to match new version of VirtualBox.
+
+Updated jquery-ui to 1.8.2.
+
+browserLocal is forced in jqueryFileTree.php if SunOS is
+detected or the $location setting contains 'localhost.'
+
+Fixed bug that would not allow console connections if accessing
+phpVirtualBox through a URL where a port is specified. E.g.
+http://myhost:8080/phpVirtualBox
+
+Added json_encode() for PHP compiled with --disable-json
+
+"rdpHost" setting changed to "consoleHost"
+
+Added VirtualBox version to host in VM list and on the host
+details tab.
+
+Added multiple server functionality.
+
+Fixed case sensitivity for $browserRestrictFiles setting.
+
+Fixed bug when using OSE where the Shared Folders section would
+not be selected when "Shared Folders" is clicked on from the
+Details tab / section.
+
+-------------------------------------
+		0.5 - 2010-08-10
+-------------------------------------
 Fixed some English translations.
 
 Added fr_fr and de_de languages. 
@@ -15,22 +44,14 @@ host server's details when it is selected in the list of vms.
 Fixed bug in File -> Preferences that would not correctly
 reflect a change made to any prefrences on the General tab.
 
-UI and back-end changes to match new version of VirtualBox.
-
-Updated jquery-ui to 1.8.2.
-
 Workaround for Console tab resize bug that would disconnect from
 an existing console session when the window was resized. Now, it
 automatically reconnects after a window resize event.
 
-browserLocal is forced in jqueryFileTree.php if SunOS is
-detected or the $location setting contains 'localhost.'
+Applied UI enhancements patch supplied by compuwizard123
+http://code.google.com/u/compuwizard123/
 
-Fixed bug that would not allow console connections if accessing
-phpVirtualBox through a URL where a port is specified. E.g.
-http://myhost:8080/phpVirtualBox
-
-Added json_encode() for PHP compiled with --disable-json
+Host details now include VirtualBox version.
 
 -------------------------------------
 		0.4 - 2010-07-24

@@ -56,6 +56,13 @@ if(!function_exists('imagepng')) {
 require_once(dirname(__FILE__).'/config.php');
 require_once(dirname(__FILE__).'/lib/vboxconnector.php');
 
+//Set no caching
+header("Expires: Mon, 26 Jul 1997 05:00:00 GMT", true);
+header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT", true);
+header("Cache-Control: max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0", true);
+header("Pragma: no-cache", true);
+
+
 $settings = new phpVBoxConfig();
 
 $vbox = new vboxconnector();
@@ -65,7 +72,7 @@ $vbox->connect();
 // AND we need to build an image from each pixel, the memory usage
 // of this script can get rather large. 800px wide usually keeps
 // it right under 150M.
-ini_set('memory_limit', '512M'); // so swap if you need to swap
+@ini_set('memory_limit', '512M'); // so swap if you need to swap
 if($_REQUEST['width']) {
 	$force_width = $_REQUEST['width'];
 } else {
@@ -77,29 +84,60 @@ try {
 
 	//Get a list of registered machines
 	$machine = $vbox->__getMachineRef($_REQUEST['vm']);
-	if ( 'Running' != $machine->state ) {
-		$machine->releaseRemote();
-		throw new Exception('The specified virtual machine is not in a Running state.');
+	switch($machine->state) {
+		case 'Running':
+		case 'Saved':
+		case 'Restoring':
+			break;
+		default:
+			$machine->releaseRemote();
+			throw new Exception('The specified virtual machine is not in a Running state.');
 	}
 
 	$_REQUEST['vm'] = $machine->id;
-	$machine->releaseRemote();
 
 	$vbox->session = $vbox->websessionManager->getSessionObject($vbox->vbox);
-	$vbox->vbox->openExistingSession($vbox->session, $_REQUEST['vm']);
+	$machine->lockMachine($vbox->session,'Shared');
 
-	$res = $vbox->session->console->display->getScreenResolution(0);
+	// Take active screenshot if machine is running
+	if($machine->state == 'Running') {
 
-    $screenWidth = array_shift($res);
-    $screenHeight = array_shift($res);
+		$res = $vbox->session->console->display->getScreenResolution(0);
 
-	$factor  = (float)$force_width / (float)$screenWidth;
-	$screenHeight = $factor * $screenHeight;
-	$screenWidth = $force_width;
+	    $screenWidth = array_shift($res);
+	    $screenHeight = array_shift($res);
 
-	$imageraw = $vbox->session->console->display->takeScreenShotToArray(0,$screenWidth, $screenHeight);
+		$factor  = (float)$force_width / (float)$screenWidth;
 
-	$vbox->session->close();
+		$screenWidth = $force_width;
+		if($factor > 0) {
+			$screenHeight = $factor * $screenHeight;
+		} else {
+			$screenHeight = ($screenWidth * 3.0/4.0);
+		}
+
+		$imageraw = $vbox->session->console->display->takeScreenShotToArray(0,$screenWidth, $screenHeight);
+
+	} else {
+
+		$res = $machine->querySavedThumbnailSize(0);
+
+		$screenWidth = $res[1];
+	    $screenHeight = $res[0];
+
+    	$factor  = (float)$force_width / (float)$screenWidth;
+
+		$screenWidth = $force_width;
+		if($factor > 0) {
+			$screenHeight = $factor * $screenHeight;
+		} else {
+			$screenHeight = ($screenWidth * 3.0/4.0);
+		}
+
+		$imageraw = $machine->readSavedThumbnailToArray(false, $screenWidth, $screenHeight);
+
+	}
+	$vbox->session->unlockMachine();
 	$vbox->session = null;
 
 
@@ -128,38 +166,29 @@ try {
 	$string = $ex->getMessage();
 
 	// Ensure we close the VM Session if we hit a error, ensure we don't have a aborted VM
-	if($vbox->session) $vbox->session->close();
+	if($vbox->session) $vbox->session->unlockMachine();
 
+	if($_REQUEST['debug']) {
 
-	$font = 6;
-	$width = ImageFontWidth($font)* strlen($string);
-	$height = ImageFontHeight($font);
-	$im = ImageCreate($width,$height);
+		$font = 6;
+		$width = ImageFontWidth($font)* strlen($string);
+		$height = ImageFontHeight($font);
+		$image = ImageCreate($width,$height);
 
-	$x=imagesx($im)-$width ;
-	$y=imagesy($im)-$height;
-	$background_color = imagecolorallocate ($im, 242, 242, 242); //white background
-	$text_color = imagecolorallocate ($im, 0, 0,0);//black text
-	imagestring ($im, $font, $x, $y, $string, $text_color);
+		$x=imagesx($image)-$width ;
+		$y=imagesy($image)-$height;
+		$background_color = imagecolorallocate ($image, 255, 255, 255);
+		$text_color = imagecolorallocate ($image, 0, 0, 0);
+		imagestring($image, $font, $x, $y, $string, $text_color);
 
-	//$image = imagecreatetruecolor(800, 600);
-	header("content-type: image/png");
-	imagepng($im);
+	} else {
+		$image = ImageCreate(1,1);
+		$b = imagecolorallocate ($image, 0, 0, 0); // black bg
+		imagefill($image,0,0,$b);
+	}
 
-
-
-
-	return;
 }
 
 
-if($_REQUEST['debug']) {
-	echo('<pre>');
-	echo("Completed\n");
-	if(function_exists('memory_get_peak_usage'))
-		echo('Peak memory usage: ' . ((memory_get_peak_usage(true) / 1024) / 1024) ."MB\n");
-	echo('</pre>');
-} else {
-	header("content-type: image/png",true);
-	imagepng($image);
-}
+header("Content-type: image/png",true);
+imagepng($image);

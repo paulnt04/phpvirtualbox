@@ -78,7 +78,7 @@ class vboxconnector {
 
 		if($this->settings['cachePath']) $this->cache->path = $this->settings['cachePath'];
 
-		$this->cache->prefix = 'pvbx-'.md5(parse_url($this->settings['location'],PHP_URL_HOST)).'-';
+		$this->cache->prefix = 'pvbx-'.$this->settings['key'].'-';
 
 	}
 
@@ -422,6 +422,9 @@ class vboxconnector {
 				break;
 			}
 
+			// Check for redirection rules diff
+			$ndiff = ($ndiff || (@serialize($args['networkAdapters'][$i]['redirects']) != @serialize($adapters[$i]['redirects'])));
+
 			if(!$ndiff) { continue; }
 			$netchanged = true;
 
@@ -430,6 +433,7 @@ class vboxconnector {
 			for($p = 0; $p < (count($netprops) - 1); $p++) {
 				$n->$netprops[$p] = $args['networkAdapters'][$i][$netprops[$p]];
 			}
+
 
 			switch($args['networkAdapters'][$i]['attachmentType']) {
 				case 'Bridged':
@@ -443,6 +447,17 @@ class vboxconnector {
 					break;
 				case 'NAT':
 					$n->attachToNAT();
+
+					// Remove existing redirects
+					foreach($n->NatDriver->getRedirects() as $r) {
+						$n->NatDriver->removeRedirect(array_shift(split(',',$r)));
+					}
+					// Add redirects
+					foreach($args['networkAdapters'][$i]['redirects'] as $r) {
+						$r = split(',',$r);
+						$n->NatDriver->addRedirect($r[0],$r[1],$r[2],$r[3],$r[4],$r[5]);
+					}
+
 					break;
 				default:
 					$n->detach();
@@ -1845,7 +1860,12 @@ class vboxconnector {
 			'internalNetwork' => $n->internalNetwork,
 			'NATNetwork' => $n->NATNetwork,
 			'cableConnected' => $n->cableConnected,
-			'lineSpeed' => $n->lineSpeed
+			'lineSpeed' => $n->lineSpeed,
+			'redirects' => (
+				(string)$n->attachmentType == 'NAT' ?
+				$n->NatDriver->getRedirects()
+				: array()
+				)
 			);
 	}
 	/*

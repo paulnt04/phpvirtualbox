@@ -89,7 +89,7 @@ for(var i in vboxOSTypes) {
 	if(!vboxSettingsOSTypes[vboxOSTypes[i].familyId]) {
 		vboxSettingsOSTypes[vboxOSTypes[i].familyId] = {'id':vboxOSTypes[i].familyId,'description':vboxOSTypes[i].familyDescription,'osTypes':[]};
 	}
-	
+
 	// We're on the default os type, record family id and index number
 	// so that we can set it later on
 	if(vboxOSTypes[i].id == vboxDefaultOSTypeId) {

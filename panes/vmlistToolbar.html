@@ -31,7 +31,7 @@ var tButtons = [
 		'click' : function () {
 			vboxVMsettingsInit($('#vboxIndex').data('selectedVM').id,function(){$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);});
 		},
-		'enabled' : function (vm) { return vm && (vm.sessionState == 'Unlocked'); }
+		'enabled' : function (vm) { return vm && (vm.sessionState == 'Unlocked' && vm.state != 'Saved'); }
 	},
 	{
 		'name' : 'vmstart',

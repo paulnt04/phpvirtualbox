@@ -60,6 +60,7 @@ public static $trans = array(
 'Finish' => 'Finish',
 'Select File' => 'Select File',
 'Select Folder' => 'Select Folder',
+'Server List' => 'Server List',
 
 // Power button
 'Pause' => 'Pause',
@@ -76,6 +77,11 @@ public static $trans = array(
 'seconds' => 'seconds',
 'hours' => 'hours',
 'days' => 'days',
+
+/* Preview box */
+'Preview' => 'Preview',
+'Update Disabled' => 'Update Disabled',
+'Every X seconds' => 'Every %s seconds', /* %s will be replaced with numeric values */
 
 /* Snapshots */
 'Snapshots' => 'Snapshots',
@@ -319,6 +325,21 @@ public static $trans = array(
 'Cable connected' => 'Cable connected',
 'netMediumType' => 'Type',
 'Guest Network Adapters' => 'Guest Network Adapters',
+/* New */
+'Port Forwarding' => 'Port Forwarding',
+'Port Forwarding Rules' => 'Port Forwarding Rules',
+'Protocol' => 'Protocol',
+'Host IP' => 'Host IP',
+'Host Port' => 'Host Port',
+'Guest IP' => 'Guest IP',
+'Guest Port' => 'Guest Port',
+'TCP' => 'TCP',
+'UDP' => 'UDP',
+'Rule' => 'Rule',
+'Insert new rule' => 'Insert new rule',
+'Delete selected rule' => 'Delete selected rule',
+'Invalid IP Address' => 'Invalid IP Address',
+'The current port forwarding rules are not valid' => 'The current port forwarding rules are not valid. None of the host or guest port values may be set to zero.',
 
 
 'Am79C970A' => 'AMD PCNet-PCI II network card',

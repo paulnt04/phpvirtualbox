@@ -46,6 +46,23 @@ function vboxVMList(anchorid) {
 	this.anchorid = anchorid;
 	this.sortDefault = function(a,b){return strnatcasecmp(a.name,b.name);}
 	this.lastUpdatedDiv = null;
+
+	// If there are multiple servers configured, setup menu
+	if($('#vboxIndex').data('vboxConfig').servers.length) {
+
+		var servers = $('#vboxIndex').data('vboxConfig').servers;
+		var ul = document.createElement('ul');
+		ul.setAttribute('class','contextMenu');
+		ul.setAttribute('style','display: none');
+		ul.setAttribute('id','vboxServerMenu');
+		for(var i = 0; i < servers.length; i++) {
+			var li = document.createElement('li');
+			li.innerHTML = "<a href='#" + $('<div />').html(servers[i].name).text() + "' style='background-image: url(images/vbox/OSE/VirtualBox_16px.png);'>"+$('<div />').html(servers[i].name).text()+"</a>";
+			ul.appendChild(li);
+		}
+		$('#vboxIndex').append(ul);
+		
+	}
 	
 	// Update list of VMs
 	/////////////////////////
@@ -83,7 +100,7 @@ function vboxVMList(anchorid) {
 		
 		
 		// Host machine added manually
-		host = [{'id':'host','state':'Hosting','name':'VirtualBox' + ($('#vboxIndex').data('vboxConfig').host ? ' ('+$('#vboxIndex').data('vboxConfig').host+')' : ''),'OSTypeId':'VirtualBox_Host'}];
+		host = [{'id':'host','state':'Hosting','name':'VirtualBox ('+$('#vboxIndex').data('vboxConfig').name+')','OSTypeId':'VirtualBox_Host'}];
 		currVMList = host.concat(currVMList);
 
 		
@@ -124,7 +141,6 @@ function vboxVMList(anchorid) {
 			$(self.lastUpdatedDiv).html(hours+':'+minutes+':'+secs);
 		}
 
-		$('#vboxVMListFader').css('left',($('#'+self.anchorid).parent().innerWidth() - 33));
 		
 	}
 	
@@ -144,8 +160,8 @@ function vboxVMList(anchorid) {
 		
 		vmUpdate.selected = self.vms[vmUpdate.id].selected;
 
-		if(changed && vmUpdate.id != 'host') {
-			
+		if(changed) {
+
 			$('#vboxVMListItem-'+self.anchorid+'-'+vmUpdate.id).replaceWith(self.vmHTML(vmUpdate));
 			
 			if(self.vms[vmUpdate.id].selected) {
@@ -174,7 +190,11 @@ function vboxVMList(anchorid) {
 		$(tbl).data(vmn);
 		tbl.setAttribute('id','vboxVMListItem-'+self.anchorid+'-'+vmn.id);
 		tbl.setAttribute('class',"vboxVMListVM vboxListItem" + (self.vms[vmn.id].selected ? "Selected" : ""));
-		$(tbl).bind('click',function(){$('#vboxIndex').data('selectedVM',$(this).data());$('#vboxIndex').trigger('vmselect',[$(this).data()]);});
+		$(tbl).bind('click',function(){
+			if($(this).data('id') == 'host' && $('#vboxIndex').data('selectedVM') && $('#vboxIndex').data('selectedVM')['id'] == $(this).data('id')) return;
+			$('#vboxIndex').data('selectedVM',$(this).data());
+			$('#vboxIndex').trigger('vmselect',[$(this).data()]);
+		});
 
 		var tr = document.createElement('tr');
 		
@@ -188,7 +208,39 @@ function vboxVMList(anchorid) {
 		// VM Name
 		var td = document.createElement('td');
 		td.setAttribute('class', 'vboxVMTitle');
-		td.appendChild(document.createTextNode(vmn.name + (vmn.currentSnapshot ? ' (' + vmn.currentSnapshot + ')' : '')));
+		// Host can have HTML in name
+		if(vmn.id == 'host') {
+			// Check for multiple server config
+			if($('#vboxIndex').data('vboxConfig').servers.length) {
+				var span = document.createElement('span');
+				$(span).attr('class','vboxServerLink');
+				$(span).text('('+$('#vboxIndex').data('vboxConfig').name+')');
+				$(span).contextMenu({
+						menu: 'vboxServerMenu',
+						button: 0,
+						mode: 'menu'
+					},
+					function(a) {
+						if(a == $('#vboxIndex').data('vboxConfig').name) return;
+						var exp = new Date(2020,12,24);
+						document.cookie = "vboxServer="+a+"; expires="+exp.toGMTString()+"; path=/";
+						$('#vboxIndex').trigger('vmselect',null);
+						$('#vboxIndex').data('selectedVM',null);
+						$('#vboxIndex').trigger('hostChange',[a]);
+						$('#'+self.anchorid).children().remove();
+						$('#'+self.anchorid).html("<div id='vboxVMListSpinner' style='text-align: center'><img src='images/spinner.gif' /></div>");
+						self.vms = self.selected = null;
+
+					}
+				);
+				td.innerHTML = 'VirtualBox ';
+				td.appendChild(span);
+			} else {				
+				td.innerHTML = vmn.name;
+			}
+		} else {
+			td.appendChild(document.createTextNode(vmn.name + (vmn.currentSnapshot ? ' (' + vmn.currentSnapshot + ')' : '')));
+		}
 		
 		tr.appendChild(td);
 		
@@ -199,6 +251,10 @@ function vboxVMList(anchorid) {
 		var td = document.createElement('td');
 		if(vmn.id != 'host' && vmn.sessionState != 'Unlocked') td.setAttribute('class','vboxVMSessionOpen');
 		td.innerHTML = "<img src='images/vbox/" + machineStateIcon(vmn.state) +"' /> " + trans(vmn.state);
+
+		// Add VirtualBox version if hosting
+		if(vmn.id == 'host')
+			td.innerHTML += ' - ' + $('#vboxIndex').data('vboxConfig').version.string;
 		
 		tr.appendChild(td);
 		tbl.appendChild(tr);
@@ -273,7 +329,6 @@ function vboxVMList(anchorid) {
 	}
 
 }
-
 
 
 </script>

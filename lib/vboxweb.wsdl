@@ -427,6 +427,20 @@
           <xsd:enumeration value="ExtraConfig"/>
         </xsd:restriction>
       </xsd:simpleType>
+      <!-- enum: CleanupMode -
+            UnregisterOnly: 1 -
+            DetachAllReturnNone: 2 -
+            DetachAllReturnHardDisksOnly: 3 -
+            Full: 4 -
+            -->
+      <xsd:simpleType name="CleanupMode">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="UnregisterOnly"/>
+          <xsd:enumeration value="DetachAllReturnNone"/>
+          <xsd:enumeration value="DetachAllReturnHardDisksOnly"/>
+          <xsd:enumeration value="Full"/>
+        </xsd:restriction>
+      </xsd:simpleType>
       <!-- enum: HostNetworkInterfaceMediumType -
             Unknown: 0 -
             Ethernet: 1 -
@@ -831,7 +845,8 @@
             OnCPUChanged: 60 -
             OnRemoteDisplayInfoChanged: 61 -
             OnEventSourceChanged: 62 -
-            Last: 63 -
+            OnCPUPriorityChanged: 63 -
+            Last: 64 -
             -->
       <xsd:simpleType name="VBoxEventType">
         <xsd:restriction base="xsd:string">
@@ -872,6 +887,7 @@
           <xsd:enumeration value="OnCPUChanged"/>
           <xsd:enumeration value="OnRemoteDisplayInfoChanged"/>
           <xsd:enumeration value="OnEventSourceChanged"/>
+          <xsd:enumeration value="OnCPUPriorityChanged"/>
           <xsd:enumeration value="Last"/>
         </xsd:restriction>
       </xsd:simpleType>
@@ -935,6 +951,7 @@
           <xsd:element name="device" type="xsd:int"/>
           <xsd:element name="type" type="vbox:DeviceType"/>
           <xsd:element name="passthrough" type="xsd:boolean"/>
+          <xsd:element name="bandwidthLimit" type="xsd:unsignedInt"/>
         </xsd:sequence>
       </xsd:complexType>
       <!-- interface ISharedFolder as struct: -->
@@ -2792,6 +2809,34 @@
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
+      <!-- read/write attribute IMachine::CPUPriority-->
+      <xsd:element name="IMachine_getCPUPriority">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_getCPUPriorityResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:unsignedInt"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_setCPUPriority">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="CPUPriority" type="xsd:unsignedInt"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_setCPUPriorityResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
+        </xsd:complexType>
+      </xsd:element>
       <!-- read/write attribute IMachine::memorySize-->
       <xsd:element name="IMachine_getMemorySize">
         <xsd:complexType>
@@ -3665,34 +3710,6 @@
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
-      <!-- read/write attribute IMachine::ioBandwidthMax-->
-      <xsd:element name="IMachine_getIoBandwidthMax">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="IMachine_getIoBandwidthMaxResponse">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="returnval" type="xsd:unsignedInt"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="IMachine_setIoBandwidthMax">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="ioBandwidthMax" type="xsd:unsignedInt"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="IMachine_setIoBandwidthMaxResponse">
-        <xsd:complexType>
-          <xsd:sequence/>
-        </xsd:complexType>
-      </xsd:element>
       <!-- method IMachine::lockMachine-->
       <xsd:element name="IMachine_lockMachine">
         <xsd:complexType>
@@ -4192,7 +4209,7 @@
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="fCloseMedia" type="xsd:boolean"/>
+            <xsd:element name="cleanupMode" type="vbox:CleanupMode"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -4208,12 +4225,15 @@
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="aMedia" minOccurs="0" maxOccurs="unbounded" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="IMachine_deleteResponse">
         <xsd:complexType>
-          <xsd:sequence/>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
       <!-- method IMachine::export-->
@@ -4926,16 +4946,15 @@
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
-      <!-- method IConsole::forgetSavedState-->
-      <xsd:element name="IConsole_forgetSavedState">
+      <!-- method IConsole::discardSavedState-->
+      <xsd:element name="IConsole_discardSavedState">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="removeFile" type="xsd:boolean"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IConsole_forgetSavedStateResponse">
+      <xsd:element name="IConsole_discardSavedStateResponse">
         <xsd:complexType>
           <xsd:sequence/>
         </xsd:complexType>
@@ -8472,6 +8491,34 @@
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
+      <!-- read/write attribute INetworkAdapter::bandwidthLimit-->
+      <xsd:element name="INetworkAdapter_getBandwidthLimit">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="INetworkAdapter_getBandwidthLimitResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:unsignedInt"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="INetworkAdapter_setBandwidthLimit">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="bandwidthLimit" type="xsd:unsignedInt"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="INetworkAdapter_setBandwidthLimitResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
+        </xsd:complexType>
+      </xsd:element>
       <!-- method INetworkAdapter::attachToNAT-->
       <xsd:element name="INetworkAdapter_attachToNAT">
         <xsd:complexType>
@@ -11446,6 +11493,22 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
+      <!--Interface ICPUPriorityChangedEvent-->
+      <!-- readonly attribute ICPUPriorityChangedEvent::priority-->
+      <xsd:element name="ICPUPriorityChangedEvent_getPriority">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ICPUPriorityChangedEvent_getPriorityResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:unsignedInt"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
       <!--Interface IVRDPServerChangedEvent-->
       <!--Interface IRemoteDisplayInfoChangedEvent-->
       <!--Interface IUSBControllerChangedEvent-->
@@ -12660,6 +12723,19 @@
   <message name="IMachine_setCPUHotPlugEnabledResultMsg">
     <part name="parameters" element="vbox:IMachine_setCPUHotPlugEnabledResponse"/>
   </message>
+  <!-- read/write attribute IMachine::CPUPriority-->
+  <message name="IMachine_getCPUPriorityRequestMsg">
+    <part name="parameters" element="vbox:IMachine_getCPUPriority"/>
+  </message>
+  <message name="IMachine_getCPUPriorityResultMsg">
+    <part name="parameters" element="vbox:IMachine_getCPUPriorityResponse"/>
+  </message>
+  <message name="IMachine_setCPUPriorityRequestMsg">
+    <part name="parameters" element="vbox:IMachine_setCPUPriority"/>
+  </message>
+  <message name="IMachine_setCPUPriorityResultMsg">
+    <part name="parameters" element="vbox:IMachine_setCPUPriorityResponse"/>
+  </message>
   <!-- read/write attribute IMachine::memorySize-->
   <message name="IMachine_getMemorySizeRequestMsg">
     <part name="parameters" element="vbox:IMachine_getMemorySize"/>
@@ -13065,19 +13141,6 @@
   </message>
   <message name="IMachine_setIoCacheSizeResultMsg">
     <part name="parameters" element="vbox:IMachine_setIoCacheSizeResponse"/>
-  </message>
-  <!-- read/write attribute IMachine::ioBandwidthMax-->
-  <message name="IMachine_getIoBandwidthMaxRequestMsg">
-    <part name="parameters" element="vbox:IMachine_getIoBandwidthMax"/>
-  </message>
-  <message name="IMachine_getIoBandwidthMaxResultMsg">
-    <part name="parameters" element="vbox:IMachine_getIoBandwidthMaxResponse"/>
-  </message>
-  <message name="IMachine_setIoBandwidthMaxRequestMsg">
-    <part name="parameters" element="vbox:IMachine_setIoBandwidthMax"/>
-  </message>
-  <message name="IMachine_setIoBandwidthMaxResultMsg">
-    <part name="parameters" element="vbox:IMachine_setIoBandwidthMaxResponse"/>
   </message>
   <!-- method IMachine::lockMachine-->
   <message name="IMachine_lockMachineRequestMsg">
@@ -13643,12 +13706,12 @@
   <message name="IConsole_adoptSavedStateResultMsg">
     <part name="parameters" element="vbox:IConsole_adoptSavedStateResponse"/>
   </message>
-  <!-- method IConsole::forgetSavedState-->
-  <message name="IConsole_forgetSavedStateRequestMsg">
-    <part name="parameters" element="vbox:IConsole_forgetSavedState"/>
+  <!-- method IConsole::discardSavedState-->
+  <message name="IConsole_discardSavedStateRequestMsg">
+    <part name="parameters" element="vbox:IConsole_discardSavedState"/>
   </message>
-  <message name="IConsole_forgetSavedStateResultMsg">
-    <part name="parameters" element="vbox:IConsole_forgetSavedStateResponse"/>
+  <message name="IConsole_discardSavedStateResultMsg">
+    <part name="parameters" element="vbox:IConsole_discardSavedStateResponse"/>
   </message>
   <!-- method IConsole::getDeviceActivity-->
   <message name="IConsole_getDeviceActivityRequestMsg">
@@ -15339,6 +15402,19 @@
   <message name="INetworkAdapter_setBootPriorityResultMsg">
     <part name="parameters" element="vbox:INetworkAdapter_setBootPriorityResponse"/>
   </message>
+  <!-- read/write attribute INetworkAdapter::bandwidthLimit-->
+  <message name="INetworkAdapter_getBandwidthLimitRequestMsg">
+    <part name="parameters" element="vbox:INetworkAdapter_getBandwidthLimit"/>
+  </message>
+  <message name="INetworkAdapter_getBandwidthLimitResultMsg">
+    <part name="parameters" element="vbox:INetworkAdapter_getBandwidthLimitResponse"/>
+  </message>
+  <message name="INetworkAdapter_setBandwidthLimitRequestMsg">
+    <part name="parameters" element="vbox:INetworkAdapter_setBandwidthLimit"/>
+  </message>
+  <message name="INetworkAdapter_setBandwidthLimitResultMsg">
+    <part name="parameters" element="vbox:INetworkAdapter_setBandwidthLimitResponse"/>
+  </message>
   <!-- method INetworkAdapter::attachToNAT-->
   <message name="INetworkAdapter_attachToNATRequestMsg">
     <part name="parameters" element="vbox:INetworkAdapter_attachToNAT"/>
@@ -16914,6 +16990,18 @@
   </message>
   <!--
         *************************************
+        messages for interface ICPUPriorityChangedEvent
+        *************************************
+      -->
+  <!-- readonly attribute ICPUPriorityChangedEvent::priority-->
+  <message name="ICPUPriorityChangedEvent_getPriorityRequestMsg">
+    <part name="parameters" element="vbox:ICPUPriorityChangedEvent_getPriority"/>
+  </message>
+  <message name="ICPUPriorityChangedEvent_getPriorityResultMsg">
+    <part name="parameters" element="vbox:ICPUPriorityChangedEvent_getPriorityResponse"/>
+  </message>
+  <!--
+        *************************************
         messages for interface IVRDPServerChangedEvent
         *************************************
       -->
@@ -17884,6 +17972,18 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
+    <operation name="IMachine_getCPUPriority">
+      <input message="vbox:IMachine_getCPUPriorityRequestMsg"/>
+      <output message="vbox:IMachine_getCPUPriorityResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IMachine_setCPUPriority">
+      <input message="vbox:IMachine_setCPUPriorityRequestMsg"/>
+      <output message="vbox:IMachine_setCPUPriorityResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
     <operation name="IMachine_getMemorySize">
       <input message="vbox:IMachine_getMemorySizeRequestMsg"/>
       <output message="vbox:IMachine_getMemorySizeResultMsg"/>
@@ -18247,18 +18347,6 @@
     <operation name="IMachine_setIoCacheSize">
       <input message="vbox:IMachine_setIoCacheSizeRequestMsg"/>
       <output message="vbox:IMachine_setIoCacheSizeResultMsg"/>
-      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
-      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
-    </operation>
-    <operation name="IMachine_getIoBandwidthMax">
-      <input message="vbox:IMachine_getIoBandwidthMaxRequestMsg"/>
-      <output message="vbox:IMachine_getIoBandwidthMaxResultMsg"/>
-      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
-      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
-    </operation>
-    <operation name="IMachine_setIoBandwidthMax">
-      <input message="vbox:IMachine_setIoBandwidthMaxRequestMsg"/>
-      <output message="vbox:IMachine_setIoBandwidthMaxResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -18747,9 +18835,9 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IConsole_forgetSavedState">
-      <input message="vbox:IConsole_forgetSavedStateRequestMsg"/>
-      <output message="vbox:IConsole_forgetSavedStateResultMsg"/>
+    <operation name="IConsole_discardSavedState">
+      <input message="vbox:IConsole_discardSavedStateRequestMsg"/>
+      <output message="vbox:IConsole_discardSavedStateResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -20236,6 +20324,18 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
+    <operation name="INetworkAdapter_getBandwidthLimit">
+      <input message="vbox:INetworkAdapter_getBandwidthLimitRequestMsg"/>
+      <output message="vbox:INetworkAdapter_getBandwidthLimitResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="INetworkAdapter_setBandwidthLimit">
+      <input message="vbox:INetworkAdapter_setBandwidthLimitRequestMsg"/>
+      <output message="vbox:INetworkAdapter_setBandwidthLimitResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
     <operation name="INetworkAdapter_attachToNAT">
       <input message="vbox:INetworkAdapter_attachToNATRequestMsg"/>
       <output message="vbox:INetworkAdapter_attachToNATResultMsg"/>
@@ -21654,6 +21754,17 @@
     <operation name="ICPUChangedEvent_getAdd">
       <input message="vbox:ICPUChangedEvent_getAddRequestMsg"/>
       <output message="vbox:ICPUChangedEvent_getAddResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface ICPUPriorityChangedEvent
+          *************************************
+        -->
+    <operation name="ICPUPriorityChangedEvent_getPriority">
+      <input message="vbox:ICPUPriorityChangedEvent_getPriorityRequestMsg"/>
+      <output message="vbox:ICPUPriorityChangedEvent_getPriorityResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -23692,6 +23803,36 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
+    <operation name="IMachine_getCPUPriority">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IMachine_setCPUPriority">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
     <operation name="IMachine_getMemorySize">
       <soap:operation soapAction="" style="document"/>
       <input>
@@ -24593,36 +24734,6 @@
       </fault>
     </operation>
     <operation name="IMachine_setIoCacheSize">
-      <soap:operation soapAction="" style="document"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="InvalidObjectFault">
-        <soap:fault name="InvalidObjectFault" use="literal"/>
-      </fault>
-      <fault name="RuntimeFault">
-        <soap:fault name="RuntimeFault" use="literal"/>
-      </fault>
-    </operation>
-    <operation name="IMachine_getIoBandwidthMax">
-      <soap:operation soapAction="" style="document"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="InvalidObjectFault">
-        <soap:fault name="InvalidObjectFault" use="literal"/>
-      </fault>
-      <fault name="RuntimeFault">
-        <soap:fault name="RuntimeFault" use="literal"/>
-      </fault>
-    </operation>
-    <operation name="IMachine_setIoBandwidthMax">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -25833,7 +25944,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IConsole_forgetSavedState">
+    <operation name="IConsole_discardSavedState">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -29428,6 +29539,36 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
+    <operation name="INetworkAdapter_getBandwidthLimit">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="INetworkAdapter_setBandwidthLimit">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
     <operation name="INetworkAdapter_attachToNAT">
       <soap:operation soapAction="" style="document"/>
       <input>
@@ -32644,6 +32785,26 @@
       </fault>
     </operation>
     <operation name="ICPUChangedEvent_getAdd">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface ICPUPriorityChangedEvent
+          *************************************
+        -->
+    <operation name="ICPUPriorityChangedEvent_getPriority">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>

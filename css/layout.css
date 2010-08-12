@@ -87,7 +87,7 @@ ul.vboxList li table tr { vertical-align: middle; }
 ul.vboxList li table td { border: 1px solid #f00; }
 ul.vboxList li img { vertical-align: middle; }
 
-.vboxListItem, a.vboxListItem, .vboxListItem a { cursor: pointer; color: #000; }
+.vboxListItem, a.vboxListItem, .vboxListItem a { cursor: pointer; color: #000; background: #fff; }
 .vboxListItemSelected, .vboxListItemSelected a, a.vboxListItemSelected { background-color: #69F !important; cursor: default !important; color: #fff !important; }
 .vboxListItemTitle { font-weight: bold; }
 
@@ -242,6 +242,7 @@ div.vboxWizard h3 { border-bottom: 1px solid #aaa; }
 
 /* Virtual Machine List and Top Toolbar*/
 #vboxPaneVMList { background: #fff;  }
+#vboxPaneVMList span.vboxServerLink { text-decoration: underline; cursor: pointer; }
 #vboxVMList { width: 300px; overflow: scroll; } /* Initial Width */
 #vboxVMList table, #vboxVMList div { width: 100%; }
 #vboxPaneVMList td.vboxVMTitle { width: 100% }
@@ -281,8 +282,15 @@ table.vboxDetailsTableBox tr.vboxDetailsHead th.hover a, table.vboxDetailsTableB
 
 table.vboxDetailsTableBox tr.vboxDetailsHead th { padding: 4px; padding-left: 8px; }
 table.vboxDetailsTableBox tr.vboxDetailsHead img { padding-right: 4px; }
-/* menu */
+/* menus */
 #vboxDetailsShowMenu li { padding: 2px; margin-right: 4px; }
+#vboxDetailsPreviewMenu li { cursor: pointer; }
+#vboxDetailsPreviewMenu li { padding: 2px; margin-right: 4px; vertical-align: middle; }
+#vboxDetailsPreviewMenu li input { display: inline; padding: 0px; margin: 0px; margin-right: 4px; }
+
+/* preview box */
+#vboxDetailsTableBoxPreview { margin-left: 6px; }
+#vboxDetailsTableBoxPreview td { padding: 8px; }
 
 /* Description tab */
 #vboxTabVMDescription input { margin: 8px; }
@@ -384,4 +392,9 @@ table.vboxDetailsTableBox tr.vboxDetailsHead img { padding-right: 4px; }
 #vboxSettingsUSBFilters ul { list-style: none; margin: 0px; padding: 0px;}
 #vboxSettingsUSBFilters ul input { vertical-align: bottom; }
 
-
+/* Port Forwarding */
+#vboxSettingsPortForwarding {background: #e9e9e9; }
+#vboxSettingsPortForwarding th { width: 16%; text-align: center; border-left: 1px solid #000; border-right: 1px solid #000; }
+#vboxSettingsPortForwardingList td { padding: 4px; }
+#vboxSettingsPortForwardingList td.vboxProto { text-align: center; }
+#vboxSettingsPortForwardingList td.vboxPort { text-align: center; }

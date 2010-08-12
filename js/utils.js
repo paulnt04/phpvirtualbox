@@ -48,7 +48,17 @@ function vboxAjaxRequest(fn,params,callback,xtra) {
 							
 							$('#vboxIndex').data('vboxFatalError',1);
 							$('#vboxIndex').css({'display':'none'});
-							vboxAlert('<p>'+trans('Fatal error')+'</p>',{'width':'50%'});
+							
+							var s = '';
+							// Multiple Servers check
+							if($('#vboxIndex').data('vboxConfig').servers.length) {
+								var servers = $('#vboxIndex').data('vboxConfig').servers;
+								for(var i = 0; i < servers.length; i++) {
+									servers[i] = "<a href='?server="+servers[i].name+"'>"+$('<div />').html(servers[i].name).text()+"</a>";
+								}
+								s = '<div style="display: block">'+trans('Server List')+': '+servers.join(', ')+'</div>';
+							}
+							vboxAlert('<p>'+trans('Fatal error')+'</p>'+s,{'width':'50%'});
 						}
 					}
 				}
@@ -522,24 +532,33 @@ function vboxPositionEvent(elm,e) {
 	$(elm).css({ top: y, left: x });
 }
 
-/* Add gradient to element background */
-function vboxGradient(elm,c1,c2) {
-	switch(true) {
-		case jQuery.browser.opera:
-			break;
-	
+/*
+ * keycode input validation functions 
+ */
+function vboxValidateNum(k) {
+	return ((k >= 96 && k <= 105)||(k >= 48 && k <= 57))
+}
+function vboxValidateIP(k) {
+	return (vboxValidateNum(k) || k == 190); 
+}
+/* ctrl keyboard chars */
+function vboxValidateCtrl(k) {
+	switch(k) {
+		case 8: // backspace
+		case 37: // left | right
+		case 39:
+		case 27: // esc
+		case 16: // shift
+		case 17: // ctrl
+		case 35: // end
+		case 36: // home
+		case 46: // del
+		case 144: // numlock
+		case 20: // capslock
+		case 18: // alt
+			return true;
 	}
-	/*
-	background: -webkit-gradient(
-		    linear,
-		    left bottom,
-		    left top,
-		    color-stop(0.45, #cccccc),
-		    color-stop(0.85, rgb(245,245,245))
-		);
-
-			background: -moz-linear-gradient(bottom, #cccccc, rgb(245,245,245));
-	*/
+	return false;
 }
 
 /* Parse Cookies */

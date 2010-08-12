@@ -101,6 +101,37 @@ function vboxExportApplianceDialogInit() {
 	vbw.run();
 
 }
+
+/*
+ * 
+ * Port forwarding configuration dialog
+ * 
+ */
+function vboxPortForwardConfigInit(rules,callback) {
+	var l = new vboxLoader();
+	l.addFile("panes/settingsPortForwarding.html",function(f){$('#vboxIndex').append(f);});
+	l.onLoad = function(){
+		vboxSettingsPortForwardingInit(rules);
+		var buttons = {};
+		buttons[trans('OK')] = function(){
+			// Get rules
+			var rules = $('#vboxSettingsPortForwardingList').children('tr');
+			for(var i = 0; i < rules.length; i++) {
+				if($(rules[i]).data('vboxRule')[3] == 0 || $(rules[i]).data('vboxRule')[5] == 0) {
+					vboxAlert(trans('The current port forwarding rules are not valid'));
+					return;
+				}
+				rules[i] = $(rules[i]).data('vboxRule');
+			}
+			callback(rules);
+			$(this).remove();
+		};
+		buttons[trans('Cancel')] = function(){$(this).remove();};
+		$('#vboxSettingsPortForwarding').dialog({'closeOnEscape':false,'width':600,'height':400,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':trans('Port Forwarding Rules')});
+	}
+	l.run();
+}
+
 /*
  * 
  * 
@@ -554,12 +585,15 @@ function vboxSettingsInit(title,panes,data,onsave,pane) {
 
 	    /* Select first or passed menu item */
 	    var i = 0;
+	    var offset = 0;
 	    if(typeof pane == "string") {
 	    	for(i = 0; i < panes.length; i++) {
+	    		if(panes[i].disabled) offset++;
 	    		if(panes[i].name == pane) break;
 	    	}
 	    }
-	    
+	    i-=offset;
+	    if(i >= panes.length) i = 0;
 	    $('#vboxSettingsMenuList').children('li:eq('+i+')').first().click();
 	    
 		

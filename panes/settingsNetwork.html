@@ -54,6 +54,10 @@
 		<th></th>
 		<td><input type='checkbox' class='vboxCheckbox' class='vboxEnablerListen' name='vboxSettingsNetConnected' /> <span class='translate vboxEnablerListen'>Cable connected</span></td>
 	</tr>
+	<tr class='vboxSettingsNetToggleAdvanced' style='display: none'>
+		<th></th>
+		<td><input type='button' class='vboxButton vboxSettingsNetPFButton' class='vboxEnablerListen' name='vboxSettingsNetPF' value='Port Forwarding' /></td>
+	</tr>	
 </table>
 </div>
 <script type='text/javascript'>
@@ -94,6 +98,9 @@ for(var i = 0; i < vboxHostNetworking.networkInterfaces.length; i++) {
 var vboxSettingsNetTemplate = document.getElementById('vboxSettingsTabNetAdapter');
 var vboxSettingsNetContainer = $(vboxSettingsNetTemplate).parent();
 
+// Translate buttons
+$(vboxSettingsNetTemplate).find('input.vboxButton').val(function(i,h){return trans(h);});
+ 
 /* translated adapter select values */
 for(var i = 0; i < document.forms['frmVboxSettings'].vboxSettingsNetAdapter.options.length; i++) {
 	document.forms['frmVboxSettings'].vboxSettingsNetAdapter.options[i].text = trans(document.forms['frmVboxSettings'].vboxSettingsNetAdapter.options[i].text) + ' (' + document.forms['frmVboxSettings'].vboxSettingsNetAdapter.options[i].text + ')';
@@ -192,6 +199,16 @@ for(var i = 0; i < parseInt($('#vboxIndex').data('vboxConfig').nicMax); i++) {
 		document.forms['frmVboxSettings'].elements['vboxSettingsNetEnabled'+a].checked = true;
 	}
 
+	$(document.forms['frmVboxSettings'].elements['vboxSettingsNetPF'+a]).click(function(){
+		var nicIndex = (parseInt($(this).attr('name').substr(17))-1);
+		vboxPortForwardConfigInit($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[nicIndex].redirects,function(rules){
+			for(var i = 0; i < rules.length; i++) {
+				rules[i] = rules[i].join(',');
+			}
+			$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[nicIndex].redirects = rules;
+		});
+	});
+
 
 }
 /* preload network 'advanced' down arrow image */
@@ -203,16 +220,20 @@ netDnAdvImg.src = 'images/downArrow.png';
  */
 function vboxSettingsUpdateNetworkOptions(sel) {
 
-	var th = $(sel).parentsUntil('table').parent().find('th.vboxSettingsNetAdapterNamedLabel').first();
-	var nsel = $(sel).parentsUntil('table').parent().find('.vboxSettingsNetAdapterNamed').first();
+	var ptable = $(sel).parentsUntil('table').parent();
+	var th = $(ptable).find('th.vboxSettingsNetAdapterNamedLabel').first();
+	var nsel = $(ptable).find('.vboxSettingsNetAdapterNamed').first();
 
-
+	// Port forward button
+	$(ptable).find('input.vboxSettingsNetPFButton').attr('disabled',(sel.value == 'NAT' ? '' : 'disabled'));
+	
 	if(sel.value == 'Null' || sel.value == 'NAT') {
 
 		$(th).addClass('vboxDisabled');
 		
 		$(nsel).children().remove();
 		$(nsel).attr('disabled','disabled');
+
 		
 	} else {
 

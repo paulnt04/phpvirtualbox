@@ -15,18 +15,15 @@ header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0");
 header("Pragma: no-cache");
 
-/*
- * Clean request
- */
-$vboxRequest = array_merge($_GET,$_POST);
-if(get_magic_quotes_gpc()) {
-	function __vbx_stripslash(&$a) { $a = stripslashes($a); }
-	array_walk_recursive($vboxRequest,'__vbx_stripslash');
-}
-
 require_once(dirname(dirname(__FILE__)).'/config.php');
 require_once(dirname(__FILE__).'/utils.php');
 require_once(dirname(__FILE__).'/vboxconnector.php');
+
+/*
+ * Clean request
+ */
+$vboxRequest = clean_request();
+
 
 $response = array('data'=>array(),'errors'=>array(),'persist'=>array());
 
@@ -57,8 +54,8 @@ switch($vboxRequest['fn']) {
 
 		if(!$response['data']['nicMax']) $response['data']['nicMax'] = 4;
 
-		// RDP Host?
-		if(!$response['data']['rdpHost']) $response['data']['rdpHost'] = $response['data']['host'];
+		// console host?
+		if(!$response['data']['consoleHost']) $response['data']['consoleHost'] = $response['data']['host'];
 
 		// Vbox version
 		try {
@@ -78,6 +75,10 @@ switch($vboxRequest['fn']) {
 		// What vboxconnector considers to be a fatal error
 		$response['data']['PHPVB_ERRNO_FATAL'] = vboxconnector::PHPVB_ERRNO_FATAL;
 
+		// "Preview" functionality available?
+		$response['data']['imagepng'] = (function_exists('imagepng') && !$response['data']['noPreview']);
+		// Update interval
+		$response['data']['previewUpdateInterval'] = max(3,intval($response['data']['previewUpdateInterval']));
 
 		break;
 

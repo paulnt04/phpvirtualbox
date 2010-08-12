@@ -67,17 +67,27 @@
 				return;
 			}
 
+			/* Check for server setting */
+			if(document.location.search) {
+				var query = document.location.search.substr(1).split('&');
+				for(var kv in query) {
+					kv = query[kv].split('=');
+					if(kv[0] == 'server') {
+						var exp = new Date(2020,12,24);
+						document.cookie = "vboxServer="+unescape(kv[1])+"; expires="+exp.toGMTString()+"; path=/";
+					}
+				}
+			}
 			
 			// Data mediator ready for use
 			dataMediator = new vboxDataMediator();
 
 			var l = new vboxLoader();
 			
-			l.add('VMs',function(d){$('#vboxIndex').data('VMList',d);});
+			l.add('Config',function(d){$('#vboxIndex').data('vboxConfig',d);});
 			l.add('GuestOSTypes',function(d){$('#vboxIndex').data('vboxOSTypes',d);});
 			l.add('SystemProperties',function(d){$('#vboxIndex').data('vboxSystemProperties',d);});
 			l.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
-			l.add('Config',function(d){$('#vboxIndex').data('vboxConfig',d);});
 			l.add('HostDetails',function(d){$('#vboxIndex').data('vboxHostDetails',d);});
 
 			l.addFile('panes/topmenu.html',function(f){$('#vboxIndex').append(f);},{});
@@ -117,20 +127,6 @@
 					$('#vboxVMList').css('width',($('#vboxIndex').data('vboxCookies')['vboxPaneX'])+'px');
 				}
 				
-				$('#vboxResizeBard').bind('mousedown',function(e){
-					if(e.button >= 2) return;
-					$('#vboxResizeBar').data('vboxX',e.pageX);
-					document.body.style.cursor = 'col-resize';
-					$(document).one('mouseup',function(e){
-						document.body.style.cursor = 'default';
-						var nx = $('#vboxVMList').width() + (e.pageX - $('#vboxResizeBar').data('vboxX'));
-						$('#vboxVMList').css('width',(nx)+'px');
-						// Constraint check
-						//if($('#vboxVMList').width() < $('#vboxVMList').parent().width()) {
-						//	$('#vboxVMList').css('width','100%');
-						//}
-					});
-				});
 			}
 			l.onShow = function() { $(window).trigger('resize'); }
 
@@ -143,6 +139,19 @@
 				
 				var h = $('#vboxResize').find('td').first().innerHeight();
 				$('#vboxResize').children().children().css({'height':h+'px','overflow':'auto','display':''});
+			});
+
+			// Refresh data when host changes
+			$('#vboxIndex').bind('hostChange',function(){
+				var l = new vboxLoader();
+				
+				l.add('Config',function(d){$('#vboxIndex').data('vboxConfig',d);});
+				l.add('GuestOSTypes',function(d){$('#vboxIndex').data('vboxOSTypes',d);});
+				l.add('SystemProperties',function(d){$('#vboxIndex').data('vboxSystemProperties',d);});
+				l.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
+				l.add('HostDetails',function(d){$('#vboxIndex').data('vboxHostDetails',d);});
+
+				l.run();
 			});
 			
 		});

@@ -10,11 +10,8 @@ var $username = 'ian';
 var $password = 'pass';
 var $location = 'http://localhost:18083/';
 
-
-
 /* See languages folder for more language options */
 var $language = 'en_us';
-
 
 
 /*
@@ -23,8 +20,34 @@ var $language = 'en_us';
  *
  */
 
-// Default host/ip to use for RDP
-//var $rdpHost = '192.168.1.40';
+// Multiple servers example config. Uncomment (remove /* and */) to use
+/*
+var $servers = array(
+	array(
+		'name' => 'London',
+		'username' => 'user',
+		'password' => 'pass',
+		'location' => 'http://192.168.1.1:18083/'
+	),
+	array(
+		'name' => 'New York',
+		'username' => 'user2',
+		'password' => 'pass2',
+		'location' => 'http://192.168.1.2:18083/'
+	),
+);
+*/
+// Default host/ip to use for RDP/VNC
+//var $consoleHost = '192.168.1.40';
+
+// Disable "preview" box
+//var $noPreview = true;
+
+// Default preview box update interval in seconds
+//var $previewUpdateInterval = 30;
+
+// Preview box pixel width
+// var $previewWidth = 200;
 
 /*
 Allow to prompt deletion harddisk files on removal from Virtual Media Manager.
@@ -105,6 +128,24 @@ var $cacheSettings = array(
 );
 */
 
+/* Multiple server functionality */
+function __construct() {
+	if(@$_COOKIE['vboxServer'] && is_array($this->servers) && count($this->servers)) {
+		foreach($this->servers as $s) {
+			if($s['name'] == $_COOKIE['vboxServer'])
+				foreach($s as $k=>$v) $this->$k = $v;
+		}
+	} elseif(!is_array($this->servers)) {
+		$this->servers = array();
+	}
+	if(!$this->location && @is_array($this->servers[0])) {
+		foreach($this->servers[0] as $k=>$v) $this->$k = $v;
+	}
+	if(!$this->name) {
+		$this->name = parse_url($this->location,PHP_URL_HOST);
+	}
+	$this->key = md5($this->location.$this->username);
+}
 
 }
 

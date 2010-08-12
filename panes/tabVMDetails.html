@@ -15,6 +15,13 @@ vboxParseCookies();
 
 // Listen for events
 $('#vboxTabVMDetails').parent().bind('vmloading',function(){
+
+	// Clear timer if it is set
+	if($('#vboxVMDetails').data('vboxPreviewTimer')) {
+		window.clearTimeout($('#vboxVMDetails').data('vboxPreviewTimer'));
+		$('#vboxVMDetails').data('vboxPreviewTimer', null);
+	}
+	
 	$('#vboxVMDetails').css({'vertical-align':'middle'});
 	$('#vboxVMDetails').html("<div class='vboxTabLoading'><img src='images/spinner.gif'></div>");
 });
@@ -23,21 +30,39 @@ $('#vboxTabVMDetails').parent().bind('vmloaded',function(e,vm){
 
 	// vboxTabVMDetails
 	if(vm && vm.id) {
+
+		$('#vboxVMDetails').data('vmid', vm.id);
 		$('#vboxVMDetails').css({'vertical-align':'top'});
 		__vboxTabVMDetails(vm);
+		
 	} else {
+		
 		$('#vboxVMDetails').css({'vertical-align':'middle'});
 		$('#vboxVMDetails').html('<div class="vboxTabLoading" style="height: 100%; background: #fff;"><img src="images/vbox/welcome.png" /></div>');
+
+		// Clear timer if it is set
+		if($('#vboxVMDetails').data('vboxPreviewTimer')) {
+			window.clearTimeout($('#vboxVMDetails').data('vboxPreviewTimer'));
+			$('#vboxVMDetails').data('vboxPreviewTimer', null);
+		}
+	
 	}
 });
-
 
 
 //Called when VM selection changes
 function __vboxTabVMDetails(vm) {
 	
 	if(vm.id == 'host') {
+
+		// Clear timer if it is set
+		if($('#vboxVMDetails').data('vboxPreviewTimer')) {
+			window.clearTimeout($('#vboxVMDetails').data('vboxPreviewTimer'));
+			$('#vboxVMDetails').data('vboxPreviewTimer', null);
+		}
+		
 		__vboxDisplayHostDetailsData(vm);
+		
 	} else {
 		__vboxDisplayDetailsData(vm,null,true,true);
 	}
@@ -102,6 +127,58 @@ function __vboxDetailRowIndented(name,value,html) {
 	return __vboxDetailRowReal(name,value,'vboxDetailNameIndent',html);
 }
 
+// Draw preview scren
+var __vboxDrawPreviewImg = null;
+function __vboxDrawPreview(vmid,fromSelf) {
+
+	if(!fromSelf && $('#vboxVMDetails').data('vboxPreviewTimer')) {
+		window.clearTimeout($('#vboxVMDetails').data('vboxPreviewTimer'));
+		$('#vboxVMDetails').data('vboxPreviewTimer', null);
+	}
+			
+	$(__vboxDrawPreviewImg).remove();
+	var w = $('#vboxIndex').data('vboxConfig')['previewWidth'];
+	__vboxDrawPreviewImg = document.createElement('img');
+	__vboxDrawPreviewImg.onload = function(){
+		
+		// Error or machine not running
+		if(this.height <= 1) {
+
+			var width = $('#vboxIndex').data('vboxConfig')['previewWidth'];
+			if(!width) width = 200;
+			var height = (width * 3.0/4.0);
+			src = 'images/vbox/monitor_glossy.png';
+			$('#vboxDetailsPreviewVMName').css('display','');
+			
+			// Clear timer if it is set
+			if($('#vboxVMDetails').data('vboxPreviewTimer')) {
+				window.clearTimeout($('#vboxVMDetails').data('vboxPreviewTimer'));
+				$('#vboxVMDetails').data('vboxPreviewTimer', null);
+			}
+
+		} else {
+			$('#vboxDetailsPreviewWrap').css({'background-image':'none'});
+			var height = this.height;
+			var width = this.width;
+			src = this.src;
+			$('#vboxDetailsPreviewVMName').css('display','none');
+			// Keep refreshing preview
+			$('#vboxVMDetails').data('vboxPreviewTimer',window.setTimeout(function(){
+				__vboxDrawPreview(vmid,true);
+			},$('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] * 1000));
+		}
+		$('#vboxDetailsPreviewWrap').css({'height':height+'px','width':width+'px','background-color':'#000','background-image':'url('+src+')'});
+	};
+
+	// Update disabled?
+	if($('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] == 0) {
+		__vboxDrawPreviewImg.height = 0;
+		__vboxDrawPreviewImg.onload();
+	} else {
+		__vboxDrawPreviewImg.src = 'screen.php?width='+(w ? w : '200')+'&vm='+vmid+'&rand='+Math.random();
+	}
+
+}
 //Display details data table for VM
 //////////////////////////////////
 function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
@@ -155,7 +232,15 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		return;
 	}
 
-
+	// Wrap table around General and system for Preview window
+	if(boxes) {
+		var tbl = document.createElement('table');
+		tbl.setAttribute('class','vboxInvisible');
+		tbl.setAttribute('style','width: 100%');
+		var tr = document.createElement('tr');
+		$(tr).css('vertical-align','top');
+	}
+	
 	// Details Table
 	var vboxDetailsTable = document.createElement('table');
 	vboxDetailsTable.setAttribute('id','vboxDetailsTable' + (boxes ? 'BoxGeneral' : 'General'));
@@ -166,14 +251,87 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Name"), data['name']));
 	vboxDetailsTable.appendChild(__vboxDetailRow(trans("OS Type"), trans(data['OSTypeId'])));
 
+	// Account for preview box
 	if(boxes) {
-		//$(targetdiv).append('<img src="images/vbox/monitor.png" style="position: relative; float: right;" /> ');
+		
 		vboxDetailsTable.appendChild(__vboxDetailRow('',''));
 		if($('#vboxIndex').data('vboxCookies')["vboxSectionShowGeneral"] == 0) {
 			vboxDetailsTable.setAttribute('style','display: none;');
 		}
+
+		var td = document.createElement('td');
+		$(td).css('width','100%'); 
+		$(td).append(vboxDetailsTable);
+		$(tr).append(td);
+
+		var td = document.createElement('td');
+
+		// Preview box
+		/////////////////////
+		var vboxDetailsTable = document.createElement('table');
+		vboxDetailsTable.setAttribute('id','vboxDetailsTableBoxPreview');
+		vboxDetailsTable.setAttribute('class','vboxDetailsTable vboxDetailsTableBox ui-corner-all');
+		vboxDetailsTable.appendChild(__vboxDetailHeader("fullscreen_16px.png","Preview",null,null));
+		if($('#vboxIndex').data('vboxCookies')["vboxSectionShowPreview"] == 0 || !$('#vboxIndex').data('vboxConfig').imagepng) {
+			vboxDetailsTable.setAttribute('style','display: none;');
+		}
+
+		var tdr = document.createElement('tr');
+		$(tdr).attr('vertical-align','middle');
+		var tdp = document.createElement('td');
+		$(tdp).css({'text-align':'center'});
+		$(tdp).attr('colspan','2');
+
+		var w = $('#vboxIndex').data('vboxConfig')['previewWidth'];
+		if(!w) w = 200;
+		var h = (w * 3.0/4.0);
+		var divWrap = document.createElement('div');
+		$(divWrap).attr('id','vboxDetailsPreviewWrap');
+		$(divWrap).attr('style','background-color:#000;background-image:url(images/vbox/monitor_glossy.png);border:0px;display:table;height:'+h+'px;width:'+w+'px;#position:relative;background-repeat: no-repeat;');
+
+		// PHP has GD extension installed ?
+		if($('#vboxIndex').data('vboxConfig').imagepng) {
+
+			// Clear timer if it is set
+			if($('#vboxVMDetails').data('vboxPreviewTimer')) {
+				window.clearTimeout($('#vboxVMDetails').data('vboxPreviewTimer'));
+				$('#vboxVMDetails').data('vboxPreviewTimer', null);
+			}
+			
+			var divOut1 = document.createElement('div');
+			$(divOut1).attr('style','#position:absolute;#top:50%;display:table-cell;vertical-align:middle;');
+			var divOut2 = document.createElement('div');
+			$(divOut2).attr('id','vboxDetailsPreviewVMName');
+			$(divOut2).attr('style','#position:relative;#top:-50%;padding:4px;color:#fff;font-weight:bold;text-align:center;');
+			$(divOut2).html($('<div />').html(data.name).text());
+			$(divOut1).append(divOut2);
+			$(divWrap).append(divOut1);
+
+			if(data.state == 'Running' && $('#vboxIndex').data('vboxCookies')["vboxSectionShowPreview"] != 0) {
+
+				__vboxDrawPreview(data.id);
+								
+			} else {
+				// Clear timer if it is set
+				if($('#vboxVMDetails').data('vboxPreviewTimer')) {
+					window.clearTimeout($('#vboxVMDetails').data('vboxPreviewTimer'));
+					$('#vboxVMDetails').data('vboxPreviewTimer', null);
+				}
+			}
+		}
+				
+
+		$(tdp).append(divWrap);
 		
-		$(targetdiv).append(vboxDetailsTable);
+		$(tdr).append(tdp);
+		vboxDetailsTable.appendChild(tdr);
+		
+		$(td).attr('rowspan','2');
+		$(td).append(vboxDetailsTable);
+		$(tr).append(td);
+		$(tbl).append(tr);
+
+		
 		var vboxDetailsTable = document.createElement('table');
 		vboxDetailsTable.setAttribute('id','vboxDetailsTableBoxSystem');
 		vboxDetailsTable.setAttribute('class','vboxDetailsTable vboxDetailsTableBox ui-corner-all');
@@ -197,12 +355,20 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		vboxDetailsTable.appendChild(__vboxDetailRow(trans("Nested Paging"), (data['HWVirtExProperties'].NestedPaging ? trans('Enabled') : trans('Disabled'))));
 	}
 
+	// Account for preview box
 	if(boxes) {
 		vboxDetailsTable.appendChild(__vboxDetailRow('',''));
 		if($('#vboxIndex').data('vboxCookies')["vboxSectionShowSystem"] == 0) {
 			vboxDetailsTable.setAttribute('style','display: none;');
-		}		
-		$(targetdiv).append(vboxDetailsTable);
+		}
+		var tr = document.createElement('tr');
+		$(tr).css('vertical-align','top');
+		var td = document.createElement('td');
+		$(td).append(vboxDetailsTable);
+		$(tr).append(td);
+		$(tbl).append(tr);
+		$(targetdiv).append(tbl);
+		
 		var vboxDetailsTable = document.createElement('table');
 		vboxDetailsTable.setAttribute('id','vboxDetailsTableBoxDisplay');
 		vboxDetailsTable.setAttribute('class','vboxDetailsTable vboxDetailsTableBox ui-corner-all');
@@ -224,7 +390,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		}
 
 		var chost = data['VRDPServer']['netAddress'];
-		if(!chost) chost = $('#vboxIndex').data('vboxConfig').rdpHost;
+		if(!chost) chost = $('#vboxIndex').data('vboxConfig').consoleHost;
 		if(!chost || chost == 'localhost' || chost == '127.0.0.1') {chost = location.host;}
 		
 		if(links) {
@@ -321,6 +487,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	// Network
 	vboxDetailsTable.appendChild(__vboxDetailHeader("nw_16px.png","Network",(settings ? 'Network' : null),(settings ? data : null)));
 
+	var vboxDetailsTableNics = 0;
 	for(var i = 0; i < data['networkAdapters'].length; i++) {
 		
 		nic = data['networkAdapters'][i];
@@ -329,6 +496,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		var xtra = '';
 
 		if(nic.enabled) {
+			vboxDetailsTableNics++;
 			switch(nic.attachmentType) {
 				case 'Bridged':
 				case 'HostOnly':
@@ -348,9 +516,12 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		}
 				
 	}
-
+	
+	if(vboxDetailsTableNics == 0) {
+		vboxDetailsTable.appendChild(__vboxDetailRow(trans('None'),''));
+		
 	// Link nic to guest networking info?
-	if(links && data['state'] == 'Running') {
+	} else if(links && data['state'] == 'Running') {
 		var n  = '<a href="javascript:vboxGuestNetworkAdaptersDialogInit(\''+data['id']+'\','+i+')">('+trans('Guest Network Adapters')+')</a>';
 		vboxDetailsTable.appendChild(__vboxDetailRow('',n,true));
 	}
@@ -454,7 +625,9 @@ function __vboxDisplayHostDetailsData(data) {
 
 	// General
 	vboxDetailsTable.appendChild(__vboxDetailHeader("machine_16px.png","General"));
+	if($('#vboxIndex').data('vboxConfig').servers.length) vboxDetailsTable.appendChild(__vboxDetailRow(trans("Name"), $('#vboxIndex').data('vboxConfig').name));	
 	vboxDetailsTable.appendChild(__vboxDetailRow(trans("OS Type"), data['operatingSystem'] + ' (' + data['OSVersion'] +')'));
+	vboxDetailsTable.appendChild(__vboxDetailRow("VirtualBox", $('#vboxIndex').data('vboxConfig').version.string));
 	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Base Memory"), data['memorySize'] + ' ' + trans('MB')));
 	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Processors"), data['cpus'][0] + ' (' + data['cpus'].length +')'));
 
@@ -484,16 +657,25 @@ function __vboxDisplayHostDetailsData(data) {
 	$('#vboxVMDetails').append(vboxDetailsTable);
 }
 
+/* Draw Preview Window */
+function __vboxDetailsDisplayPreview(data) {
+	
+}
 
 /* Show / Hide boxes menu */
 var ul = document.createElement('ul');
 ul.setAttribute('class','contextMenu');
 ul.setAttribute('style','display: none');
 ul.setAttribute('id','vboxDetailsShowMenu');
-var sections = new Array('General','System','Display','Storage','Audio','Network','USB','Shared Folders');
+var sections = new Array('General','System','Preview','Display','Storage','Audio','Network','USB','Shared Folders');
 for(var i = 0; i < sections.length; i++) {
 
+	// No USB in OSE
 	if($('#vboxIndex').data('vboxConfig').version.ose && sections[i] == 'USB')
+		continue;
+
+	// No Preview if PHP does not have GD extensions installed / enabled
+	if(!$('#vboxIndex').data('vboxConfig').imagepng && sections[i] == 'Preview')
 		continue;
 
 	// checked?
@@ -506,10 +688,25 @@ for(var i = 0; i < sections.length; i++) {
 	$(cb).attr({'type':'checkbox','class':'vboxCheckbox','name':sections[i].replace(' ','')})
 	if(checked) $(cb).attr('checked',checked);
 	$(cb).click(function(){
+
 		var exp = new Date(2020,12,24);
 		document.cookie = "vboxSectionShow"+$(this).attr('name')+"="+(this.checked ? 1 : 0)+"; expires="+exp.toGMTString()+"; path=/";
 		$('#vboxDetailsTableBox'+$(this).attr('name')).css('display',(this.checked ? '' : 'none'));
 		$('#vboxIndex').data('vboxCookies')["vboxSectionShow"+$(this).attr('name')] = (this.checked ? 1 : 0);
+
+		// Special case for Preview
+		if($(this).attr('name') == 'Preview') {
+			if(this.checked && $('#vboxVMDetails').data('vmid') != 'host') {
+				__vboxDrawPreview($('#vboxVMDetails').data('vmid'));
+			} else {
+				// Clear timer if it is set
+				if($('#vboxVMDetails').data('vboxPreviewTimer')) {
+					window.clearTimeout($('#vboxVMDetails').data('vboxPreviewTimer'));
+					$('#vboxVMDetails').data('vboxPreviewTimer', null);
+				}
+			}				
+		}
+		
 	});
 	$(li).append(cb);
 	var sp = document.createElement('span');
@@ -520,20 +717,105 @@ for(var i = 0; i < sections.length; i++) {
 $('#vboxIndex').append(ul);
 $('#vboxDetailsShowMenu').bind('contextmenu', function() { return false; })
 
+/* Preivew Update Menu */
+// determine default
+if($('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] === undefined) {
+	if($('#vboxIndex').data('vboxConfig').previewUpdateInterval)
+		$('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] = $('#vboxIndex').data('vboxConfig').previewUpdateInterval;
+	else
+		$('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] = 3;
+}
+var ul = document.createElement('ul');
+ul.setAttribute('class','contextMenu');
+ul.setAttribute('style','display: none');
+ul.setAttribute('id','vboxDetailsPreviewMenu');
+$(ul).click(function(){$(this).hide();});
+var radio = document.createElement('input');
+$(radio).attr({'class':'vboxRadio','type':'radio','name':'vboxPreviewRadio','value':0});
+$(radio).click(function(){
+	$('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] = 0;
+	var exp = new Date(2020,12,24);
+	document.cookie = "vboxPreviewUpdate=0; expires="+exp.toGMTString()+"; path=/";
+});
+if($('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] == 0) {
+	$(radio).attr('checked','checked');
+}
+var li = document.createElement('li');
+$(li).append(radio);
+var sp = document.createElement('span');
+$(sp).html(trans('Update Disabled'));
+$(li).append(sp);
+$(ul).append(li);
+var ints = [1,3,5,10,20];
+// check for update interval
+if($('#vboxIndex').data('vboxConfig').previewUpdateInterval && jQuery.inArray($('#vboxIndex').data('vboxConfig').previewUpdateInterval, ints) < 0) {
+	ints[ints.length] = $('#vboxIndex').data('vboxConfig').previewUpdateInterval;
+}
+if(jQuery.inArray(parseInt($('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"]), ints) < 0) {
+	ints[ints.length] = $('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"];
+}
+ints.sort(function(a,b){
+	if(a == b) return 0;
+	return (a > b ? 1 : -1);
+});
+
+for(var i = 0; i < ints.length; i++) {
+	var radio = document.createElement('input');
+	$(radio).attr({'class':'vboxRadio','type':'radio','name':'vboxPreviewRadio','value':ints[i]});
+	$(radio).click(function(){
+		var exp = new Date(2020,12,24);
+		document.cookie = "vboxPreviewUpdate="+$(this).val()+"; expires="+exp.toGMTString()+"; path=/";		
+		$('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] = $(this).val();
+		__vboxDrawPreview($('#vboxVMDetails').data('vmid'));
+	});
+
+	if($('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] == ints[i])
+		$(radio).attr('checked','checked');
+	
+	var li = document.createElement('li');
+	if(i==0) $(li).attr('class','separator');
+	$(li).append(radio);
+	var sp = document.createElement('span');
+	$(sp).html(trans('Every X seconds').replace('%s',ints[i]));
+	$(sp).click(function(){
+		$(this).siblings('input').click();
+	});
+	$(li).append(sp);
+	$(ul).append(li);
+}
+$('#vboxIndex').append(ul);
+$(ul).bind('contextmenu', function() { return false; })
+
+
+/* Menu functionality */
 $("#vboxVMDetails").mouseup( function(e) {
 
 	if(e.button == 2) {
-		vboxPositionEvent($('#vboxDetailsShowMenu'), e);
-		$('#vboxDetailsShowMenu').show();
+
+		// Check for right click over preview window
+		var pos = $('#vboxDetailsPreviewWrap').offset();
+		var w = $('#vboxDetailsPreviewWrap').outerWidth(false);
+		var h = $('#vboxDetailsPreviewWrap').outerHeight(false);
+
+		if(pos && e.pageX > 0 && e.pageX >= pos.left && e.pageX <= (pos.left + w) && e.pageY >= pos.top && e.pageY <= (pos.top+h)) {
+			var menu = $('#vboxDetailsPreviewMenu');
+			$('#vboxDetailsShowMenu').hide();
+		} else {
+			var menu = $('#vboxDetailsShowMenu');
+			$('#vboxDetailsPreviewMenu').hide();
+		}
+		vboxPositionEvent(menu, e);
+		$(menu).show();
+		
 		e.preventDefault();
 		e.stopPropagation();
 		return false;
 	} else {
 		$('#vboxDetailsShowMenu').hide();
+		$('#vboxDetailsPreviewMenu').hide();
 	}
 });
 $("#vboxVMDetails").bind('contextmenu', function() { return false; }).bind('click',function(e){return e.button!=2;});
 
 </script>
-
 </div>
