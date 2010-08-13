@@ -262,8 +262,39 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		var td = document.createElement('td');
 		$(td).css('width','100%'); 
 		$(td).append(vboxDetailsTable);
-		$(tr).append(td);
+		
+		var vboxDetailsTable = document.createElement('table');
+		vboxDetailsTable.setAttribute('id','vboxDetailsTableBoxSystem');
+		vboxDetailsTable.setAttribute('class','vboxDetailsTable vboxDetailsTableBox ui-corner-all');
+	}		
 
+	// System
+	vboxDetailsTable.appendChild(__vboxDetailHeader('chipset_16px.png',"System",(settings ? 'System' : null),(settings ? data : null)));
+	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Base Memory"), data['memorySize'] + " " + trans('MB')));
+	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Processors"), data['CPUCount']));
+	
+	// Boot Order
+	var bo = new Array();
+	for(var i = 0; i < data['bootOrder'].length; i++) {
+		bo[i] = trans(data['bootOrder'][i]);
+	}
+	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Boot Order"), bo.join(trans('LIST_SEP'))));
+
+	// HW acceleration config enabled?
+	if($('#vboxIndex').data('vboxConfig').enableAccelerationConfig) {
+		vboxDetailsTable.appendChild(__vboxDetailRow(trans("VCPU"), (data['HWVirtExProperties'].Enabled ? trans('Enabled') : trans('Disabled'))));
+		vboxDetailsTable.appendChild(__vboxDetailRow(trans("Nested Paging"), (data['HWVirtExProperties'].NestedPaging ? trans('Enabled') : trans('Disabled'))));
+	}
+
+	// Account for preview box
+	if(boxes) {
+		vboxDetailsTable.appendChild(__vboxDetailRow('',''));
+		if($('#vboxIndex').data('vboxCookies')["vboxSectionShowSystem"] == 0) {
+			vboxDetailsTable.setAttribute('style','display: none;');
+		}
+		$(td).append(vboxDetailsTable);
+		$(tr).append(td);
+		
 		var td = document.createElement('td');
 
 		// Preview box
@@ -326,47 +357,10 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		$(tdr).append(tdp);
 		vboxDetailsTable.appendChild(tdr);
 		
-		$(td).attr('rowspan','2');
 		$(td).append(vboxDetailsTable);
 		$(tr).append(td);
 		$(tbl).append(tr);
-
 		
-		var vboxDetailsTable = document.createElement('table');
-		vboxDetailsTable.setAttribute('id','vboxDetailsTableBoxSystem');
-		vboxDetailsTable.setAttribute('class','vboxDetailsTable vboxDetailsTableBox ui-corner-all');
-	}		
-
-	// System
-	vboxDetailsTable.appendChild(__vboxDetailHeader('chipset_16px.png',"System",(settings ? 'System' : null),(settings ? data : null)));
-	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Base Memory"), data['memorySize'] + " " + trans('MB')));
-	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Processors"), data['CPUCount']));
-	
-	// Boot Order
-	var bo = new Array();
-	for(var i = 0; i < data['bootOrder'].length; i++) {
-		bo[i] = trans(data['bootOrder'][i]);
-	}
-	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Boot Order"), bo.join(trans('LIST_SEP'))));
-
-	// HW acceleration config enabled?
-	if($('#vboxIndex').data('vboxConfig').enableAccelerationConfig) {
-		vboxDetailsTable.appendChild(__vboxDetailRow(trans("VCPU"), (data['HWVirtExProperties'].Enabled ? trans('Enabled') : trans('Disabled'))));
-		vboxDetailsTable.appendChild(__vboxDetailRow(trans("Nested Paging"), (data['HWVirtExProperties'].NestedPaging ? trans('Enabled') : trans('Disabled'))));
-	}
-
-	// Account for preview box
-	if(boxes) {
-		vboxDetailsTable.appendChild(__vboxDetailRow('',''));
-		if($('#vboxIndex').data('vboxCookies')["vboxSectionShowSystem"] == 0) {
-			vboxDetailsTable.setAttribute('style','display: none;');
-		}
-		var tr = document.createElement('tr');
-		$(tr).css('vertical-align','top');
-		var td = document.createElement('td');
-		$(td).append(vboxDetailsTable);
-		$(tr).append(td);
-		$(tbl).append(tr);
 		$(targetdiv).append(tbl);
 		
 		var vboxDetailsTable = document.createElement('table');
@@ -751,7 +745,7 @@ var ints = [1,3,5,10,20];
 if($('#vboxIndex').data('vboxConfig').previewUpdateInterval && jQuery.inArray($('#vboxIndex').data('vboxConfig').previewUpdateInterval, ints) < 0) {
 	ints[ints.length] = $('#vboxIndex').data('vboxConfig').previewUpdateInterval;
 }
-if(jQuery.inArray(parseInt($('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"]), ints) < 0) {
+if($('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] && jQuery.inArray(parseInt($('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"]), ints) < 0) {
 	ints[ints.length] = $('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"];
 }
 ints.sort(function(a,b){

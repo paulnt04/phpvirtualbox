@@ -392,20 +392,6 @@ class IVirtualBox extends VBox_ManagedObject {
        return new IMachine ($this->connection, $response->returnval);
   }
 
-   public function createLegacyMachine($arg_name, $arg_osTypeId, $arg_settingsFile, $arg_id) { 
-       $request = new stdClass();
-       
-       $request->_this = $this->handle;
-       
-       $request->name = $arg_name;
-       $request->osTypeId = $arg_osTypeId;
-       $request->settingsFile = $arg_settingsFile;
-       $request->id = $arg_id;
-       $response = $this->connection->__soapCall('IVirtualBox_createLegacyMachine', array((array)$request));
-       
-       return new IMachine ($this->connection, $response->returnval);
-  }
-
    public function openMachine($arg_settingsFile) { 
        $request = new stdClass();
        
@@ -472,108 +458,27 @@ class IVirtualBox extends VBox_ManagedObject {
        return new IMedium ($this->connection, $response->returnval);
   }
 
-   public function openHardDisk($arg_location, $arg_accessMode, $arg_setImageId, $arg_imageId, $arg_setParentId, $arg_parentId) { 
+   public function openMedium($arg_location, $arg_deviceType, $arg_accessMode) { 
        $request = new stdClass();
        
        $request->_this = $this->handle;
        
        $request->location = $arg_location;
+       $request->deviceType = $arg_deviceType;
        $request->accessMode = $arg_accessMode;
-       $request->setImageId = $arg_setImageId;
-       $request->imageId = $arg_imageId;
-       $request->setParentId = $arg_setParentId;
-       $request->parentId = $arg_parentId;
-       $response = $this->connection->__soapCall('IVirtualBox_openHardDisk', array((array)$request));
+       $response = $this->connection->__soapCall('IVirtualBox_openMedium', array((array)$request));
        
        return new IMedium ($this->connection, $response->returnval);
   }
 
-   public function getHardDisk($arg_id) { 
-       $request = new stdClass();
-       
-       $request->_this = $this->handle;
-       
-       $request->id = $arg_id;
-       $response = $this->connection->__soapCall('IVirtualBox_getHardDisk', array((array)$request));
-       
-       return new IMedium ($this->connection, $response->returnval);
-  }
-
-   public function findHardDisk($arg_location) { 
+   public function findMedium($arg_location, $arg_type) { 
        $request = new stdClass();
        
        $request->_this = $this->handle;
        
        $request->location = $arg_location;
-       $response = $this->connection->__soapCall('IVirtualBox_findHardDisk', array((array)$request));
-       
-       return new IMedium ($this->connection, $response->returnval);
-  }
-
-   public function openDVDImage($arg_location, $arg_id) { 
-       $request = new stdClass();
-       
-       $request->_this = $this->handle;
-       
-       $request->location = $arg_location;
-       $request->id = $arg_id;
-       $response = $this->connection->__soapCall('IVirtualBox_openDVDImage', array((array)$request));
-       
-       return new IMedium ($this->connection, $response->returnval);
-  }
-
-   public function getDVDImage($arg_id) { 
-       $request = new stdClass();
-       
-       $request->_this = $this->handle;
-       
-       $request->id = $arg_id;
-       $response = $this->connection->__soapCall('IVirtualBox_getDVDImage', array((array)$request));
-       
-       return new IMedium ($this->connection, $response->returnval);
-  }
-
-   public function findDVDImage($arg_location) { 
-       $request = new stdClass();
-       
-       $request->_this = $this->handle;
-       
-       $request->location = $arg_location;
-       $response = $this->connection->__soapCall('IVirtualBox_findDVDImage', array((array)$request));
-       
-       return new IMedium ($this->connection, $response->returnval);
-  }
-
-   public function openFloppyImage($arg_location, $arg_id) { 
-       $request = new stdClass();
-       
-       $request->_this = $this->handle;
-       
-       $request->location = $arg_location;
-       $request->id = $arg_id;
-       $response = $this->connection->__soapCall('IVirtualBox_openFloppyImage', array((array)$request));
-       
-       return new IMedium ($this->connection, $response->returnval);
-  }
-
-   public function getFloppyImage($arg_id) { 
-       $request = new stdClass();
-       
-       $request->_this = $this->handle;
-       
-       $request->id = $arg_id;
-       $response = $this->connection->__soapCall('IVirtualBox_getFloppyImage', array((array)$request));
-       
-       return new IMedium ($this->connection, $response->returnval);
-  }
-
-   public function findFloppyImage($arg_location) { 
-       $request = new stdClass();
-       
-       $request->_this = $this->handle;
-       
-       $request->location = $arg_location;
-       $response = $this->connection->__soapCall('IVirtualBox_findFloppyImage', array((array)$request));
+       $request->type = $arg_type;
+       $response = $this->connection->__soapCall('IVirtualBox_findMedium', array((array)$request));
        
        return new IMedium ($this->connection, $response->returnval);
   }
@@ -1351,7 +1256,7 @@ class IMachine extends VBox_ManagedObject {
        return new DeviceType ($this->connection, $response->returnval);
   }
 
-   public function attachDevice($arg_name, $arg_controllerPort, $arg_device, $arg_type, $arg_id) { 
+   public function attachDevice($arg_name, $arg_controllerPort, $arg_device, $arg_type, $arg_medium) { 
        $request = new stdClass();
        
        $request->_this = $this->handle;
@@ -1360,7 +1265,7 @@ class IMachine extends VBox_ManagedObject {
        $request->controllerPort = $arg_controllerPort;
        $request->device = $arg_device;
        $request->type = $arg_type;
-       $request->id = $arg_id;
+       $request->medium = $arg_medium;
        $response = $this->connection->__soapCall('IMachine_attachDevice', array((array)$request));
        
        return ;
@@ -2826,11 +2731,12 @@ class IConsole extends VBox_ManagedObject {
        return ;
   }
 
-   public function discardSavedState() { 
+   public function discardSavedState($arg_fRemoveFile) { 
        $request = new stdClass();
        
        $request->_this = $this->handle;
        
+       $request->fRemoveFile = $arg_fRemoveFile;
        $response = $this->connection->__soapCall('IConsole_discardSavedState', array((array)$request));
        
        return ;
@@ -4312,6 +4218,20 @@ class ISnapshotCollection extends VBox_ManagedObjectCollection {
 * Generated VBoxWebService Interface Wrapper
 */
 class IMedium extends VBox_ManagedObject {
+
+   public function setIDs($arg_setImageId, $arg_imageId, $arg_setParentId, $arg_parentId) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->setImageId = $arg_setImageId;
+       $request->imageId = $arg_imageId;
+       $request->setParentId = $arg_setParentId;
+       $request->parentId = $arg_parentId;
+       $response = $this->connection->__soapCall('IMedium_setIDs', array((array)$request));
+       
+       return ;
+  }
 
    public function refreshState() { 
        $request = new stdClass();
@@ -7210,6 +7130,40 @@ class IMachineDataChangedEventCollection extends VBox_ManagedObjectCollection {
 /**
 * Generated VBoxWebService Interface Wrapper
 */
+class IMediumRegisteredEvent extends IEvent {
+
+   public function getMediumId() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IMediumRegisteredEvent_getMediumId', array((array)$request));
+       return (string)$response->returnval;
+   }
+
+   public function getMediumType() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IMediumRegisteredEvent_getMediumType', array((array)$request));
+       return new DeviceType ($this->connection, $response->returnval);
+   }
+
+   public function getRegistered() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IMediumRegisteredEvent_getRegistered', array((array)$request));
+       return (bool)$response->returnval;
+   }
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class IMediumRegisteredEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "IMediumRegisteredEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
 class IMachineRegisteredEvent extends IMachineEvent {
 
    public function getRegistered() {
@@ -9061,8 +9015,8 @@ class NATProtocolCollection extends VBox_EnumCollection {
 * Generated VBoxWebService ENUM
 */
 class VBoxEventType extends VBox_Enum {
-   public $NameMap = array(0 => 'Invalid', 1 => 'Any', 2 => 'MachineEvent', 3 => 'SnapshotEvent', 4 => 'InputEvent', 31 => 'LastWildcard', 32 => 'OnMachineStateChanged', 33 => 'OnMachineDataChanged', 34 => 'OnExtraDataChanged', 35 => 'OnExtraDataCanChange', 36 => 'OnMediumRegistered', 37 => 'OnMachineRegistered', 38 => 'OnSessionStateChanged', 39 => 'OnSnapshotTaken', 40 => 'OnSnapshotDeleted', 41 => 'OnSnapshotChanged', 42 => 'OnGuestPropertyChanged', 43 => 'OnMousePointerShapeChanged', 44 => 'OnMouseCapabilityChanged', 45 => 'OnKeyboardLedsChanged', 46 => 'OnStateChanged', 47 => 'OnAdditionsStateChanged', 48 => 'OnNetworkAdapterChanged', 49 => 'OnSerialPortChanged', 50 => 'OnParallelPortChanged', 51 => 'OnStorageControllerChanged', 52 => 'OnMediumChanged', 53 => 'OnVRDPServerChanged', 54 => 'OnUSBControllerChanged', 55 => 'OnUSBDeviceStateChanged', 56 => 'OnSharedFolderChanged', 57 => 'OnRuntimeError', 58 => 'OnCanShowWindow', 59 => 'OnShowWindow', 60 => 'OnCPUChanged', 61 => 'OnRemoteDisplayInfoChanged', 62 => 'OnEventSourceChanged', 63 => 'OnCPUPriorityChanged', 64 => 'Last');
-   public $ValueMap = array('Invalid' => 0, 'Any' => 1, 'MachineEvent' => 2, 'SnapshotEvent' => 3, 'InputEvent' => 4, 'LastWildcard' => 31, 'OnMachineStateChanged' => 32, 'OnMachineDataChanged' => 33, 'OnExtraDataChanged' => 34, 'OnExtraDataCanChange' => 35, 'OnMediumRegistered' => 36, 'OnMachineRegistered' => 37, 'OnSessionStateChanged' => 38, 'OnSnapshotTaken' => 39, 'OnSnapshotDeleted' => 40, 'OnSnapshotChanged' => 41, 'OnGuestPropertyChanged' => 42, 'OnMousePointerShapeChanged' => 43, 'OnMouseCapabilityChanged' => 44, 'OnKeyboardLedsChanged' => 45, 'OnStateChanged' => 46, 'OnAdditionsStateChanged' => 47, 'OnNetworkAdapterChanged' => 48, 'OnSerialPortChanged' => 49, 'OnParallelPortChanged' => 50, 'OnStorageControllerChanged' => 51, 'OnMediumChanged' => 52, 'OnVRDPServerChanged' => 53, 'OnUSBControllerChanged' => 54, 'OnUSBDeviceStateChanged' => 55, 'OnSharedFolderChanged' => 56, 'OnRuntimeError' => 57, 'OnCanShowWindow' => 58, 'OnShowWindow' => 59, 'OnCPUChanged' => 60, 'OnRemoteDisplayInfoChanged' => 61, 'OnEventSourceChanged' => 62, 'OnCPUPriorityChanged' => 63, 'Last' => 64);
+   public $NameMap = array(0 => 'Invalid', 1 => 'Any', 2 => 'Vetoable', 3 => 'MachineEvent', 4 => 'SnapshotEvent', 5 => 'InputEvent', 31 => 'LastWildcard', 32 => 'OnMachineStateChanged', 33 => 'OnMachineDataChanged', 34 => 'OnExtraDataChanged', 35 => 'OnExtraDataCanChange', 36 => 'OnMediumRegistered', 37 => 'OnMachineRegistered', 38 => 'OnSessionStateChanged', 39 => 'OnSnapshotTaken', 40 => 'OnSnapshotDeleted', 41 => 'OnSnapshotChanged', 42 => 'OnGuestPropertyChanged', 43 => 'OnMousePointerShapeChanged', 44 => 'OnMouseCapabilityChanged', 45 => 'OnKeyboardLedsChanged', 46 => 'OnStateChanged', 47 => 'OnAdditionsStateChanged', 48 => 'OnNetworkAdapterChanged', 49 => 'OnSerialPortChanged', 50 => 'OnParallelPortChanged', 51 => 'OnStorageControllerChanged', 52 => 'OnMediumChanged', 53 => 'OnVRDPServerChanged', 54 => 'OnUSBControllerChanged', 55 => 'OnUSBDeviceStateChanged', 56 => 'OnSharedFolderChanged', 57 => 'OnRuntimeError', 58 => 'OnCanShowWindow', 59 => 'OnShowWindow', 60 => 'OnCPUChanged', 61 => 'OnRemoteDisplayInfoChanged', 62 => 'OnEventSourceChanged', 63 => 'OnCPUPriorityChanged', 64 => 'Last');
+   public $ValueMap = array('Invalid' => 0, 'Any' => 1, 'Vetoable' => 2, 'MachineEvent' => 3, 'SnapshotEvent' => 4, 'InputEvent' => 5, 'LastWildcard' => 31, 'OnMachineStateChanged' => 32, 'OnMachineDataChanged' => 33, 'OnExtraDataChanged' => 34, 'OnExtraDataCanChange' => 35, 'OnMediumRegistered' => 36, 'OnMachineRegistered' => 37, 'OnSessionStateChanged' => 38, 'OnSnapshotTaken' => 39, 'OnSnapshotDeleted' => 40, 'OnSnapshotChanged' => 41, 'OnGuestPropertyChanged' => 42, 'OnMousePointerShapeChanged' => 43, 'OnMouseCapabilityChanged' => 44, 'OnKeyboardLedsChanged' => 45, 'OnStateChanged' => 46, 'OnAdditionsStateChanged' => 47, 'OnNetworkAdapterChanged' => 48, 'OnSerialPortChanged' => 49, 'OnParallelPortChanged' => 50, 'OnStorageControllerChanged' => 51, 'OnMediumChanged' => 52, 'OnVRDPServerChanged' => 53, 'OnUSBControllerChanged' => 54, 'OnUSBDeviceStateChanged' => 55, 'OnSharedFolderChanged' => 56, 'OnRuntimeError' => 57, 'OnCanShowWindow' => 58, 'OnShowWindow' => 59, 'OnCPUChanged' => 60, 'OnRemoteDisplayInfoChanged' => 61, 'OnEventSourceChanged' => 62, 'OnCPUPriorityChanged' => 63, 'Last' => 64);
 }
 
 /**

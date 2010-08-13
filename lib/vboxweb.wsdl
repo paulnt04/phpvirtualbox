@@ -810,9 +810,10 @@
       <!-- enum: VBoxEventType -
             Invalid: 0 -
             Any: 1 -
-            MachineEvent: 2 -
-            SnapshotEvent: 3 -
-            InputEvent: 4 -
+            Vetoable: 2 -
+            MachineEvent: 3 -
+            SnapshotEvent: 4 -
+            InputEvent: 5 -
             LastWildcard: 31 -
             OnMachineStateChanged: 32 -
             OnMachineDataChanged: 33 -
@@ -852,6 +853,7 @@
         <xsd:restriction base="xsd:string">
           <xsd:enumeration value="Invalid"/>
           <xsd:enumeration value="Any"/>
+          <xsd:enumeration value="Vetoable"/>
           <xsd:enumeration value="MachineEvent"/>
           <xsd:enumeration value="SnapshotEvent"/>
           <xsd:enumeration value="InputEvent"/>
@@ -1477,25 +1479,6 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <!-- method IVirtualBox::createLegacyMachine-->
-      <xsd:element name="IVirtualBox_createLegacyMachine">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="name" type="xsd:string"/>
-            <xsd:element name="osTypeId" type="xsd:string"/>
-            <xsd:element name="settingsFile" type="xsd:string"/>
-            <xsd:element name="id" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="IVirtualBox_createLegacyMachineResponse">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="returnval" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
       <!-- method IVirtualBox::openMachine-->
       <xsd:element name="IVirtualBox_openMachine">
         <xsd:complexType>
@@ -1590,151 +1573,35 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <!-- method IVirtualBox::openHardDisk-->
-      <xsd:element name="IVirtualBox_openHardDisk">
+      <!-- method IVirtualBox::openMedium-->
+      <xsd:element name="IVirtualBox_openMedium">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
             <xsd:element name="location" type="xsd:string"/>
+            <xsd:element name="deviceType" type="vbox:DeviceType"/>
             <xsd:element name="accessMode" type="vbox:AccessMode"/>
-            <xsd:element name="setImageId" type="xsd:boolean"/>
-            <xsd:element name="imageId" type="xsd:string"/>
-            <xsd:element name="setParentId" type="xsd:boolean"/>
-            <xsd:element name="parentId" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IVirtualBox_openHardDiskResponse">
+      <xsd:element name="IVirtualBox_openMediumResponse">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="returnval" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <!-- method IVirtualBox::getHardDisk-->
-      <xsd:element name="IVirtualBox_getHardDisk">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="id" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="IVirtualBox_getHardDiskResponse">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="returnval" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <!-- method IVirtualBox::findHardDisk-->
-      <xsd:element name="IVirtualBox_findHardDisk">
+      <!-- method IVirtualBox::findMedium-->
+      <xsd:element name="IVirtualBox_findMedium">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
             <xsd:element name="location" type="xsd:string"/>
+            <xsd:element name="type" type="vbox:DeviceType"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IVirtualBox_findHardDiskResponse">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="returnval" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <!-- method IVirtualBox::openDVDImage-->
-      <xsd:element name="IVirtualBox_openDVDImage">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="location" type="xsd:string"/>
-            <xsd:element name="id" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="IVirtualBox_openDVDImageResponse">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="returnval" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <!-- method IVirtualBox::getDVDImage-->
-      <xsd:element name="IVirtualBox_getDVDImage">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="id" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="IVirtualBox_getDVDImageResponse">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="returnval" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <!-- method IVirtualBox::findDVDImage-->
-      <xsd:element name="IVirtualBox_findDVDImage">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="location" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="IVirtualBox_findDVDImageResponse">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="returnval" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <!-- method IVirtualBox::openFloppyImage-->
-      <xsd:element name="IVirtualBox_openFloppyImage">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="location" type="xsd:string"/>
-            <xsd:element name="id" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="IVirtualBox_openFloppyImageResponse">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="returnval" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <!-- method IVirtualBox::getFloppyImage-->
-      <xsd:element name="IVirtualBox_getFloppyImage">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="id" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="IVirtualBox_getFloppyImageResponse">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="returnval" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <!-- method IVirtualBox::findFloppyImage-->
-      <xsd:element name="IVirtualBox_findFloppyImage">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="location" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="IVirtualBox_findFloppyImageResponse">
+      <xsd:element name="IVirtualBox_findMediumResponse">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="returnval" type="xsd:string"/>
@@ -3783,7 +3650,7 @@
             <xsd:element name="controllerPort" type="xsd:int"/>
             <xsd:element name="device" type="xsd:int"/>
             <xsd:element name="type" type="vbox:DeviceType"/>
-            <xsd:element name="id" type="xsd:string"/>
+            <xsd:element name="medium" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -4951,6 +4818,7 @@
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="fRemoveFile" type="xsd:boolean"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -7500,6 +7368,23 @@
           <xsd:sequence>
             <xsd:element name="returnval" minOccurs="0" maxOccurs="unbounded" type="xsd:string"/>
           </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IMedium::setIDs-->
+      <xsd:element name="IMedium_setIDs">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="setImageId" type="xsd:boolean"/>
+            <xsd:element name="imageId" type="xsd:string"/>
+            <xsd:element name="setParentId" type="xsd:boolean"/>
+            <xsd:element name="parentId" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMedium_setIDsResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
       <!-- method IMedium::refreshState-->
@@ -11085,6 +10970,52 @@
         </xsd:complexType>
       </xsd:element>
       <!--Interface IMachineDataChangedEvent-->
+      <!--Interface IMediumRegisteredEvent-->
+      <!-- readonly attribute IMediumRegisteredEvent::mediumId-->
+      <xsd:element name="IMediumRegisteredEvent_getMediumId">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMediumRegisteredEvent_getMediumIdResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IMediumRegisteredEvent::mediumType-->
+      <xsd:element name="IMediumRegisteredEvent_getMediumType">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMediumRegisteredEvent_getMediumTypeResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="vbox:DeviceType"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IMediumRegisteredEvent::registered-->
+      <xsd:element name="IMediumRegisteredEvent_getRegistered">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMediumRegisteredEvent_getRegisteredResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
       <!--Interface IMachineRegisteredEvent-->
       <!-- readonly attribute IMachineRegisteredEvent::registered-->
       <xsd:element name="IMachineRegisteredEvent_getRegistered">
@@ -12100,13 +12031,6 @@
   <message name="IVirtualBox_createMachineResultMsg">
     <part name="parameters" element="vbox:IVirtualBox_createMachineResponse"/>
   </message>
-  <!-- method IVirtualBox::createLegacyMachine-->
-  <message name="IVirtualBox_createLegacyMachineRequestMsg">
-    <part name="parameters" element="vbox:IVirtualBox_createLegacyMachine"/>
-  </message>
-  <message name="IVirtualBox_createLegacyMachineResultMsg">
-    <part name="parameters" element="vbox:IVirtualBox_createLegacyMachineResponse"/>
-  </message>
   <!-- method IVirtualBox::openMachine-->
   <message name="IVirtualBox_openMachineRequestMsg">
     <part name="parameters" element="vbox:IVirtualBox_openMachine"/>
@@ -12149,68 +12073,19 @@
   <message name="IVirtualBox_createHardDiskResultMsg">
     <part name="parameters" element="vbox:IVirtualBox_createHardDiskResponse"/>
   </message>
-  <!-- method IVirtualBox::openHardDisk-->
-  <message name="IVirtualBox_openHardDiskRequestMsg">
-    <part name="parameters" element="vbox:IVirtualBox_openHardDisk"/>
+  <!-- method IVirtualBox::openMedium-->
+  <message name="IVirtualBox_openMediumRequestMsg">
+    <part name="parameters" element="vbox:IVirtualBox_openMedium"/>
   </message>
-  <message name="IVirtualBox_openHardDiskResultMsg">
-    <part name="parameters" element="vbox:IVirtualBox_openHardDiskResponse"/>
+  <message name="IVirtualBox_openMediumResultMsg">
+    <part name="parameters" element="vbox:IVirtualBox_openMediumResponse"/>
   </message>
-  <!-- method IVirtualBox::getHardDisk-->
-  <message name="IVirtualBox_getHardDiskRequestMsg">
-    <part name="parameters" element="vbox:IVirtualBox_getHardDisk"/>
+  <!-- method IVirtualBox::findMedium-->
+  <message name="IVirtualBox_findMediumRequestMsg">
+    <part name="parameters" element="vbox:IVirtualBox_findMedium"/>
   </message>
-  <message name="IVirtualBox_getHardDiskResultMsg">
-    <part name="parameters" element="vbox:IVirtualBox_getHardDiskResponse"/>
-  </message>
-  <!-- method IVirtualBox::findHardDisk-->
-  <message name="IVirtualBox_findHardDiskRequestMsg">
-    <part name="parameters" element="vbox:IVirtualBox_findHardDisk"/>
-  </message>
-  <message name="IVirtualBox_findHardDiskResultMsg">
-    <part name="parameters" element="vbox:IVirtualBox_findHardDiskResponse"/>
-  </message>
-  <!-- method IVirtualBox::openDVDImage-->
-  <message name="IVirtualBox_openDVDImageRequestMsg">
-    <part name="parameters" element="vbox:IVirtualBox_openDVDImage"/>
-  </message>
-  <message name="IVirtualBox_openDVDImageResultMsg">
-    <part name="parameters" element="vbox:IVirtualBox_openDVDImageResponse"/>
-  </message>
-  <!-- method IVirtualBox::getDVDImage-->
-  <message name="IVirtualBox_getDVDImageRequestMsg">
-    <part name="parameters" element="vbox:IVirtualBox_getDVDImage"/>
-  </message>
-  <message name="IVirtualBox_getDVDImageResultMsg">
-    <part name="parameters" element="vbox:IVirtualBox_getDVDImageResponse"/>
-  </message>
-  <!-- method IVirtualBox::findDVDImage-->
-  <message name="IVirtualBox_findDVDImageRequestMsg">
-    <part name="parameters" element="vbox:IVirtualBox_findDVDImage"/>
-  </message>
-  <message name="IVirtualBox_findDVDImageResultMsg">
-    <part name="parameters" element="vbox:IVirtualBox_findDVDImageResponse"/>
-  </message>
-  <!-- method IVirtualBox::openFloppyImage-->
-  <message name="IVirtualBox_openFloppyImageRequestMsg">
-    <part name="parameters" element="vbox:IVirtualBox_openFloppyImage"/>
-  </message>
-  <message name="IVirtualBox_openFloppyImageResultMsg">
-    <part name="parameters" element="vbox:IVirtualBox_openFloppyImageResponse"/>
-  </message>
-  <!-- method IVirtualBox::getFloppyImage-->
-  <message name="IVirtualBox_getFloppyImageRequestMsg">
-    <part name="parameters" element="vbox:IVirtualBox_getFloppyImage"/>
-  </message>
-  <message name="IVirtualBox_getFloppyImageResultMsg">
-    <part name="parameters" element="vbox:IVirtualBox_getFloppyImageResponse"/>
-  </message>
-  <!-- method IVirtualBox::findFloppyImage-->
-  <message name="IVirtualBox_findFloppyImageRequestMsg">
-    <part name="parameters" element="vbox:IVirtualBox_findFloppyImage"/>
-  </message>
-  <message name="IVirtualBox_findFloppyImageResultMsg">
-    <part name="parameters" element="vbox:IVirtualBox_findFloppyImageResponse"/>
+  <message name="IVirtualBox_findMediumResultMsg">
+    <part name="parameters" element="vbox:IVirtualBox_findMediumResponse"/>
   </message>
   <!-- method IVirtualBox::getGuestOSType-->
   <message name="IVirtualBox_getGuestOSTypeRequestMsg">
@@ -14914,6 +14789,13 @@
   <message name="IMedium_getMachineIdsResultMsg">
     <part name="parameters" element="vbox:IMedium_getMachineIdsResponse"/>
   </message>
+  <!-- method IMedium::setIDs-->
+  <message name="IMedium_setIDsRequestMsg">
+    <part name="parameters" element="vbox:IMedium_setIDs"/>
+  </message>
+  <message name="IMedium_setIDsResultMsg">
+    <part name="parameters" element="vbox:IMedium_setIDsResponse"/>
+  </message>
   <!-- method IMedium::refreshState-->
   <message name="IMedium_refreshStateRequestMsg">
     <part name="parameters" element="vbox:IMedium_refreshState"/>
@@ -16718,6 +16600,32 @@
       -->
   <!--
         *************************************
+        messages for interface IMediumRegisteredEvent
+        *************************************
+      -->
+  <!-- readonly attribute IMediumRegisteredEvent::mediumId-->
+  <message name="IMediumRegisteredEvent_getMediumIdRequestMsg">
+    <part name="parameters" element="vbox:IMediumRegisteredEvent_getMediumId"/>
+  </message>
+  <message name="IMediumRegisteredEvent_getMediumIdResultMsg">
+    <part name="parameters" element="vbox:IMediumRegisteredEvent_getMediumIdResponse"/>
+  </message>
+  <!-- readonly attribute IMediumRegisteredEvent::mediumType-->
+  <message name="IMediumRegisteredEvent_getMediumTypeRequestMsg">
+    <part name="parameters" element="vbox:IMediumRegisteredEvent_getMediumType"/>
+  </message>
+  <message name="IMediumRegisteredEvent_getMediumTypeResultMsg">
+    <part name="parameters" element="vbox:IMediumRegisteredEvent_getMediumTypeResponse"/>
+  </message>
+  <!-- readonly attribute IMediumRegisteredEvent::registered-->
+  <message name="IMediumRegisteredEvent_getRegisteredRequestMsg">
+    <part name="parameters" element="vbox:IMediumRegisteredEvent_getRegistered"/>
+  </message>
+  <message name="IMediumRegisteredEvent_getRegisteredResultMsg">
+    <part name="parameters" element="vbox:IMediumRegisteredEvent_getRegisteredResponse"/>
+  </message>
+  <!--
+        *************************************
         messages for interface IMachineRegisteredEvent
         *************************************
       -->
@@ -17420,12 +17328,6 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IVirtualBox_createLegacyMachine">
-      <input message="vbox:IVirtualBox_createLegacyMachineRequestMsg"/>
-      <output message="vbox:IVirtualBox_createLegacyMachineResultMsg"/>
-      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
-      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
-    </operation>
     <operation name="IVirtualBox_openMachine">
       <input message="vbox:IVirtualBox_openMachineRequestMsg"/>
       <output message="vbox:IVirtualBox_openMachineResultMsg"/>
@@ -17462,57 +17364,15 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IVirtualBox_openHardDisk">
-      <input message="vbox:IVirtualBox_openHardDiskRequestMsg"/>
-      <output message="vbox:IVirtualBox_openHardDiskResultMsg"/>
+    <operation name="IVirtualBox_openMedium">
+      <input message="vbox:IVirtualBox_openMediumRequestMsg"/>
+      <output message="vbox:IVirtualBox_openMediumResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IVirtualBox_getHardDisk">
-      <input message="vbox:IVirtualBox_getHardDiskRequestMsg"/>
-      <output message="vbox:IVirtualBox_getHardDiskResultMsg"/>
-      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
-      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
-    </operation>
-    <operation name="IVirtualBox_findHardDisk">
-      <input message="vbox:IVirtualBox_findHardDiskRequestMsg"/>
-      <output message="vbox:IVirtualBox_findHardDiskResultMsg"/>
-      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
-      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
-    </operation>
-    <operation name="IVirtualBox_openDVDImage">
-      <input message="vbox:IVirtualBox_openDVDImageRequestMsg"/>
-      <output message="vbox:IVirtualBox_openDVDImageResultMsg"/>
-      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
-      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
-    </operation>
-    <operation name="IVirtualBox_getDVDImage">
-      <input message="vbox:IVirtualBox_getDVDImageRequestMsg"/>
-      <output message="vbox:IVirtualBox_getDVDImageResultMsg"/>
-      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
-      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
-    </operation>
-    <operation name="IVirtualBox_findDVDImage">
-      <input message="vbox:IVirtualBox_findDVDImageRequestMsg"/>
-      <output message="vbox:IVirtualBox_findDVDImageResultMsg"/>
-      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
-      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
-    </operation>
-    <operation name="IVirtualBox_openFloppyImage">
-      <input message="vbox:IVirtualBox_openFloppyImageRequestMsg"/>
-      <output message="vbox:IVirtualBox_openFloppyImageResultMsg"/>
-      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
-      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
-    </operation>
-    <operation name="IVirtualBox_getFloppyImage">
-      <input message="vbox:IVirtualBox_getFloppyImageRequestMsg"/>
-      <output message="vbox:IVirtualBox_getFloppyImageResultMsg"/>
-      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
-      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
-    </operation>
-    <operation name="IVirtualBox_findFloppyImage">
-      <input message="vbox:IVirtualBox_findFloppyImageRequestMsg"/>
-      <output message="vbox:IVirtualBox_findFloppyImageResultMsg"/>
+    <operation name="IVirtualBox_findMedium">
+      <input message="vbox:IVirtualBox_findMediumRequestMsg"/>
+      <output message="vbox:IVirtualBox_findMediumResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -19894,6 +19754,12 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
+    <operation name="IMedium_setIDs">
+      <input message="vbox:IMedium_setIDsRequestMsg"/>
+      <output message="vbox:IMedium_setIDsResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
     <operation name="IMedium_refreshState">
       <input message="vbox:IMedium_refreshStateRequestMsg"/>
       <output message="vbox:IMedium_refreshStateResultMsg"/>
@@ -21513,6 +21379,29 @@
         -->
     <!--
           *************************************
+          operations in portType for interface IMediumRegisteredEvent
+          *************************************
+        -->
+    <operation name="IMediumRegisteredEvent_getMediumId">
+      <input message="vbox:IMediumRegisteredEvent_getMediumIdRequestMsg"/>
+      <output message="vbox:IMediumRegisteredEvent_getMediumIdResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IMediumRegisteredEvent_getMediumType">
+      <input message="vbox:IMediumRegisteredEvent_getMediumTypeRequestMsg"/>
+      <output message="vbox:IMediumRegisteredEvent_getMediumTypeResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IMediumRegisteredEvent_getRegistered">
+      <input message="vbox:IMediumRegisteredEvent_getRegisteredRequestMsg"/>
+      <output message="vbox:IMediumRegisteredEvent_getRegisteredResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <!--
+          *************************************
           operations in portType for interface IMachineRegisteredEvent
           *************************************
         -->
@@ -22468,21 +22357,6 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IVirtualBox_createLegacyMachine">
-      <soap:operation soapAction="" style="document"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="InvalidObjectFault">
-        <soap:fault name="InvalidObjectFault" use="literal"/>
-      </fault>
-      <fault name="RuntimeFault">
-        <soap:fault name="RuntimeFault" use="literal"/>
-      </fault>
-    </operation>
     <operation name="IVirtualBox_openMachine">
       <soap:operation soapAction="" style="document"/>
       <input>
@@ -22573,7 +22447,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IVirtualBox_openHardDisk">
+    <operation name="IVirtualBox_openMedium">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -22588,112 +22462,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IVirtualBox_getHardDisk">
-      <soap:operation soapAction="" style="document"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="InvalidObjectFault">
-        <soap:fault name="InvalidObjectFault" use="literal"/>
-      </fault>
-      <fault name="RuntimeFault">
-        <soap:fault name="RuntimeFault" use="literal"/>
-      </fault>
-    </operation>
-    <operation name="IVirtualBox_findHardDisk">
-      <soap:operation soapAction="" style="document"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="InvalidObjectFault">
-        <soap:fault name="InvalidObjectFault" use="literal"/>
-      </fault>
-      <fault name="RuntimeFault">
-        <soap:fault name="RuntimeFault" use="literal"/>
-      </fault>
-    </operation>
-    <operation name="IVirtualBox_openDVDImage">
-      <soap:operation soapAction="" style="document"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="InvalidObjectFault">
-        <soap:fault name="InvalidObjectFault" use="literal"/>
-      </fault>
-      <fault name="RuntimeFault">
-        <soap:fault name="RuntimeFault" use="literal"/>
-      </fault>
-    </operation>
-    <operation name="IVirtualBox_getDVDImage">
-      <soap:operation soapAction="" style="document"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="InvalidObjectFault">
-        <soap:fault name="InvalidObjectFault" use="literal"/>
-      </fault>
-      <fault name="RuntimeFault">
-        <soap:fault name="RuntimeFault" use="literal"/>
-      </fault>
-    </operation>
-    <operation name="IVirtualBox_findDVDImage">
-      <soap:operation soapAction="" style="document"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="InvalidObjectFault">
-        <soap:fault name="InvalidObjectFault" use="literal"/>
-      </fault>
-      <fault name="RuntimeFault">
-        <soap:fault name="RuntimeFault" use="literal"/>
-      </fault>
-    </operation>
-    <operation name="IVirtualBox_openFloppyImage">
-      <soap:operation soapAction="" style="document"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="InvalidObjectFault">
-        <soap:fault name="InvalidObjectFault" use="literal"/>
-      </fault>
-      <fault name="RuntimeFault">
-        <soap:fault name="RuntimeFault" use="literal"/>
-      </fault>
-    </operation>
-    <operation name="IVirtualBox_getFloppyImage">
-      <soap:operation soapAction="" style="document"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="InvalidObjectFault">
-        <soap:fault name="InvalidObjectFault" use="literal"/>
-      </fault>
-      <fault name="RuntimeFault">
-        <soap:fault name="RuntimeFault" use="literal"/>
-      </fault>
-    </operation>
-    <operation name="IVirtualBox_findFloppyImage">
+    <operation name="IVirtualBox_findMedium">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -28524,6 +28293,21 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
+    <operation name="IMedium_setIDs">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
     <operation name="IMedium_refreshState">
       <soap:operation soapAction="" style="document"/>
       <input>
@@ -32319,6 +32103,56 @@
           operations in portType for interface IMachineDataChangedEvent
           *************************************
         -->
+    <!--
+          *************************************
+          operations in portType for interface IMediumRegisteredEvent
+          *************************************
+        -->
+    <operation name="IMediumRegisteredEvent_getMediumId">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IMediumRegisteredEvent_getMediumType">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IMediumRegisteredEvent_getRegistered">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
     <!--
           *************************************
           operations in portType for interface IMachineRegisteredEvent
