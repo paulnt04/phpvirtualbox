@@ -72,7 +72,7 @@ $vbox->connect();
 // AND we need to build an image from each pixel, the memory usage
 // of this script can get rather large. 800px wide usually keeps
 // it right under 150M.
-@ini_set('memory_limit', '512M'); // so swap if you need to swap
+@ini_set('memory_limit', '512M');
 if($_REQUEST['width']) {
 	$force_width = $_REQUEST['width'];
 } else {

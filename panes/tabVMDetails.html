@@ -77,22 +77,34 @@ function __vboxDetailSettingsLink(text,section,id) {
 }
 
 //Returns table row (tr) element for details header
-function __vboxDetailHeader(icon,name,linkto,vm) {
+function __vboxDetailHeader(icon,name,linkto,vm,boxes) {
 
 	var tr = document.createElement('tr');
 	tr.setAttribute('class','vboxDetailsHead');
 	var th = document.createElement('th');
 	th.setAttribute('class','vboxDetailsSection');
 	th.setAttribute('colspan', '2');
-	th.innerHTML = "<img src='images/vbox/" + icon + "' /> ";
+	th.innerHTML = "<img style='float:left; margin-right: 3px; ' src='images/vbox/" + icon + "' /> ";
 
+	var sp = document.createElement('span');
+	$(sp).css({'float':'left'});
 	// Create links to settings?
 	if(typeof linkto == "string") {
-		$(th).append(__vboxDetailSettingsLink(trans(name),linkto,vm.id));
+		$(sp).append(__vboxDetailSettingsLink(trans(name)+' ',linkto,vm.id));
 	} else {
-		$(th).append(document.createTextNode(trans(name)));
+		$(sp).append(document.createTextNode(trans(name)+' '));
 	}
-
+	$(th).append(sp);
+	
+	var sp = document.createElement('span');
+	$(sp).attr('class','vboxDetailsUpDnImgSpan');
+	$(sp).css({'float':'right'});
+	if(boxes) {
+		var udimg = document.createElement('img');
+		$(udimg).attr({'src':'images/arrow_grad_up.png'});
+		$(sp).append(udimg);
+	}
+	$(th).append(sp);
 	tr.appendChild(th);
 
 	return tr;
@@ -247,7 +259,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	vboxDetailsTable.setAttribute('class','vboxDetailsTable' + (boxes ? ' vboxDetailsTableBox ui-corner-all' : ''));
 
 	// General
-	vboxDetailsTable.appendChild(__vboxDetailHeader("machine_16px.png","General",(settings ? 'General' : null),(settings ? data : null)));
+	vboxDetailsTable.appendChild(__vboxDetailHeader("machine_16px.png","General",(settings ? 'General' : null),(settings ? data : null),boxes));
 	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Name"), data['name']));
 	vboxDetailsTable.appendChild(__vboxDetailRow(trans("OS Type"), trans(data['OSTypeId'])));
 
@@ -269,7 +281,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	}		
 
 	// System
-	vboxDetailsTable.appendChild(__vboxDetailHeader('chipset_16px.png',"System",(settings ? 'System' : null),(settings ? data : null)));
+	vboxDetailsTable.appendChild(__vboxDetailHeader('chipset_16px.png',"System",(settings ? 'System' : null),(settings ? data : null),boxes));
 	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Base Memory"), data['memorySize'] + " " + trans('MB')));
 	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Processors"), data['CPUCount']));
 	
@@ -302,7 +314,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		var vboxDetailsTable = document.createElement('table');
 		vboxDetailsTable.setAttribute('id','vboxDetailsTableBoxPreview');
 		vboxDetailsTable.setAttribute('class','vboxDetailsTable vboxDetailsTableBox ui-corner-all');
-		vboxDetailsTable.appendChild(__vboxDetailHeader("fullscreen_16px.png","Preview",null,null));
+		vboxDetailsTable.appendChild(__vboxDetailHeader("fullscreen_16px.png","Preview",null,null,boxes));
 		if($('#vboxIndex').data('vboxCookies')["vboxSectionShowPreview"] == 0 || !$('#vboxIndex').data('vboxConfig').imagepng) {
 			vboxDetailsTable.setAttribute('style','display: none;');
 		}
@@ -338,7 +350,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 			$(divOut1).append(divOut2);
 			$(divWrap).append(divOut1);
 
-			if(data.state == 'Running' && $('#vboxIndex').data('vboxCookies')["vboxSectionShowPreview"] != 0) {
+			if((data.state == 'Running' || data.state == 'Saved') && $('#vboxIndex').data('vboxCookies')["vboxSectionShowPreview"] != 0) {
 
 				__vboxDrawPreview(data.id);
 								
@@ -369,7 +381,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	}		
 	
 	// Display 
-	vboxDetailsTable.appendChild(__vboxDetailHeader("fullscreen_16px.png","Display",(settings ? 'Display' : null),(settings ? data : null)));
+	vboxDetailsTable.appendChild(__vboxDetailHeader("fullscreen_16px.png","Display",(settings ? 'Display' : null),(settings ? data : null),boxes));
 	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Video Memory"), data['VRAMSize'] + " " + trans('MB')));
 	/* Unsupported at this time. 
 	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Video 3d"), (data['accelerate3DEnabled'] ? trans("Enabled") : trans("Disabled"))));
@@ -409,7 +421,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	}		
 	
 	// Storage
-	vboxDetailsTable.appendChild(__vboxDetailHeader("hd_16px.png","Storage",(settings ? 'Storage' : null),(settings ? data : null)));
+	vboxDetailsTable.appendChild(__vboxDetailHeader("hd_16px.png","Storage",(settings ? 'Storage' : null),(settings ? data : null),boxes));
 	storage = new vboxStorage();
 	for(var a = 0; a < data['storageControllers'].length; a++) {
 		
@@ -459,7 +471,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	}		
 	
 	// Audio (uncomment here and in vboxconnector.php if you'd like 
-	vboxDetailsTable.appendChild(__vboxDetailHeader("sound_16px.png","Audio",(settings ? 'Audio' : null),(settings ? data : null)));
+	vboxDetailsTable.appendChild(__vboxDetailHeader("sound_16px.png","Audio",(settings ? 'Audio' : null),(settings ? data : null),boxes));
 	if(!data['audioAdapter']['enabled']) {
 		vboxDetailsTable.appendChild(__vboxDetailRow(trans("Disabled"), ""));
 	} else {
@@ -479,7 +491,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	}		
 	
 	// Network
-	vboxDetailsTable.appendChild(__vboxDetailHeader("nw_16px.png","Network",(settings ? 'Network' : null),(settings ? data : null)));
+	vboxDetailsTable.appendChild(__vboxDetailHeader("nw_16px.png","Network",(settings ? 'Network' : null),(settings ? data : null),boxes));
 
 	var vboxDetailsTableNics = 0;
 	for(var i = 0; i < data['networkAdapters'].length; i++) {
@@ -533,7 +545,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	// USB
 	if(data['USBController']) {
 		if(boxes) vboxDetailsTable.setAttribute('id','vboxDetailsTableBoxUSB');
-		vboxDetailsTable.appendChild(__vboxDetailHeader("usb_16px.png","USB",(settings ? 'USB' : null),(settings ? data : null)));
+		vboxDetailsTable.appendChild(__vboxDetailHeader("usb_16px.png","USB",(settings ? 'USB' : null),(settings ? data : null),boxes));
 	}
 	if(data['USBController'] && data['USBController']['enabled']) {
 		var tot = 0;
@@ -561,7 +573,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	}
 	
 	// Shared Folders
-	vboxDetailsTable.appendChild(__vboxDetailHeader("shared_folder_16px.png","Shared Folders",(settings ? 'SharedFolders' : null),(settings ? data : null)));
+	vboxDetailsTable.appendChild(__vboxDetailHeader("shared_folder_16px.png","Shared Folders",(settings ? 'SharedFolders' : null),(settings ? data : null),boxes));
 	if(!data['sharedFolders'] || data['sharedFolders'].length < 1) {
 		vboxDetailsTable.appendChild(__vboxDetailRow(trans("None"), ''));
 	} else {
@@ -575,7 +587,30 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 			vboxDetailsTable.setAttribute('style','display: none;');
 		}
 		vboxDetailsTable.appendChild(__vboxDetailRow('',''));
+
+		$(targetdiv).append(vboxDetailsTable);
+		
+		var vboxDetailsTable = document.createElement('table');
+		vboxDetailsTable.setAttribute('id','vboxDetailsTableBoxDescription');
+		vboxDetailsTable.setAttribute('class','vboxDetailsTable vboxDetailsTableBox ui-corner-all');
+		if($('#vboxIndex').data('vboxCookies')["vboxSectionShowDescription"] == 0) {
+			vboxDetailsTable.setAttribute('style','display: none;');
+		}		
+		
 	}
+
+	// Description
+	vboxDetailsTable.appendChild(__vboxDetailHeader("description_16px.png","Description",(settings ? 'General:2' : null),(settings ? data : null),boxes));
+	var dtr = document.createElement('tr');
+	var dtd = document.createElement('td');
+	$(dtd).attr('class','vboxDetailDescriptionCell');
+	$(dtd).attr('colspan','2');
+	$(dtd).html(data.description.length ? $('<div />').html(data.description).text() : trans("None"));
+	$(dtr).append(dtd); 
+	vboxDetailsTable.appendChild(dtr);
+
+	if(boxes)
+		vboxDetailsTable.appendChild(__vboxDetailRow('',''));
 	
 	// Append Table
 	$(targetdiv).append(vboxDetailsTable);
@@ -587,10 +622,13 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 				if($(this).data('vboxHidden')) {
 					$(this).parent().siblings().css('display','');
 					$(this).data('vboxHidden',false);
+					var src = 'images/arrow_grad_up.png';
 				} else {
 					$(this).parent().siblings().css('display','none');
-					$(this).data('vboxHidden',true);				
+					$(this).data('vboxHidden',true);
+					var src = 'images/arrow_grad_dn.png';				
 				}
+				$(this).children('span.vboxDetailsUpDnImgSpan').children('img').attr('src',src);
 				e.stopPropagation();
 				e.preventDefault();				
 				return false;
@@ -621,7 +659,7 @@ function __vboxDisplayHostDetailsData(data) {
 	vboxDetailsTable.appendChild(__vboxDetailHeader("machine_16px.png","General"));
 	if($('#vboxIndex').data('vboxConfig').servers.length) vboxDetailsTable.appendChild(__vboxDetailRow(trans("Name"), $('#vboxIndex').data('vboxConfig').name));	
 	vboxDetailsTable.appendChild(__vboxDetailRow(trans("OS Type"), data['operatingSystem'] + ' (' + data['OSVersion'] +')'));
-	vboxDetailsTable.appendChild(__vboxDetailRow("VirtualBox", $('#vboxIndex').data('vboxConfig').version.string));
+	vboxDetailsTable.appendChild(__vboxDetailRow("VirtualBox", $('#vboxIndex').data('vboxConfig').version.string+' ('+$('#vboxIndex').data('vboxConfig').version.revision+')'));
 	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Base Memory"), data['memorySize'] + ' ' + trans('MB')));
 	vboxDetailsTable.appendChild(__vboxDetailRow(trans("Processors"), data['cpus'][0] + ' (' + data['cpus'].length +')'));
 
@@ -651,17 +689,13 @@ function __vboxDisplayHostDetailsData(data) {
 	$('#vboxVMDetails').append(vboxDetailsTable);
 }
 
-/* Draw Preview Window */
-function __vboxDetailsDisplayPreview(data) {
-	
-}
 
 /* Show / Hide boxes menu */
 var ul = document.createElement('ul');
 ul.setAttribute('class','contextMenu');
 ul.setAttribute('style','display: none');
 ul.setAttribute('id','vboxDetailsShowMenu');
-var sections = new Array('General','System','Preview','Display','Storage','Audio','Network','USB','Shared Folders');
+var sections = new Array('General','System','Preview','Display','Storage','Audio','Network','USB','Shared Folders','Description');
 for(var i = 0; i < sections.length; i++) {
 
 	// No USB in OSE
@@ -803,6 +837,7 @@ $("#vboxVMDetails").mouseup( function(e) {
 		
 		e.preventDefault();
 		e.stopPropagation();
+
 		return false;
 	} else {
 		$('#vboxDetailsShowMenu').hide();

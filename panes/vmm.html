@@ -347,6 +347,7 @@ var vmmButtons = new Array(
 		'separator' : true,
 		'enabled' : function (item) {
 			return item && !item.target && ($(item).data('attachedTo').length > 0) && $(item).data('children').length == 0 && $(item).data('hasSnapshots') == 0;
+			
 		},
 		'click' : function () {
 			switch($("#vboxVMMTabs").tabs('option','selected')) {

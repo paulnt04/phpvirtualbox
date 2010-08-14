@@ -586,15 +586,23 @@ function vboxSettingsInit(title,panes,data,onsave,pane) {
 	    /* Select first or passed menu item */
 	    var i = 0;
 	    var offset = 0;
+	    var tab = undefined;
 	    if(typeof pane == "string") {
+	    	var section = pane.split(':');
+	    	if(section[1]) tab = section[1];
 	    	for(i = 0; i < panes.length; i++) {
 	    		if(panes[i].disabled) offset++;
-	    		if(panes[i].name == pane) break;
+	    		if(panes[i].name == section[0]) break;
 	    	}
 	    }
 	    i-=offset;
 	    if(i >= panes.length) i = 0;
-	    $('#vboxSettingsMenuList').children('li:eq('+i+')').first().click();
+	    $('#vboxSettingsMenuList').children('li:eq('+i+')').first().click().each(function(){
+	    	if(tab !== undefined) {
+	    		$('#vboxSettingsPane-'+$(this).data('name')).tabs('select', tab);	    		
+	    	}
+	    	
+	    });
 	    
 		
 		

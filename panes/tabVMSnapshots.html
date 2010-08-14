@@ -98,7 +98,7 @@ var tButtons = [
   			buttons[trans('OK')] = function() {
 	  	  		var l = new vboxLoader();
 	  	  		l.mode = 'save';
-	  	  		l.add('takeSnapshot',function(d){
+	  	  		l.add('snapshotTake',function(d){
 					if(d && d.progress) {
 						vboxProgress(d.progress,function(){
 							$('#vboxTabVMSnapshots').trigger('refresh');
@@ -131,7 +131,7 @@ var tButtons = [
 			buttons[trans('Restore')] = function() {
 	  	  		var l = new vboxLoader();
 	  	  		l.mode = 'save';
-	  	  		l.add('restoreSnapshot',function(d){
+	  	  		l.add('snapshotRestore',function(d){
 					if(d && d.progress) {
 						vboxProgress(d.progress,function(){
 							$('#vboxTabVMSnapshots').trigger('refresh');
@@ -160,7 +160,7 @@ var tButtons = [
 			buttons[trans('Delete')] = function() {
 	  	  		var l = new vboxLoader();
 	  	  		l.mode = 'save';
-	  	  		l.add('deleteSnapshot',function(d){
+	  	  		l.add('snapshotDelete',function(d){
 					if(d && d.progress) {
 						vboxProgress(d.progress,function(){
 							$('#vboxTabVMSnapshots').trigger('refresh');

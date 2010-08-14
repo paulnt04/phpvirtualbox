@@ -136,7 +136,9 @@ class vboxconnector {
 				'string'=>join('.',$this->version),
 				'major'=>intval(array_shift($this->version)),
 				'minor'=>intval(array_shift($this->version)),
-				'sub'=>intval(array_shift($this->version))
+				'sub'=>intval(array_shift($this->version)),
+				'revision'=>(string)$this->vbox->revision,
+				'settingsFilePath' => $this->vbox->settingsFilePath
 			);
 		}
 
@@ -241,30 +243,6 @@ class vboxconnector {
 	}
 
 	/*
-	 * Set VM Description
-	 */
-	public function setDescription($args,&$response) {
-
-		$response['data']['vm'] = $args['vm'];
-
-		$this->__vboxwebsrvConnect();
-
-		$machine = $this->__getMachineRef($args['vm']);
-
-		$this->session = $this->websessionManager->getSessionObject($this->vbox);
-		$machine->lockMachine($this->session,'Write');
-		$this->session->machine->description = $args['description'];
-		$this->session->machine->saveSettings();
-		$this->session->unlockMachine();
-		$this->session = null;
-		$machine->releaseRemote();
-
-		$this->cache->expire('__getMachine'.$args['vm']);
-
-		return ($response['data']['result'] = 1);
-	}
-
-	/*
 	 * Enumerate guest properties of vm
 	 */
 	public function enumerateGuestProperties($args,&$response) {
@@ -362,11 +340,11 @@ class vboxconnector {
 
 		// Storage Controllers
 		$scs = $m->storageControllers;
-		$attached = array();
+		$attachedEx = $attachedNew = array();
 		foreach($scs as $sc) {
 			$mas = $m->getMediumAttachmentsOfController($sc->name);
 			foreach($mas as $ma) {
-				if((string)$ma->medium && $ma->medium->id) $attached[$ma->medium->id] = true;
+				$attachedEx[$sc->name.$ma->port.$ma.device] = (((string)$ma->medium && $ma->medium->id) ? $ma->medium->id : null);
 				if($ma->controller) {
 					$m->detachDevice($ma->controller,$ma->port,$ma->device);
 				}
@@ -388,7 +366,7 @@ class vboxconnector {
 
 			// Medium attachments
 			foreach($sc['mediumAttachments'] as $ma) {
-				if($ma['medium']['id']) unset($attached[$ma['medium']['id']]);
+				$attachedNew[$name.$ma['port'].$ma['device']] = $ma['medium']['id'];
 				$m->attachDevice($name,$ma['port'],$ma['device'],$ma['type'],($ma['medium'] && $ma['medium']['id'] ? $ma['medium']['id'] : null));
 				if($ma['type'] == 'DVD') $m->passthroughDevice($name,$ma['port'],$ma['device'],($ma['passthrough'] ? true : false));
 			}
@@ -396,8 +374,10 @@ class vboxconnector {
 		// Expire storage
 		$expire[] = '__getStorageControllers'.$args['id'];
 		// Expire mediums?
-		if(count($attached))
-			$expire[] = '__getMediums';
+		ksort($attachedEx);
+		ksort($attachedNew);
+		if(serialize($attachedEx) != serialize($attachedNew))
+			$expire[] = 'getMediums';
 
 
 		/*
@@ -2061,7 +2041,7 @@ class vboxconnector {
 	/*
 	 * Restore snapshot of machine
 	 */
-	public function restoreSnapshot($args, &$response) {
+	public function snapshotRestore($args, &$response) {
 
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
@@ -2109,7 +2089,7 @@ class vboxconnector {
 	/*
 	 * Delete snapshot of machine
 	 */
-	public function deleteSnapshot($args, &$response) {
+	public function snapshotDelete($args, &$response) {
 
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
@@ -2156,7 +2136,7 @@ class vboxconnector {
 	/*
 	 * Take snapshot of machine
 	 */
-	public function takeSnapshot($args, &$response) {
+	public function snapshotTake($args, &$response) {
 
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
@@ -2324,7 +2304,7 @@ class vboxconnector {
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
 
-		$m = $this->vbox->getHardDisk($args['id']);
+		$m = $this->vbox->findMedium($args['id'],'HardDisk');
 		$m->type = $args['type'];
 		$m->releaseRemote();
 
@@ -2345,23 +2325,9 @@ class vboxconnector {
 
 		$acl = new AccessMode(null,'ReadWrite');
 
-		switch($args['type']) {
-			case 'HardDisk':
-				$m = $this->vbox->openHardDisk($args['path'],$acl,false,null,false,null);
-				break;
-			case 'DVD':
-				$m = $this->vbox->openDVDImage($args['path'],null);
-				break;
-			case 'Floppy':
-				$m = $this->vbox->openFloppyImage($args['path'],null);
-				break;
+		$m = $this->vbox->openMedium($args['path'],$args['type'],$acl);
+		$m->releaseRemote();
 
-		}
-		$id = null;
-		if($m) {
-			$id = $m->id;
-			$m->releaseRemote();
-		}
 		$this->cache->expire('getMediums');
 		return ($response['data']['result'] = 1);
 	}
@@ -2404,16 +2370,8 @@ class vboxconnector {
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
 
-		switch($args['type']) {
-			case 'DVD':
-				$m = $this->vbox->getDVDImage($args['id']);
-				break;
-			case 'Floppy':
-				$m = $this->vbox->getFloppyImage($args['id']);
-				break;
-			default:
-				$m = $this->vbox->getHardDisk($args['id']);
-		}
+		$m = $this->vbox->findMedium($args['id'],$args['type']);
+
 		// connected to...
 		$machines = $m->machineIds;
 		foreach($machines as $uuid) {
@@ -2486,16 +2444,8 @@ class vboxconnector {
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
 
-		switch($args['type']) {
-			case 'DVD':
-				$m = $this->vbox->getDVDImage($args['id']);
-				break;
-			case 'Floppy':
-				$m = $this->vbox->getFloppyImage($args['id']);
-				break;
-			default:
-				$m = $this->vbox->getHardDisk($args['id']);
-		}
+		if(!$args['type']) $args['type'] = 'HardDisk';
+		$m = $this->vbox->findMedium($args['id'],$args['type']);
 
 		if($args['delete'] && $this->settings['deleteOnRemove'] && $m->deviceType == 'HardDisk') {
 
@@ -2513,7 +2463,7 @@ class vboxconnector {
 			$response['data']['progress'] = (string)$progress;
 
 		} else {
-			$m->unlockMachine();
+			$m->close();
 			$this->cache->expire('getMediums');
 		}
 
@@ -2591,6 +2541,7 @@ class vboxconnector {
 					} catch(Exception $e) { }
 				}
 			}
+			$hasSnapshots = (count($sids) ? 1 : 0);
 			$attachedTo[] = array('machine'=>$mid->name,'snapshots'=>$sids);
 		}
 
