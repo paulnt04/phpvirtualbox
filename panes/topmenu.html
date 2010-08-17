@@ -99,7 +99,7 @@ var menu = {
 					buttons[trans('Unregister')] = function(){
 						$(this).remove();
 						var l = new vboxLoader();
-						l.add('removeVM',function(){},{'vm':$('#vboxIndex').data('selectedVM').id});
+						l.add('removeVM',function(){},{'vm':$('#vboxIndex').data('selectedVM').id,'unregister':1});
 						l.mode = 'save';
 						l.onLoad = function(){$('#vboxIndex').trigger('vmlistrefresh');};
 						l.run();
@@ -107,15 +107,30 @@ var menu = {
 					var q = trans('Unregister VM Message1').replace('%s','<b>'+$('#vboxIndex').data('selectedVM').name+'</b>') + '<p>'+trans('Unregister VM Message2')+'</p>';
 					
 				} else {
-					buttons[trans('Delete')] = function(){
+					buttons[trans('Delete All')] = function(){
 						$(this).remove();
-						var l = new vboxLoader();
-						l.add('removeVM',function(){},{'vm':$('#vboxIndex').data('selectedVM').id,'delete':1});
-						l.mode = 'save';
-						l.onLoad = function(){$('#vboxIndex').trigger('vmlistrefresh');};
-						l.run();
+						vboxAjaxRequest('removeVM',{'vm':$('#vboxIndex').data('selectedVM').id,'delete':1},function(d){
+							// check for progress operation
+							if(d && d.progress) {
+								vboxProgress(d.progress,function(){$('#vboxIndex').trigger('vmlistrefresh');});
+								return;
+							}
+							$('#vboxIndex').trigger('vmlistrefresh');
+						});
 					}
-					var q = trans('Delete VM Message1').replace('%s','<b>'+$('#vboxIndex').data('selectedVM').name+'</b>') + '<p><b>'+trans('Delete VM Message2')+'</b></p>';
+					buttons[trans('Keep Harddisks')] = function(){
+						$(this).remove();
+						vboxAjaxRequest('removeVM',{'vm':$('#vboxIndex').data('selectedVM').id,'keep':1},function(d){
+							// check for progress operation
+							if(d && d.progress) {
+								vboxProgress(d.progress,function(){$('#vboxIndex').trigger('vmlistrefresh');});
+								return;
+							}
+							$('#vboxIndex').trigger('vmlistrefresh');
+						});
+					}
+					
+					var q = trans('Delete VM Message1').replace('%s','<b>'+$('#vboxIndex').data('selectedVM').name+'</b>') + '<p><b>'+trans('Delete VM Message2')+'</b></p><p>'+trans('Delete VM Message3')+'</p>';
 				}				
 				vboxConfirm(q,buttons);
         	
@@ -131,7 +146,7 @@ var menu = {
 				buttons[trans('Discard')] = function(){
 					$(this).remove();
 					var l = new vboxLoader();
-					l.add('setStateVMforgetSavedState',function(){},{'vm':$('#vboxIndex').data('selectedVM').id});
+					l.add('setStateVMdiscardSavedState',function(){},{'vm':$('#vboxIndex').data('selectedVM').id});
 					l.mode = 'save';
 					l.onLoad = function(){$('#vboxIndex').trigger('vmlistrefresh');};
 					l.run();

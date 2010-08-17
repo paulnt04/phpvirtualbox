@@ -43,10 +43,8 @@
 
 	<table width='100%' style='width: 100%;' class='vboxInvisible'>
 		<tr>
-			<td style='width: 100%; white-space: nowrap'>
-				<input type='text' class='vboxText' name='wizardExportApplianceLocation' style='width: 100%'/>
-			</td>
-			<td style='width: auto; white-space: nowrap;' class='vboxFileFolderInput'>
+			<td style='width: 100%; white-space: nowrap' class='vboxFileFolderInput'>
+				<input type='text' class='vboxText' name='wizardExportApplianceLocation' />
 				<input type="button" class="vboxImgButton" style="background-image: url(images/vbox/select_file_16px.png)" onClick="wizardExportApplianceBrowseLocation()" />
 			</td>
 		</tr>
@@ -108,7 +106,7 @@ function wizardExportApplianceBrowseLocation() {
 		loc = loc.replace(r,'');
 	} else {
 		// no path set
-		loc = $('#vboxIndex').data('vboxSystemProperties').defaultMachineFolder;
+		loc = $('#vboxIndex').data('vboxConfig').version.settingsFilePath.substring(0,$('#vboxIndex').data('vboxConfig').version.settingsFilePath.length - 27);
 	}
 	vboxFileBrowser(loc,function(f){
 		if(!f) return;
@@ -201,7 +199,7 @@ $('#wizardExportApplianceStep3').bind('show',function(e,wiz){
 		document.forms['frmwizardExportAppliance'].elements.wizardExportApplianceLegacy.disabled = false;
 	}
 	if($(document.forms['frmwizardExportAppliance'].elements.wizardExportApplianceLocation).val()) return;
-	name = $('#vboxIndex').data('vboxSystemProperties').defaultMachineFolder + $('#vboxIndex').data('vboxConfig').DSEP + name + '.ovf';
+	name = $('#vboxIndex').data('vboxConfig').version.settingsFilePath.substring(0,$('#vboxIndex').data('vboxConfig').version.settingsFilePath.length - 27) + $('#vboxIndex').data('vboxConfig').DSEP + name + '.ova';
 	$(document.forms['frmwizardExportAppliance'].elements.wizardExportApplianceLocation).val(name);
 });
 

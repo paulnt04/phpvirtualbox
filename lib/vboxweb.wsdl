@@ -82,15 +82,16 @@
             Restoring: 13 -
             TeleportingPausedVM: 14 -
             TeleportingIn: 15 -
-            DeletingSnapshotOnline: 16 -
-            DeletingSnapshotPaused: 17 -
-            RestoringSnapshot: 18 -
-            DeletingSnapshot: 19 -
-            SettingUp: 20 -
+            FaultTolerantSyncing: 16 -
+            DeletingSnapshotOnline: 17 -
+            DeletingSnapshotPaused: 18 -
+            RestoringSnapshot: 19 -
+            DeletingSnapshot: 20 -
+            SettingUp: 21 -
             FirstOnline: 5 -
-            LastOnline: 17 -
+            LastOnline: 18 -
             FirstTransient: 8 -
-            LastTransient: 20 -
+            LastTransient: 21 -
             -->
       <xsd:simpleType name="MachineState">
         <xsd:restriction base="xsd:string">
@@ -110,6 +111,7 @@
           <xsd:enumeration value="Restoring"/>
           <xsd:enumeration value="TeleportingPausedVM"/>
           <xsd:enumeration value="TeleportingIn"/>
+          <xsd:enumeration value="FaultTolerantSyncing"/>
           <xsd:enumeration value="DeletingSnapshotOnline"/>
           <xsd:enumeration value="DeletingSnapshotPaused"/>
           <xsd:enumeration value="RestoringSnapshot"/>
@@ -165,6 +167,18 @@
           <xsd:enumeration value="VPID"/>
           <xsd:enumeration value="NestedPaging"/>
           <xsd:enumeration value="LargePages"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <!-- enum: FaultToleranceState -
+            Inactive: 1 -
+            Source: 2 -
+            Target: 3 -
+            -->
+      <xsd:simpleType name="FaultToleranceState">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Inactive"/>
+          <xsd:enumeration value="Source"/>
+          <xsd:enumeration value="Target"/>
         </xsd:restriction>
       </xsd:simpleType>
       <!-- enum: LockType -
@@ -906,10 +920,10 @@
           <xsd:element name="numberOfClients" type="xsd:unsignedInt"/>
           <xsd:element name="beginTime" type="xsd:long"/>
           <xsd:element name="endTime" type="xsd:long"/>
-          <xsd:element name="bytesSent" type="xsd:unsignedLong"/>
-          <xsd:element name="bytesSentTotal" type="xsd:unsignedLong"/>
-          <xsd:element name="bytesReceived" type="xsd:unsignedLong"/>
-          <xsd:element name="bytesReceivedTotal" type="xsd:unsignedLong"/>
+          <xsd:element name="bytesSent" type="xsd:long"/>
+          <xsd:element name="bytesSentTotal" type="xsd:long"/>
+          <xsd:element name="bytesReceived" type="xsd:long"/>
+          <xsd:element name="bytesReceivedTotal" type="xsd:long"/>
           <xsd:element name="user" type="xsd:string"/>
           <xsd:element name="domain" type="xsd:string"/>
           <xsd:element name="clientName" type="xsd:string"/>
@@ -3493,6 +3507,118 @@
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
+      <!-- read/write attribute IMachine::faultToleranceState-->
+      <xsd:element name="IMachine_getFaultToleranceState">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_getFaultToleranceStateResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="vbox:FaultToleranceState"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_setFaultToleranceState">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="faultToleranceState" type="vbox:FaultToleranceState"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_setFaultToleranceStateResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- read/write attribute IMachine::faultTolerancePort-->
+      <xsd:element name="IMachine_getFaultTolerancePort">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_getFaultTolerancePortResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:unsignedInt"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_setFaultTolerancePort">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="faultTolerancePort" type="xsd:unsignedInt"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_setFaultTolerancePortResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- read/write attribute IMachine::faultToleranceAddress-->
+      <xsd:element name="IMachine_getFaultToleranceAddress">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_getFaultToleranceAddressResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_setFaultToleranceAddress">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="faultToleranceAddress" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_setFaultToleranceAddressResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- read/write attribute IMachine::faultToleranceSyncInterval-->
+      <xsd:element name="IMachine_getFaultToleranceSyncInterval">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_getFaultToleranceSyncIntervalResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:unsignedInt"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_setFaultToleranceSyncInterval">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="faultToleranceSyncInterval" type="xsd:unsignedInt"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_setFaultToleranceSyncIntervalResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
+        </xsd:complexType>
+      </xsd:element>
       <!-- read/write attribute IMachine::RTCUseUTC-->
       <xsd:element name="IMachine_getRTCUseUTC">
         <xsd:complexType>
@@ -4222,7 +4348,7 @@
       <xsd:element name="IMachine_showConsoleWindowResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="returnval" type="xsd:unsignedLong"/>
+            <xsd:element name="returnval" type="xsd:long"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -4239,7 +4365,7 @@
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="value" type="xsd:string"/>
-            <xsd:element name="timestamp" type="xsd:unsignedLong"/>
+            <xsd:element name="timestamp" type="xsd:long"/>
             <xsd:element name="flags" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
@@ -4272,7 +4398,7 @@
       <xsd:element name="IMachine_getGuestPropertyTimestampResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="returnval" type="xsd:unsignedLong"/>
+            <xsd:element name="returnval" type="xsd:long"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -4321,7 +4447,7 @@
           <xsd:sequence>
             <xsd:element name="name" minOccurs="0" maxOccurs="unbounded" type="xsd:string"/>
             <xsd:element name="value" minOccurs="0" maxOccurs="unbounded" type="xsd:string"/>
-            <xsd:element name="timestamp" minOccurs="0" maxOccurs="unbounded" type="xsd:unsignedLong"/>
+            <xsd:element name="timestamp" minOccurs="0" maxOccurs="unbounded" type="xsd:long"/>
             <xsd:element name="flags" minOccurs="0" maxOccurs="unbounded" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
@@ -4465,8 +4591,8 @@
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
             <xsd:element name="idx" type="xsd:unsignedInt"/>
-            <xsd:element name="offset" type="xsd:unsignedLong"/>
-            <xsd:element name="size" type="xsd:unsignedLong"/>
+            <xsd:element name="offset" type="xsd:long"/>
+            <xsd:element name="size" type="xsd:long"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -5842,7 +5968,7 @@
       <xsd:element name="ISystemProperties_getMaxVDISizeResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="returnval" type="xsd:unsignedLong"/>
+            <xsd:element name="returnval" type="xsd:long"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -6016,7 +6142,7 @@
       <xsd:element name="ISystemProperties_getFreeDiskSpaceWarningResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="returnval" type="xsd:unsignedLong"/>
+            <xsd:element name="returnval" type="xsd:long"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -6024,7 +6150,7 @@
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="freeDiskSpaceWarning" type="xsd:unsignedLong"/>
+            <xsd:element name="freeDiskSpaceWarning" type="xsd:long"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -6072,7 +6198,7 @@
       <xsd:element name="ISystemProperties_getFreeDiskSpaceErrorResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="returnval" type="xsd:unsignedLong"/>
+            <xsd:element name="returnval" type="xsd:long"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -6080,7 +6206,7 @@
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="freeDiskSpaceError" type="xsd:unsignedLong"/>
+            <xsd:element name="freeDiskSpaceError" type="xsd:long"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -6400,34 +6526,6 @@
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
-      <!-- read/write attribute IGuest::pageFusionEnabled-->
-      <xsd:element name="IGuest_getPageFusionEnabled">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="IGuest_getPageFusionEnabledResponse">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="returnval" type="xsd:boolean"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="IGuest_setPageFusionEnabled">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="pageFusionEnabled" type="xsd:boolean"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="IGuest_setPageFusionEnabledResponse">
-        <xsd:complexType>
-          <xsd:sequence/>
-        </xsd:complexType>
-      </xsd:element>
       <!-- read/write attribute IGuest::statisticsUpdateInterval-->
       <xsd:element name="IGuest_getStatisticsUpdateInterval">
         <xsd:complexType>
@@ -6531,7 +6629,7 @@
             <xsd:element name="pid" type="xsd:unsignedInt"/>
             <xsd:element name="flags" type="xsd:unsignedInt"/>
             <xsd:element name="timeoutMS" type="xsd:unsignedInt"/>
-            <xsd:element name="size" type="xsd:unsignedLong"/>
+            <xsd:element name="size" type="xsd:long"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -6765,6 +6863,21 @@
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="IProgress_getOperationPercentResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:unsignedInt"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IProgress::operationWeight-->
+      <xsd:element name="IProgress_getOperationWeight">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IProgress_getOperationWeightResponse">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="returnval" type="xsd:unsignedInt"/>
@@ -7175,7 +7288,7 @@
       <xsd:element name="IMedium_getSizeResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="returnval" type="xsd:unsignedLong"/>
+            <xsd:element name="returnval" type="xsd:long"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -7308,7 +7421,7 @@
       <xsd:element name="IMedium_getLogicalSizeResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="returnval" type="xsd:unsignedLong"/>
+            <xsd:element name="returnval" type="xsd:long"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -7559,7 +7672,7 @@
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="logicalSize" type="xsd:unsignedLong"/>
+            <xsd:element name="logicalSize" type="xsd:long"/>
             <xsd:element name="variant" type="vbox:MediumVariant"/>
           </xsd:sequence>
         </xsd:complexType>
@@ -7657,7 +7770,7 @@
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="logicalSize" type="xsd:unsignedLong"/>
+            <xsd:element name="logicalSize" type="xsd:long"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -10937,6 +11050,35 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
+      <!--Interface IReusableEvent-->
+      <!-- readonly attribute IReusableEvent::generation-->
+      <xsd:element name="IReusableEvent_getGeneration">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IReusableEvent_getGenerationResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:unsignedInt"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IReusableEvent::reuse-->
+      <xsd:element name="IReusableEvent_reuse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IReusableEvent_reuseResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
+        </xsd:complexType>
+      </xsd:element>
       <!--Interface IMachineEvent-->
       <!-- readonly attribute IMachineEvent::machineId-->
       <xsd:element name="IMachineEvent_getMachineId">
@@ -11732,7 +11874,7 @@
       <xsd:element name="IShowWindowEvent_getWinIdResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="returnval" type="xsd:unsignedLong"/>
+            <xsd:element name="returnval" type="xsd:long"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -11740,7 +11882,7 @@
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="winId" type="xsd:unsignedLong"/>
+            <xsd:element name="winId" type="xsd:long"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -12977,6 +13119,58 @@
   </message>
   <message name="IMachine_setTeleporterPasswordResultMsg">
     <part name="parameters" element="vbox:IMachine_setTeleporterPasswordResponse"/>
+  </message>
+  <!-- read/write attribute IMachine::faultToleranceState-->
+  <message name="IMachine_getFaultToleranceStateRequestMsg">
+    <part name="parameters" element="vbox:IMachine_getFaultToleranceState"/>
+  </message>
+  <message name="IMachine_getFaultToleranceStateResultMsg">
+    <part name="parameters" element="vbox:IMachine_getFaultToleranceStateResponse"/>
+  </message>
+  <message name="IMachine_setFaultToleranceStateRequestMsg">
+    <part name="parameters" element="vbox:IMachine_setFaultToleranceState"/>
+  </message>
+  <message name="IMachine_setFaultToleranceStateResultMsg">
+    <part name="parameters" element="vbox:IMachine_setFaultToleranceStateResponse"/>
+  </message>
+  <!-- read/write attribute IMachine::faultTolerancePort-->
+  <message name="IMachine_getFaultTolerancePortRequestMsg">
+    <part name="parameters" element="vbox:IMachine_getFaultTolerancePort"/>
+  </message>
+  <message name="IMachine_getFaultTolerancePortResultMsg">
+    <part name="parameters" element="vbox:IMachine_getFaultTolerancePortResponse"/>
+  </message>
+  <message name="IMachine_setFaultTolerancePortRequestMsg">
+    <part name="parameters" element="vbox:IMachine_setFaultTolerancePort"/>
+  </message>
+  <message name="IMachine_setFaultTolerancePortResultMsg">
+    <part name="parameters" element="vbox:IMachine_setFaultTolerancePortResponse"/>
+  </message>
+  <!-- read/write attribute IMachine::faultToleranceAddress-->
+  <message name="IMachine_getFaultToleranceAddressRequestMsg">
+    <part name="parameters" element="vbox:IMachine_getFaultToleranceAddress"/>
+  </message>
+  <message name="IMachine_getFaultToleranceAddressResultMsg">
+    <part name="parameters" element="vbox:IMachine_getFaultToleranceAddressResponse"/>
+  </message>
+  <message name="IMachine_setFaultToleranceAddressRequestMsg">
+    <part name="parameters" element="vbox:IMachine_setFaultToleranceAddress"/>
+  </message>
+  <message name="IMachine_setFaultToleranceAddressResultMsg">
+    <part name="parameters" element="vbox:IMachine_setFaultToleranceAddressResponse"/>
+  </message>
+  <!-- read/write attribute IMachine::faultToleranceSyncInterval-->
+  <message name="IMachine_getFaultToleranceSyncIntervalRequestMsg">
+    <part name="parameters" element="vbox:IMachine_getFaultToleranceSyncInterval"/>
+  </message>
+  <message name="IMachine_getFaultToleranceSyncIntervalResultMsg">
+    <part name="parameters" element="vbox:IMachine_getFaultToleranceSyncIntervalResponse"/>
+  </message>
+  <message name="IMachine_setFaultToleranceSyncIntervalRequestMsg">
+    <part name="parameters" element="vbox:IMachine_setFaultToleranceSyncInterval"/>
+  </message>
+  <message name="IMachine_setFaultToleranceSyncIntervalResultMsg">
+    <part name="parameters" element="vbox:IMachine_setFaultToleranceSyncIntervalResponse"/>
   </message>
   <!-- read/write attribute IMachine::RTCUseUTC-->
   <message name="IMachine_getRTCUseUTCRequestMsg">
@@ -14330,19 +14524,6 @@
   <message name="IGuest_setMemoryBalloonSizeResultMsg">
     <part name="parameters" element="vbox:IGuest_setMemoryBalloonSizeResponse"/>
   </message>
-  <!-- read/write attribute IGuest::pageFusionEnabled-->
-  <message name="IGuest_getPageFusionEnabledRequestMsg">
-    <part name="parameters" element="vbox:IGuest_getPageFusionEnabled"/>
-  </message>
-  <message name="IGuest_getPageFusionEnabledResultMsg">
-    <part name="parameters" element="vbox:IGuest_getPageFusionEnabledResponse"/>
-  </message>
-  <message name="IGuest_setPageFusionEnabledRequestMsg">
-    <part name="parameters" element="vbox:IGuest_setPageFusionEnabled"/>
-  </message>
-  <message name="IGuest_setPageFusionEnabledResultMsg">
-    <part name="parameters" element="vbox:IGuest_setPageFusionEnabledResponse"/>
-  </message>
   <!-- read/write attribute IGuest::statisticsUpdateInterval-->
   <message name="IGuest_getStatisticsUpdateIntervalRequestMsg">
     <part name="parameters" element="vbox:IGuest_getStatisticsUpdateInterval"/>
@@ -14493,6 +14674,13 @@
   </message>
   <message name="IProgress_getOperationPercentResultMsg">
     <part name="parameters" element="vbox:IProgress_getOperationPercentResponse"/>
+  </message>
+  <!-- readonly attribute IProgress::operationWeight-->
+  <message name="IProgress_getOperationWeightRequestMsg">
+    <part name="parameters" element="vbox:IProgress_getOperationWeight"/>
+  </message>
+  <message name="IProgress_getOperationWeightResultMsg">
+    <part name="parameters" element="vbox:IProgress_getOperationWeightResponse"/>
   </message>
   <!-- read/write attribute IProgress::timeout-->
   <message name="IProgress_getTimeoutRequestMsg">
@@ -16571,6 +16759,25 @@
   </message>
   <!--
         *************************************
+        messages for interface IReusableEvent
+        *************************************
+      -->
+  <!-- readonly attribute IReusableEvent::generation-->
+  <message name="IReusableEvent_getGenerationRequestMsg">
+    <part name="parameters" element="vbox:IReusableEvent_getGeneration"/>
+  </message>
+  <message name="IReusableEvent_getGenerationResultMsg">
+    <part name="parameters" element="vbox:IReusableEvent_getGenerationResponse"/>
+  </message>
+  <!-- method IReusableEvent::reuse-->
+  <message name="IReusableEvent_reuseRequestMsg">
+    <part name="parameters" element="vbox:IReusableEvent_reuse"/>
+  </message>
+  <message name="IReusableEvent_reuseResultMsg">
+    <part name="parameters" element="vbox:IReusableEvent_reuseResponse"/>
+  </message>
+  <!--
+        *************************************
         messages for interface IMachineEvent
         *************************************
       -->
@@ -18174,6 +18381,54 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
+    <operation name="IMachine_getFaultToleranceState">
+      <input message="vbox:IMachine_getFaultToleranceStateRequestMsg"/>
+      <output message="vbox:IMachine_getFaultToleranceStateResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IMachine_setFaultToleranceState">
+      <input message="vbox:IMachine_setFaultToleranceStateRequestMsg"/>
+      <output message="vbox:IMachine_setFaultToleranceStateResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IMachine_getFaultTolerancePort">
+      <input message="vbox:IMachine_getFaultTolerancePortRequestMsg"/>
+      <output message="vbox:IMachine_getFaultTolerancePortResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IMachine_setFaultTolerancePort">
+      <input message="vbox:IMachine_setFaultTolerancePortRequestMsg"/>
+      <output message="vbox:IMachine_setFaultTolerancePortResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IMachine_getFaultToleranceAddress">
+      <input message="vbox:IMachine_getFaultToleranceAddressRequestMsg"/>
+      <output message="vbox:IMachine_getFaultToleranceAddressResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IMachine_setFaultToleranceAddress">
+      <input message="vbox:IMachine_setFaultToleranceAddressRequestMsg"/>
+      <output message="vbox:IMachine_setFaultToleranceAddressResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IMachine_getFaultToleranceSyncInterval">
+      <input message="vbox:IMachine_getFaultToleranceSyncIntervalRequestMsg"/>
+      <output message="vbox:IMachine_getFaultToleranceSyncIntervalResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IMachine_setFaultToleranceSyncInterval">
+      <input message="vbox:IMachine_setFaultToleranceSyncIntervalRequestMsg"/>
+      <output message="vbox:IMachine_setFaultToleranceSyncIntervalResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
     <operation name="IMachine_getRTCUseUTC">
       <input message="vbox:IMachine_getRTCUseUTCRequestMsg"/>
       <output message="vbox:IMachine_getRTCUseUTCResultMsg"/>
@@ -19350,18 +19605,6 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IGuest_getPageFusionEnabled">
-      <input message="vbox:IGuest_getPageFusionEnabledRequestMsg"/>
-      <output message="vbox:IGuest_getPageFusionEnabledResultMsg"/>
-      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
-      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
-    </operation>
-    <operation name="IGuest_setPageFusionEnabled">
-      <input message="vbox:IGuest_setPageFusionEnabledRequestMsg"/>
-      <output message="vbox:IGuest_setPageFusionEnabledResultMsg"/>
-      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
-      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
-    </operation>
     <operation name="IGuest_getStatisticsUpdateInterval">
       <input message="vbox:IGuest_getStatisticsUpdateIntervalRequestMsg"/>
       <output message="vbox:IGuest_getStatisticsUpdateIntervalResultMsg"/>
@@ -19490,6 +19733,12 @@
     <operation name="IProgress_getOperationPercent">
       <input message="vbox:IProgress_getOperationPercentRequestMsg"/>
       <output message="vbox:IProgress_getOperationPercentResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IProgress_getOperationWeight">
+      <input message="vbox:IProgress_getOperationWeightRequestMsg"/>
+      <output message="vbox:IProgress_getOperationWeightResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -21347,6 +21596,23 @@
     <operation name="IEvent_waitProcessed">
       <input message="vbox:IEvent_waitProcessedRequestMsg"/>
       <output message="vbox:IEvent_waitProcessedResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IReusableEvent
+          *************************************
+        -->
+    <operation name="IReusableEvent_getGeneration">
+      <input message="vbox:IReusableEvent_getGenerationRequestMsg"/>
+      <output message="vbox:IReusableEvent_getGenerationResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IReusableEvent_reuse">
+      <input message="vbox:IReusableEvent_reuseRequestMsg"/>
+      <output message="vbox:IReusableEvent_reuseResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -24427,6 +24693,126 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
+    <operation name="IMachine_getFaultToleranceState">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IMachine_setFaultToleranceState">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IMachine_getFaultTolerancePort">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IMachine_setFaultTolerancePort">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IMachine_getFaultToleranceAddress">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IMachine_setFaultToleranceAddress">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IMachine_getFaultToleranceSyncInterval">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IMachine_setFaultToleranceSyncInterval">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
     <operation name="IMachine_getRTCUseUTC">
       <soap:operation soapAction="" style="document"/>
       <input>
@@ -27313,36 +27699,6 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IGuest_getPageFusionEnabled">
-      <soap:operation soapAction="" style="document"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="InvalidObjectFault">
-        <soap:fault name="InvalidObjectFault" use="literal"/>
-      </fault>
-      <fault name="RuntimeFault">
-        <soap:fault name="RuntimeFault" use="literal"/>
-      </fault>
-    </operation>
-    <operation name="IGuest_setPageFusionEnabled">
-      <soap:operation soapAction="" style="document"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="InvalidObjectFault">
-        <soap:fault name="InvalidObjectFault" use="literal"/>
-      </fault>
-      <fault name="RuntimeFault">
-        <soap:fault name="RuntimeFault" use="literal"/>
-      </fault>
-    </operation>
     <operation name="IGuest_getStatisticsUpdateInterval">
       <soap:operation soapAction="" style="document"/>
       <input>
@@ -27649,6 +28005,21 @@
       </fault>
     </operation>
     <operation name="IProgress_getOperationPercent">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IProgress_getOperationWeight">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -32044,6 +32415,41 @@
       </fault>
     </operation>
     <operation name="IEvent_waitProcessed">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IReusableEvent
+          *************************************
+        -->
+    <operation name="IReusableEvent_getGeneration">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IReusableEvent_reuse">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>

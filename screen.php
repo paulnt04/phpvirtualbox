@@ -84,7 +84,7 @@ try {
 
 	//Get a list of registered machines
 	$machine = $vbox->__getMachineRef($_REQUEST['vm']);
-	switch($machine->state) {
+	switch($machine->state->__toString()) {
 		case 'Running':
 		case 'Saved':
 		case 'Restoring':
@@ -96,11 +96,11 @@ try {
 
 	$_REQUEST['vm'] = $machine->id;
 
-	$vbox->session = $vbox->websessionManager->getSessionObject($vbox->vbox);
-	$machine->lockMachine($vbox->session,'Shared');
+	$vbox->session = $vbox->websessionManager->getSessionObject($vbox->vbox->handle);
+	$machine->lockMachine($vbox->session->handle,'Shared');
 
 	// Take active screenshot if machine is running
-	if($machine->state == 'Running') {
+	if($machine->state->__toString() == 'Running') {
 
 		$res = $vbox->session->console->display->getScreenResolution(0);
 
@@ -166,7 +166,7 @@ try {
 	$string = $ex->getMessage();
 
 	// Ensure we close the VM Session if we hit a error, ensure we don't have a aborted VM
-	if($vbox->session) $vbox->session->unlockMachine();
+	if($vbox->session && $vbox->session->handle) $vbox->session->unlockMachine();
 
 	if($_REQUEST['debug']) {
 

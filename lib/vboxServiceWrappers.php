@@ -2537,6 +2537,86 @@ class IMachine extends VBox_ManagedObject {
        $this->connection->__soapCall('IMachine_setTeleporterPassword', array((array)$request));
    }
 
+   public function getFaultToleranceState() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IMachine_getFaultToleranceState', array((array)$request));
+       return new FaultToleranceState ($this->connection, $response->returnval);
+   }
+
+   public function setFaultToleranceState($value) {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       if (is_int($value) || is_string($value) || is_bool($value)) {
+            $request->faultToleranceState = $value;
+       }
+       else
+       {
+            $request->faultToleranceState = $value->handle;
+       }
+       $this->connection->__soapCall('IMachine_setFaultToleranceState', array((array)$request));
+   }
+
+   public function getFaultTolerancePort() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IMachine_getFaultTolerancePort', array((array)$request));
+       return (float)$response->returnval;
+   }
+
+   public function setFaultTolerancePort($value) {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       if (is_int($value) || is_string($value) || is_bool($value)) {
+            $request->faultTolerancePort = $value;
+       }
+       else
+       {
+            $request->faultTolerancePort = $value->handle;
+       }
+       $this->connection->__soapCall('IMachine_setFaultTolerancePort', array((array)$request));
+   }
+
+   public function getFaultToleranceAddress() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IMachine_getFaultToleranceAddress', array((array)$request));
+       return (string)$response->returnval;
+   }
+
+   public function setFaultToleranceAddress($value) {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       if (is_int($value) || is_string($value) || is_bool($value)) {
+            $request->faultToleranceAddress = $value;
+       }
+       else
+       {
+            $request->faultToleranceAddress = $value->handle;
+       }
+       $this->connection->__soapCall('IMachine_setFaultToleranceAddress', array((array)$request));
+   }
+
+   public function getFaultToleranceSyncInterval() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IMachine_getFaultToleranceSyncInterval', array((array)$request));
+       return (float)$response->returnval;
+   }
+
+   public function setFaultToleranceSyncInterval($value) {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       if (is_int($value) || is_string($value) || is_bool($value)) {
+            $request->faultToleranceSyncInterval = $value;
+       }
+       else
+       {
+            $request->faultToleranceSyncInterval = $value->handle;
+       }
+       $this->connection->__soapCall('IMachine_setFaultToleranceSyncInterval', array((array)$request));
+   }
+
    public function getRTCUseUTC() {
        $request = new stdClass();
        $request->_this = $this->handle;
@@ -3884,26 +3964,6 @@ class IGuest extends VBox_ManagedObject {
        $this->connection->__soapCall('IGuest_setMemoryBalloonSize', array((array)$request));
    }
 
-   public function getPageFusionEnabled() {
-       $request = new stdClass();
-       $request->_this = $this->handle;
-       $response = $this->connection->__soapCall('IGuest_getPageFusionEnabled', array((array)$request));
-       return (bool)$response->returnval;
-   }
-
-   public function setPageFusionEnabled($value) {
-       $request = new stdClass();
-       $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
-            $request->pageFusionEnabled = $value;
-       }
-       else
-       {
-            $request->pageFusionEnabled = $value->handle;
-       }
-       $this->connection->__soapCall('IGuest_setPageFusionEnabled', array((array)$request));
-   }
-
    public function getStatisticsUpdateInterval() {
        $request = new stdClass();
        $request->_this = $this->handle;
@@ -4088,6 +4148,13 @@ class IProgress extends VBox_ManagedObject {
        $request = new stdClass();
        $request->_this = $this->handle;
        $response = $this->connection->__soapCall('IProgress_getOperationPercent', array((array)$request));
+       return (float)$response->returnval;
+   }
+
+   public function getOperationWeight() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IProgress_getOperationWeight', array((array)$request));
        return (float)$response->returnval;
    }
 
@@ -7077,6 +7144,36 @@ class IEventCollection extends VBox_ManagedObjectCollection {
 /**
 * Generated VBoxWebService Interface Wrapper
 */
+class IReusableEvent extends IEvent {
+
+   public function reuse() { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $response = $this->connection->__soapCall('IReusableEvent_reuse', array((array)$request));
+       
+       return ;
+  }
+
+   public function getGeneration() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IReusableEvent_getGeneration', array((array)$request));
+       return (float)$response->returnval;
+   }
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class IReusableEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "IReusableEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
 class IMachineEvent extends IEvent {
 
    public function getMachineId() {
@@ -8370,8 +8467,8 @@ class AccessModeCollection extends VBox_EnumCollection {
 * Generated VBoxWebService ENUM
 */
 class MachineState extends VBox_Enum {
-   public $NameMap = array(0 => 'Null', 1 => 'PoweredOff', 2 => 'Saved', 3 => 'Teleported', 4 => 'Aborted', 5 => 'Running', 6 => 'Paused', 7 => 'Stuck', 8 => 'Teleporting', 9 => 'LiveSnapshotting', 10 => 'Starting', 11 => 'Stopping', 12 => 'Saving', 13 => 'Restoring', 14 => 'TeleportingPausedVM', 15 => 'TeleportingIn', 16 => 'DeletingSnapshotOnline', 17 => 'DeletingSnapshotPaused', 18 => 'RestoringSnapshot', 19 => 'DeletingSnapshot', 20 => 'SettingUp', );
-   public $ValueMap = array('Null' => 0, 'PoweredOff' => 1, 'Saved' => 2, 'Teleported' => 3, 'Aborted' => 4, 'Running' => 5, 'Paused' => 6, 'Stuck' => 7, 'Teleporting' => 8, 'LiveSnapshotting' => 9, 'Starting' => 10, 'Stopping' => 11, 'Saving' => 12, 'Restoring' => 13, 'TeleportingPausedVM' => 14, 'TeleportingIn' => 15, 'DeletingSnapshotOnline' => 16, 'DeletingSnapshotPaused' => 17, 'RestoringSnapshot' => 18, 'DeletingSnapshot' => 19, 'SettingUp' => 20, );
+   public $NameMap = array(0 => 'Null', 1 => 'PoweredOff', 2 => 'Saved', 3 => 'Teleported', 4 => 'Aborted', 5 => 'Running', 6 => 'Paused', 7 => 'Stuck', 8 => 'Teleporting', 9 => 'LiveSnapshotting', 10 => 'Starting', 11 => 'Stopping', 12 => 'Saving', 13 => 'Restoring', 14 => 'TeleportingPausedVM', 15 => 'TeleportingIn', 16 => 'FaultTolerantSyncing', 17 => 'DeletingSnapshotOnline', 18 => 'DeletingSnapshotPaused', 19 => 'RestoringSnapshot', 20 => 'DeletingSnapshot', 21 => 'SettingUp', );
+   public $ValueMap = array('Null' => 0, 'PoweredOff' => 1, 'Saved' => 2, 'Teleported' => 3, 'Aborted' => 4, 'Running' => 5, 'Paused' => 6, 'Stuck' => 7, 'Teleporting' => 8, 'LiveSnapshotting' => 9, 'Starting' => 10, 'Stopping' => 11, 'Saving' => 12, 'Restoring' => 13, 'TeleportingPausedVM' => 14, 'TeleportingIn' => 15, 'FaultTolerantSyncing' => 16, 'DeletingSnapshotOnline' => 17, 'DeletingSnapshotPaused' => 18, 'RestoringSnapshot' => 19, 'DeletingSnapshot' => 20, 'SettingUp' => 21, );
 }
 
 /**
@@ -8424,6 +8521,21 @@ class HWVirtExPropertyType extends VBox_Enum {
 */
 class HWVirtExPropertyTypeCollection extends VBox_EnumCollection {
    protected $_interfaceName = "HWVirtExPropertyType";
+}
+
+/**
+* Generated VBoxWebService ENUM
+*/
+class FaultToleranceState extends VBox_Enum {
+   public $NameMap = array(1 => 'Inactive', 2 => 'Source', 3 => 'Target');
+   public $ValueMap = array('Inactive' => 1, 'Source' => 2, 'Target' => 3);
+}
+
+/**
+* Generated VBoxWebService Enum Collection
+*/
+class FaultToleranceStateCollection extends VBox_EnumCollection {
+   protected $_interfaceName = "FaultToleranceState";
 }
 
 /**

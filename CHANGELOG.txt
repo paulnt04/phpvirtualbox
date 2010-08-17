@@ -11,7 +11,10 @@ Fixed bug that would not allow console connections if accessing
 phpVirtualBox through a URL where a port is specified. E.g.
 http://myhost:8080/phpVirtualBox
 
-Added json_encode() for PHP compiled with --disable-json
+Added json_encode() for PHP compiled with --disable-json and
+PHP versions < 5.2.0.
+
+Fixed compatibility issues with PHP 5.1.x.
 
 "rdpHost" setting changed to "consoleHost"
 
@@ -25,6 +28,8 @@ Fixed case sensitivity for $browserRestrictFiles setting.
 Fixed bug when using OSE where the Shared Folders section would
 not be selected when "Shared Folders" is clicked on from the
 Details tab / section.
+
+Exporting a VM defaults to '.ova' file.
 
 -------------------------------------
 		0.5 - 2010-08-10

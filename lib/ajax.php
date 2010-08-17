@@ -48,7 +48,8 @@ switch($vboxRequest['fn']) {
 
 		$settings = new phpVBoxConfig();
 		$response['data'] = get_object_vars($settings);
-		$response['data']['host'] = parse_url($response['data']['location'],PHP_URL_HOST);
+		$response['data']['host'] = parse_url($response['data']['location']);
+		$response['data']['host'] = $response['data']['host']['host'];
 		unset($response['data']['username']);
 		unset($response['data']['password']);
 

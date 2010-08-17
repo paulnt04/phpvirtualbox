@@ -51,7 +51,8 @@ $vboxRequest = clean_request();
 
 
 // Force localbrowser if we're on the same host or sunos is detected
-$vbhost = parse_url($settings->location,PHP_URL_HOST);
+$vbhost = parse_url($settings->location);
+$vbhost = $vbhost['host'];
 $localbrowser = ($vbhost == 'localhost' || $vbhost == '127.0.0.1' || $settings->browserLocal || stripos($vbox->vbox->host->operatingSystem,'sunos') !== false);
 
 if($localbrowser) {
