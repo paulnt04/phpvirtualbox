@@ -198,11 +198,11 @@ div.vboxWizard h3 { border-bottom: 1px solid #aaa; }
 
 /* Main Tabs */
 #tabMainContent  {padding-left: 6px; padding-right: 8px;} /* less left to account for resize bar */
-#vboxTabsList { text-align: right; white-space: nowrap; }
+#vboxTabsList { float: right; text-align: right; white-space: nowrap;}
 #vboxPaneTabContent { width: 100%; }
 #vboxPaneTabContent div.vboxTabLoading { text-align: center; vertical-align: middle; height: 100%; background: #fff; }
 #vboxPaneTabContent div.vboxTabLoading img { text-align: center; margin: 20px; position: relative; top: 30%; }
-#tablistMain { margin-right: 20px; display: inline;  }
+#tablistMain { margin-right: 20px; margin-top: 22px; }
 #tablistMain li img { margin-right: 4px; }
 #tablistMain li a, #tablistMain li a:visited { color: #000; }
 #tablistMain li.vboxDisabled a, #tablistMain li.vboxDisabled a:visited { color: #aaa; cursor: default; }
@@ -247,11 +247,12 @@ div.vboxWizard h3 { border-bottom: 1px solid #aaa; }
 #vboxVMList { width: 300px; overflow: scroll; } /* Initial Width */
 #vboxVMList table, #vboxVMList div { width: 100%; }
 #vboxPaneVMList td.vboxVMTitle { width: 100% }
-table.vboxVMListVM { margin-top: 10px; vertical-align: top; }
+table.vboxVMListVM { margin-bottom: 5px; vertical-align: top; }
 table.vboxVMListVM td { padding: 2px; white-space: nowrap; }
 table.vboxVMListVM td.vboxVMSessionOpen { font-style: italic; }
 
 /* Toolbar above vm list */
+#vboxPaneToolbar { float: left; }
 #vboxPaneToolbar table td { margin-right: 6px; }
 #vboxPaneToolbar table td.buttonEnabled { cursor: pointer; }
 #vboxPaneToolbar table td.buttonDisabled { cursor: default; }
@@ -270,7 +271,11 @@ table.vboxDetailsTableError { background: #eee; margin-top: 8px; }
 table.vboxDetailsTableError tr { vertical-align: top; }
 /* Details table boxes */
 table.vboxDetailsTableBox { background: #fff; margin-bottom: 10px; width: 100%; border-collapse: collapse; border-spacing: 0px;
--moz-border-radius-topleft: 4px/*{cornerRadius}*/; -webkit-border-top-left-radius: 4px/*{cornerRadius}*/; border-top-left-radius: 4px/*{cornerRadius}*/; -moz-border-radius-topright: 4px/*{cornerRadius}*/; -webkit-border-top-right-radius: 4px/*{cornerRadius}*/; border-top-right-radius: 4px/*{cornerRadius}*/;}
+	-moz-border-radius-topleft: 4px/*{cornerRadius}*/; -webkit-border-top-left-radius: 4px/*{cornerRadius}*/; border-top-left-radius: 4px/*{cornerRadius}*/; -moz-border-radius-topright: 4px/*{cornerRadius}*/; -webkit-border-top-right-radius: 4px/*{cornerRadius}*/; border-top-right-radius: 4px/*{cornerRadius}*/;
+}
+/* Safari / Chrome "fix" */
+table.vboxDetailsTableBox img::selection { color: transparent; }
+
 table.vboxDetailsTableBox tr.vboxDetailsHead {
 	-moz-border-radius-topleft: 4px/*{cornerRadius}*/; -webkit-border-top-left-radius: 4px/*{cornerRadius}*/; border-top-left-radius: 4px/*{cornerRadius}*/; -moz-border-radius-topright: 4px/*{cornerRadius}*/; -webkit-border-top-right-radius: 4px/*{cornerRadius}*/; border-top-right-radius: 4px/*{cornerRadius}*/;
 }
@@ -304,9 +309,9 @@ table.vboxDetailsTableBox tr.vboxDetailsHead img { padding-right: 4px; }
 table.vboxDetailsTable td.vboxDetailDescriptionCell { padding-left: 20px; }
 
 /* menus */
-#vboxDetailsShowMenu li { padding: 2px; margin-right: 4px; }
+#vboxDetailsShowMenu li { padding: 2px; padding-right: 4px; }
 #vboxDetailsPreviewMenu li { cursor: pointer; }
-#vboxDetailsPreviewMenu li { padding: 2px; margin-right: 4px; vertical-align: middle; }
+#vboxDetailsPreviewMenu li { padding: 2px; padding-right: 4px; vertical-align: middle; }
 #vboxDetailsPreviewMenu li input { display: inline; padding: 0px; margin: 0px; margin-right: 4px; }
 
 /* preview box */

@@ -201,7 +201,7 @@ function vboxVMList(anchorid) {
 		// VM OS type icon
 		var td = document.createElement('td');
 		td.setAttribute('rowspan','2');
-		td.innerHTML = "<img src='images/vbox/" + vmGuestOSTypeIcon(vmn.OSTypeId) + "' />";
+		td.innerHTML = "<img src='images/vbox/" + vboxGuestOSTypeIcon(vmn.OSTypeId) + "' />";
 		
 		tr.appendChild(td);
 		
@@ -250,7 +250,7 @@ function vboxVMList(anchorid) {
 		
 		var td = document.createElement('td');
 		if(vmn.id != 'host' && vmn.sessionState != 'Unlocked') td.setAttribute('class','vboxVMSessionOpen');
-		td.innerHTML = "<img src='images/vbox/" + machineStateIcon(vmn.state) +"' /> " + trans(vmn.state);
+		td.innerHTML = "<img src='images/vbox/" + vboxMachineStateIcon(vmn.state) +"' /> " + trans(vmn.state);
 
 		// Add VirtualBox version if hosting
 		if(vmn.id == 'host')

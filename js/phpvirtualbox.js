@@ -92,7 +92,9 @@ function vboxWizard(name, title, img) {
 			buttons[trans('Next')+' >'] = self.displayNext;
 			buttons[trans('Cancel')] = self.close;
 			
+			setLangContext('vbox'+self.name);
 			vboxInitDisplay(self.name+'Content');
+			unsetLangContext();
 			
 			$(d).dialog({'closeOnEscape':false,'width':self.width,'height':self.height,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':self.title});
 
@@ -249,6 +251,10 @@ function vboxToolbar(buttons) {
 		for(var i = 0; i < self.buttons.length; i++) {
 			self.buttons[i].toolbar = self;
 			$(tr).append(self.buttonElement(self.buttons[i]));
+			// If button can be enabled / disabled, disable by default
+			if(self.buttons[i].enabled) {
+				self.disableButton(self.buttons[i]);
+			}
 			if(self.buttons[i].separator) {
 				var td = document.createElement('td');
 				td.setAttribute('class','vboxToolbarSeparator');

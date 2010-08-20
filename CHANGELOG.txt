@@ -31,6 +31,8 @@ Details tab / section.
 
 Exporting a VM defaults to '.ova' file.
 
+Added language contexts.
+
 -------------------------------------
 		0.5 - 2010-08-10
 -------------------------------------

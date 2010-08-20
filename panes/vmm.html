@@ -160,7 +160,9 @@
 /*
  * Translate
  */
+setLangContext('vboxVMM');
 $("#vboxVMMTabs").find(".translate").html(function(i,h){return trans(h);}).removeClass('translate');
+unsetLangContext();
 
 /*
  * Setup Tabs
@@ -292,6 +294,7 @@ var vmmButtons = new Array(
 
 				var q = '<p>'+trans('VMM Remove Media Message1').replace('%s','<b>'+m.location+'</b>') + '</p><p>'+trans('VMM Remove Media Message2') + '</p><p>'+trans('VMM Remove Media Message3')+'</p>';
 
+				setLangContext('vboxVMM');
 				var buttons = {};
 				buttons[trans('Delete')] = function(){
 					vboxAjaxRequest('mediumRemove',{'id':m.id,'type':m.deviceType,'delete':1},function(ret){
@@ -314,11 +317,13 @@ var vmmButtons = new Array(
 					});
 					$(this).remove();
 				};
+				unsetLangContext();
 				
 			} else {
 				
 				var q = trans('Are you sure remove medium').replace('%s','<br /><b>'+m.location+'</b><br />') + '<br /><br />'+trans('Medium remove note');
 
+				setLangContext('vboxVMM');
 				var buttons = {};
 				buttons[trans('Remove')] = function(){
 					var b = this;
@@ -330,6 +335,7 @@ var vmmButtons = new Array(
 						l.run();
 					});
 				};
+				unsetLangContext();
 					
 			}
 			vboxConfirm(q,buttons);
@@ -363,6 +369,7 @@ var vmmButtons = new Array(
 			}
 			var m = $(elm).find('tr.vboxListItemSelected').first().data();
 			var q = trans('Are you sure release medium').replace('%s','<br /><b>'+m.location+'</b>');
+			setLangContext('vboxVMM');
 			var buttons = {};
 			buttons[trans('Release')] = function(){
 				var b = this;
@@ -382,6 +389,7 @@ var vmmButtons = new Array(
 				}
 				q += '<br /><br />' + trans('This will detach from').replace('%s','<b>'+machines.join('</b>'+trans('LIST_SEP')+'<b>') + '</b>');
 			};
+			unsetLangContext();
 			vboxConfirm(q,buttons);
 				
 		}
@@ -531,10 +539,12 @@ var menu = {
         
 	]
 };
+setLangContext('vboxVMM');
 var vmmMenu = new vboxMenuBar('vboxMMMenu');
 vmmMenu.addMenu(menu);
 vmmMenu.iconStringDisabled = '_disabled';
 vmmMenu.addMenuBar('vboxMMMenu');
+unsetLangContext();
 
 /* Display selected media info */
 function vboxVMMMediaInfo(e,m) {
@@ -674,11 +684,12 @@ function vboxVMMFillMediums(sel) {
 
 	var hideDiff = $('#vboxVirtualMediaManager').data('hideDiff');
 	var attached = $('#vboxVirtualMediaManager').data('attached');
-	
+
+	setLangContext('vboxVMM');
 	for(var i in mediums) {
 		vboxVMMAddMedium(mediums[i],0,hideDiff,attached);
 	}
-	
+	unsetLangContext();
 
 	// Select medium?
 	if(sel) {

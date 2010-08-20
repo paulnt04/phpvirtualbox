@@ -63,6 +63,7 @@ public static $trans = array(
 'Server List' => 'Server List',
 
 // Power button
+'Stop' => 'Stop',
 'Pause' => 'Pause',
 'Reset' => 'Reset',
 'Save State' => 'Save State',
@@ -82,6 +83,7 @@ public static $trans = array(
 'Preview' => 'Preview',
 'Update Disabled' => 'Update Disabled',
 'Every X seconds' => 'Every %s seconds', /* %s will be replaced with numeric values */
+'Open in new window' => 'Open in new window', /* View saved VM screenshot */
 
 /* Snapshots */
 'Snapshots' => 'Snapshots',

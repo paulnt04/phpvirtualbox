@@ -70,7 +70,7 @@ l.onLoad = function() {
 		$(li).data('vm',vms[i]);
 		$(li).addClass('vboxListItem');
 		$(li).click(function(){$(this).toggleClass('vboxListItemSelected');});
-		li.innerHTML = "<img style='width: 16px; height: 16px;' src='images/vbox/" + vmGuestOSTypeIcon(vms[i].OSTypeId) + "' /> " + vms[i].name;
+		li.innerHTML = "<img style='width: 16px; height: 16px;' src='images/vbox/" + vboxGuestOSTypeIcon(vms[i].OSTypeId) + "' /> " + vms[i].name;
 		$(vmlist).append(li);
 	}
 	vboxColorRows(vmlist);
@@ -166,6 +166,7 @@ $('#wizardExportApplianceStep2').bind('show',function(e,wiz){
 		$(tbl).append(trparent);
 		
 		// VM properties
+		setLangContext('vboxAppliance');
 		for(var p in vboxApplianceProps) {
 			
 			var tr = document.createElement('tr');
@@ -183,6 +184,7 @@ $('#wizardExportApplianceStep2').bind('show',function(e,wiz){
 			$(tr).append(td);
 			$(tbl).append(tr);
 		}
+		unsetLangContext();
 	}
 	vboxColorRows(tbl);
 

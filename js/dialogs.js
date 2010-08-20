@@ -186,6 +186,7 @@ function vboxShowLogsDialogInit(vm) {
 	l.addFile('panes/vmlogs.html',function(f){$('#vboxVMLogsDialog').append(f);});
 	l.onLoad = function(){
 		var buttons = {};
+		setLangContext('vboxVMLogs');
 		buttons[trans('Refresh')] = function() {
 			l = new vboxLoader();
 			l.add('VMLogFileNames',function(r){$('#vboxVMLogsDialog').data('logs',r);},{'vm':vm});
@@ -195,6 +196,7 @@ function vboxShowLogsDialogInit(vm) {
 			l.run();
 		};
 		buttons[trans('Close')] = function(){$(this).remove();};
+		unsetLangContext();
 		$('#vboxVMLogsDialog').dialog({'closeOnEscape':false,'width':800,'height':500,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':trans('Logs')});
 		vboxShowLogsInit(vm);
 	};
@@ -236,7 +238,9 @@ function vboxVMMDialogInit(callback,type,hideDiff,attached) {
 						sel = $('#vboxVMMFDList').find('tr.vboxListItemSelected').first();
 				}
 				if(!$(sel).html()) {
+					setLangContext('vboxVMM');
 					vboxAlert(trans('Please select a medium.'));
+					unsetLangContext();
 					return;
 				}
 				callback($(sel).data());
@@ -548,7 +552,9 @@ function vboxSettingsInit(title,panes,data,onsave,pane) {
 	loader.onLoad = function(){
 		
 		/* Init UI Items */
+		setLangContext('vboxSettings');
 		vboxInitDisplay('vboxSettingsDialog');
+		unsetLangContext();
 		
 		// Opera hidden select box bug
 		////////////////////////////////

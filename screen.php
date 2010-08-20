@@ -43,24 +43,8 @@
 // Clean request
 $_REQUEST = array_merge($_GET,$_POST);
 
-// Does PHP installation have GD?
-if(!function_exists('imagepng')) {
-	echo("PHP does not have the GD extension installed and/or enabled.");
-	exit;
-// Is VM Specified
-} else if(!$_REQUEST['vm']) {
-	echo("Please specify a *RUNNING* VM to take a screen shot of. E.g. http://webserver/phpvirtualbox/screen.php?vm=VMName");
-	exit;
-}
-
 require_once(dirname(__FILE__).'/config.php');
 require_once(dirname(__FILE__).'/lib/vboxconnector.php');
-
-//Set no caching
-header("Expires: Mon, 26 Jul 1997 05:00:00 GMT", true);
-header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT", true);
-header("Cache-Control: max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0", true);
-header("Pragma: no-cache", true);
 
 
 $settings = new phpVBoxConfig();
@@ -75,12 +59,16 @@ $vbox->connect();
 @ini_set('memory_limit', '512M');
 if($_REQUEST['width']) {
 	$force_width = $_REQUEST['width'];
-} else {
-	$force_width = ($settings->screenShotWidth ? $settings->screenShotWidth : 800);
 }
 
 
 try {
+
+	// Is VM Specified
+	if(!$_REQUEST['vm']) {
+		echo("Please specify a *RUNNING* VM to take a screen shot of. E.g. http://webserver/phpvirtualbox/screen.php?vm=VMName");
+		exit;
+	}
 
 	//Get a list of registered machines
 	$machine = $vbox->__getMachineRef($_REQUEST['vm']);
@@ -96,99 +84,62 @@ try {
 
 	$_REQUEST['vm'] = $machine->id;
 
-	$vbox->session = $vbox->websessionManager->getSessionObject($vbox->vbox->handle);
-	$machine->lockMachine($vbox->session->handle,'Shared');
 
 	// Take active screenshot if machine is running
 	if($machine->state->__toString() == 'Running') {
+
+		$vbox->session = $vbox->websessionManager->getSessionObject($vbox->vbox->handle);
+		$machine->lockMachine($vbox->session->handle,'Shared');
 
 		$res = $vbox->session->console->display->getScreenResolution(0);
 
 	    $screenWidth = array_shift($res);
 	    $screenHeight = array_shift($res);
 
-		$factor  = (float)$force_width / (float)$screenWidth;
+	    if($force_width) {
 
-		$screenWidth = $force_width;
-		if($factor > 0) {
-			$screenHeight = $factor * $screenHeight;
-		} else {
-			$screenHeight = ($screenWidth * 3.0/4.0);
-		}
+			$factor  = (float)$force_width / (float)$screenWidth;
 
-		$imageraw = $vbox->session->console->display->takeScreenShotToArray(0,$screenWidth, $screenHeight);
+			$screenWidth = $force_width;
+			if($factor > 0) {
+				$screenHeight = $factor * $screenHeight;
+			} else {
+				$screenHeight = ($screenWidth * 3.0/4.0);
+			}
+	    }
+
+		// array() for compatibility with readSavedScreenshotPNGToArray return value
+		$imageraw = array($vbox->session->console->display->takeScreenShotPNGToArray(0,$screenWidth, $screenHeight));
+
+		$vbox->session->unlockMachine();
 
 	} else {
 
-		$res = $machine->querySavedThumbnailSize(0);
-
-		$screenWidth = $res[1];
-	    $screenHeight = $res[0];
-
-    	$factor  = (float)$force_width / (float)$screenWidth;
-
-		$screenWidth = $force_width;
-		if($factor > 0) {
-			$screenHeight = $factor * $screenHeight;
-		} else {
-			$screenHeight = ($screenWidth * 3.0/4.0);
-		}
-
-		$imageraw = $machine->readSavedThumbnailToArray(false, $screenWidth, $screenHeight);
+		$imageraw = $machine->readSavedScreenshotPNGToArray(0);
 
 	}
-	$vbox->session->unlockMachine();
 	$vbox->session = null;
 
 
-    $image = imagecreatetruecolor($screenWidth, $screenHeight);
+	header("Content-type: image/png",true);
 
-
-    for ($height = 0; $height < $screenHeight; $height++) {
-
-		for ($width = 0; $width < $screenWidth; $width++) {
-
-			$start = ($height*$screenWidth + $width)*4;
-			$red = $imageraw[$start];
-			$green = $imageraw[$start+1];
-			$blue = $imageraw[$start+2];
-			$imageraw[$start] = $imageraw[$start+1] = $imageraw[$start+2] = $imageraw[$start+3] = null;
-
-			$colour = imagecolorallocate($image, $red, $green, $blue);
-
-            imagesetpixel($image, $width, $height, $colour);
-		}
+	foreach($imageraw as $i) {
+		if(is_array($i))
+			foreach($i as $b) echo(chr($b));
 	}
 
 
 } catch (Exception $ex) {
 
-	$string = $ex->getMessage();
-
 	// Ensure we close the VM Session if we hit a error, ensure we don't have a aborted VM
-	if($vbox->session && $vbox->session->handle) $vbox->session->unlockMachine();
-
-	if($_REQUEST['debug']) {
-
-		$font = 6;
-		$width = ImageFontWidth($font)* strlen($string);
-		$height = ImageFontHeight($font);
-		$image = ImageCreate($width,$height);
-
-		$x=imagesx($image)-$width ;
-		$y=imagesy($image)-$height;
-		$background_color = imagecolorallocate ($image, 255, 255, 255);
-		$text_color = imagecolorallocate ($image, 0, 0, 0);
-		imagestring($image, $font, $x, $y, $string, $text_color);
-
-	} else {
-		$image = ImageCreate(1,1);
-		$b = imagecolorallocate ($image, 0, 0, 0); // black bg
-		imagefill($image,0,0,$b);
+	if($vbox && $vbox->session && $vbox->session->handle) {
+		try {
+			$vbox->session->unlockMachine();
+		} catch (Exception $e) {}
 	}
 
+	if($_REQUEST['debug']) {
+		echo("<pre>");
+		print_r($ex);
+	}
 }
-
-
-header("Content-type: image/png",true);
-imagepng($image);

@@ -2597,6 +2597,26 @@ class IMachine extends VBox_ManagedObject {
        $this->connection->__soapCall('IMachine_setFaultToleranceAddress', array((array)$request));
    }
 
+   public function getFaultTolerancePassword() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IMachine_getFaultTolerancePassword', array((array)$request));
+       return (string)$response->returnval;
+   }
+
+   public function setFaultTolerancePassword($value) {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       if (is_int($value) || is_string($value) || is_bool($value)) {
+            $request->faultTolerancePassword = $value;
+       }
+       else
+       {
+            $request->faultTolerancePassword = $value->handle;
+       }
+       $this->connection->__soapCall('IMachine_setFaultTolerancePassword', array((array)$request));
+   }
+
    public function getFaultToleranceSyncInterval() {
        $request = new stdClass();
        $request->_this = $this->handle;
@@ -4916,6 +4936,19 @@ class IDisplay extends VBox_ManagedObject {
        $request->width = $arg_width;
        $request->height = $arg_height;
        $response = $this->connection->__soapCall('IDisplay_takeScreenShotToArray', array((array)$request));
+       
+       return (array)$response->returnval;
+  }
+
+   public function takeScreenShotPNGToArray($arg_screenId, $arg_width, $arg_height) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->screenId = $arg_screenId;
+       $request->width = $arg_width;
+       $request->height = $arg_height;
+       $response = $this->connection->__soapCall('IDisplay_takeScreenShotPNGToArray', array((array)$request));
        
        return (array)$response->returnval;
   }
@@ -8527,8 +8560,8 @@ class HWVirtExPropertyTypeCollection extends VBox_EnumCollection {
 * Generated VBoxWebService ENUM
 */
 class FaultToleranceState extends VBox_Enum {
-   public $NameMap = array(1 => 'Inactive', 2 => 'Source', 3 => 'Target');
-   public $ValueMap = array('Inactive' => 1, 'Source' => 2, 'Target' => 3);
+   public $NameMap = array(1 => 'Inactive', 2 => 'Master', 3 => 'Standby');
+   public $ValueMap = array('Inactive' => 1, 'Master' => 2, 'Standby' => 3);
 }
 
 /**

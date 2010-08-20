@@ -98,9 +98,11 @@ var vboxVMListStopMenu = {
 };
 
 /* Append Top Toolbar */
+setLangContext('vboxVMList');
 toolbarTop = new vboxToolbar(tButtons);
 toolbarTop.size = 32;
 toolbarTop.addButtons('vboxPaneToolbar');
+unsetLangContext();
 $('#vboxIndex').bind('vmselect',toolbarTop.update);
 
 
@@ -110,6 +112,7 @@ var ul = document.createElement('ul');
 ul.setAttribute('class','contextMenu');
 ul.setAttribute('style','display: none');
 ul.setAttribute('id','vboxStopMenu');
+setLangContext('vboxVMList');
 for(var i in vboxVMListStopMenu) {
 	
 	// add name
@@ -120,7 +123,7 @@ for(var i in vboxVMListStopMenu) {
 	ul.appendChild(li);
 	
 }
-
+unsetLangContext();
 
 /* Append 'Stop' button Menu */
 $('#vboxIndex').append(ul);

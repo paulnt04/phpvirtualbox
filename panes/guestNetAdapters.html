@@ -44,6 +44,8 @@ function vboxVMNetAdaptersInit(vm,index) {
 
 function vboxVMNetAdaptersDisplay(d) {
 	
+	setLangContext('vboxGuestNetAdapters');
+	
 	// Create hash / assoc array / mapping
 	var data = {};
 	for(var a = 0; a < d[0].length; a++) {
@@ -95,6 +97,8 @@ function vboxVMNetAdaptersDisplay(d) {
 
 	// Update it all
 	vboxInitDisplay('vboxGuestNetAdapters');
+
+	unsetLangContext();
 
 }
 

@@ -49,7 +49,7 @@ var $servers = array(
 //var $previewUpdateInterval = 30;
 
 // Preview box pixel width
-// var $previewWidth = 200;
+var $previewWidth = 220;
 
 /*
 Allow to prompt deletion harddisk files on removal from Virtual Media Manager.
@@ -84,8 +84,8 @@ var $browserRestrictFiles = '.iso,.vdi,.vmdk,.img,.bin,.vhd,.hdd,.ovf,.ova';
 #var $disableTabVMSnapshots = true; // Snapshots tab
 #var $disableTabVMConsole = true; // Console tab
 
-/* Custom screen resolutions for console tab */
-#var $consoleResolutions = '640x480,800x600,1024x768';
+/* Screen resolutions for console tab */
+var $consoleResolutions = '640x480,800x600,1024x768';
 
 /* Max number of network cards per VM. Do not set above VirtualBox's limit (typically 8) or below 1 */
 var $nicMax = 4;

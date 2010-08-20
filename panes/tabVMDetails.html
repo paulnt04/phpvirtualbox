@@ -24,14 +24,21 @@ $('#vboxTabVMDetails').parent().bind('vmloading',function(){
 	
 	$('#vboxVMDetails').css({'vertical-align':'middle'});
 	$('#vboxVMDetails').html("<div class='vboxTabLoading'><img src='images/spinner.gif'></div>");
+
+	// Hide any menus that may be showing on this pane
+	$('#vboxDetailsShowMenu').hide();
+	$('#vboxDetailsPreviewMenu').hide();
+
 });
 
 $('#vboxTabVMDetails').parent().bind('vmloaded',function(e,vm){
 
+	// Hide any menus that may be showing on this pane
+	$('#vboxDetailsShowMenu').hide();
+	$('#vboxDetailsPreviewMenu').hide();
+	
 	// vboxTabVMDetails
 	if(vm && vm.id) {
-
-		$('#vboxVMDetails').data('vmid', vm.id);
 		$('#vboxVMDetails').css({'vertical-align':'top'});
 		__vboxTabVMDetails(vm);
 		
@@ -152,7 +159,11 @@ function __vboxDetailRowIndented(name,value,html) {
 
 // Draw preview scren
 var __vboxDrawPreviewImg = null;
-function __vboxDrawPreview(vmid,fromSelf) {
+// Make sure previewWidth is set
+if(!$('#vboxIndex').data('vboxConfig')['previewWidth'])
+	$('#vboxIndex').data('vboxConfig')['previewWidth'] = 200;
+
+function __vboxDrawPreview(fromSelf) {
 
 	if(!fromSelf && $('#vboxVMDetails').data('vboxPreviewTimer')) {
 		window.clearTimeout($('#vboxVMDetails').data('vboxPreviewTimer'));
@@ -167,11 +178,12 @@ function __vboxDrawPreview(vmid,fromSelf) {
 		// Error or machine not running
 		if(this.height <= 1) {
 
-			var width = $('#vboxIndex').data('vboxConfig')['previewWidth'];
-			if(!width) width = 200;
-			var height = (width * 3.0/4.0);
-			src = 'images/vbox/monitor_glossy.png';
+			$('#vboxDetailsPreviewImg').attr('src','about:blank');
+			$('#vboxDetailsPreviewImg').css('display','none');
 			$('#vboxDetailsPreviewVMName').css('display','');
+			
+			var width = $('#vboxIndex').data('vboxConfig')['previewWidth'];
+			var height = (width * 3.0/4.0);
 			
 			// Clear timer if it is set
 			if($('#vboxVMDetails').data('vboxPreviewTimer')) {
@@ -179,26 +191,43 @@ function __vboxDrawPreview(vmid,fromSelf) {
 				$('#vboxVMDetails').data('vboxPreviewTimer', null);
 			}
 
+			$('#vboxDetailsPreviewWrap').css({'height':height+'px','width':width+'px'});
+			
 		} else {
-			$('#vboxDetailsPreviewWrap').css({'background-image':'none'});
-			var height = this.height;
-			var width = this.width;
-			src = this.src;
+
+
+			// Calculate height based on width
+			var width = $('#vboxIndex').data('vboxConfig')['previewWidth'];
+			var factor = width / this.width;
+			if(!factor) factor = 1;
+			var height = this.height * factor;
+			
 			$('#vboxDetailsPreviewVMName').css('display','none');
-			// Keep refreshing preview
+			$('#vboxDetailsPreviewImg').css({'display':'','height':height+'px','width':width+'px'});
+			$('#vboxDetailsPreviewImg').attr('src',this.src);
+
+			// Keep refreshing preview if VM is running
 			$('#vboxVMDetails').data('vboxPreviewTimer',window.setTimeout(function(){
-				__vboxDrawPreview(vmid,true);
+				__vboxDrawPreview(true);
 			},$('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] * 1000));
+
+			$('#vboxDetailsPreviewWrap').css({'height':height+'px','width':width+'px'});
 		}
-		$('#vboxDetailsPreviewWrap').css({'height':height+'px','width':width+'px','background-color':'#000','background-image':'url('+src+')'});
 	};
 
-	// Update disabled?
-	if($('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] == 0) {
+	// Update disabled? State not Running or Saved
+	if($('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] == 0 || ($('#vboxIndex').data('selectedVM').state != 'Running' && $('#vboxIndex').data('selectedVM').state != 'Saved')) {
 		__vboxDrawPreviewImg.height = 0;
 		__vboxDrawPreviewImg.onload();
 	} else {
-		__vboxDrawPreviewImg.src = 'screen.php?width='+(w ? w : '200')+'&vm='+vmid+'&rand='+Math.random();
+		// Running VMs get random numbers. Saved are based on last state change.
+		// Try to let the browser cache Saved screen shots
+		if($('#vboxIndex').data('selectedVM').state == 'Running') {
+			var randid = Math.random(); 
+		} else {
+			var randid = $('#vboxIndex').data('selectedVM').lastStateChange;
+		}
+		__vboxDrawPreviewImg.src = 'screen.php?width='+(w)+'&vm='+$('#vboxIndex').data('selectedVM').id+'&randid='+randid;
 	}
 
 }
@@ -326,7 +355,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		vboxDetailsTable.setAttribute('id','vboxDetailsTableBoxPreview');
 		vboxDetailsTable.setAttribute('class','vboxDetailsTable vboxDetailsTableBox ui-corner-all');
 		vboxDetailsTable.appendChild(__vboxDetailHeader("fullscreen_16px.png","Preview",null,null,boxes));
-		if($('#vboxIndex').data('vboxCookies')["vboxSectionShowPreview"] == 0 || !$('#vboxIndex').data('vboxConfig').imagepng) {
+		if($('#vboxIndex').data('vboxCookies')["vboxSectionShowPreview"] == 0 || $('#vboxIndex').data('vboxConfig').noPreview) {
 			vboxDetailsTable.setAttribute('style','display: none;');
 		}
 
@@ -343,8 +372,13 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		$(divWrap).attr('id','vboxDetailsPreviewWrap');
 		$(divWrap).attr('style','background-color:#000;background-image:url(images/vbox/monitor_glossy.png);border:0px;display:table;height:'+h+'px;width:'+w+'px;#position:relative;background-repeat: no-repeat;');
 
-		// PHP has GD extension installed ?
-		if($('#vboxIndex').data('vboxConfig').imagepng) {
+		var divWrapImg = document.createElement('img');
+		$(divWrapImg).attr('id','vboxDetailsPreviewImg');
+		$(divWrapImg).css('display','none');
+		$(divWrap).append(divWrapImg);
+		
+		// Preview enabled
+		if(!$('#vboxIndex').data('vboxConfig').noPreview) {
 
 			// Clear timer if it is set
 			if($('#vboxVMDetails').data('vboxPreviewTimer')) {
@@ -353,9 +387,9 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 			}
 			
 			var divOut1 = document.createElement('div');
+			$(divOut1).attr('id','vboxDetailsPreviewVMName');
 			$(divOut1).attr('style','#position:absolute;#top:50%;display:table-cell;vertical-align:middle;');
 			var divOut2 = document.createElement('div');
-			$(divOut2).attr('id','vboxDetailsPreviewVMName');
 			$(divOut2).attr('style','#position:relative;#top:-50%;padding:4px;color:#fff;font-weight:bold;text-align:center;');
 			$(divOut2).html($('<div />').html(data.name).text());
 			$(divOut1).append(divOut2);
@@ -363,7 +397,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 
 			if((data.state == 'Running' || data.state == 'Saved') && $('#vboxIndex').data('vboxCookies')["vboxSectionShowPreview"] != 0) {
 
-				__vboxDrawPreview(data.id);
+				__vboxDrawPreview();
 								
 			} else {
 				// Clear timer if it is set
@@ -372,6 +406,9 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 					$('#vboxVMDetails').data('vboxPreviewTimer', null);
 				}
 			}
+
+			// Update 'View saved screenshot' menu item
+			$('#vboxDetailsViewSavedSS').css('display',($('#vboxIndex').data('selectedVM').state == 'Saved' || $('#vboxIndex').data('selectedVM').state == 'Running' ? '' : 'none'));
 		}
 				
 
@@ -648,9 +685,15 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 			}).hover(function(){
 				$(this).addClass('hover');},
 				function(){$(this).removeClass('hover');}
-			).children().children().bind('onselectstart',function(){
+			).bind('onselectstart',function(e){
+				e.stopPropagation();
+				e.preventDefault();				
 				return false;
-			}).attr('unselectable','on').css('MozUserSelect','none');
+			}).bind('onmousedown',function(e){
+				e.stopPropagation();
+				e.preventDefault();								
+				return false;
+			}).attr('unselectable','on').css('MozUserSelect','none').find('*').attr('unselectable','on').css('MozUserSelect','none');
 		});
 	}
 }
@@ -703,7 +746,11 @@ function __vboxDisplayHostDetailsData(data) {
 }
 
 
-/* Show / Hide boxes menu */
+/*
+ *
+ * Show / Hide boxes menu
+ *
+ */
 var ul = document.createElement('ul');
 ul.setAttribute('class','contextMenu');
 ul.setAttribute('style','display: none');
@@ -715,8 +762,8 @@ for(var i = 0; i < sections.length; i++) {
 	if($('#vboxIndex').data('vboxConfig').version.ose && sections[i] == 'USB')
 		continue;
 
-	// No Preview if PHP does not have GD extensions installed / enabled
-	if(!$('#vboxIndex').data('vboxConfig').imagepng && sections[i] == 'Preview')
+	// Preview is not enabled?
+	if($('#vboxIndex').data('vboxConfig').noPreview && sections[i] == 'Preview')
 		continue;
 
 	// checked?
@@ -725,6 +772,11 @@ for(var i = 0; i < sections.length; i++) {
 		checked = '';
 	
 	var li = document.createElement('li');
+	$(li).hover(function(){
+		$(this).addClass('hover');
+	},function(){
+		$(this).removeClass('hover');
+	});	 	
 	var cb = document.createElement('input');
 	$(cb).attr({'type':'checkbox','class':'vboxCheckbox','name':sections[i].replace(' ','')})
 	if(checked) $(cb).attr('checked',checked);
@@ -737,8 +789,8 @@ for(var i = 0; i < sections.length; i++) {
 
 		// Special case for Preview
 		if($(this).attr('name') == 'Preview') {
-			if(this.checked && $('#vboxVMDetails').data('vmid') != 'host') {
-				__vboxDrawPreview($('#vboxVMDetails').data('vmid'));
+			if(this.checked && $('#vboxIndex').data('selectedVM').id != 'host') {
+				__vboxDrawPreview();
 			} else {
 				// Clear timer if it is set
 				if($('#vboxVMDetails').data('vboxPreviewTimer')) {
@@ -758,7 +810,12 @@ for(var i = 0; i < sections.length; i++) {
 $('#vboxIndex').append(ul);
 $('#vboxDetailsShowMenu').bind('contextmenu', function() { return false; })
 
-/* Preivew Update Menu */
+
+/*
+ * 
+ * Preivew Update Menu
+ *
+ */
 // determine default
 if($('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] === undefined) {
 	if($('#vboxIndex').data('vboxConfig').previewUpdateInterval)
@@ -782,6 +839,11 @@ if($('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] == 0) {
 	$(radio).attr('checked','checked');
 }
 var li = document.createElement('li');
+$(li).hover(function(){
+	$(this).addClass('hover');
+},function(){
+	$(this).removeClass('hover');
+});
 $(li).append(radio);
 var sp = document.createElement('span');
 $(sp).html(trans('Update Disabled'));
@@ -807,7 +869,7 @@ for(var i = 0; i < ints.length; i++) {
 		var exp = new Date(2020,12,24);
 		document.cookie = "vboxPreviewUpdate="+$(this).val()+"; expires="+exp.toGMTString()+"; path=/";		
 		$('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] = $(this).val();
-		__vboxDrawPreview($('#vboxVMDetails').data('vmid'));
+		__vboxDrawPreview();
 	});
 
 	if($('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] == ints[i])
@@ -822,7 +884,28 @@ for(var i = 0; i < ints.length; i++) {
 		$(this).siblings('input').click();
 	});
 	$(li).append(sp);
+	$(li).hover(function(){
+		$(this).addClass('hover');
+	},function(){
+		$(this).removeClass('hover');
+	});
 	$(ul).append(li);
+	if(i == (ints.length - 1)) {
+		var li = document.createElement('li');
+		$(li).attr({'id':'vboxDetailsViewSavedSS','class':'separator','style':'display:none'});
+		$(li).hover(function(){
+			$(this).addClass('hover');
+		},function(){
+			$(this).removeClass('hover');
+		});		
+		var sp = document.createElement('sp');
+		$(sp).html(trans('Open in new window'));
+		$(li).append(sp);
+		$(li).click(function(){
+			var newwin = window.open('screen.php?vm='+$('#vboxIndex').data('selectedVM').id,'vboxSC','toolbar=1,menubar=0,location=0,directories=0,status=true,resize=true');
+		});
+		$(ul).append(li);
+	}
 }
 $('#vboxIndex').append(ul);
 $(ul).bind('contextmenu', function() { return false; })

@@ -171,14 +171,14 @@
       </xsd:simpleType>
       <!-- enum: FaultToleranceState -
             Inactive: 1 -
-            Source: 2 -
-            Target: 3 -
+            Master: 2 -
+            Standby: 3 -
             -->
       <xsd:simpleType name="FaultToleranceState">
         <xsd:restriction base="xsd:string">
           <xsd:enumeration value="Inactive"/>
-          <xsd:enumeration value="Source"/>
-          <xsd:enumeration value="Target"/>
+          <xsd:enumeration value="Master"/>
+          <xsd:enumeration value="Standby"/>
         </xsd:restriction>
       </xsd:simpleType>
       <!-- enum: LockType -
@@ -3587,6 +3587,34 @@
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="IMachine_setFaultToleranceAddressResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- read/write attribute IMachine::faultTolerancePassword-->
+      <xsd:element name="IMachine_getFaultTolerancePassword">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_getFaultTolerancePasswordResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_setFaultTolerancePassword">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="faultTolerancePassword" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_setFaultTolerancePasswordResponse">
         <xsd:complexType>
           <xsd:sequence/>
         </xsd:complexType>
@@ -8070,6 +8098,24 @@
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="IDisplay_takeScreenShotToArrayResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" minOccurs="0" maxOccurs="unbounded" type="xsd:unsignedByte"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IDisplay::takeScreenShotPNGToArray-->
+      <xsd:element name="IDisplay_takeScreenShotPNGToArray">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="screenId" type="xsd:unsignedInt"/>
+            <xsd:element name="width" type="xsd:unsignedInt"/>
+            <xsd:element name="height" type="xsd:unsignedInt"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IDisplay_takeScreenShotPNGToArrayResponse">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="returnval" minOccurs="0" maxOccurs="unbounded" type="xsd:unsignedByte"/>
@@ -13159,6 +13205,19 @@
   <message name="IMachine_setFaultToleranceAddressResultMsg">
     <part name="parameters" element="vbox:IMachine_setFaultToleranceAddressResponse"/>
   </message>
+  <!-- read/write attribute IMachine::faultTolerancePassword-->
+  <message name="IMachine_getFaultTolerancePasswordRequestMsg">
+    <part name="parameters" element="vbox:IMachine_getFaultTolerancePassword"/>
+  </message>
+  <message name="IMachine_getFaultTolerancePasswordResultMsg">
+    <part name="parameters" element="vbox:IMachine_getFaultTolerancePasswordResponse"/>
+  </message>
+  <message name="IMachine_setFaultTolerancePasswordRequestMsg">
+    <part name="parameters" element="vbox:IMachine_setFaultTolerancePassword"/>
+  </message>
+  <message name="IMachine_setFaultTolerancePasswordResultMsg">
+    <part name="parameters" element="vbox:IMachine_setFaultTolerancePasswordResponse"/>
+  </message>
   <!-- read/write attribute IMachine::faultToleranceSyncInterval-->
   <message name="IMachine_getFaultToleranceSyncIntervalRequestMsg">
     <part name="parameters" element="vbox:IMachine_getFaultToleranceSyncInterval"/>
@@ -15271,6 +15330,13 @@
   </message>
   <message name="IDisplay_takeScreenShotToArrayResultMsg">
     <part name="parameters" element="vbox:IDisplay_takeScreenShotToArrayResponse"/>
+  </message>
+  <!-- method IDisplay::takeScreenShotPNGToArray-->
+  <message name="IDisplay_takeScreenShotPNGToArrayRequestMsg">
+    <part name="parameters" element="vbox:IDisplay_takeScreenShotPNGToArray"/>
+  </message>
+  <message name="IDisplay_takeScreenShotPNGToArrayResultMsg">
+    <part name="parameters" element="vbox:IDisplay_takeScreenShotPNGToArrayResponse"/>
   </message>
   <!-- method IDisplay::drawToScreen-->
   <!--skipping method drawToScreen for it has parameters with suppressed types-->
@@ -18417,6 +18483,18 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
+    <operation name="IMachine_getFaultTolerancePassword">
+      <input message="vbox:IMachine_getFaultTolerancePasswordRequestMsg"/>
+      <output message="vbox:IMachine_getFaultTolerancePasswordResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IMachine_setFaultTolerancePassword">
+      <input message="vbox:IMachine_setFaultTolerancePasswordRequestMsg"/>
+      <output message="vbox:IMachine_setFaultTolerancePasswordResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
     <operation name="IMachine_getFaultToleranceSyncInterval">
       <input message="vbox:IMachine_getFaultToleranceSyncIntervalRequestMsg"/>
       <output message="vbox:IMachine_getFaultToleranceSyncIntervalResultMsg"/>
@@ -20255,6 +20333,12 @@
     <operation name="IDisplay_takeScreenShotToArray">
       <input message="vbox:IDisplay_takeScreenShotToArrayRequestMsg"/>
       <output message="vbox:IDisplay_takeScreenShotToArrayResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IDisplay_takeScreenShotPNGToArray">
+      <input message="vbox:IDisplay_takeScreenShotPNGToArrayRequestMsg"/>
+      <output message="vbox:IDisplay_takeScreenShotPNGToArrayResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -24783,6 +24867,36 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
+    <operation name="IMachine_getFaultTolerancePassword">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IMachine_setFaultTolerancePassword">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
     <operation name="IMachine_getFaultToleranceSyncInterval">
       <soap:operation soapAction="" style="document"/>
       <input>
@@ -29238,6 +29352,21 @@
     </operation>
     <!--skipping method takeScreenShot for it has parameters with suppressed types-->
     <operation name="IDisplay_takeScreenShotToArray">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IDisplay_takeScreenShotPNGToArray">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>

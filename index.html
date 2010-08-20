@@ -32,7 +32,6 @@
     <script type="text/javascript" src="js/jquery.contextMenu.js"></script>
 	<script type="text/javascript" src="js/jquery.tipped-1.5.min.js"></script>
 	<script type="text/javascript" src="js/jqueryFileTree.js"></script>	
-	<script type="text/javascript" src="js/vboxweb.js"></script>
 	<script type="text/javascript" src="js/jquery.jec-1.2.5.js"></script>
 	
 	<!-- Internal Scripts -->
@@ -168,13 +167,12 @@
 			 -->
 		</td>
 	</tr>
-	<tr>
-		<!-- VMList toolbar -->
-		<td class='vboxPaneTop'>
+	<tr style='vertical-align: middle;'>
+		<td class='vboxPaneTop vboxInvisible' colspan='3'>
+			<!-- VMList toolbar -->
 			<div id='vboxPaneToolbar'></div>
-		</td>
-		<!-- Tabs / Buttons -->
-		<td class='vboxPaneTop' id='vboxTabsList' colspan='2'>
+			<!-- Tabs / Buttons -->
+			<div id='vboxTabsList'></div>
 		</td>
 	</tr>
 	<tr style='vertical-align: top;' id='vboxResize'>

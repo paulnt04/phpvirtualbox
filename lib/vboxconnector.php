@@ -353,6 +353,8 @@ class vboxconnector {
 			$m->removeStorageController($scname);
 		}
 
+		// Get mediums so that we have medium types
+
 		// Add New
 		foreach($args['storageControllers'] as $sc) {
 
@@ -367,8 +369,14 @@ class vboxconnector {
 			// Medium attachments
 			foreach($sc['mediumAttachments'] as $ma) {
 				$attachedNew[$name.$ma['port'].$ma['device']] = $ma['medium']['id'];
-				$m->attachDevice($name,$ma['port'],$ma['device'],$ma['type'],($ma['medium'] && $ma['medium']['id'] ? $ma['medium']['id'] : null));
+				if(is_array($ma['medium']) && $ma['medium']['id'] && $ma['type']) {
+					$med = $this->vbox->findMedium($ma['medium']['id'],$ma['type']);
+				} else {
+					$med = null;
+				}
+				$m->attachDevice($name,$ma['port'],$ma['device'],$ma['type'],(is_object($med) ? $med->handle : null));
 				if($ma['type'] == 'DVD') $m->passthroughDevice($name,$ma['port'],$ma['device'],($ma['passthrough'] ? true : false));
+				if(is_object($med)) $med->releaseRemote();
 			}
 		}
 		// Expire storage
@@ -1240,7 +1248,7 @@ class vboxconnector {
 
 		// Machine state
 		$machine = $this->__getMachineRef($vm);
-		$mstate = $machine->state;
+		$mstate = $machine->state->__toString();
 
 		// If state has an expected result, check
 		// that we are not already in it
@@ -1798,6 +1806,7 @@ class vboxconnector {
 					'state' => $machine->state->__toString(),
 					'OSTypeId' => $machine->getOSTypeId(),
 					'id' => $machine->id,
+					'lastStateChange' => $machine->lastStateChange,
 					'sessionState' => $machine->sessionState->__toString(),
 					'currentSnapshot' => ($machine->currentSnapshot->handle ? $machine->currentSnapshot->name : '')
 				);
@@ -1812,6 +1821,7 @@ class vboxconnector {
 						'OSTypeId' => 'Other',
 						'id' => $machine->id,
 						'sessionState' => 'Inaccessible',
+						'lastStateChange' => 0,
 						'currentSnapshot' => ''
 					);
 
@@ -2521,7 +2531,7 @@ class vboxconnector {
 			$save = true; // force save on closed session as it is not a "run-time" change
 		} else {
 
-			$this->vbox->lockMachine($this->session->handle, 'Shared');
+			$machine->lockMachine($this->session->handle, 'Shared');
 		}
 
 		$this->session->machine->mountMedium($args['controller'],$args['port'],$args['device'],$args['medium'],true);
