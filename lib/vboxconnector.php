@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: vboxconnector.php 718 2010-07-24 18:19:33Z ian $
+ * $Id$
  */
 
 class vboxconnector {
@@ -1566,8 +1566,29 @@ class vboxconnector {
 			$data['snapshotCount'] = $machine->snapshotCount;
 			$data['sessionState'] = (string)$machine->sessionState;
 			$data['currentStateModified'] = $machine->currentStateModified;
+
+			$mdlm = ($machine->lastStateChange/1000);
 			$machine->releaseRemote();
 
+			// Get current console port
+			$version = $this->getVersion();
+			if(!$version['ose'] && $data['state'] == 'Running') {
+				$console = $this->cache->get('__consolePort'.$args['vm'],120000);
+				if($console === false || $console['lastStateChange'] < $mdlm) {
+					$this->session = $this->websessionManager->getSessionObject($this->vbox);
+					$this->vbox->openExistingSession($this->session, $args['vm'], 'vrdp', '');
+					$data['consolePort'] = $this->session->console->remoteDisplayInfo->port;
+					$this->session->close();
+					$this->session = null;
+					$console = array(
+						'consolePort'=>$data['consolePort'],
+						'lastStateChange'=>$mdlm
+					);
+					$this->cache->store('__consolePort'.$data['id'],$console);
+				} else {
+					$data['consolePort'] = $console['port'];
+				}
+			}
 		}
 
 		$data['accessible'] = 1;
@@ -1618,7 +1639,7 @@ class vboxconnector {
 		}
 
 		// Clear caches
-		foreach(array('getMachine','getNetworkAdapters','getStorageControllers','getSharedFolders','getUSBController') as $ex) {
+		foreach(array('consolePort','getMachine','getNetworkAdapters','getStorageControllers','getSharedFolders','getUSBController') as $ex) {
 			$this->cache->expire('__'.$ex.$args['vm']);
 		}
 		$this->cache->expire('getMediums');

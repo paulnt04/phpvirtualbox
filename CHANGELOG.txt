@@ -1,4 +1,18 @@
 -------------------------------------
+-------------------------------------
+Fixed Console tab bug when a virtual machine has a range or list
+of RDP ports configured.
+
+Default host in location setting is now 127.0.0.1 instead of 
+"localhost" to get around problems when "localhost" resolves to
+an IPv6 address.
+
+Fixed bug in file / folder browser when file extension is not
+lower case.
+
+Added missing "Stop" to english translation file.
+
+-------------------------------------
 		0.5 - 2010-08-10
 -------------------------------------
 Fixed some English translations.

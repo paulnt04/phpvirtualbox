@@ -17,7 +17,7 @@
 //
 //	]--- Modified by Ian Moore for phpVirtualBox
 //
-// $Id: jqueryFileTree.php 709 2010-07-22 16:49:46Z ian $
+// $Id$
 //
 //
 
@@ -177,7 +177,7 @@ function printdir($dir, $recurse=array()) {
 
 			if($types[$i] != 4) {
 
-				$ext = preg_replace('/^.*\./', '', $file);
+				$ext = strtolower(preg_replace('/^.*\./', '', $file));
 
 				if(count($allowed) && !@$allowed['.'.$ext]) continue;
 
@@ -225,7 +225,7 @@ function printdirlocal($dir, $recurse=array()) {
 			$file = $dir.DSEP.$file;
 			if( file_exists($file) && !is_dir($file) ) {
 
-				$ext = preg_replace('/^.*\./', '', $file);
+				$ext = strtolower(preg_replace('/^.*\./', '', $file));
 
 				if(count($allowed) && !$allowed['.'.$ext]) continue;
 
@@ -239,7 +239,7 @@ function printdirlocal($dir, $recurse=array()) {
 
 function vbox_basename($b) { return substr($b,strrpos($b,DSEP)+1); }
 function folder_file($f) {
-	$ext = preg_replace('/^.*\./', '', $f);
+	$ext = strtolower(preg_replace('/^.*\./', '', $f));
 	echo "<li class=\"file file_{$ext} vboxListItem\"><a href=\"#\" name='".htmlentities($f)."' rel=\"".htmlentities($f)."\">".htmlentities(vbox_basename($f))."</a></li>";
 }
 function folder_folder($f,$full=false,$expanded=false,$selected=false) {

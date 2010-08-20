@@ -2,9 +2,29 @@
 /*
  * Simple RDP connection file generator
  *
- * $Id: rdp.php 696 2010-07-08 00:46:41Z ian $
+ * $Id$
  *
  */
+
+/*
+ * Check for port range or list of ports
+ */
+if(preg_match('/[^\d]/',$_REQUEST['port'])) {
+
+	require_once(dirname(__FILE__).'/config.php');
+	require_once(dirname(__FILE__).'/lib/vboxconnector.php');
+
+	$vbox = new vboxconnector();
+	$vbox->connect();
+
+	$args = array('vm'=>$_REQUEST['vm']);
+	$response = array();
+	$vbox->getVMDetails($args,$response);
+
+	$_REQUEST['port'] = $response['data']['consolePort'];
+
+}
+
 header("Content-type: application/x-rdp",true);
 header("Content-disposition: attachment; filename=\"". $_REQUEST['vm'] .".rdp\"",true);
 

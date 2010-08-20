@@ -62,6 +62,7 @@ public static $trans = array(
 'Select Folder' => 'Select Folder',
 
 // Power button
+'Stop' => 'Stop',
 'Pause' => 'Pause',
 'Reset' => 'Reset',
 'Save State' => 'Save State',

@@ -5,7 +5,7 @@
  * 
  * 	Common classes used
  * 
- * $Id: phpvirtualbox.js 697 2010-07-08 02:31:17Z ian $
+ * $Id$
  * 
  * 
  */

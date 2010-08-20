@@ -2,7 +2,7 @@
 /*
  * Simple data -> filesystem caching class
  *
- * $Id: cache.php 662 2010-06-12 16:27:45Z ian $
+ * $Id$
  *
  */
 

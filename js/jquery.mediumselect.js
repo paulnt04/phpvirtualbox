@@ -2,7 +2,7 @@
  * 
  * phpVirtualBox medium (disk / CD image etc.) select box
  * 
- * $Id: jquery.mediumselect.js 634 2010-06-04 02:37:10Z ian $
+ * $Id$
  * 
  */
 
