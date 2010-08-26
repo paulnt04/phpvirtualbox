@@ -1777,6 +1777,17 @@ class IMachine extends VBox_ManagedObject {
        return array((array)$response->returnval, (float)$response->width, (float)$response->height);
   }
 
+   public function readSavedThumbnailPNGToArray($arg_screenId) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->screenId = $arg_screenId;
+       $response = $this->connection->__soapCall('IMachine_readSavedThumbnailPNGToArray', array((array)$request));
+       
+       return array((array)$response->returnval, (float)$response->width, (float)$response->height);
+  }
+
    public function querySavedScreenshotPNGSize($arg_screenId) { 
        $request = new stdClass();
        
@@ -8545,8 +8556,8 @@ class CPUPropertyTypeCollection extends VBox_EnumCollection {
 * Generated VBoxWebService ENUM
 */
 class HWVirtExPropertyType extends VBox_Enum {
-   public $NameMap = array(0 => 'Null', 1 => 'Enabled', 2 => 'Exclusive', 3 => 'VPID', 4 => 'NestedPaging', 5 => 'LargePages');
-   public $ValueMap = array('Null' => 0, 'Enabled' => 1, 'Exclusive' => 2, 'VPID' => 3, 'NestedPaging' => 4, 'LargePages' => 5);
+   public $NameMap = array(0 => 'Null', 1 => 'Enabled', 2 => 'Exclusive', 3 => 'VPID', 4 => 'NestedPaging', 5 => 'LargePages', 6 => 'Force');
+   public $ValueMap = array('Null' => 0, 'Enabled' => 1, 'Exclusive' => 2, 'VPID' => 3, 'NestedPaging' => 4, 'LargePages' => 5, 'Force' => 6);
 }
 
 /**

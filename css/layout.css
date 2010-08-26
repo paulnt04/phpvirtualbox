@@ -259,6 +259,7 @@ table.vboxVMListVM td.vboxVMSessionOpen { font-style: italic; }
 
 /* Details Tab and Table */
 #vboxTabVMDetails { font-size: 0.9em; }
+#vboxDetailsWelcome { background: #fff; }
 table.vboxDetailsTable { width: auto; }
 table.vboxDetailsTableBox tr.vboxDetailsHead th { white-space: nowrap; }
 table.vboxDetailsTable td { padding: 2px; }
@@ -296,10 +297,15 @@ table.vboxDetailsTableBox tr.vboxDetailsHead th.vboxDetailsSectionCollapsed {
 	-moz-border-radius-bottomleft: 4px/*{cornerRadius}*/; -webkit-border-bottom-left-radius: 4px/*{cornerRadius}*/; border-bottom-left-radius: 4px/*{cornerRadius}*/; -moz-border-radius-bottomright: 4px/*{cornerRadius}*/; -webkit-border-bottom-right-radius: 4px/*{cornerRadius}*/; border-bottom-right-radius: 4px/*{cornerRadius}*/;
 }
 
-table.vboxDetailsTableBox tr.vboxDetailsHead a { color: #000; }
-table.vboxDetailsTableBox tr.vboxDetailsHead th.hover a, table.vboxDetailsTableBox tr.vboxDetailsHead th.hover a:visited {
-	color: #0000ff;
+table.vboxDetailsTableBox tr.vboxDetailsHead a, table.vboxDetailsTableBox tr.vboxDetailsHead th.hover div.vboxNoLinks a {
+	color: #000;
+	cursor: default;
 }
+table.vboxDetailsTableBox tr.vboxDetailsHead th.hover a {
+	color: #0000ff;
+	cursor: pointer;
+}
+
 table.vboxDetailsTableBox tr.vboxDetailsHead th span.vboxDetailsUpDnImgSpan { display: none; }
 table.vboxDetailsTableBox tr.vboxDetailsHead th.hover span.vboxDetailsUpDnImgSpan { display: inline; }
 
@@ -315,8 +321,16 @@ table.vboxDetailsTable td.vboxDetailDescriptionCell { padding-left: 20px; }
 #vboxDetailsPreviewMenu li input { display: inline; padding: 0px; margin: 0px; margin-right: 4px; }
 
 /* preview box */
-#vboxDetailsTableBoxPreview { margin-left: 6px; }
-#vboxDetailsTableBoxPreview td { padding: 8px; }
+#vboxDetailsTableBoxPreviewSpacer { padding: 4px; }
+#vboxDetailsTableBoxPreview { text-align: center; }
+#vboxDetailsTableBoxPreview table, #vboxDetailsTableBoxPreview td, #vboxDetailsTableBoxPreview img { padding: 0px; margin: 0px; border: 0px; }
+div.vboxPreviewSaved {
+	background-color:#000;
+}
+div.vboxPreviewSaved img {
+	opacity: .75;
+	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=75)";
+}
 
 /* Description tab */
 #vboxTabVMDescription input { margin: 8px; }

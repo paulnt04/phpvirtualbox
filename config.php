@@ -49,7 +49,7 @@ var $servers = array(
 //var $previewUpdateInterval = 30;
 
 // Preview box pixel width
-var $previewWidth = 220;
+var $previewWidth = 180;
 
 /*
 Allow to prompt deletion harddisk files on removal from Virtual Media Manager.

@@ -158,6 +158,7 @@
             VPID: 3 -
             NestedPaging: 4 -
             LargePages: 5 -
+            Force: 6 -
             -->
       <xsd:simpleType name="HWVirtExPropertyType">
         <xsd:restriction base="xsd:string">
@@ -167,6 +168,7 @@
           <xsd:enumeration value="VPID"/>
           <xsd:enumeration value="NestedPaging"/>
           <xsd:enumeration value="LargePages"/>
+          <xsd:enumeration value="Force"/>
         </xsd:restriction>
       </xsd:simpleType>
       <!-- enum: FaultToleranceState -
@@ -4509,6 +4511,24 @@
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="IMachine_readSavedThumbnailToArrayResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="width" type="xsd:unsignedInt"/>
+            <xsd:element name="height" type="xsd:unsignedInt"/>
+            <xsd:element name="returnval" minOccurs="0" maxOccurs="unbounded" type="xsd:unsignedByte"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IMachine::readSavedThumbnailPNGToArray-->
+      <xsd:element name="IMachine_readSavedThumbnailPNGToArray">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="screenId" type="xsd:unsignedInt"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_readSavedThumbnailPNGToArrayResponse">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="width" type="xsd:unsignedInt"/>
@@ -13613,6 +13633,13 @@
   <message name="IMachine_readSavedThumbnailToArrayResultMsg">
     <part name="parameters" element="vbox:IMachine_readSavedThumbnailToArrayResponse"/>
   </message>
+  <!-- method IMachine::readSavedThumbnailPNGToArray-->
+  <message name="IMachine_readSavedThumbnailPNGToArrayRequestMsg">
+    <part name="parameters" element="vbox:IMachine_readSavedThumbnailPNGToArray"/>
+  </message>
+  <message name="IMachine_readSavedThumbnailPNGToArrayResultMsg">
+    <part name="parameters" element="vbox:IMachine_readSavedThumbnailPNGToArrayResponse"/>
+  </message>
   <!-- method IMachine::querySavedScreenshotPNGSize-->
   <message name="IMachine_querySavedScreenshotPNGSizeRequestMsg">
     <part name="parameters" element="vbox:IMachine_querySavedScreenshotPNGSize"/>
@@ -18834,6 +18861,12 @@
     <operation name="IMachine_readSavedThumbnailToArray">
       <input message="vbox:IMachine_readSavedThumbnailToArrayRequestMsg"/>
       <output message="vbox:IMachine_readSavedThumbnailToArrayResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IMachine_readSavedThumbnailPNGToArray">
+      <input message="vbox:IMachine_readSavedThumbnailPNGToArrayRequestMsg"/>
+      <output message="vbox:IMachine_readSavedThumbnailPNGToArrayResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -25738,6 +25771,21 @@
       </fault>
     </operation>
     <operation name="IMachine_readSavedThumbnailToArray">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IMachine_readSavedThumbnailPNGToArray">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>

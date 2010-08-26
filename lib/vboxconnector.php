@@ -1569,6 +1569,29 @@ class vboxconnector {
 			$data['snapshotCount'] = $machine->snapshotCount;
 			$data['sessionState'] = $machine->sessionState->__toString();
 			$data['currentStateModified'] = $machine->currentStateModified;
+
+			$mdlm = ($machine->lastStateChange/1000);
+
+			// Get current console port
+			$version = $this->getVersion();
+			if(!$version['ose'] && $data['state'] == 'Running') {
+				$console = $this->cache->get('__consolePort'.$args['vm'],120000);
+				if($console === false || $console['lastStateChange'] < $mdlm) {
+					$this->session = &$this->websessionManager->getSessionObject($this->vbox->handle);
+					$machine->lockMachine($this->session->handle, 'Shared');
+					$data['consolePort'] = $this->session->console->remoteDisplayInfo->port;
+					$this->session->unlockMachine();
+					$this->session = null;
+					$console = array(
+						'consolePort'=>$data['consolePort'],
+						'lastStateChange'=>$mdlm
+					);
+					$this->cache->store('__consolePort'.$data['id'],$console);
+				} else {
+					$data['consolePort'] = $console['port'];
+				}
+			}
+
 			$machine->releaseRemote();
 
 		}
@@ -1608,7 +1631,7 @@ class vboxconnector {
 
 		$machine = $this->__getMachineRef($args['vm']);
 
-		$cache = array('__getMachine'.$args['vm'],'__getNetworkAdapters'.$args['vm'],'__getStorageControllers'.$args['vm'],
+		$cache = array('__consolePort'.$args['vm'],'__getMachine'.$args['vm'],'__getNetworkAdapters'.$args['vm'],'__getStorageControllers'.$args['vm'],
 			'__getSharedFolders'.$args['vm'],'__getUSBController'.$args['vm'],'getMediums');
 
 		// Only unregister or delete?

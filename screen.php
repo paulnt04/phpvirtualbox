@@ -57,16 +57,18 @@ $vbox->connect();
 // of this script can get rather large. 800px wide usually keeps
 // it right under 150M.
 @ini_set('memory_limit', '512M');
-if($_REQUEST['width']) {
+
+// Set width. Else assume we want real time updates if VM is running below
+if($_REQUEST['width'])
 	$force_width = $_REQUEST['width'];
-}
+
 
 
 try {
 
 	// Is VM Specified
 	if(!$_REQUEST['vm']) {
-		echo("Please specify a *RUNNING* VM to take a screen shot of. E.g. http://webserver/phpvirtualbox/screen.php?vm=VMName");
+		echo("Please specify a VM to take a screen shot of. E.g. http://webserver/phpvirtualbox/screen.php?vm=VMName");
 		exit;
 	}
 
@@ -82,7 +84,14 @@ try {
 			throw new Exception('The specified virtual machine is not in a Running state.');
 	}
 
+	// Date last modified
+	$dlm = floor($machine->lastStateChange/1000);
+
+	// Set last modified header
+	header("Last-Modified: " . gmdate("D, d M Y H:i:s", $dlm) . " GMT");
+
 	$_REQUEST['vm'] = $machine->id;
+
 
 
 	// Take active screenshot if machine is running
@@ -96,6 +105,7 @@ try {
 	    $screenWidth = array_shift($res);
 	    $screenHeight = array_shift($res);
 
+	    // Force screenshot width while maintaining aspect ratio
 	    if($force_width) {
 
 			$factor  = (float)$force_width / (float)$screenWidth;
@@ -106,6 +116,15 @@ try {
 			} else {
 				$screenHeight = ($screenWidth * 3.0/4.0);
 			}
+
+		// If no width is set, assume we want real-time updates
+	    } else {
+
+			//Set no caching
+			header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+			header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+			header("Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0");
+			header("Pragma: no-cache");
 	    }
 
 		// array() for compatibility with readSavedScreenshotPNGToArray return value
@@ -115,7 +134,21 @@ try {
 
 	} else {
 
-		$imageraw = $machine->readSavedScreenshotPNGToArray(0);
+		// Let the browser cache images
+    	if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) >= $dlm) {
+			if (php_sapi_name()=='CGI') {
+				Header("Status: 304 Not Modified");
+			} else {
+				Header("HTTP/1.0 304 Not Modified");
+			}
+      		exit;
+    	}
+
+
+    	if($_REQUEST['full'])
+    		$imageraw = $machine->readSavedScreenshotPNGToArray(0);
+    	else
+			$imageraw = $machine->readSavedThumbnailPNGToArray(0);
 
 	}
 	$vbox->session = null;

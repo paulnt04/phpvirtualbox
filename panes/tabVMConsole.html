@@ -1,4 +1,4 @@
-<div id='vboxTabVMConsole' class='vboxTabContent'>
+<div id='vboxTabVMConsole' class='vboxTabContent' style='display:none;'>
   <div id='vboxTabVMUnavailable' style='display: none' class='translate'>Virtual machine is not running or RDP configured.</div>
   <div id='vboxRDPFormContainer'  style='padding-top: 8px; display: none'>
 	<form name="vboxRDPForm" onsubmit="return false">
@@ -64,7 +64,7 @@ $('#vboxTabVMConsole').parent().bind('vmloading',function(){
 
 $('#vboxTabVMConsole').bind('show',function(e,vm){
 
-	if(!vm || vm.id == 'host' || !vm.VRDPServer || !vm.VRDPServer.ports || !vm.VRDPServer.enabled || vm.state != 'Running') {
+	if(!vm || vm.id == 'host' || !vm.VRDPServer || !vm.consolePort || !vm.VRDPServer.enabled || vm.state != 'Running') {
 		$('#vboxRDPFormContainer').css({'display':'none'});
 		$('#FlashRDPContainer').css({'visibility':'hidden'});
 		$('#vboxTabVMUnavailable').css({'display':''});
@@ -86,7 +86,7 @@ $('#vboxTabVMConsole').bind('show',function(e,vm){
 	
 	var chost = (vm.VRDPServer.netAddress ? vm.VRDPServer.netAddress : $('#vboxIndex').data('vboxConfig').consoleHost);
 	if(chost == 'localhost' || chost == '127.0.0.1') { chost = location.hostname;}
-	chost+=':'+vm.VRDPServer.ports;
+	chost+=':'+vm.consolePort;
 	$(document.vboxRDPForm.serverAddress).val(chost);
 
 	// for detached console <title>

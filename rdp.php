@@ -5,6 +5,26 @@
  * $Id$
  *
  */
+
+/*
+ * Check for port range or list of ports
+ */
+if(preg_match('/[^\d]/',$_REQUEST['port'])) {
+
+	require_once(dirname(__FILE__).'/config.php');
+	require_once(dirname(__FILE__).'/lib/vboxconnector.php');
+
+	$vbox = new vboxconnector();
+	$vbox->connect();
+
+	$args = array('vm'=>$_REQUEST['vm']);
+	$response = array();
+	$vbox->getVMDetails($args,$response);
+
+	$_REQUEST['port'] = $response['data']['consolePort'];
+
+}
+
 header("Content-type: application/x-rdp",true);
 header("Content-disposition: attachment; filename=\"". $_REQUEST['vm'] .".rdp\"",true);
 

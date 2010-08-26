@@ -33,6 +33,9 @@ Exporting a VM defaults to '.ova' file.
 
 Added language contexts.
 
+Changed cache temp dir location to try environment variables
+first.
+
 -------------------------------------
 		0.5 - 2010-08-10
 -------------------------------------
