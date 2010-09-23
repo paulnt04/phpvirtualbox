@@ -873,12 +873,13 @@ class IAppliance extends VBox_ManagedObject {
        return new IVFSExplorer ($this->connection, $response->returnval);
   }
 
-   public function write($arg_format, $arg_path) { 
+   public function write($arg_format, $arg_manifest, $arg_path) { 
        $request = new stdClass();
        
        $request->_this = $this->handle;
        
        $request->format = $arg_format;
+       $request->manifest = $arg_manifest;
        $request->path = $arg_path;
        $response = $this->connection->__soapCall('IAppliance_write', array((array)$request));
        
@@ -1754,6 +1755,17 @@ class IMachine extends VBox_ManagedObject {
        return array((array)$response->name, (array)$response->value, (array)$response->timestamp, (array)$response->flags);
   }
 
+   public function querySavedGuestSize($arg_screenId) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->screenId = $arg_screenId;
+       $response = $this->connection->__soapCall('IMachine_querySavedGuestSize', array((array)$request));
+       
+       return array((float)$response->width, (float)$response->height);
+  }
+
    public function querySavedThumbnailSize($arg_screenId) { 
        $request = new stdClass();
        
@@ -2280,6 +2292,26 @@ class IMachine extends VBox_ManagedObject {
             $request->hpetEnabled = $value->handle;
        }
        $this->connection->__soapCall('IMachine_setHpetEnabled', array((array)$request));
+   }
+
+   public function getChipsetType() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IMachine_getChipsetType', array((array)$request));
+       return new ChipsetType ($this->connection, $response->returnval);
+   }
+
+   public function setChipsetType($value) {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       if (is_int($value) || is_string($value) || is_bool($value)) {
+            $request->chipsetType = $value;
+       }
+       else
+       {
+            $request->chipsetType = $value->handle;
+       }
+       $this->connection->__soapCall('IMachine_setChipsetType', array((array)$request));
    }
 
    public function getSnapshotFolder() {
@@ -3563,6 +3595,17 @@ class ISystemProperties extends VBox_ManagedObject {
        return new DeviceTypeCollection ($this->connection, (array)$response->returnval);
   }
 
+   public function getDefaultIoCacheSettingForStorageController($arg_controllerType) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->controllerType = $arg_controllerType;
+       $response = $this->connection->__soapCall('ISystemProperties_getDefaultIoCacheSettingForStorageController', array((array)$request));
+       
+       return (bool)$response->returnval;
+  }
+
    public function getMinGuestRAM() {
        $request = new stdClass();
        $request->_this = $this->handle;
@@ -3612,10 +3655,10 @@ class ISystemProperties extends VBox_ManagedObject {
        return (float)$response->returnval;
    }
 
-   public function getMaxVDISize() {
+   public function getInfoVDSize() {
        $request = new stdClass();
        $request->_this = $this->handle;
-       $response = $this->connection->__soapCall('ISystemProperties_getMaxVDISize', array((array)$request));
+       $response = $this->connection->__soapCall('ISystemProperties_getInfoVDSize', array((array)$request));
        return (float)$response->returnval;
    }
 
@@ -3884,6 +3927,17 @@ class IGuest extends VBox_ManagedObject {
        return array((float)$response->cpuUser, (float)$response->cpuKernel, (float)$response->cpuIdle, (float)$response->memTotal, (float)$response->memFree, (float)$response->memBalloon, (float)$response->memShared, (float)$response->memCache, (float)$response->pagedTotal, (float)$response->memAllocTotal, (float)$response->memFreeTotal, (float)$response->memBalloonTotal, (float)$response->memSharedTotal);
   }
 
+   public function getAdditionsStatus($arg_level) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->level = $arg_level;
+       $response = $this->connection->__soapCall('IGuest_getAdditionsStatus', array((array)$request));
+       
+       return (bool)$response->returnval;
+  }
+
    public function setCredentials($arg_userName, $arg_password, $arg_domain, $arg_allowInteractiveLogon) { 
        $request = new stdClass();
        
@@ -3947,11 +4001,11 @@ class IGuest extends VBox_ManagedObject {
        return (string)$response->returnval;
    }
 
-   public function getAdditionsActive() {
+   public function getAdditionsRunLevel() {
        $request = new stdClass();
        $request->_this = $this->handle;
-       $response = $this->connection->__soapCall('IGuest_getAdditionsActive', array((array)$request));
-       return (bool)$response->returnval;
+       $response = $this->connection->__soapCall('IGuest_getAdditionsRunLevel', array((array)$request));
+       return new AdditionsRunLevelType ($this->connection, $response->returnval);
    }
 
    public function getAdditionsVersion() {
@@ -8223,6 +8277,8 @@ class IGuestOSType extends VBox_Struct {
     
        protected $recommendedRtcUseUtc;
     
+       protected $recommendedChipset;
+    
     public function __construct($connection, $values) {
        $this->connection = $connection;
     
@@ -8247,6 +8303,7 @@ class IGuestOSType extends VBox_Struct {
        $this->recommendedHpet = $values->recommendedHpet;
        $this->recommendedUsbTablet = $values->recommendedUsbTablet;
        $this->recommendedRtcUseUtc = $values->recommendedRtcUseUtc;
+       $this->recommendedChipset = $values->recommendedChipset;
     }
 
     
@@ -8332,6 +8389,10 @@ class IGuestOSType extends VBox_Struct {
     
     public function getRecommendedRtcUseUtc() {
         return (bool)$this->recommendedRtcUseUtc;
+    }
+    
+    public function getRecommendedChipset() {
+        return new ChipsetType ($this->connection, $this->recommendedChipset);
     }
     
 
@@ -8870,6 +8931,21 @@ class HostNetworkInterfaceTypeCollection extends VBox_EnumCollection {
 /**
 * Generated VBoxWebService ENUM
 */
+class AdditionsRunLevelType extends VBox_Enum {
+   public $NameMap = array(0 => 'None', 1 => 'System', 2 => 'Userland', 3 => 'Desktop');
+   public $ValueMap = array('None' => 0, 'System' => 1, 'Userland' => 2, 'Desktop' => 3);
+}
+
+/**
+* Generated VBoxWebService Enum Collection
+*/
+class AdditionsRunLevelTypeCollection extends VBox_EnumCollection {
+   protected $_interfaceName = "AdditionsRunLevelType";
+}
+
+/**
+* Generated VBoxWebService ENUM
+*/
 class MediumState extends VBox_Enum {
    public $NameMap = array(0 => 'NotCreated', 1 => 'Created', 2 => 'LockedRead', 3 => 'LockedWrite', 4 => 'Inaccessible', 5 => 'Creating', 6 => 'Deleting');
    public $ValueMap = array('NotCreated' => 0, 'Created' => 1, 'LockedRead' => 2, 'LockedWrite' => 3, 'Inaccessible' => 4, 'Creating' => 5, 'Deleting' => 6);
@@ -8946,8 +9022,8 @@ class DataFlagsCollection extends VBox_EnumCollection {
 * Generated VBoxWebService ENUM
 */
 class MediumFormatCapabilities extends VBox_Enum {
-   public $NameMap = array(0x01 => 'Uuid', 0x02 => 'CreateFixed', 0x04 => 'CreateDynamic', 0x08 => 'CreateSplit2G', 0x10 => 'Differencing', 0x20 => 'Asynchronous', 0x40 => 'File', 0x80 => 'Properties', 0xFF => 'CapabilityMask');
-   public $ValueMap = array('Uuid' => 0x01, 'CreateFixed' => 0x02, 'CreateDynamic' => 0x04, 'CreateSplit2G' => 0x08, 'Differencing' => 0x10, 'Asynchronous' => 0x20, 'File' => 0x40, 'Properties' => 0x80, 'CapabilityMask' => 0xFF);
+   public $NameMap = array(0x01 => 'Uuid', 0x02 => 'CreateFixed', 0x04 => 'CreateDynamic', 0x08 => 'CreateSplit2G', 0x10 => 'Differencing', 0x20 => 'Asynchronous', 0x40 => 'File', 0x80 => 'Properties', 0x100 => 'TcpNetworking', 0x200 => 'VFS', 0x3FF => 'CapabilityMask');
+   public $ValueMap = array('Uuid' => 0x01, 'CreateFixed' => 0x02, 'CreateDynamic' => 0x04, 'CreateSplit2G' => 0x08, 'Differencing' => 0x10, 'Asynchronous' => 0x20, 'File' => 0x40, 'Properties' => 0x80, 'TcpNetworking' => 0x100, 'VFS' => 0x200, 'CapabilityMask' => 0x3FF);
 }
 
 /**
@@ -9135,6 +9211,21 @@ class StorageControllerType extends VBox_Enum {
 */
 class StorageControllerTypeCollection extends VBox_EnumCollection {
    protected $_interfaceName = "StorageControllerType";
+}
+
+/**
+* Generated VBoxWebService ENUM
+*/
+class ChipsetType extends VBox_Enum {
+   public $NameMap = array(0 => 'Null', 1 => 'PIIX3', 2 => 'ICH9');
+   public $ValueMap = array('Null' => 0, 'PIIX3' => 1, 'ICH9' => 2);
+}
+
+/**
+* Generated VBoxWebService Enum Collection
+*/
+class ChipsetTypeCollection extends VBox_EnumCollection {
+   protected $_interfaceName = "ChipsetType";
 }
 
 /**

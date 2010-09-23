@@ -493,6 +493,20 @@
           <xsd:enumeration value="HostOnly"/>
         </xsd:restriction>
       </xsd:simpleType>
+      <!-- enum: AdditionsRunLevelType -
+            None: 0 -
+            System: 1 -
+            Userland: 2 -
+            Desktop: 3 -
+            -->
+      <xsd:simpleType name="AdditionsRunLevelType">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="None"/>
+          <xsd:enumeration value="System"/>
+          <xsd:enumeration value="Userland"/>
+          <xsd:enumeration value="Desktop"/>
+        </xsd:restriction>
+      </xsd:simpleType>
       <!-- enum: MediumState -
             NotCreated: 0 -
             Created: 1 -
@@ -582,7 +596,9 @@
             Asynchronous: 0x20 -
             File: 0x40 -
             Properties: 0x80 -
-            CapabilityMask: 0xFF -
+            TcpNetworking: 0x100 -
+            VFS: 0x200 -
+            CapabilityMask: 0x3FF -
             -->
       <xsd:simpleType name="MediumFormatCapabilities">
         <xsd:restriction base="xsd:string">
@@ -594,6 +610,8 @@
           <xsd:enumeration value="Asynchronous"/>
           <xsd:enumeration value="File"/>
           <xsd:enumeration value="Properties"/>
+          <xsd:enumeration value="TcpNetworking"/>
+          <xsd:enumeration value="VFS"/>
           <xsd:enumeration value="CapabilityMask"/>
         </xsd:restriction>
       </xsd:simpleType>
@@ -801,6 +819,18 @@
           <xsd:enumeration value="LsiLogicSas"/>
         </xsd:restriction>
       </xsd:simpleType>
+      <!-- enum: ChipsetType -
+            Null: 0 -
+            PIIX3: 1 -
+            ICH9: 2 -
+            -->
+      <xsd:simpleType name="ChipsetType">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Null"/>
+          <xsd:enumeration value="PIIX3"/>
+          <xsd:enumeration value="ICH9"/>
+        </xsd:restriction>
+      </xsd:simpleType>
       <!-- enum: NATAliasMode -
             AliasLog: 0x1 -
             AliasProxyOnly: 0x02 -
@@ -946,7 +976,7 @@
           <xsd:element name="recommendedVirtEx" type="xsd:boolean"/>
           <xsd:element name="recommendedRAM" type="xsd:unsignedInt"/>
           <xsd:element name="recommendedVRAM" type="xsd:unsignedInt"/>
-          <xsd:element name="recommendedHDD" type="xsd:unsignedInt"/>
+          <xsd:element name="recommendedHDD" type="xsd:long"/>
           <xsd:element name="adapterType" type="vbox:NetworkAdapterType"/>
           <xsd:element name="recommendedPae" type="xsd:boolean"/>
           <xsd:element name="recommendedDvdStorageController" type="vbox:StorageControllerType"/>
@@ -958,6 +988,7 @@
           <xsd:element name="recommendedHpet" type="xsd:boolean"/>
           <xsd:element name="recommendedUsbTablet" type="xsd:boolean"/>
           <xsd:element name="recommendedRtcUseUtc" type="xsd:boolean"/>
+          <xsd:element name="recommendedChipset" type="vbox:ChipsetType"/>
         </xsd:sequence>
       </xsd:complexType>
       <!-- interface IMediumAttachment as struct: -->
@@ -2052,6 +2083,7 @@
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
             <xsd:element name="format" type="xsd:string"/>
+            <xsd:element name="manifest" type="xsd:boolean"/>
             <xsd:element name="path" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
@@ -3039,6 +3071,34 @@
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="IMachine_setHpetEnabledResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- read/write attribute IMachine::chipsetType-->
+      <xsd:element name="IMachine_getChipsetType">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_getChipsetTypeResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="vbox:ChipsetType"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_setChipsetType">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="chipsetType" type="vbox:ChipsetType"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_setChipsetTypeResponse">
         <xsd:complexType>
           <xsd:sequence/>
         </xsd:complexType>
@@ -4479,6 +4539,23 @@
             <xsd:element name="value" minOccurs="0" maxOccurs="unbounded" type="xsd:string"/>
             <xsd:element name="timestamp" minOccurs="0" maxOccurs="unbounded" type="xsd:long"/>
             <xsd:element name="flags" minOccurs="0" maxOccurs="unbounded" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IMachine::querySavedGuestSize-->
+      <xsd:element name="IMachine_querySavedGuestSize">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="screenId" type="xsd:unsignedInt"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_querySavedGuestSizeResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="width" type="xsd:unsignedInt"/>
+            <xsd:element name="height" type="xsd:unsignedInt"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -6005,15 +6082,15 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <!-- readonly attribute ISystemProperties::maxVDISize-->
-      <xsd:element name="ISystemProperties_getMaxVDISize">
+      <!-- readonly attribute ISystemProperties::infoVDSize-->
+      <xsd:element name="ISystemProperties_getInfoVDSize">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="ISystemProperties_getMaxVDISizeResponse">
+      <xsd:element name="ISystemProperties_getInfoVDSizeResponse">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="returnval" type="xsd:long"/>
@@ -6470,6 +6547,22 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
+      <!-- method ISystemProperties::getDefaultIoCacheSettingForStorageController-->
+      <xsd:element name="ISystemProperties_getDefaultIoCacheSettingForStorageController">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="controllerType" type="vbox:StorageControllerType"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ISystemProperties_getDefaultIoCacheSettingForStorageControllerResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
       <!--Interface IGuest-->
       <!-- readonly attribute IGuest::OSTypeId-->
       <xsd:element name="IGuest_getOSTypeId">
@@ -6486,18 +6579,18 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <!-- readonly attribute IGuest::additionsActive-->
-      <xsd:element name="IGuest_getAdditionsActive">
+      <!-- readonly attribute IGuest::additionsRunLevel-->
+      <xsd:element name="IGuest_getAdditionsRunLevel">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IGuest_getAdditionsActiveResponse">
+      <xsd:element name="IGuest_getAdditionsRunLevelResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="returnval" type="xsd:boolean"/>
+            <xsd:element name="returnval" type="vbox:AdditionsRunLevelType"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -6626,6 +6719,22 @@
             <xsd:element name="memFreeTotal" type="xsd:unsignedInt"/>
             <xsd:element name="memBalloonTotal" type="xsd:unsignedInt"/>
             <xsd:element name="memSharedTotal" type="xsd:unsignedInt"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IGuest::getAdditionsStatus-->
+      <xsd:element name="IGuest_getAdditionsStatus">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="level" type="vbox:AdditionsRunLevelType"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IGuest_getAdditionsStatusResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:boolean"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -12969,6 +13078,19 @@
   <message name="IMachine_setHpetEnabledResultMsg">
     <part name="parameters" element="vbox:IMachine_setHpetEnabledResponse"/>
   </message>
+  <!-- read/write attribute IMachine::chipsetType-->
+  <message name="IMachine_getChipsetTypeRequestMsg">
+    <part name="parameters" element="vbox:IMachine_getChipsetType"/>
+  </message>
+  <message name="IMachine_getChipsetTypeResultMsg">
+    <part name="parameters" element="vbox:IMachine_getChipsetTypeResponse"/>
+  </message>
+  <message name="IMachine_setChipsetTypeRequestMsg">
+    <part name="parameters" element="vbox:IMachine_setChipsetType"/>
+  </message>
+  <message name="IMachine_setChipsetTypeResultMsg">
+    <part name="parameters" element="vbox:IMachine_setChipsetTypeResponse"/>
+  </message>
   <!-- read/write attribute IMachine::snapshotFolder-->
   <message name="IMachine_getSnapshotFolderRequestMsg">
     <part name="parameters" element="vbox:IMachine_getSnapshotFolder"/>
@@ -13618,6 +13740,13 @@
   </message>
   <message name="IMachine_enumerateGuestPropertiesResultMsg">
     <part name="parameters" element="vbox:IMachine_enumerateGuestPropertiesResponse"/>
+  </message>
+  <!-- method IMachine::querySavedGuestSize-->
+  <message name="IMachine_querySavedGuestSizeRequestMsg">
+    <part name="parameters" element="vbox:IMachine_querySavedGuestSize"/>
+  </message>
+  <message name="IMachine_querySavedGuestSizeResultMsg">
+    <part name="parameters" element="vbox:IMachine_querySavedGuestSizeResponse"/>
   </message>
   <!-- method IMachine::querySavedThumbnailSize-->
   <message name="IMachine_querySavedThumbnailSizeRequestMsg">
@@ -14338,12 +14467,12 @@
   <message name="ISystemProperties_getMaxGuestMonitorsResultMsg">
     <part name="parameters" element="vbox:ISystemProperties_getMaxGuestMonitorsResponse"/>
   </message>
-  <!-- readonly attribute ISystemProperties::maxVDISize-->
-  <message name="ISystemProperties_getMaxVDISizeRequestMsg">
-    <part name="parameters" element="vbox:ISystemProperties_getMaxVDISize"/>
+  <!-- readonly attribute ISystemProperties::infoVDSize-->
+  <message name="ISystemProperties_getInfoVDSizeRequestMsg">
+    <part name="parameters" element="vbox:ISystemProperties_getInfoVDSize"/>
   </message>
-  <message name="ISystemProperties_getMaxVDISizeResultMsg">
-    <part name="parameters" element="vbox:ISystemProperties_getMaxVDISizeResponse"/>
+  <message name="ISystemProperties_getInfoVDSizeResultMsg">
+    <part name="parameters" element="vbox:ISystemProperties_getInfoVDSizeResponse"/>
   </message>
   <!-- readonly attribute ISystemProperties::networkAdapterCount-->
   <message name="ISystemProperties_getNetworkAdapterCountRequestMsg">
@@ -14552,6 +14681,13 @@
   <message name="ISystemProperties_getDeviceTypesForStorageBusResultMsg">
     <part name="parameters" element="vbox:ISystemProperties_getDeviceTypesForStorageBusResponse"/>
   </message>
+  <!-- method ISystemProperties::getDefaultIoCacheSettingForStorageController-->
+  <message name="ISystemProperties_getDefaultIoCacheSettingForStorageControllerRequestMsg">
+    <part name="parameters" element="vbox:ISystemProperties_getDefaultIoCacheSettingForStorageController"/>
+  </message>
+  <message name="ISystemProperties_getDefaultIoCacheSettingForStorageControllerResultMsg">
+    <part name="parameters" element="vbox:ISystemProperties_getDefaultIoCacheSettingForStorageControllerResponse"/>
+  </message>
   <!--
         *************************************
         messages for interface IGuestOSType
@@ -14569,12 +14705,12 @@
   <message name="IGuest_getOSTypeIdResultMsg">
     <part name="parameters" element="vbox:IGuest_getOSTypeIdResponse"/>
   </message>
-  <!-- readonly attribute IGuest::additionsActive-->
-  <message name="IGuest_getAdditionsActiveRequestMsg">
-    <part name="parameters" element="vbox:IGuest_getAdditionsActive"/>
+  <!-- readonly attribute IGuest::additionsRunLevel-->
+  <message name="IGuest_getAdditionsRunLevelRequestMsg">
+    <part name="parameters" element="vbox:IGuest_getAdditionsRunLevel"/>
   </message>
-  <message name="IGuest_getAdditionsActiveResultMsg">
-    <part name="parameters" element="vbox:IGuest_getAdditionsActiveResponse"/>
+  <message name="IGuest_getAdditionsRunLevelResultMsg">
+    <part name="parameters" element="vbox:IGuest_getAdditionsRunLevelResponse"/>
   </message>
   <!-- readonly attribute IGuest::additionsVersion-->
   <message name="IGuest_getAdditionsVersionRequestMsg">
@@ -14629,6 +14765,13 @@
   </message>
   <message name="IGuest_internalGetStatisticsResultMsg">
     <part name="parameters" element="vbox:IGuest_internalGetStatisticsResponse"/>
+  </message>
+  <!-- method IGuest::getAdditionsStatus-->
+  <message name="IGuest_getAdditionsStatusRequestMsg">
+    <part name="parameters" element="vbox:IGuest_getAdditionsStatus"/>
+  </message>
+  <message name="IGuest_getAdditionsStatusResultMsg">
+    <part name="parameters" element="vbox:IGuest_getAdditionsStatusResponse"/>
   </message>
   <!-- method IGuest::setCredentials-->
   <message name="IGuest_setCredentialsRequestMsg">
@@ -18282,6 +18425,18 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
+    <operation name="IMachine_getChipsetType">
+      <input message="vbox:IMachine_getChipsetTypeRequestMsg"/>
+      <output message="vbox:IMachine_getChipsetTypeResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IMachine_setChipsetType">
+      <input message="vbox:IMachine_setChipsetTypeRequestMsg"/>
+      <output message="vbox:IMachine_setChipsetTypeResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
     <operation name="IMachine_getSnapshotFolder">
       <input message="vbox:IMachine_getSnapshotFolderRequestMsg"/>
       <output message="vbox:IMachine_getSnapshotFolderResultMsg"/>
@@ -18849,6 +19004,12 @@
     <operation name="IMachine_enumerateGuestProperties">
       <input message="vbox:IMachine_enumerateGuestPropertiesRequestMsg"/>
       <output message="vbox:IMachine_enumerateGuestPropertiesResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IMachine_querySavedGuestSize">
+      <input message="vbox:IMachine_querySavedGuestSizeRequestMsg"/>
+      <output message="vbox:IMachine_querySavedGuestSizeResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -19472,9 +19633,9 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="ISystemProperties_getMaxVDISize">
-      <input message="vbox:ISystemProperties_getMaxVDISizeRequestMsg"/>
-      <output message="vbox:ISystemProperties_getMaxVDISizeResultMsg"/>
+    <operation name="ISystemProperties_getInfoVDSize">
+      <input message="vbox:ISystemProperties_getInfoVDSizeRequestMsg"/>
+      <output message="vbox:ISystemProperties_getInfoVDSizeResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -19664,6 +19825,12 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
+    <operation name="ISystemProperties_getDefaultIoCacheSettingForStorageController">
+      <input message="vbox:ISystemProperties_getDefaultIoCacheSettingForStorageControllerRequestMsg"/>
+      <output message="vbox:ISystemProperties_getDefaultIoCacheSettingForStorageControllerResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
     <!--
           *************************************
           operations in portType for interface IGuestOSType
@@ -19680,9 +19847,9 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IGuest_getAdditionsActive">
-      <input message="vbox:IGuest_getAdditionsActiveRequestMsg"/>
-      <output message="vbox:IGuest_getAdditionsActiveResultMsg"/>
+    <operation name="IGuest_getAdditionsRunLevel">
+      <input message="vbox:IGuest_getAdditionsRunLevelRequestMsg"/>
+      <output message="vbox:IGuest_getAdditionsRunLevelResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -19731,6 +19898,12 @@
     <operation name="IGuest_internalGetStatistics">
       <input message="vbox:IGuest_internalGetStatisticsRequestMsg"/>
       <output message="vbox:IGuest_internalGetStatisticsResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IGuest_getAdditionsStatus">
+      <input message="vbox:IGuest_getAdditionsStatusRequestMsg"/>
+      <output message="vbox:IGuest_getAdditionsStatusResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -24330,6 +24503,36 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
+    <operation name="IMachine_getChipsetType">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IMachine_setChipsetType">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
     <operation name="IMachine_getSnapshotFolder">
       <soap:operation soapAction="" style="document"/>
       <input>
@@ -25741,6 +25944,21 @@
       </fault>
     </operation>
     <operation name="IMachine_enumerateGuestProperties">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IMachine_querySavedGuestSize">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -27266,7 +27484,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="ISystemProperties_getMaxVDISize">
+    <operation name="ISystemProperties_getInfoVDSize">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -27746,6 +27964,21 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
+    <operation name="ISystemProperties_getDefaultIoCacheSettingForStorageController">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
     <!--
           *************************************
           operations in portType for interface IGuestOSType
@@ -27771,7 +28004,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IGuest_getAdditionsActive">
+    <operation name="IGuest_getAdditionsRunLevel">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -27892,6 +28125,21 @@
       </fault>
     </operation>
     <operation name="IGuest_internalGetStatistics">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IGuest_getAdditionsStatus">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>

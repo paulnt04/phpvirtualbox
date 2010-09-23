@@ -36,6 +36,9 @@ Added language contexts.
 Changed cache temp dir location to try environment variables
 first.
 
+Fixed bug that would not send the 'Esc' key to the console when
+pressed.
+
 -------------------------------------
 		0.5 - 2010-08-10
 -------------------------------------

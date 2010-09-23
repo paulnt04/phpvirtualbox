@@ -428,7 +428,7 @@ div.vboxPreviewSaved img {
 
 /* USB Settings */
 #vboxSettingsUSBFilters { background: #fff; }
-#vboxSettingsUSBFilters li { width: 100%; margin: 0px; padding: 2px }
+#vboxSettingsUSBFilters li { width: 100%; margin: 0px; padding: 2px 0px 2px 0px; }
 #vboxSettingsUSBFilters ul { list-style: none; margin: 0px; padding: 0px;}
 #vboxSettingsUSBFilters ul input { vertical-align: bottom; }
 

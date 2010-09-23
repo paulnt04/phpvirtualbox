@@ -100,8 +100,8 @@ class vboxconnector {
 		        'cache_wsdl'=>WSDL_CACHE_MEMORY,
 		        'trace'=>($this->settings['debugSoap']),
 				'connection_timeout' => ($this->settings['connectionTimeout'] ? $this->settings['connectionTimeout'] : 20),
-		        'location'=>$this->settings['location'],
-		        'soap_version'=>SOAP_1_2));
+		        'location'=>$this->settings['location']
+		    ));
 
 		/* Try / catch / throw here hides login credentials from exception if one is thrown */
 		try {
@@ -419,6 +419,7 @@ class vboxconnector {
 
 			$n = $m->getNetworkAdapter($i);
 			for($p = 0; $p < (count($netprops) - 1); $p++) {
+				if($netprops[$p] == 'internalNetwork') continue;
 				$n->{$netprops[$p]} = $args['networkAdapters'][$i][$netprops[$p]];
 			}
 			$n->enabled = (bool)$args['networkAdapters'][$i]['enabled'];
@@ -430,6 +431,7 @@ class vboxconnector {
 					break;
 				case 'Internal':
 					$n->attachToInternalNetwork();
+					$n->internalNetwork = (string)$adapters[$i]['internalNetwork'];
 					break;
 				case 'HostOnly':
 					$n->attachToHostOnlyInterface();
@@ -485,71 +487,73 @@ class vboxconnector {
 
 
 		// USB Filters
-		if(!$version['ose']) {
 
-			$usbchanged = false;
-			$usbEx = array();
-			$usbNew = array();
+		$usbchanged = false;
+		$usbEx = array();
+		$usbNew = array();
 
-			$usbc = $this->__getCachedMachineData('__getUSBController',$args['id'],$this->session->machine);
+		$usbc = $this->__getCachedMachineData('__getUSBController',$args['id'],$this->session->machine);
 
-			// controller properties
-			if((bool)$usbc['enabled'] != (bool)$args['USBController']['enabled'] || (bool)$usbc['enabledEhci'] != (bool)$args['USBController']['enabledEhci']) {
-				$usbchanged = true;
-				$m->USBController->enabled = (bool)$args['USBController']['enabled'];
-				$m->USBController->enabledEhci = (bool)$args['USBController']['enabledEhci'];
-			}
+		// controller properties
+		if((bool)$usbc['enabled'] != (bool)$args['USBController']['enabled'] || (bool)$usbc['enabledEhci'] != (bool)$args['USBController']['enabledEhci']) {
+			$usbchanged = true;
+			$m->USBController->enabled = (bool)$args['USBController']['enabled'];
+			$m->USBController->enabledEhci = (bool)$args['USBController']['enabledEhci'];
+		}
 
-			// filters
-			if(!is_array($args['USBController']['deviceFilters'])) $args['USBController']['deviceFilters'] = array();
-			if(count($usbc['deviceFilters']) != count($args['USBController']['deviceFilters']) || @serialize($usbc['deviceFilters']) != @serialize($args['USBController']['deviceFilters'])) {
+		// filters
+		if(!is_array($args['USBController']['deviceFilters'])) $args['USBController']['deviceFilters'] = array();
+		if(count($usbc['deviceFilters']) != count($args['USBController']['deviceFilters']) || @serialize($usbc['deviceFilters']) != @serialize($args['USBController']['deviceFilters'])) {
 
-				$usbchanged = true;
+			$usbchanged = true;
 
-				// usb filter properties to change
-				$usbProps = array('vendorId','productId','revision','manufacturer','product','serialNumber','port','remote');
+			// usb filter properties to change
+			$usbProps = array('vendorId','productId','revision','manufacturer','product','serialNumber','port','remote');
 
-				// Remove and Add filters
-				try {
+			// Remove and Add filters
+			try {
 
 
-					$max = max(count($usbc['deviceFilters']),count($args['USBController']['deviceFilters']));
+				$max = max(count($usbc['deviceFilters']),count($args['USBController']['deviceFilters']));
+				$offset = 0;
 
-					// Remove existing
-					for($i = 0; $i < $max; $i++) {
+				// Remove existing
+				for($i = 0; $i < $max; $i++) {
 
-						// Only if filter differs
-						if(@serialize($usbc['deviceFilters'][$i]) != @serialize($args['USBController']['deviceFilters'][$i])) {
+					// Only if filter differs
+					if(@serialize($usbc['deviceFilters'][$i]) != @serialize($args['USBController']['deviceFilters'][$i])) {
 
-							// Remove existing?
-							if(count($usbc['deviceFilters'][$i]))
-								$m->USBController->removeDeviceFilter($i);
-
-							// Exists in new?
-							if(count($args['USBController']['deviceFilters'][$i])) {
-
-								// Create filter
-								$f = $m->USBController->createDeviceFilter($args['USBController']['deviceFilters'][$i]['name']);
-								$f->active = (bool)$args['USBController']['deviceFilters'][$i]['active'];
-
-								foreach($usbProps as $p) {
-									$f->$p = $args['USBController']['deviceFilters'][$i][$p];
-								}
-
-								$m->USBController->insertDeviceFilter($i,$f);
-								$f->releaseRemote();
-							}
+						// Remove existing?
+						if($i < count($usbc['deviceFilters'])) {
+							$m->USBController->removeDeviceFilter(($i-$offset));
+							$offset++;
 						}
 
+						// Exists in new?
+						if(count($args['USBController']['deviceFilters'][$i])) {
+
+							// Create filter
+							$f = $m->USBController->createDeviceFilter($args['USBController']['deviceFilters'][$i]['name']);
+							$f->active = (bool)$args['USBController']['deviceFilters'][$i]['active'];
+
+							foreach($usbProps as $p) {
+								$f->$p = $args['USBController']['deviceFilters'][$i][$p];
+							}
+
+							$m->USBController->insertDeviceFilter($i,$f);
+							$f->releaseRemote();
+							$offset--;
+						}
 					}
 
-				} catch (Exception $e) { $this->errors[] = $e; }
+				}
 
-			}
+			} catch (Exception $e) { $this->errors[] = $e; }
 
-			// Expire USB info?
-			if($usbchanged) $expire[] = '__getUSBController'.$args['id'];
 		}
+
+		// Expire USB info?
+		if($usbchanged) $expire[] = '__getUSBController'.$args['id'];
 
 
 		$this->session->machine->saveSettings();
@@ -1027,7 +1031,11 @@ class vboxconnector {
 
 			for($i = 0; $i < $this->settings['nicMax']; $i++) {
 
-				$h = &$machine->getNetworkAdapter($i);
+				try {
+					$h = &$machine->getNetworkAdapter($i);
+				} catch (Exception $e) {
+					break;
+				}
 
 				if($h->enabled && $h->internalNetwork)
 					$networks[$h->internalNetwork] = 1;
@@ -1211,7 +1219,7 @@ class vboxconnector {
 				'description' => $g->description,
 				'is64Bit' => $g->is64Bit,
 				'recommendedRAM' => $g->recommendedRAM,
-				'recommendedHDD' => $g->recommendedHDD
+				'recommendedHDD' => ($g->recommendedHDD/1024)/1024
 			);
 		}
 		return true;
@@ -1462,11 +1470,6 @@ class vboxconnector {
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
 
-		// Not supported in OSE
-		$version = $this->getVersion();
-		if($version['ose']) return true;
-
-
 		foreach($this->vbox->host->USBDevices as $d) {
 			$response['data'][] = array(
 				'id' => $d->id,
@@ -1556,9 +1559,7 @@ class vboxconnector {
 
 
 		// USB Filters
-		if(!$version['ose']) {
-			$data['USBController'] = $this->__getCachedMachineData('__getUSBController',@$args['vm'],$machine,@$args['force_refresh']);
-		}
+		$data['USBController'] = $this->__getCachedMachineData('__getUSBController',@$args['vm'],$machine,@$args['force_refresh']);
 
 		// Non-cached items when not obtaining
 		// snapshot machine info
@@ -1715,9 +1716,9 @@ class vboxconnector {
 
 			// Always set
 			$this->session->machine->setExtraData('GUI/SaveMountedAtRuntime', 'yes');
+			$this->session->machine->USBController->enabled = true;
+			$this->session->machine->USBController->enabledEhci = true;
 			if(!$version['ose']) {
-				$this->session->machine->USBController->enabled = true;
-				$this->session->machine->USBController->enabledEhci = true;
 				$this->session->machine->VRDPServer->authTimeout = 5000;
 			}
 
@@ -2623,7 +2624,7 @@ class vboxconnector {
 				'children' => $children,
 				'base' => (($m->deviceType->__toString() == 'HardDisk' && $m->base->handle) ? $m->base->id : null),
 				'readOnly' => $m->readOnly,
-				'logicalSize' => $m->logicalSize,
+				'logicalSize' => ($m->logicalSize/1024)/1024,
 				'autoReset' => $m->autoReset,
 				'hasSnapshots' => $hasSnapshots,
 				'lastAccessError' => $m->lastAccessError,
@@ -2681,7 +2682,7 @@ class vboxconnector {
 			'maxGuestVRAM' => (string)$this->vbox->systemProperties->maxGuestVRAM,
 			'minGuestCPUCount' => (string)$this->vbox->systemProperties->minGuestCPUCount,
 			'maxGuestCPUCount' => (string)$this->vbox->systemProperties->maxGuestCPUCount,
-			'maxVDISize' => (string)$this->vbox->systemProperties->maxVDISize,
+			'infoVDSize' => (string)$this->vbox->systemProperties->infoVDSize,
 			'networkAdapterCount' => (string)$this->vbox->systemProperties->networkAdapterCount,
 			'maxBootPosition' => (string)$this->vbox->systemProperties->maxBootPosition,
 			'defaultMachineFolder' => (string)$this->vbox->systemProperties->defaultMachineFolder,

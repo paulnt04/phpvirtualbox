@@ -429,7 +429,7 @@ function vboxVMsettingsInit(vm,callback,pane) {
 		{'name':'Storage','label':'Storage','icon':'attachment'},
 		{'name':'Audio','label':'Audio','icon':'sound'},
 		{'name':'Network','label':'Network','icon':'nw','tabbed':true},
-		{'name':'USB','label':'USB','icon':'usb','disabled':($('#vboxIndex').data('vboxConfig').version.ose)},
+		{'name':'USB','label':'USB','icon':'usb'},
 		{'name':'SharedFolders','label':'Shared Folders','icon':'shared_folder'}
 			
 	);
