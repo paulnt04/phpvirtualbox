@@ -1,4 +1,6 @@
 
+phpVirtualBox is Copyright (C) 2010 Ian Moore (imoore76 at yahoo dot com)
+
 FREE, WITHOUT WARRANTY:
 
 All files of this program (phpVirtualBox) are distributed under the

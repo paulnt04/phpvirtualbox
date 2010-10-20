@@ -2047,24 +2047,24 @@ class IMachine extends VBox_ManagedObject {
        $this->connection->__soapCall('IMachine_setCPUHotPlugEnabled', array((array)$request));
    }
 
-   public function getCPUPriority() {
+   public function getCPUExecutionCap() {
        $request = new stdClass();
        $request->_this = $this->handle;
-       $response = $this->connection->__soapCall('IMachine_getCPUPriority', array((array)$request));
+       $response = $this->connection->__soapCall('IMachine_getCPUExecutionCap', array((array)$request));
        return (float)$response->returnval;
    }
 
-   public function setCPUPriority($value) {
+   public function setCPUExecutionCap($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
        if (is_int($value) || is_string($value) || is_bool($value)) {
-            $request->CPUPriority = $value;
+            $request->CPUExecutionCap = $value;
        }
        else
        {
-            $request->CPUPriority = $value->handle;
+            $request->CPUExecutionCap = $value->handle;
        }
-       $this->connection->__soapCall('IMachine_setCPUPriority', array((array)$request));
+       $this->connection->__soapCall('IMachine_setCPUExecutionCap', array((array)$request));
    }
 
    public function getMemorySize() {
@@ -3994,6 +3994,33 @@ class IGuest extends VBox_ManagedObject {
        return array((float)$response->returnval, (float)$response->exitcode, (float)$response->flags);
   }
 
+   public function copyToGuest($arg_source, $arg_dest, $arg_flags) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->source = $arg_source;
+       $request->dest = $arg_dest;
+       $request->flags = $arg_flags;
+       $response = $this->connection->__soapCall('IGuest_copyToGuest', array((array)$request));
+       
+       return new IProgress ($this->connection, $response->returnval);
+  }
+
+   public function setProcessInput($arg_pid, $arg_flags, $arg_timeoutMS, $arg_data) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->pid = $arg_pid;
+       $request->flags = $arg_flags;
+       $request->timeoutMS = $arg_timeoutMS;
+       $request->data = $arg_data;
+       $response = $this->connection->__soapCall('IGuest_setProcessInput', array((array)$request));
+       
+       return (float)$response->returnval;
+  }
+
    public function getOSTypeId() {
        $request = new stdClass();
        $request->_this = $this->handle;
@@ -4878,6 +4905,13 @@ class IKeyboard extends VBox_ManagedObject {
        
        return ;
   }
+
+   public function getEventSource() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IKeyboard_getEventSource', array((array)$request));
+       return new IEventSource ($this->connection, $response->returnval);
+   }
 }
   
 /**
@@ -4941,6 +4975,13 @@ class IMouse extends VBox_ManagedObject {
        $request->_this = $this->handle;
        $response = $this->connection->__soapCall('IMouse_getNeedsHostCursor', array((array)$request));
        return (bool)$response->returnval;
+   }
+
+   public function getEventSource() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IMouse_getEventSource', array((array)$request));
+       return new IEventSource ($this->connection, $response->returnval);
    }
 }
   
@@ -7775,12 +7816,12 @@ class ICPUChangedEventCollection extends VBox_ManagedObjectCollection {
 /**
 * Generated VBoxWebService Interface Wrapper
 */
-class ICPUPriorityChangedEvent extends IEvent {
+class ICPUExecutionCapChangedEvent extends IEvent {
 
-   public function getPriority() {
+   public function getExecutionCap() {
        $request = new stdClass();
        $request->_this = $this->handle;
-       $response = $this->connection->__soapCall('ICPUPriorityChangedEvent_getPriority', array((array)$request));
+       $response = $this->connection->__soapCall('ICPUExecutionCapChangedEvent_getExecutionCap', array((array)$request));
        return (float)$response->returnval;
    }
 }
@@ -7788,8 +7829,83 @@ class ICPUPriorityChangedEvent extends IEvent {
 /**
 * Generated VBoxWebService Managed Object Collection
 */
-class ICPUPriorityChangedEventCollection extends VBox_ManagedObjectCollection {
-   protected $_interfaceName = "ICPUPriorityChangedEvent";
+class ICPUExecutionCapChangedEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "ICPUExecutionCapChangedEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class IGuestKeyboardEvent extends IEvent {
+
+   public function getScancodes() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IGuestKeyboardEvent_getScancodes', array((array)$request));
+       return (array)$response->returnval;
+   }
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class IGuestKeyboardEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "IGuestKeyboardEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class IGuestMouseEvent extends IReusableEvent {
+
+   public function getAbsolute() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IGuestMouseEvent_getAbsolute', array((array)$request));
+       return (bool)$response->returnval;
+   }
+
+   public function getX() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IGuestMouseEvent_getX', array((array)$request));
+       return (int)$response->returnval;
+   }
+
+   public function getY() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IGuestMouseEvent_getY', array((array)$request));
+       return (int)$response->returnval;
+   }
+
+   public function getZ() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IGuestMouseEvent_getZ', array((array)$request));
+       return (int)$response->returnval;
+   }
+
+   public function getW() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IGuestMouseEvent_getW', array((array)$request));
+       return (int)$response->returnval;
+   }
+
+   public function getButtons() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IGuestMouseEvent_getButtons', array((array)$request));
+       return (int)$response->returnval;
+   }
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class IGuestMouseEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "IGuestMouseEvent";
 }
 
 /**
@@ -8946,6 +9062,36 @@ class AdditionsRunLevelTypeCollection extends VBox_EnumCollection {
 /**
 * Generated VBoxWebService ENUM
 */
+class ExecuteProcessFlag extends VBox_Enum {
+   public $NameMap = array(0 => 'None', 2 => 'IgnoreOrphanedProcesses');
+   public $ValueMap = array('None' => 0, 'IgnoreOrphanedProcesses' => 2);
+}
+
+/**
+* Generated VBoxWebService Enum Collection
+*/
+class ExecuteProcessFlagCollection extends VBox_EnumCollection {
+   protected $_interfaceName = "ExecuteProcessFlag";
+}
+
+/**
+* Generated VBoxWebService ENUM
+*/
+class CopyFileFlag extends VBox_Enum {
+   public $NameMap = array(0 => 'None', 2 => 'Recursive', 4 => 'Update', 8 => 'FollowLinks');
+   public $ValueMap = array('None' => 0, 'Recursive' => 2, 'Update' => 4, 'FollowLinks' => 8);
+}
+
+/**
+* Generated VBoxWebService Enum Collection
+*/
+class CopyFileFlagCollection extends VBox_EnumCollection {
+   protected $_interfaceName = "CopyFileFlag";
+}
+
+/**
+* Generated VBoxWebService ENUM
+*/
 class MediumState extends VBox_Enum {
    public $NameMap = array(0 => 'NotCreated', 1 => 'Created', 2 => 'LockedRead', 3 => 'LockedWrite', 4 => 'Inaccessible', 5 => 'Creating', 6 => 'Deleting');
    public $ValueMap = array('NotCreated' => 0, 'Created' => 1, 'LockedRead' => 2, 'LockedWrite' => 3, 'Inaccessible' => 4, 'Creating' => 5, 'Deleting' => 6);
@@ -9262,8 +9408,8 @@ class NATProtocolCollection extends VBox_EnumCollection {
 * Generated VBoxWebService ENUM
 */
 class VBoxEventType extends VBox_Enum {
-   public $NameMap = array(0 => 'Invalid', 1 => 'Any', 2 => 'Vetoable', 3 => 'MachineEvent', 4 => 'SnapshotEvent', 5 => 'InputEvent', 31 => 'LastWildcard', 32 => 'OnMachineStateChanged', 33 => 'OnMachineDataChanged', 34 => 'OnExtraDataChanged', 35 => 'OnExtraDataCanChange', 36 => 'OnMediumRegistered', 37 => 'OnMachineRegistered', 38 => 'OnSessionStateChanged', 39 => 'OnSnapshotTaken', 40 => 'OnSnapshotDeleted', 41 => 'OnSnapshotChanged', 42 => 'OnGuestPropertyChanged', 43 => 'OnMousePointerShapeChanged', 44 => 'OnMouseCapabilityChanged', 45 => 'OnKeyboardLedsChanged', 46 => 'OnStateChanged', 47 => 'OnAdditionsStateChanged', 48 => 'OnNetworkAdapterChanged', 49 => 'OnSerialPortChanged', 50 => 'OnParallelPortChanged', 51 => 'OnStorageControllerChanged', 52 => 'OnMediumChanged', 53 => 'OnVRDPServerChanged', 54 => 'OnUSBControllerChanged', 55 => 'OnUSBDeviceStateChanged', 56 => 'OnSharedFolderChanged', 57 => 'OnRuntimeError', 58 => 'OnCanShowWindow', 59 => 'OnShowWindow', 60 => 'OnCPUChanged', 61 => 'OnRemoteDisplayInfoChanged', 62 => 'OnEventSourceChanged', 63 => 'OnCPUPriorityChanged', 64 => 'Last');
-   public $ValueMap = array('Invalid' => 0, 'Any' => 1, 'Vetoable' => 2, 'MachineEvent' => 3, 'SnapshotEvent' => 4, 'InputEvent' => 5, 'LastWildcard' => 31, 'OnMachineStateChanged' => 32, 'OnMachineDataChanged' => 33, 'OnExtraDataChanged' => 34, 'OnExtraDataCanChange' => 35, 'OnMediumRegistered' => 36, 'OnMachineRegistered' => 37, 'OnSessionStateChanged' => 38, 'OnSnapshotTaken' => 39, 'OnSnapshotDeleted' => 40, 'OnSnapshotChanged' => 41, 'OnGuestPropertyChanged' => 42, 'OnMousePointerShapeChanged' => 43, 'OnMouseCapabilityChanged' => 44, 'OnKeyboardLedsChanged' => 45, 'OnStateChanged' => 46, 'OnAdditionsStateChanged' => 47, 'OnNetworkAdapterChanged' => 48, 'OnSerialPortChanged' => 49, 'OnParallelPortChanged' => 50, 'OnStorageControllerChanged' => 51, 'OnMediumChanged' => 52, 'OnVRDPServerChanged' => 53, 'OnUSBControllerChanged' => 54, 'OnUSBDeviceStateChanged' => 55, 'OnSharedFolderChanged' => 56, 'OnRuntimeError' => 57, 'OnCanShowWindow' => 58, 'OnShowWindow' => 59, 'OnCPUChanged' => 60, 'OnRemoteDisplayInfoChanged' => 61, 'OnEventSourceChanged' => 62, 'OnCPUPriorityChanged' => 63, 'Last' => 64);
+   public $NameMap = array(0 => 'Invalid', 1 => 'Any', 2 => 'Vetoable', 3 => 'MachineEvent', 4 => 'SnapshotEvent', 5 => 'InputEvent', 31 => 'LastWildcard', 32 => 'OnMachineStateChanged', 33 => 'OnMachineDataChanged', 34 => 'OnExtraDataChanged', 35 => 'OnExtraDataCanChange', 36 => 'OnMediumRegistered', 37 => 'OnMachineRegistered', 38 => 'OnSessionStateChanged', 39 => 'OnSnapshotTaken', 40 => 'OnSnapshotDeleted', 41 => 'OnSnapshotChanged', 42 => 'OnGuestPropertyChanged', 43 => 'OnMousePointerShapeChanged', 44 => 'OnMouseCapabilityChanged', 45 => 'OnKeyboardLedsChanged', 46 => 'OnStateChanged', 47 => 'OnAdditionsStateChanged', 48 => 'OnNetworkAdapterChanged', 49 => 'OnSerialPortChanged', 50 => 'OnParallelPortChanged', 51 => 'OnStorageControllerChanged', 52 => 'OnMediumChanged', 53 => 'OnVRDPServerChanged', 54 => 'OnUSBControllerChanged', 55 => 'OnUSBDeviceStateChanged', 56 => 'OnSharedFolderChanged', 57 => 'OnRuntimeError', 58 => 'OnCanShowWindow', 59 => 'OnShowWindow', 60 => 'OnCPUChanged', 61 => 'OnRemoteDisplayInfoChanged', 62 => 'OnEventSourceChanged', 63 => 'OnCPUExecutionCapChanged', 64 => 'OnGuestKeyboardEvent', 65 => 'OnGuestMouseEvent', 66 => 'Last');
+   public $ValueMap = array('Invalid' => 0, 'Any' => 1, 'Vetoable' => 2, 'MachineEvent' => 3, 'SnapshotEvent' => 4, 'InputEvent' => 5, 'LastWildcard' => 31, 'OnMachineStateChanged' => 32, 'OnMachineDataChanged' => 33, 'OnExtraDataChanged' => 34, 'OnExtraDataCanChange' => 35, 'OnMediumRegistered' => 36, 'OnMachineRegistered' => 37, 'OnSessionStateChanged' => 38, 'OnSnapshotTaken' => 39, 'OnSnapshotDeleted' => 40, 'OnSnapshotChanged' => 41, 'OnGuestPropertyChanged' => 42, 'OnMousePointerShapeChanged' => 43, 'OnMouseCapabilityChanged' => 44, 'OnKeyboardLedsChanged' => 45, 'OnStateChanged' => 46, 'OnAdditionsStateChanged' => 47, 'OnNetworkAdapterChanged' => 48, 'OnSerialPortChanged' => 49, 'OnParallelPortChanged' => 50, 'OnStorageControllerChanged' => 51, 'OnMediumChanged' => 52, 'OnVRDPServerChanged' => 53, 'OnUSBControllerChanged' => 54, 'OnUSBDeviceStateChanged' => 55, 'OnSharedFolderChanged' => 56, 'OnRuntimeError' => 57, 'OnCanShowWindow' => 58, 'OnShowWindow' => 59, 'OnCPUChanged' => 60, 'OnRemoteDisplayInfoChanged' => 61, 'OnEventSourceChanged' => 62, 'OnCPUExecutionCapChanged' => 63, 'OnGuestKeyboardEvent' => 64, 'OnGuestMouseEvent' => 65, 'Last' => 66);
 }
 
 /**

@@ -1,6 +1,7 @@
 <?php
 /*
  * $Id$
+ * Copyright (C) 2010 Ian Moore (imoore76 at yahoo dot com)
  */
 
 class vboxconnector {
@@ -318,6 +319,7 @@ class vboxconnector {
 			$m->VRDPServer->ports = $args['VRDPServer']['ports'];
 			$m->VRDPServer->authType = ($args['VRDPServer']['authType'] ? $args['VRDPServer']['authType'] : null);
 			$m->VRDPServer->authTimeout = intval($args['VRDPServer']['authTimeout']);
+			$m->VRDPServer->allowMultiConnection = intval($args['VRDPServer']['allowMultiConnection']);
 		}
 
 		// Audio controller settings
@@ -988,7 +990,7 @@ class vboxconnector {
 			$m->releaseRemote();
 		}
 
-		$progress = $app->write(($args['format'] ? $args['format'] : 'ovf-1.0'),$args['file']);
+		$progress = $app->write(($args['format'] ? $args['format'] : 'ovf-1.0'),true,$args['file']);
 
 		// Does an exception exist?
 		try {
@@ -1728,6 +1730,7 @@ class vboxconnector {
 			$this->session->machine->setCpuProperty('PAE',$defaults->recommendedPae);
 			$this->session->machine->RTCUseUTC = $defaults->recommendedRtcUseUtc;
 			$this->session->machine->firmwareType = $defaults->recommendedFirmware->__toString();
+			$this->session->machine->chipsetType = $defaults->recommendedChipset->__toString();
 			if(intval($defaults->recommendedVRAM) > 0) $this->session->machine->VRAMSize = intval($defaults->recommendedVRAM);
 
 			/*
@@ -1745,6 +1748,7 @@ class vboxconnector {
 				$bus = new StorageBus(null,$HDbusType);
 				$sc = $this->session->machine->addStorageController(trans($HDbusType.' Controller'),$bus->__toString());
 				$sc->controllerType = $HDconType;
+				$sc->useHostIOCache = (bool)$this->vbox->systemProperties->getDefaultIoCacheSettingForStorageController($HDconType);
 				$sc->releaseRemote();
 
 				$m = $this->vbox->findMedium($args['disk'],'HardDisk');
@@ -1764,6 +1768,7 @@ class vboxconnector {
 					$bus = new StorageBus(null,$DVDbusType);
 					$sc = $this->session->machine->addStorageController(trans($DVDbusType.' Controller'),$bus->__toString());
 					$sc->controllerType = $DVDconType;
+					$sc->useHostIOCache = (bool)$this->vbox->systemProperties->getDefaultIoCacheSettingForStorageController($DVDconType);
 					$sc->releaseRemote();
 				}
 

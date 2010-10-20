@@ -85,7 +85,7 @@ $('#vboxTabVMConsole').bind('show',function(e,vm){
 	if(vboxConsoleDetached) window.status = $("#vboxRDPStatus").text();
 	
 	var chost = (vm.VRDPServer.netAddress ? vm.VRDPServer.netAddress : $('#vboxIndex').data('vboxConfig').consoleHost);
-	if(chost == 'localhost' || chost == '127.0.0.1') { chost = location.hostname;}
+	if(!chost) { chost = location.hostname;}
 	chost+=':'+vm.consolePort;
 	$(document.vboxRDPForm.serverAddress).val(chost);
 

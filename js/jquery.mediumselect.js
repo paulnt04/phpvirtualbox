@@ -3,6 +3,7 @@
  * phpVirtualBox medium (disk / CD image etc.) select box
  * 
  * $Id$
+ * Copyright (C) 2010 Ian Moore (imoore76 at yahoo dot com)
  * 
  */
 

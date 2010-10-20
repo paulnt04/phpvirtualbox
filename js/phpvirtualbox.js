@@ -1,12 +1,9 @@
-
 /*
- * 
- * 
- * 
+
  * 	Common classes used
  * 
  * $Id$
- * 
+ * Copyright (C) 2010 Ian Moore (imoore76 at yahoo dot com)
  * 
  */
 
@@ -345,7 +342,7 @@ function vboxToolbarSmall(buttons) {
 		// Pre-load disabled version of icon if enabled function exists
 		if(b.enabled) {
 			var a = new Image();
-			a.src = "images/vbox/" + b.icon + "_" + self.disabledString + "_16px.png";
+			a.src = "images/vbox/" + b.icon + "_" + self.disabledString + "_" + self.size + "px.png";
 		}
 		
 		var btn = document.createElement('input');

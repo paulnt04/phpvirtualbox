@@ -6,7 +6,7 @@
  * depends on methods' public / private attributes being set correctly.
  *
  * $Id$
- *
+ * Copyright (C) 2010 Ian Moore (imoore76 at yahoo dot com)
 */
 
 //Set no caching

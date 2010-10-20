@@ -507,6 +507,30 @@
           <xsd:enumeration value="Desktop"/>
         </xsd:restriction>
       </xsd:simpleType>
+      <!-- enum: ExecuteProcessFlag -
+            None: 0 -
+            IgnoreOrphanedProcesses: 2 -
+            -->
+      <xsd:simpleType name="ExecuteProcessFlag">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="None"/>
+          <xsd:enumeration value="IgnoreOrphanedProcesses"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <!-- enum: CopyFileFlag -
+            None: 0 -
+            Recursive: 2 -
+            Update: 4 -
+            FollowLinks: 8 -
+            -->
+      <xsd:simpleType name="CopyFileFlag">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="None"/>
+          <xsd:enumeration value="Recursive"/>
+          <xsd:enumeration value="Update"/>
+          <xsd:enumeration value="FollowLinks"/>
+        </xsd:restriction>
+      </xsd:simpleType>
       <!-- enum: MediumState -
             NotCreated: 0 -
             Created: 1 -
@@ -892,8 +916,10 @@
             OnCPUChanged: 60 -
             OnRemoteDisplayInfoChanged: 61 -
             OnEventSourceChanged: 62 -
-            OnCPUPriorityChanged: 63 -
-            Last: 64 -
+            OnCPUExecutionCapChanged: 63 -
+            OnGuestKeyboardEvent: 64 -
+            OnGuestMouseEvent: 65 -
+            Last: 66 -
             -->
       <xsd:simpleType name="VBoxEventType">
         <xsd:restriction base="xsd:string">
@@ -935,7 +961,9 @@
           <xsd:enumeration value="OnCPUChanged"/>
           <xsd:enumeration value="OnRemoteDisplayInfoChanged"/>
           <xsd:enumeration value="OnEventSourceChanged"/>
-          <xsd:enumeration value="OnCPUPriorityChanged"/>
+          <xsd:enumeration value="OnCPUExecutionCapChanged"/>
+          <xsd:enumeration value="OnGuestKeyboardEvent"/>
+          <xsd:enumeration value="OnGuestMouseEvent"/>
           <xsd:enumeration value="Last"/>
         </xsd:restriction>
       </xsd:simpleType>
@@ -2724,30 +2752,30 @@
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
-      <!-- read/write attribute IMachine::CPUPriority-->
-      <xsd:element name="IMachine_getCPUPriority">
+      <!-- read/write attribute IMachine::CPUExecutionCap-->
+      <xsd:element name="IMachine_getCPUExecutionCap">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IMachine_getCPUPriorityResponse">
+      <xsd:element name="IMachine_getCPUExecutionCapResponse">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="returnval" type="xsd:unsignedInt"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IMachine_setCPUPriority">
+      <xsd:element name="IMachine_setCPUExecutionCap">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="CPUPriority" type="xsd:unsignedInt"/>
+            <xsd:element name="CPUExecutionCap" type="xsd:unsignedInt"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IMachine_setCPUPriorityResponse">
+      <xsd:element name="IMachine_setCPUExecutionCapResponse">
         <xsd:complexType>
           <xsd:sequence/>
         </xsd:complexType>
@@ -6815,6 +6843,43 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
+      <!-- method IGuest::copyToGuest-->
+      <xsd:element name="IGuest_copyToGuest">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="source" type="xsd:string"/>
+            <xsd:element name="dest" type="xsd:string"/>
+            <xsd:element name="flags" type="xsd:unsignedInt"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IGuest_copyToGuestResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IGuest::setProcessInput-->
+      <xsd:element name="IGuest_setProcessInput">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="pid" type="xsd:unsignedInt"/>
+            <xsd:element name="flags" type="xsd:unsignedInt"/>
+            <xsd:element name="timeoutMS" type="xsd:unsignedInt"/>
+            <xsd:element name="data" minOccurs="0" maxOccurs="unbounded" type="xsd:unsignedByte"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IGuest_setProcessInputResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:unsignedInt"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
       <!--Interface IProgress-->
       <!-- readonly attribute IProgress::id-->
       <xsd:element name="IProgress_getId">
@@ -8034,6 +8099,21 @@
         </xsd:complexType>
       </xsd:element>
       <!--Interface IKeyboard-->
+      <!-- readonly attribute IKeyboard::eventSource-->
+      <xsd:element name="IKeyboard_getEventSource">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IKeyboard_getEventSourceResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
       <!-- method IKeyboard::putScancode-->
       <xsd:element name="IKeyboard_putScancode">
         <xsd:complexType>
@@ -8120,6 +8200,21 @@
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="returnval" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IMouse::eventSource-->
+      <xsd:element name="IMouse_getEventSource">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMouse_getEventSourceResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -11741,19 +11836,126 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <!--Interface ICPUPriorityChangedEvent-->
-      <!-- readonly attribute ICPUPriorityChangedEvent::priority-->
-      <xsd:element name="ICPUPriorityChangedEvent_getPriority">
+      <!--Interface ICPUExecutionCapChangedEvent-->
+      <!-- readonly attribute ICPUExecutionCapChangedEvent::executionCap-->
+      <xsd:element name="ICPUExecutionCapChangedEvent_getExecutionCap">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="ICPUPriorityChangedEvent_getPriorityResponse">
+      <xsd:element name="ICPUExecutionCapChangedEvent_getExecutionCapResponse">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="returnval" type="xsd:unsignedInt"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!--Interface IGuestKeyboardEvent-->
+      <!-- readonly attribute IGuestKeyboardEvent::scancodes-->
+      <xsd:element name="IGuestKeyboardEvent_getScancodes">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IGuestKeyboardEvent_getScancodesResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" minOccurs="0" maxOccurs="unbounded" type="xsd:int"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!--Interface IGuestMouseEvent-->
+      <!-- readonly attribute IGuestMouseEvent::absolute-->
+      <xsd:element name="IGuestMouseEvent_getAbsolute">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IGuestMouseEvent_getAbsoluteResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IGuestMouseEvent::x-->
+      <xsd:element name="IGuestMouseEvent_getX">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IGuestMouseEvent_getXResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:int"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IGuestMouseEvent::y-->
+      <xsd:element name="IGuestMouseEvent_getY">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IGuestMouseEvent_getYResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:int"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IGuestMouseEvent::z-->
+      <xsd:element name="IGuestMouseEvent_getZ">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IGuestMouseEvent_getZResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:int"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IGuestMouseEvent::w-->
+      <xsd:element name="IGuestMouseEvent_getW">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IGuestMouseEvent_getWResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:int"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IGuestMouseEvent::buttons-->
+      <xsd:element name="IGuestMouseEvent_getButtons">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IGuestMouseEvent_getButtonsResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:int"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -12915,18 +13117,18 @@
   <message name="IMachine_setCPUHotPlugEnabledResultMsg">
     <part name="parameters" element="vbox:IMachine_setCPUHotPlugEnabledResponse"/>
   </message>
-  <!-- read/write attribute IMachine::CPUPriority-->
-  <message name="IMachine_getCPUPriorityRequestMsg">
-    <part name="parameters" element="vbox:IMachine_getCPUPriority"/>
+  <!-- read/write attribute IMachine::CPUExecutionCap-->
+  <message name="IMachine_getCPUExecutionCapRequestMsg">
+    <part name="parameters" element="vbox:IMachine_getCPUExecutionCap"/>
   </message>
-  <message name="IMachine_getCPUPriorityResultMsg">
-    <part name="parameters" element="vbox:IMachine_getCPUPriorityResponse"/>
+  <message name="IMachine_getCPUExecutionCapResultMsg">
+    <part name="parameters" element="vbox:IMachine_getCPUExecutionCapResponse"/>
   </message>
-  <message name="IMachine_setCPUPriorityRequestMsg">
-    <part name="parameters" element="vbox:IMachine_setCPUPriority"/>
+  <message name="IMachine_setCPUExecutionCapRequestMsg">
+    <part name="parameters" element="vbox:IMachine_setCPUExecutionCap"/>
   </message>
-  <message name="IMachine_setCPUPriorityResultMsg">
-    <part name="parameters" element="vbox:IMachine_setCPUPriorityResponse"/>
+  <message name="IMachine_setCPUExecutionCapResultMsg">
+    <part name="parameters" element="vbox:IMachine_setCPUExecutionCapResponse"/>
   </message>
   <!-- read/write attribute IMachine::memorySize-->
   <message name="IMachine_getMemorySizeRequestMsg">
@@ -14801,6 +15003,20 @@
   <message name="IGuest_getProcessStatusResultMsg">
     <part name="parameters" element="vbox:IGuest_getProcessStatusResponse"/>
   </message>
+  <!-- method IGuest::copyToGuest-->
+  <message name="IGuest_copyToGuestRequestMsg">
+    <part name="parameters" element="vbox:IGuest_copyToGuest"/>
+  </message>
+  <message name="IGuest_copyToGuestResultMsg">
+    <part name="parameters" element="vbox:IGuest_copyToGuestResponse"/>
+  </message>
+  <!-- method IGuest::setProcessInput-->
+  <message name="IGuest_setProcessInputRequestMsg">
+    <part name="parameters" element="vbox:IGuest_setProcessInput"/>
+  </message>
+  <message name="IGuest_setProcessInputResultMsg">
+    <part name="parameters" element="vbox:IGuest_setProcessInputResponse"/>
+  </message>
   <!--
         *************************************
         messages for interface IProgress
@@ -15391,6 +15607,13 @@
         messages for interface IKeyboard
         *************************************
       -->
+  <!-- readonly attribute IKeyboard::eventSource-->
+  <message name="IKeyboard_getEventSourceRequestMsg">
+    <part name="parameters" element="vbox:IKeyboard_getEventSource"/>
+  </message>
+  <message name="IKeyboard_getEventSourceResultMsg">
+    <part name="parameters" element="vbox:IKeyboard_getEventSourceResponse"/>
+  </message>
   <!-- method IKeyboard::putScancode-->
   <message name="IKeyboard_putScancodeRequestMsg">
     <part name="parameters" element="vbox:IKeyboard_putScancode"/>
@@ -15437,6 +15660,13 @@
   </message>
   <message name="IMouse_getNeedsHostCursorResultMsg">
     <part name="parameters" element="vbox:IMouse_getNeedsHostCursorResponse"/>
+  </message>
+  <!-- readonly attribute IMouse::eventSource-->
+  <message name="IMouse_getEventSourceRequestMsg">
+    <part name="parameters" element="vbox:IMouse_getEventSource"/>
+  </message>
+  <message name="IMouse_getEventSourceResultMsg">
+    <part name="parameters" element="vbox:IMouse_getEventSourceResponse"/>
   </message>
   <!-- method IMouse::putMouseEvent-->
   <message name="IMouse_putMouseEventRequestMsg">
@@ -17341,15 +17571,74 @@
   </message>
   <!--
         *************************************
-        messages for interface ICPUPriorityChangedEvent
+        messages for interface ICPUExecutionCapChangedEvent
         *************************************
       -->
-  <!-- readonly attribute ICPUPriorityChangedEvent::priority-->
-  <message name="ICPUPriorityChangedEvent_getPriorityRequestMsg">
-    <part name="parameters" element="vbox:ICPUPriorityChangedEvent_getPriority"/>
+  <!-- readonly attribute ICPUExecutionCapChangedEvent::executionCap-->
+  <message name="ICPUExecutionCapChangedEvent_getExecutionCapRequestMsg">
+    <part name="parameters" element="vbox:ICPUExecutionCapChangedEvent_getExecutionCap"/>
   </message>
-  <message name="ICPUPriorityChangedEvent_getPriorityResultMsg">
-    <part name="parameters" element="vbox:ICPUPriorityChangedEvent_getPriorityResponse"/>
+  <message name="ICPUExecutionCapChangedEvent_getExecutionCapResultMsg">
+    <part name="parameters" element="vbox:ICPUExecutionCapChangedEvent_getExecutionCapResponse"/>
+  </message>
+  <!--
+        *************************************
+        messages for interface IGuestKeyboardEvent
+        *************************************
+      -->
+  <!-- readonly attribute IGuestKeyboardEvent::scancodes-->
+  <message name="IGuestKeyboardEvent_getScancodesRequestMsg">
+    <part name="parameters" element="vbox:IGuestKeyboardEvent_getScancodes"/>
+  </message>
+  <message name="IGuestKeyboardEvent_getScancodesResultMsg">
+    <part name="parameters" element="vbox:IGuestKeyboardEvent_getScancodesResponse"/>
+  </message>
+  <!--
+        *************************************
+        messages for interface IGuestMouseEvent
+        *************************************
+      -->
+  <!-- readonly attribute IGuestMouseEvent::absolute-->
+  <message name="IGuestMouseEvent_getAbsoluteRequestMsg">
+    <part name="parameters" element="vbox:IGuestMouseEvent_getAbsolute"/>
+  </message>
+  <message name="IGuestMouseEvent_getAbsoluteResultMsg">
+    <part name="parameters" element="vbox:IGuestMouseEvent_getAbsoluteResponse"/>
+  </message>
+  <!-- readonly attribute IGuestMouseEvent::x-->
+  <message name="IGuestMouseEvent_getXRequestMsg">
+    <part name="parameters" element="vbox:IGuestMouseEvent_getX"/>
+  </message>
+  <message name="IGuestMouseEvent_getXResultMsg">
+    <part name="parameters" element="vbox:IGuestMouseEvent_getXResponse"/>
+  </message>
+  <!-- readonly attribute IGuestMouseEvent::y-->
+  <message name="IGuestMouseEvent_getYRequestMsg">
+    <part name="parameters" element="vbox:IGuestMouseEvent_getY"/>
+  </message>
+  <message name="IGuestMouseEvent_getYResultMsg">
+    <part name="parameters" element="vbox:IGuestMouseEvent_getYResponse"/>
+  </message>
+  <!-- readonly attribute IGuestMouseEvent::z-->
+  <message name="IGuestMouseEvent_getZRequestMsg">
+    <part name="parameters" element="vbox:IGuestMouseEvent_getZ"/>
+  </message>
+  <message name="IGuestMouseEvent_getZResultMsg">
+    <part name="parameters" element="vbox:IGuestMouseEvent_getZResponse"/>
+  </message>
+  <!-- readonly attribute IGuestMouseEvent::w-->
+  <message name="IGuestMouseEvent_getWRequestMsg">
+    <part name="parameters" element="vbox:IGuestMouseEvent_getW"/>
+  </message>
+  <message name="IGuestMouseEvent_getWResultMsg">
+    <part name="parameters" element="vbox:IGuestMouseEvent_getWResponse"/>
+  </message>
+  <!-- readonly attribute IGuestMouseEvent::buttons-->
+  <message name="IGuestMouseEvent_getButtonsRequestMsg">
+    <part name="parameters" element="vbox:IGuestMouseEvent_getButtons"/>
+  </message>
+  <message name="IGuestMouseEvent_getButtonsResultMsg">
+    <part name="parameters" element="vbox:IGuestMouseEvent_getButtonsResponse"/>
   </message>
   <!--
         *************************************
@@ -18275,15 +18564,15 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IMachine_getCPUPriority">
-      <input message="vbox:IMachine_getCPUPriorityRequestMsg"/>
-      <output message="vbox:IMachine_getCPUPriorityResultMsg"/>
+    <operation name="IMachine_getCPUExecutionCap">
+      <input message="vbox:IMachine_getCPUExecutionCapRequestMsg"/>
+      <output message="vbox:IMachine_getCPUExecutionCapResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IMachine_setCPUPriority">
-      <input message="vbox:IMachine_setCPUPriorityRequestMsg"/>
-      <output message="vbox:IMachine_setCPUPriorityResultMsg"/>
+    <operation name="IMachine_setCPUExecutionCap">
+      <input message="vbox:IMachine_setCPUExecutionCapRequestMsg"/>
+      <output message="vbox:IMachine_setCPUExecutionCapResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -19931,6 +20220,18 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
+    <operation name="IGuest_copyToGuest">
+      <input message="vbox:IGuest_copyToGuestRequestMsg"/>
+      <output message="vbox:IGuest_copyToGuestResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IGuest_setProcessInput">
+      <input message="vbox:IGuest_setProcessInputRequestMsg"/>
+      <output message="vbox:IGuest_setProcessInputResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
     <!--
           *************************************
           operations in portType for interface IProgress
@@ -20447,6 +20748,12 @@
           operations in portType for interface IKeyboard
           *************************************
         -->
+    <operation name="IKeyboard_getEventSource">
+      <input message="vbox:IKeyboard_getEventSourceRequestMsg"/>
+      <output message="vbox:IKeyboard_getEventSourceResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
     <operation name="IKeyboard_putScancode">
       <input message="vbox:IKeyboard_putScancodeRequestMsg"/>
       <output message="vbox:IKeyboard_putScancodeResultMsg"/>
@@ -20485,6 +20792,12 @@
     <operation name="IMouse_getNeedsHostCursor">
       <input message="vbox:IMouse_getNeedsHostCursorRequestMsg"/>
       <output message="vbox:IMouse_getNeedsHostCursorResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IMouse_getEventSource">
+      <input message="vbox:IMouse_getEventSourceRequestMsg"/>
+      <output message="vbox:IMouse_getEventSourceResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -22204,12 +22517,64 @@
     </operation>
     <!--
           *************************************
-          operations in portType for interface ICPUPriorityChangedEvent
+          operations in portType for interface ICPUExecutionCapChangedEvent
           *************************************
         -->
-    <operation name="ICPUPriorityChangedEvent_getPriority">
-      <input message="vbox:ICPUPriorityChangedEvent_getPriorityRequestMsg"/>
-      <output message="vbox:ICPUPriorityChangedEvent_getPriorityResultMsg"/>
+    <operation name="ICPUExecutionCapChangedEvent_getExecutionCap">
+      <input message="vbox:ICPUExecutionCapChangedEvent_getExecutionCapRequestMsg"/>
+      <output message="vbox:ICPUExecutionCapChangedEvent_getExecutionCapResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IGuestKeyboardEvent
+          *************************************
+        -->
+    <operation name="IGuestKeyboardEvent_getScancodes">
+      <input message="vbox:IGuestKeyboardEvent_getScancodesRequestMsg"/>
+      <output message="vbox:IGuestKeyboardEvent_getScancodesResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IGuestMouseEvent
+          *************************************
+        -->
+    <operation name="IGuestMouseEvent_getAbsolute">
+      <input message="vbox:IGuestMouseEvent_getAbsoluteRequestMsg"/>
+      <output message="vbox:IGuestMouseEvent_getAbsoluteResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IGuestMouseEvent_getX">
+      <input message="vbox:IGuestMouseEvent_getXRequestMsg"/>
+      <output message="vbox:IGuestMouseEvent_getXResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IGuestMouseEvent_getY">
+      <input message="vbox:IGuestMouseEvent_getYRequestMsg"/>
+      <output message="vbox:IGuestMouseEvent_getYResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IGuestMouseEvent_getZ">
+      <input message="vbox:IGuestMouseEvent_getZRequestMsg"/>
+      <output message="vbox:IGuestMouseEvent_getZResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IGuestMouseEvent_getW">
+      <input message="vbox:IGuestMouseEvent_getWRequestMsg"/>
+      <output message="vbox:IGuestMouseEvent_getWResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IGuestMouseEvent_getButtons">
+      <input message="vbox:IGuestMouseEvent_getButtonsRequestMsg"/>
+      <output message="vbox:IGuestMouseEvent_getButtonsResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -24128,7 +24493,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IMachine_getCPUPriority">
+    <operation name="IMachine_getCPUExecutionCap">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -24143,7 +24508,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IMachine_setCPUPriority">
+    <operation name="IMachine_setCPUExecutionCap">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -28214,6 +28579,36 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
+    <operation name="IGuest_copyToGuest">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IGuest_setProcessInput">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
     <!--
           *************************************
           operations in portType for interface IProgress
@@ -29459,6 +29854,21 @@
           operations in portType for interface IKeyboard
           *************************************
         -->
+    <operation name="IKeyboard_getEventSource">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
     <operation name="IKeyboard_putScancode">
       <soap:operation soapAction="" style="document"/>
       <input>
@@ -29540,6 +29950,21 @@
       </fault>
     </operation>
     <operation name="IMouse_getNeedsHostCursor">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IMouse_getEventSource">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -33466,10 +33891,125 @@
     </operation>
     <!--
           *************************************
-          operations in portType for interface ICPUPriorityChangedEvent
+          operations in portType for interface ICPUExecutionCapChangedEvent
           *************************************
         -->
-    <operation name="ICPUPriorityChangedEvent_getPriority">
+    <operation name="ICPUExecutionCapChangedEvent_getExecutionCap">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IGuestKeyboardEvent
+          *************************************
+        -->
+    <operation name="IGuestKeyboardEvent_getScancodes">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IGuestMouseEvent
+          *************************************
+        -->
+    <operation name="IGuestMouseEvent_getAbsolute">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IGuestMouseEvent_getX">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IGuestMouseEvent_getY">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IGuestMouseEvent_getZ">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IGuestMouseEvent_getW">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IGuestMouseEvent_getButtons">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
