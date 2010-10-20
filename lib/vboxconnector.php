@@ -78,7 +78,7 @@ class vboxconnector {
 
 		if($this->settings['cachePath']) $this->cache->path = $this->settings['cachePath'];
 
-		$this->cache->prefix = 'pvbx-'.md5(parse_url($this->settings['location'],PHP_URL_HOST)).'-';
+		$this->cache->prefix = 'pvbx-'.md5($this->settings['location']).'-';
 
 	}
 
@@ -336,6 +336,7 @@ class vboxconnector {
 			$m->VRDPServer->ports = $args['VRDPServer']['ports'];
 			$m->VRDPServer->authType = ($args['VRDPServer']['authType'] ? $args['VRDPServer']['authType'] : null);
 			$m->VRDPServer->authTimeout = intval($args['VRDPServer']['authTimeout']);
+			$m->VRDPServer->allowMultiConnection = intval($args['VRDPServer']['allowMultiConnection']);
 		}
 
 		// Audio controller settings
@@ -1934,7 +1935,8 @@ class vboxconnector {
 				'ports' => $m->VRDPServer->ports,
 				'netAddress' => $m->VRDPServer->netAddress,
 				'authType' => (string)$m->VRDPServer->authType,
-				'authTimeout' => $m->VRDPServer->authTimeout
+				'authTimeout' => $m->VRDPServer->authTimeout,
+				'allowMultiConnection' => $m->VRDPServer->allowMultiConnection
 				)),
 			'audioAdapter' => array(
 				'enabled' => $m->audioAdapter->enabled,

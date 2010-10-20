@@ -8,8 +8,24 @@
  * 
  */
 $(document).ready(function(){
-	$(window).keydown(function(i){if(i.keyCode&&i.keyCode===27){i.preventDefault()}});
-	$(document).keydown(function(i){if(i.keyCode&&i.keyCode===27){i.preventDefault()}});
+    $(window).keydown(function(i){if(i.keyCode&&i.keyCode===27){
+        i.preventDefault()
+        try {
+                var flash = RDPWebClient.getFlashById("FlashRDP");
+                flash.keyboardSendScancodes('01');
+        } catch (e) {
+                //alert(e.message);
+        }
+	}});
+	$(document).keydown(function(i){if(i.keyCode&&i.keyCode===27){
+	        i.preventDefault()
+	        try {
+	                var flash = RDPWebClient.getFlashById("FlashRDP");
+	                flash.keyboardSendScancodes('01');
+	        } catch (e) {
+	                //alert(e.message);
+	        }
+	}});
 });
 
 /*

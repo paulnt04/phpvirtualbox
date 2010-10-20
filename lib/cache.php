@@ -19,13 +19,13 @@ class cache {
 
 	/* set up temp path */
 	function __construct() {
-		// PHP >= 5.2.1
-		if(function_exists('sys_get_temp_dir')) {
-			$this->path = sys_get_temp_dir();
-		} else if(@is_writable('/tmp')) {
-			$this->path = '/tmp';
-		} else if($_ENV['TEMP'] && @is_writbale($_ENV['TEMP'])) {
+		if($_ENV['TEMP'] && @is_writable($_ENV['TEMP'])) {
 			$this->path = $_ENV['TEMP'];
+		} else if($_ENV['TMP'] && @is_writable($_ENV['TMP'])) {
+			$this->path = $_ENV['TMP'];
+		// PHP >= 5.2.1
+		} else if(function_exists('sys_get_temp_dir')) {
+			$this->path = sys_get_temp_dir();
 		}
 	}
 

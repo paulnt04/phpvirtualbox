@@ -178,6 +178,8 @@ public static $trans = array(
 'Authentication Method' => 'Authentication Method',
 'External' => 'External',
 'Guest' => 'Guest',
+'Extended Features' => 'Extended Features',
+'Allow Multiple Connections' => 'Allow Multiple Connections',
 
 'Storage' => 'Storage',
 'Storage Tree' => 'Storage Tree',

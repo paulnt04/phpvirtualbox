@@ -100,6 +100,10 @@
 		<th><span class='translate'>Authentication Timeout</span>:</th>
 		<td><input type='text' class='vboxText' style='width: 100%' name='vboxSettingsDisplayRDPAuthTimeout' /></td>
 	</tr>
+	<tr>
+		<th><span class='translate'>Extended Features</span>:</th>
+		<td><input type='checkbox' class='vboxCheckbox' name='vboxSettingsDisplayRDPMulti' /> <span class='translate'>Allow Multiple Connections</span></td>
+	</tr>		
 </table>
 </div>
 <script type='text/javascript'>
@@ -138,6 +142,10 @@ if(!$('#vboxSettingsDialog').data('vboxMachineData').VRDPServer) {
 	if(($('#vboxSettingsDialog').data('vboxMachineData').VRDPServer.enabled)) {
 		document.forms['frmVboxSettings'].vboxSettingsDisplayRDPEnabled.checked = true;
 	}
+	if(($('#vboxSettingsDialog').data('vboxMachineData').VRDPServer.allowMultiConnection)) {
+		document.forms['frmVboxSettings'].vboxSettingsDisplayRDPMulti.checked = true;
+	}
+	
 }
 
 /* Change settings onSave() */
@@ -156,6 +164,7 @@ $('#vboxSettingsDialog').bind('save',function(){
 		$('#vboxSettingsDialog').data('vboxMachineData').VRDPServer.authType = document.forms['frmVboxSettings'].vboxSettingsDisplayRDPAuth.value;
 		$('#vboxSettingsDialog').data('vboxMachineData').VRDPServer.authTimeout = document.forms['frmVboxSettings'].vboxSettingsDisplayRDPAuthTimeout.value;
 		$('#vboxSettingsDialog').data('vboxMachineData').VRDPServer.enabled = (document.forms['frmVboxSettings'].vboxSettingsDisplayRDPEnabled.checked ? 1 : 0);
+		$('#vboxSettingsDialog').data('vboxMachineData').VRDPServer.allowMultiConnection = (document.forms['frmVboxSettings'].vboxSettingsDisplayRDPMulti.checked ? 1 : 0);
 	}
 });
 

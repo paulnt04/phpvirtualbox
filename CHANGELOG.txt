@@ -1,5 +1,9 @@
 -------------------------------------
 -------------------------------------
+Changed temp file prefix to use an md5 of the location setting. This
+will cleanly separate > 1 instance of phpVirtualBox running on the
+same physical server.
+
 Fixed Console tab bug when a virtual machine has a range or list
 of RDP ports configured.
 
@@ -11,6 +15,13 @@ Fixed bug in file / folder browser when file extension is not
 lower case.
 
 Added missing "Stop" to english translation file.
+
+Changed cache temp dir location to try environment variables
+first.
+
+Console tab no longer overwrites rdpHost setting.
+
+Added "Allow Multiple Connections" to Remote Display settings.
 
 -------------------------------------
 		0.5 - 2010-08-10
