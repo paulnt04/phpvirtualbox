@@ -224,7 +224,7 @@ var vmmButtons = new Array(
 			var td = document.createElement('td');
 			td.setAttribute('class','vboxFileFolderInput');
 			td.setAttribute('style','width: auto; white-space: nowrap;');
-			td.innerHTML = '<input type="button" class="vboxImgButton" style="background-image: url(images/vbox/select_file_16px.png); '+($('#vboxIndex').data('vboxConfig').browserDisable ? 'display: none;' : '')+'" onClick="vboxFileBrowser($(\'#vboxIndex\').data(\'vboxSystemProperties\').defaultHardDiskFolder,function(f){$(\'#vboxVMMAddMediumImage\').val((f ? f : undefined));},false);" />';
+			td.innerHTML = '<input type="button" class="vboxImgButton" style="background-image: url(images/vbox/select_file_16px.png); '+($('#vboxIndex').data('vboxConfig').browserDisable ? 'display: none;' : '')+'" onClick="vboxFileBrowser($(\'#vboxIndex\').data(\'vboxSystemProperties\').homeFolder,function(f){$(\'#vboxVMMAddMediumImage\').val((f ? f : undefined));},false);" />';
 			tr.appendChild(td);
 			tbl.appendChild(tr);
 
@@ -439,7 +439,7 @@ var menu = {
 				var td = document.createElement('td');
 				td.setAttribute('class','vboxFileFolderInput');
 				td.setAttribute('style','width: auto; white-space: nowrap;');
-				td.innerHTML = '<input type="button" class="vboxImgButton" style="background-image: url(images/vbox/select_file_16px.png); '+($('#vboxIndex').data('vboxConfig').browserDisable ? 'display: none;' : '')+'" onClick="vboxFileBrowser($(\'#vboxIndex\').data(\'vboxSystemProperties\').defaultHardDiskFolder,function(f){$(\'#vboxVMMCloneMedium\').val((f ? f : undefined));},false);" />';
+				td.innerHTML = '<input type="button" class="vboxImgButton" style="background-image: url(images/vbox/select_file_16px.png); '+($('#vboxIndex').data('vboxConfig').browserDisable ? 'display: none;' : '')+'" onClick="vboxFileBrowser($(\'#vboxIndex\').data(\'vboxSystemProperties\').homeFolder,function(f){$(\'#vboxVMMCloneMedium\').val((f ? f : undefined));},false);" />';
 				tr.appendChild(td);
 				tbl.appendChild(tr);
 

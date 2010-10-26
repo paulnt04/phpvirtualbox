@@ -517,11 +517,21 @@
           <xsd:enumeration value="IgnoreOrphanedProcesses"/>
         </xsd:restriction>
       </xsd:simpleType>
+      <!-- enum: ProcessInputFlag -
+            None: 0 -
+            EndOfFile: 1 -
+            -->
+      <xsd:simpleType name="ProcessInputFlag">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="None"/>
+          <xsd:enumeration value="EndOfFile"/>
+        </xsd:restriction>
+      </xsd:simpleType>
       <!-- enum: CopyFileFlag -
             None: 0 -
-            Recursive: 2 -
-            Update: 4 -
-            FollowLinks: 8 -
+            Recursive: 1 -
+            Update: 2 -
+            FollowLinks: 4 -
             -->
       <xsd:simpleType name="CopyFileFlag">
         <xsd:restriction base="xsd:string">
@@ -556,6 +566,7 @@
             Immutable: 1 -
             Writethrough: 2 -
             Shareable: 3 -
+            Readonly: 4 -
             -->
       <xsd:simpleType name="MediumType">
         <xsd:restriction base="xsd:string">
@@ -563,6 +574,7 @@
           <xsd:enumeration value="Immutable"/>
           <xsd:enumeration value="Writethrough"/>
           <xsd:enumeration value="Shareable"/>
+          <xsd:enumeration value="Readonly"/>
         </xsd:restriction>
       </xsd:simpleType>
       <!-- enum: MediumVariant -
@@ -789,12 +801,12 @@
           <xsd:enumeration value="HDA"/>
         </xsd:restriction>
       </xsd:simpleType>
-      <!-- enum: VRDPAuthType -
+      <!-- enum: AuthType -
             Null: 0 -
             External: 1 -
             Guest: 2 -
             -->
-      <xsd:simpleType name="VRDPAuthType">
+      <xsd:simpleType name="AuthType">
         <xsd:restriction base="xsd:string">
           <xsd:enumeration value="Null"/>
           <xsd:enumeration value="External"/>
@@ -906,7 +918,7 @@
             OnParallelPortChanged: 50 -
             OnStorageControllerChanged: 51 -
             OnMediumChanged: 52 -
-            OnVRDPServerChanged: 53 -
+            OnVRDEServerChanged: 53 -
             OnUSBControllerChanged: 54 -
             OnUSBDeviceStateChanged: 55 -
             OnSharedFolderChanged: 56 -
@@ -914,7 +926,7 @@
             OnCanShowWindow: 58 -
             OnShowWindow: 59 -
             OnCPUChanged: 60 -
-            OnRemoteDisplayInfoChanged: 61 -
+            OnVRDEServerInfoChanged: 61 -
             OnEventSourceChanged: 62 -
             OnCPUExecutionCapChanged: 63 -
             OnGuestKeyboardEvent: 64 -
@@ -951,7 +963,7 @@
           <xsd:enumeration value="OnParallelPortChanged"/>
           <xsd:enumeration value="OnStorageControllerChanged"/>
           <xsd:enumeration value="OnMediumChanged"/>
-          <xsd:enumeration value="OnVRDPServerChanged"/>
+          <xsd:enumeration value="OnVRDEServerChanged"/>
           <xsd:enumeration value="OnUSBControllerChanged"/>
           <xsd:enumeration value="OnUSBDeviceStateChanged"/>
           <xsd:enumeration value="OnSharedFolderChanged"/>
@@ -959,7 +971,7 @@
           <xsd:enumeration value="OnCanShowWindow"/>
           <xsd:enumeration value="OnShowWindow"/>
           <xsd:enumeration value="OnCPUChanged"/>
-          <xsd:enumeration value="OnRemoteDisplayInfoChanged"/>
+          <xsd:enumeration value="OnVRDEServerInfoChanged"/>
           <xsd:enumeration value="OnEventSourceChanged"/>
           <xsd:enumeration value="OnCPUExecutionCapChanged"/>
           <xsd:enumeration value="OnGuestKeyboardEvent"/>
@@ -972,8 +984,8 @@
       * structs
       ******************************************************
 -->
-      <!-- interface IRemoteDisplayInfo as struct: -->
-      <xsd:complexType name="IRemoteDisplayInfo">
+      <!-- interface IVRDEServerInfo as struct: -->
+      <xsd:complexType name="IVRDEServerInfo">
         <xsd:sequence>
           <xsd:element name="active" type="xsd:boolean"/>
           <xsd:element name="port" type="xsd:int"/>
@@ -1017,6 +1029,7 @@
           <xsd:element name="recommendedUsbTablet" type="xsd:boolean"/>
           <xsd:element name="recommendedRtcUseUtc" type="xsd:boolean"/>
           <xsd:element name="recommendedChipset" type="vbox:ChipsetType"/>
+          <xsd:element name="recommendedAudioController" type="vbox:AudioControllerType"/>
         </xsd:sequence>
       </xsd:complexType>
       <!-- interface IMediumAttachment as struct: -->
@@ -1534,16 +1547,33 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
+      <!-- method IVirtualBox::composeMachineFilename-->
+      <xsd:element name="IVirtualBox_composeMachineFilename">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="name" type="xsd:string"/>
+            <xsd:element name="baseFolder" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IVirtualBox_composeMachineFilenameResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
       <!-- method IVirtualBox::createMachine-->
       <xsd:element name="IVirtualBox_createMachine">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="settingsFile" type="xsd:string"/>
             <xsd:element name="name" type="xsd:string"/>
             <xsd:element name="osTypeId" type="xsd:string"/>
-            <xsd:element name="baseFolder" type="xsd:string"/>
             <xsd:element name="id" type="xsd:string"/>
-            <xsd:element name="override" type="xsd:boolean"/>
+            <xsd:element name="forceOverwrite" type="xsd:boolean"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -1584,28 +1614,12 @@
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
-      <!-- method IVirtualBox::getMachine-->
-      <xsd:element name="IVirtualBox_getMachine">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="id" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="IVirtualBox_getMachineResponse">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="returnval" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
       <!-- method IVirtualBox::findMachine-->
       <xsd:element name="IVirtualBox_findMachine">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="name" type="xsd:string"/>
+            <xsd:element name="nameOrId" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -1776,24 +1790,6 @@
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
-      <!-- method IVirtualBox::waitForPropertyChange-->
-      <xsd:element name="IVirtualBox_waitForPropertyChange">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="what" type="xsd:string"/>
-            <xsd:element name="timeout" type="xsd:unsignedInt"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="IVirtualBox_waitForPropertyChangeResponse">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="changed" type="xsd:string"/>
-            <xsd:element name="values" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
       <!-- method IVirtualBox::createDHCPServer-->
       <xsd:element name="IVirtualBox_createDHCPServer">
         <xsd:complexType>
@@ -1856,6 +1852,49 @@
             <xsd:element name="url" type="xsd:string"/>
             <xsd:element name="file" type="xsd:string"/>
             <xsd:element name="returnval" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IVirtualBox::VRDERegisterLibrary-->
+      <xsd:element name="IVirtualBox_VRDERegisterLibrary">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="name" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IVirtualBox_VRDERegisterLibraryResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IVirtualBox::VRDEUnregisterLibrary-->
+      <xsd:element name="IVirtualBox_VRDEUnregisterLibrary">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="name" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IVirtualBox_VRDEUnregisterLibraryResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IVirtualBox::VRDEListLibraries-->
+      <xsd:element name="IVirtualBox_VRDEListLibraries">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IVirtualBox_VRDEListLibrariesResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" minOccurs="0" maxOccurs="unbounded" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -3159,15 +3198,15 @@
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
-      <!-- readonly attribute IMachine::VRDPServer-->
-      <xsd:element name="IMachine_getVRDPServer">
+      <!-- readonly attribute IMachine::VRDEServer-->
+      <xsd:element name="IMachine_getVRDEServer">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IMachine_getVRDPServerResponse">
+      <xsd:element name="IMachine_getVRDEServerResponse">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="returnval" type="xsd:string"/>
@@ -4353,26 +4392,11 @@
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
             <xsd:element name="aAppliance" type="xsd:string"/>
+            <xsd:element name="location" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="IMachine_exportResponse">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="returnval" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <!-- method IMachine::getSnapshot-->
-      <xsd:element name="IMachine_getSnapshot">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="id" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="IMachine_getSnapshotResponse">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="returnval" type="xsd:string"/>
@@ -4384,7 +4408,7 @@
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="name" type="xsd:string"/>
+            <xsd:element name="nameOrId" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -4393,20 +4417,6 @@
           <xsd:sequence>
             <xsd:element name="returnval" type="xsd:string"/>
           </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <!-- method IMachine::setCurrentSnapshot-->
-      <xsd:element name="IMachine_setCurrentSnapshot">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="id" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="IMachine_setCurrentSnapshotResponse">
-        <xsd:complexType>
-          <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
       <!-- method IMachine::createSharedFolder-->
@@ -4893,18 +4903,18 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <!-- readonly attribute IConsole::remoteDisplayInfo-->
-      <xsd:element name="IConsole_getRemoteDisplayInfo">
+      <!-- readonly attribute IConsole::VRDEServerInfo-->
+      <xsd:element name="IConsole_getVRDEServerInfo">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IConsole_getRemoteDisplayInfoResponse">
+      <xsd:element name="IConsole_getVRDEServerInfoResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="returnval" type="vbox:IRemoteDisplayInfo"/>
+            <xsd:element name="returnval" type="vbox:IVRDEServerInfo"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -6213,34 +6223,6 @@
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
-      <!-- read/write attribute ISystemProperties::defaultHardDiskFolder-->
-      <xsd:element name="ISystemProperties_getDefaultHardDiskFolder">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="ISystemProperties_getDefaultHardDiskFolderResponse">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="returnval" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="ISystemProperties_setDefaultHardDiskFolder">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="defaultHardDiskFolder" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="ISystemProperties_setDefaultHardDiskFolderResponse">
-        <xsd:complexType>
-          <xsd:sequence/>
-        </xsd:complexType>
-      </xsd:element>
       <!-- readonly attribute ISystemProperties::mediumFormats-->
       <xsd:element name="ISystemProperties_getMediumFormats">
         <xsd:complexType>
@@ -6396,30 +6378,30 @@
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
-      <!-- read/write attribute ISystemProperties::remoteDisplayAuthLibrary-->
-      <xsd:element name="ISystemProperties_getRemoteDisplayAuthLibrary">
+      <!-- read/write attribute ISystemProperties::VRDEAuthLibrary-->
+      <xsd:element name="ISystemProperties_getVRDEAuthLibrary">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="ISystemProperties_getRemoteDisplayAuthLibraryResponse">
+      <xsd:element name="ISystemProperties_getVRDEAuthLibraryResponse">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="returnval" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="ISystemProperties_setRemoteDisplayAuthLibrary">
+      <xsd:element name="ISystemProperties_setVRDEAuthLibrary">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="remoteDisplayAuthLibrary" type="xsd:string"/>
+            <xsd:element name="VRDEAuthLibrary" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="ISystemProperties_setRemoteDisplayAuthLibraryResponse">
+      <xsd:element name="ISystemProperties_setVRDEAuthLibraryResponse">
         <xsd:complexType>
           <xsd:sequence/>
         </xsd:complexType>
@@ -6448,6 +6430,34 @@
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="ISystemProperties_setWebServiceAuthLibraryResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- read/write attribute ISystemProperties::defaultVRDELibrary-->
+      <xsd:element name="ISystemProperties_getDefaultVRDELibrary">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ISystemProperties_getDefaultVRDELibraryResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ISystemProperties_setDefaultVRDELibrary">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="defaultVRDELibrary" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ISystemProperties_setDefaultVRDELibraryResponse">
         <xsd:complexType>
           <xsd:sequence/>
         </xsd:complexType>
@@ -6850,6 +6860,8 @@
             <xsd:element name="_this" type="xsd:string"/>
             <xsd:element name="source" type="xsd:string"/>
             <xsd:element name="dest" type="xsd:string"/>
+            <xsd:element name="userName" type="xsd:string"/>
+            <xsd:element name="password" type="xsd:string"/>
             <xsd:element name="flags" type="xsd:unsignedInt"/>
           </xsd:sequence>
         </xsd:complexType>
@@ -6868,7 +6880,6 @@
             <xsd:element name="_this" type="xsd:string"/>
             <xsd:element name="pid" type="xsd:unsignedInt"/>
             <xsd:element name="flags" type="xsd:unsignedInt"/>
-            <xsd:element name="timeoutMS" type="xsd:unsignedInt"/>
             <xsd:element name="data" minOccurs="0" maxOccurs="unbounded" type="xsd:unsignedByte"/>
           </xsd:sequence>
         </xsd:complexType>
@@ -9946,23 +9957,23 @@
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
-      <!--Interface IVRDPServer-->
-      <!-- read/write attribute IVRDPServer::enabled-->
-      <xsd:element name="IVRDPServer_getEnabled">
+      <!--Interface IVRDEServer-->
+      <!-- read/write attribute IVRDEServer::enabled-->
+      <xsd:element name="IVRDEServer_getEnabled">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IVRDPServer_getEnabledResponse">
+      <xsd:element name="IVRDEServer_getEnabledResponse">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="returnval" type="xsd:boolean"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IVRDPServer_setEnabled">
+      <xsd:element name="IVRDEServer_setEnabled">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
@@ -9970,111 +9981,55 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IVRDPServer_setEnabledResponse">
+      <xsd:element name="IVRDEServer_setEnabledResponse">
         <xsd:complexType>
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
-      <!-- read/write attribute IVRDPServer::ports-->
-      <xsd:element name="IVRDPServer_getPorts">
+      <!-- read/write attribute IVRDEServer::authType-->
+      <xsd:element name="IVRDEServer_getAuthType">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IVRDPServer_getPortsResponse">
+      <xsd:element name="IVRDEServer_getAuthTypeResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="returnval" type="xsd:string"/>
+            <xsd:element name="returnval" type="vbox:AuthType"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IVRDPServer_setPorts">
+      <xsd:element name="IVRDEServer_setAuthType">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="ports" type="xsd:string"/>
+            <xsd:element name="authType" type="vbox:AuthType"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IVRDPServer_setPortsResponse">
+      <xsd:element name="IVRDEServer_setAuthTypeResponse">
         <xsd:complexType>
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
-      <!-- read/write attribute IVRDPServer::netAddress-->
-      <xsd:element name="IVRDPServer_getNetAddress">
+      <!-- read/write attribute IVRDEServer::authTimeout-->
+      <xsd:element name="IVRDEServer_getAuthTimeout">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IVRDPServer_getNetAddressResponse">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="returnval" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="IVRDPServer_setNetAddress">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="netAddress" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="IVRDPServer_setNetAddressResponse">
-        <xsd:complexType>
-          <xsd:sequence/>
-        </xsd:complexType>
-      </xsd:element>
-      <!-- read/write attribute IVRDPServer::authType-->
-      <xsd:element name="IVRDPServer_getAuthType">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="IVRDPServer_getAuthTypeResponse">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="returnval" type="vbox:VRDPAuthType"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="IVRDPServer_setAuthType">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="authType" type="vbox:VRDPAuthType"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="IVRDPServer_setAuthTypeResponse">
-        <xsd:complexType>
-          <xsd:sequence/>
-        </xsd:complexType>
-      </xsd:element>
-      <!-- read/write attribute IVRDPServer::authTimeout-->
-      <xsd:element name="IVRDPServer_getAuthTimeout">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="IVRDPServer_getAuthTimeoutResponse">
+      <xsd:element name="IVRDEServer_getAuthTimeoutResponse">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="returnval" type="xsd:unsignedInt"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IVRDPServer_setAuthTimeout">
+      <xsd:element name="IVRDEServer_setAuthTimeout">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
@@ -10082,27 +10037,27 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IVRDPServer_setAuthTimeoutResponse">
+      <xsd:element name="IVRDEServer_setAuthTimeoutResponse">
         <xsd:complexType>
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
-      <!-- read/write attribute IVRDPServer::allowMultiConnection-->
-      <xsd:element name="IVRDPServer_getAllowMultiConnection">
+      <!-- read/write attribute IVRDEServer::allowMultiConnection-->
+      <xsd:element name="IVRDEServer_getAllowMultiConnection">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IVRDPServer_getAllowMultiConnectionResponse">
+      <xsd:element name="IVRDEServer_getAllowMultiConnectionResponse">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="returnval" type="xsd:boolean"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IVRDPServer_setAllowMultiConnection">
+      <xsd:element name="IVRDEServer_setAllowMultiConnection">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
@@ -10110,27 +10065,27 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IVRDPServer_setAllowMultiConnectionResponse">
+      <xsd:element name="IVRDEServer_setAllowMultiConnectionResponse">
         <xsd:complexType>
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
-      <!-- read/write attribute IVRDPServer::reuseSingleConnection-->
-      <xsd:element name="IVRDPServer_getReuseSingleConnection">
+      <!-- read/write attribute IVRDEServer::reuseSingleConnection-->
+      <xsd:element name="IVRDEServer_getReuseSingleConnection">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IVRDPServer_getReuseSingleConnectionResponse">
+      <xsd:element name="IVRDEServer_getReuseSingleConnectionResponse">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="returnval" type="xsd:boolean"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IVRDPServer_setReuseSingleConnection">
+      <xsd:element name="IVRDEServer_setReuseSingleConnection">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
@@ -10138,27 +10093,27 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IVRDPServer_setReuseSingleConnectionResponse">
+      <xsd:element name="IVRDEServer_setReuseSingleConnectionResponse">
         <xsd:complexType>
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
-      <!-- read/write attribute IVRDPServer::videoChannel-->
-      <xsd:element name="IVRDPServer_getVideoChannel">
+      <!-- read/write attribute IVRDEServer::videoChannel-->
+      <xsd:element name="IVRDEServer_getVideoChannel">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IVRDPServer_getVideoChannelResponse">
+      <xsd:element name="IVRDEServer_getVideoChannelResponse">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="returnval" type="xsd:boolean"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IVRDPServer_setVideoChannel">
+      <xsd:element name="IVRDEServer_setVideoChannel">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
@@ -10166,27 +10121,27 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IVRDPServer_setVideoChannelResponse">
+      <xsd:element name="IVRDEServer_setVideoChannelResponse">
         <xsd:complexType>
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
-      <!-- read/write attribute IVRDPServer::videoChannelQuality-->
-      <xsd:element name="IVRDPServer_getVideoChannelQuality">
+      <!-- read/write attribute IVRDEServer::videoChannelQuality-->
+      <xsd:element name="IVRDEServer_getVideoChannelQuality">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IVRDPServer_getVideoChannelQualityResponse">
+      <xsd:element name="IVRDEServer_getVideoChannelQualityResponse">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="returnval" type="xsd:unsignedInt"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IVRDPServer_setVideoChannelQuality">
+      <xsd:element name="IVRDEServer_setVideoChannelQuality">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
@@ -10194,9 +10149,40 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IVRDPServer_setVideoChannelQualityResponse">
+      <xsd:element name="IVRDEServer_setVideoChannelQualityResponse">
         <xsd:complexType>
           <xsd:sequence/>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IVRDEServer::setVRDEProperty-->
+      <xsd:element name="IVRDEServer_setVRDEProperty">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="key" type="xsd:string"/>
+            <xsd:element name="value" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IVRDEServer_setVRDEPropertyResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IVRDEServer::getVRDEProperty-->
+      <xsd:element name="IVRDEServer_getVRDEProperty">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="key" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IVRDEServer_getVRDEPropertyResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
       <!--Interface ISession-->
@@ -11151,6 +11137,22 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
+      <!-- method IEventSource::createAggregator-->
+      <xsd:element name="IEventSource_createAggregator">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="subordinates" minOccurs="0" maxOccurs="unbounded" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IEventSource_createAggregatorResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
       <!-- method IEventSource::registerListener-->
       <xsd:element name="IEventSource_registerListener">
         <xsd:complexType>
@@ -11959,8 +11961,8 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <!--Interface IVRDPServerChangedEvent-->
-      <!--Interface IRemoteDisplayInfoChangedEvent-->
+      <!--Interface IVRDEServerChangedEvent-->
+      <!--Interface IVRDEServerInfoChangedEvent-->
       <!--Interface IUSBControllerChangedEvent-->
       <!--Interface IUSBDeviceStateChangedEvent-->
       <!-- readonly attribute IUSBDeviceStateChangedEvent::device-->
@@ -12543,6 +12545,13 @@
   <message name="IVirtualBox_getEventSourceResultMsg">
     <part name="parameters" element="vbox:IVirtualBox_getEventSourceResponse"/>
   </message>
+  <!-- method IVirtualBox::composeMachineFilename-->
+  <message name="IVirtualBox_composeMachineFilenameRequestMsg">
+    <part name="parameters" element="vbox:IVirtualBox_composeMachineFilename"/>
+  </message>
+  <message name="IVirtualBox_composeMachineFilenameResultMsg">
+    <part name="parameters" element="vbox:IVirtualBox_composeMachineFilenameResponse"/>
+  </message>
   <!-- method IVirtualBox::createMachine-->
   <message name="IVirtualBox_createMachineRequestMsg">
     <part name="parameters" element="vbox:IVirtualBox_createMachine"/>
@@ -12563,13 +12572,6 @@
   </message>
   <message name="IVirtualBox_registerMachineResultMsg">
     <part name="parameters" element="vbox:IVirtualBox_registerMachineResponse"/>
-  </message>
-  <!-- method IVirtualBox::getMachine-->
-  <message name="IVirtualBox_getMachineRequestMsg">
-    <part name="parameters" element="vbox:IVirtualBox_getMachine"/>
-  </message>
-  <message name="IVirtualBox_getMachineResultMsg">
-    <part name="parameters" element="vbox:IVirtualBox_getMachineResponse"/>
   </message>
   <!-- method IVirtualBox::findMachine-->
   <message name="IVirtualBox_findMachineRequestMsg">
@@ -12648,13 +12650,6 @@
   <message name="IVirtualBox_setExtraDataResultMsg">
     <part name="parameters" element="vbox:IVirtualBox_setExtraDataResponse"/>
   </message>
-  <!-- method IVirtualBox::waitForPropertyChange-->
-  <message name="IVirtualBox_waitForPropertyChangeRequestMsg">
-    <part name="parameters" element="vbox:IVirtualBox_waitForPropertyChange"/>
-  </message>
-  <message name="IVirtualBox_waitForPropertyChangeResultMsg">
-    <part name="parameters" element="vbox:IVirtualBox_waitForPropertyChangeResponse"/>
-  </message>
   <!-- method IVirtualBox::createDHCPServer-->
   <message name="IVirtualBox_createDHCPServerRequestMsg">
     <part name="parameters" element="vbox:IVirtualBox_createDHCPServer"/>
@@ -12682,6 +12677,27 @@
   </message>
   <message name="IVirtualBox_checkFirmwarePresentResultMsg">
     <part name="parameters" element="vbox:IVirtualBox_checkFirmwarePresentResponse"/>
+  </message>
+  <!-- method IVirtualBox::VRDERegisterLibrary-->
+  <message name="IVirtualBox_VRDERegisterLibraryRequestMsg">
+    <part name="parameters" element="vbox:IVirtualBox_VRDERegisterLibrary"/>
+  </message>
+  <message name="IVirtualBox_VRDERegisterLibraryResultMsg">
+    <part name="parameters" element="vbox:IVirtualBox_VRDERegisterLibraryResponse"/>
+  </message>
+  <!-- method IVirtualBox::VRDEUnregisterLibrary-->
+  <message name="IVirtualBox_VRDEUnregisterLibraryRequestMsg">
+    <part name="parameters" element="vbox:IVirtualBox_VRDEUnregisterLibrary"/>
+  </message>
+  <message name="IVirtualBox_VRDEUnregisterLibraryResultMsg">
+    <part name="parameters" element="vbox:IVirtualBox_VRDEUnregisterLibraryResponse"/>
+  </message>
+  <!-- method IVirtualBox::VRDEListLibraries-->
+  <message name="IVirtualBox_VRDEListLibrariesRequestMsg">
+    <part name="parameters" element="vbox:IVirtualBox_VRDEListLibraries"/>
+  </message>
+  <message name="IVirtualBox_VRDEListLibrariesResultMsg">
+    <part name="parameters" element="vbox:IVirtualBox_VRDEListLibrariesResponse"/>
   </message>
   <!--
         *************************************
@@ -13306,12 +13322,12 @@
   <message name="IMachine_setSnapshotFolderResultMsg">
     <part name="parameters" element="vbox:IMachine_setSnapshotFolderResponse"/>
   </message>
-  <!-- readonly attribute IMachine::VRDPServer-->
-  <message name="IMachine_getVRDPServerRequestMsg">
-    <part name="parameters" element="vbox:IMachine_getVRDPServer"/>
+  <!-- readonly attribute IMachine::VRDEServer-->
+  <message name="IMachine_getVRDEServerRequestMsg">
+    <part name="parameters" element="vbox:IMachine_getVRDEServer"/>
   </message>
-  <message name="IMachine_getVRDPServerResultMsg">
-    <part name="parameters" element="vbox:IMachine_getVRDPServerResponse"/>
+  <message name="IMachine_getVRDEServerResultMsg">
+    <part name="parameters" element="vbox:IMachine_getVRDEServerResponse"/>
   </message>
   <!-- readonly attribute IMachine::mediumAttachments-->
   <message name="IMachine_getMediumAttachmentsRequestMsg">
@@ -13852,26 +13868,12 @@
   <message name="IMachine_exportResultMsg">
     <part name="parameters" element="vbox:IMachine_exportResponse"/>
   </message>
-  <!-- method IMachine::getSnapshot-->
-  <message name="IMachine_getSnapshotRequestMsg">
-    <part name="parameters" element="vbox:IMachine_getSnapshot"/>
-  </message>
-  <message name="IMachine_getSnapshotResultMsg">
-    <part name="parameters" element="vbox:IMachine_getSnapshotResponse"/>
-  </message>
   <!-- method IMachine::findSnapshot-->
   <message name="IMachine_findSnapshotRequestMsg">
     <part name="parameters" element="vbox:IMachine_findSnapshot"/>
   </message>
   <message name="IMachine_findSnapshotResultMsg">
     <part name="parameters" element="vbox:IMachine_findSnapshotResponse"/>
-  </message>
-  <!-- method IMachine::setCurrentSnapshot-->
-  <message name="IMachine_setCurrentSnapshotRequestMsg">
-    <part name="parameters" element="vbox:IMachine_setCurrentSnapshot"/>
-  </message>
-  <message name="IMachine_setCurrentSnapshotResultMsg">
-    <part name="parameters" element="vbox:IMachine_setCurrentSnapshotResponse"/>
   </message>
   <!-- method IMachine::createSharedFolder-->
   <message name="IMachine_createSharedFolderRequestMsg">
@@ -14022,7 +14024,7 @@
   </message>
   <!--
         *************************************
-        messages for interface IRemoteDisplayInfo
+        messages for interface IVRDEServerInfo
         *************************************
       -->
   <!--
@@ -14094,12 +14096,12 @@
   <message name="IConsole_getSharedFoldersResultMsg">
     <part name="parameters" element="vbox:IConsole_getSharedFoldersResponse"/>
   </message>
-  <!-- readonly attribute IConsole::remoteDisplayInfo-->
-  <message name="IConsole_getRemoteDisplayInfoRequestMsg">
-    <part name="parameters" element="vbox:IConsole_getRemoteDisplayInfo"/>
+  <!-- readonly attribute IConsole::VRDEServerInfo-->
+  <message name="IConsole_getVRDEServerInfoRequestMsg">
+    <part name="parameters" element="vbox:IConsole_getVRDEServerInfo"/>
   </message>
-  <message name="IConsole_getRemoteDisplayInfoResultMsg">
-    <part name="parameters" element="vbox:IConsole_getRemoteDisplayInfoResponse"/>
+  <message name="IConsole_getVRDEServerInfoResultMsg">
+    <part name="parameters" element="vbox:IConsole_getVRDEServerInfoResponse"/>
   </message>
   <!-- readonly attribute IConsole::eventSource-->
   <message name="IConsole_getEventSourceRequestMsg">
@@ -14717,19 +14719,6 @@
   <message name="ISystemProperties_setDefaultMachineFolderResultMsg">
     <part name="parameters" element="vbox:ISystemProperties_setDefaultMachineFolderResponse"/>
   </message>
-  <!-- read/write attribute ISystemProperties::defaultHardDiskFolder-->
-  <message name="ISystemProperties_getDefaultHardDiskFolderRequestMsg">
-    <part name="parameters" element="vbox:ISystemProperties_getDefaultHardDiskFolder"/>
-  </message>
-  <message name="ISystemProperties_getDefaultHardDiskFolderResultMsg">
-    <part name="parameters" element="vbox:ISystemProperties_getDefaultHardDiskFolderResponse"/>
-  </message>
-  <message name="ISystemProperties_setDefaultHardDiskFolderRequestMsg">
-    <part name="parameters" element="vbox:ISystemProperties_setDefaultHardDiskFolder"/>
-  </message>
-  <message name="ISystemProperties_setDefaultHardDiskFolderResultMsg">
-    <part name="parameters" element="vbox:ISystemProperties_setDefaultHardDiskFolderResponse"/>
-  </message>
   <!-- readonly attribute ISystemProperties::mediumFormats-->
   <message name="ISystemProperties_getMediumFormatsRequestMsg">
     <part name="parameters" element="vbox:ISystemProperties_getMediumFormats"/>
@@ -14802,18 +14791,18 @@
   <message name="ISystemProperties_setFreeDiskSpacePercentErrorResultMsg">
     <part name="parameters" element="vbox:ISystemProperties_setFreeDiskSpacePercentErrorResponse"/>
   </message>
-  <!-- read/write attribute ISystemProperties::remoteDisplayAuthLibrary-->
-  <message name="ISystemProperties_getRemoteDisplayAuthLibraryRequestMsg">
-    <part name="parameters" element="vbox:ISystemProperties_getRemoteDisplayAuthLibrary"/>
+  <!-- read/write attribute ISystemProperties::VRDEAuthLibrary-->
+  <message name="ISystemProperties_getVRDEAuthLibraryRequestMsg">
+    <part name="parameters" element="vbox:ISystemProperties_getVRDEAuthLibrary"/>
   </message>
-  <message name="ISystemProperties_getRemoteDisplayAuthLibraryResultMsg">
-    <part name="parameters" element="vbox:ISystemProperties_getRemoteDisplayAuthLibraryResponse"/>
+  <message name="ISystemProperties_getVRDEAuthLibraryResultMsg">
+    <part name="parameters" element="vbox:ISystemProperties_getVRDEAuthLibraryResponse"/>
   </message>
-  <message name="ISystemProperties_setRemoteDisplayAuthLibraryRequestMsg">
-    <part name="parameters" element="vbox:ISystemProperties_setRemoteDisplayAuthLibrary"/>
+  <message name="ISystemProperties_setVRDEAuthLibraryRequestMsg">
+    <part name="parameters" element="vbox:ISystemProperties_setVRDEAuthLibrary"/>
   </message>
-  <message name="ISystemProperties_setRemoteDisplayAuthLibraryResultMsg">
-    <part name="parameters" element="vbox:ISystemProperties_setRemoteDisplayAuthLibraryResponse"/>
+  <message name="ISystemProperties_setVRDEAuthLibraryResultMsg">
+    <part name="parameters" element="vbox:ISystemProperties_setVRDEAuthLibraryResponse"/>
   </message>
   <!-- read/write attribute ISystemProperties::webServiceAuthLibrary-->
   <message name="ISystemProperties_getWebServiceAuthLibraryRequestMsg">
@@ -14827,6 +14816,19 @@
   </message>
   <message name="ISystemProperties_setWebServiceAuthLibraryResultMsg">
     <part name="parameters" element="vbox:ISystemProperties_setWebServiceAuthLibraryResponse"/>
+  </message>
+  <!-- read/write attribute ISystemProperties::defaultVRDELibrary-->
+  <message name="ISystemProperties_getDefaultVRDELibraryRequestMsg">
+    <part name="parameters" element="vbox:ISystemProperties_getDefaultVRDELibrary"/>
+  </message>
+  <message name="ISystemProperties_getDefaultVRDELibraryResultMsg">
+    <part name="parameters" element="vbox:ISystemProperties_getDefaultVRDELibraryResponse"/>
+  </message>
+  <message name="ISystemProperties_setDefaultVRDELibraryRequestMsg">
+    <part name="parameters" element="vbox:ISystemProperties_setDefaultVRDELibrary"/>
+  </message>
+  <message name="ISystemProperties_setDefaultVRDELibraryResultMsg">
+    <part name="parameters" element="vbox:ISystemProperties_setDefaultVRDELibraryResponse"/>
   </message>
   <!-- read/write attribute ISystemProperties::LogHistoryCount-->
   <message name="ISystemProperties_getLogHistoryCountRequestMsg">
@@ -16538,125 +16540,113 @@
   </message>
   <!--
         *************************************
-        messages for interface IVRDPServer
+        messages for interface IVRDEServer
         *************************************
       -->
-  <!-- read/write attribute IVRDPServer::enabled-->
-  <message name="IVRDPServer_getEnabledRequestMsg">
-    <part name="parameters" element="vbox:IVRDPServer_getEnabled"/>
+  <!-- read/write attribute IVRDEServer::enabled-->
+  <message name="IVRDEServer_getEnabledRequestMsg">
+    <part name="parameters" element="vbox:IVRDEServer_getEnabled"/>
   </message>
-  <message name="IVRDPServer_getEnabledResultMsg">
-    <part name="parameters" element="vbox:IVRDPServer_getEnabledResponse"/>
+  <message name="IVRDEServer_getEnabledResultMsg">
+    <part name="parameters" element="vbox:IVRDEServer_getEnabledResponse"/>
   </message>
-  <message name="IVRDPServer_setEnabledRequestMsg">
-    <part name="parameters" element="vbox:IVRDPServer_setEnabled"/>
+  <message name="IVRDEServer_setEnabledRequestMsg">
+    <part name="parameters" element="vbox:IVRDEServer_setEnabled"/>
   </message>
-  <message name="IVRDPServer_setEnabledResultMsg">
-    <part name="parameters" element="vbox:IVRDPServer_setEnabledResponse"/>
+  <message name="IVRDEServer_setEnabledResultMsg">
+    <part name="parameters" element="vbox:IVRDEServer_setEnabledResponse"/>
   </message>
-  <!-- read/write attribute IVRDPServer::ports-->
-  <message name="IVRDPServer_getPortsRequestMsg">
-    <part name="parameters" element="vbox:IVRDPServer_getPorts"/>
+  <!-- read/write attribute IVRDEServer::authType-->
+  <message name="IVRDEServer_getAuthTypeRequestMsg">
+    <part name="parameters" element="vbox:IVRDEServer_getAuthType"/>
   </message>
-  <message name="IVRDPServer_getPortsResultMsg">
-    <part name="parameters" element="vbox:IVRDPServer_getPortsResponse"/>
+  <message name="IVRDEServer_getAuthTypeResultMsg">
+    <part name="parameters" element="vbox:IVRDEServer_getAuthTypeResponse"/>
   </message>
-  <message name="IVRDPServer_setPortsRequestMsg">
-    <part name="parameters" element="vbox:IVRDPServer_setPorts"/>
+  <message name="IVRDEServer_setAuthTypeRequestMsg">
+    <part name="parameters" element="vbox:IVRDEServer_setAuthType"/>
   </message>
-  <message name="IVRDPServer_setPortsResultMsg">
-    <part name="parameters" element="vbox:IVRDPServer_setPortsResponse"/>
+  <message name="IVRDEServer_setAuthTypeResultMsg">
+    <part name="parameters" element="vbox:IVRDEServer_setAuthTypeResponse"/>
   </message>
-  <!-- read/write attribute IVRDPServer::netAddress-->
-  <message name="IVRDPServer_getNetAddressRequestMsg">
-    <part name="parameters" element="vbox:IVRDPServer_getNetAddress"/>
+  <!-- read/write attribute IVRDEServer::authTimeout-->
+  <message name="IVRDEServer_getAuthTimeoutRequestMsg">
+    <part name="parameters" element="vbox:IVRDEServer_getAuthTimeout"/>
   </message>
-  <message name="IVRDPServer_getNetAddressResultMsg">
-    <part name="parameters" element="vbox:IVRDPServer_getNetAddressResponse"/>
+  <message name="IVRDEServer_getAuthTimeoutResultMsg">
+    <part name="parameters" element="vbox:IVRDEServer_getAuthTimeoutResponse"/>
   </message>
-  <message name="IVRDPServer_setNetAddressRequestMsg">
-    <part name="parameters" element="vbox:IVRDPServer_setNetAddress"/>
+  <message name="IVRDEServer_setAuthTimeoutRequestMsg">
+    <part name="parameters" element="vbox:IVRDEServer_setAuthTimeout"/>
   </message>
-  <message name="IVRDPServer_setNetAddressResultMsg">
-    <part name="parameters" element="vbox:IVRDPServer_setNetAddressResponse"/>
+  <message name="IVRDEServer_setAuthTimeoutResultMsg">
+    <part name="parameters" element="vbox:IVRDEServer_setAuthTimeoutResponse"/>
   </message>
-  <!-- read/write attribute IVRDPServer::authType-->
-  <message name="IVRDPServer_getAuthTypeRequestMsg">
-    <part name="parameters" element="vbox:IVRDPServer_getAuthType"/>
+  <!-- read/write attribute IVRDEServer::allowMultiConnection-->
+  <message name="IVRDEServer_getAllowMultiConnectionRequestMsg">
+    <part name="parameters" element="vbox:IVRDEServer_getAllowMultiConnection"/>
   </message>
-  <message name="IVRDPServer_getAuthTypeResultMsg">
-    <part name="parameters" element="vbox:IVRDPServer_getAuthTypeResponse"/>
+  <message name="IVRDEServer_getAllowMultiConnectionResultMsg">
+    <part name="parameters" element="vbox:IVRDEServer_getAllowMultiConnectionResponse"/>
   </message>
-  <message name="IVRDPServer_setAuthTypeRequestMsg">
-    <part name="parameters" element="vbox:IVRDPServer_setAuthType"/>
+  <message name="IVRDEServer_setAllowMultiConnectionRequestMsg">
+    <part name="parameters" element="vbox:IVRDEServer_setAllowMultiConnection"/>
   </message>
-  <message name="IVRDPServer_setAuthTypeResultMsg">
-    <part name="parameters" element="vbox:IVRDPServer_setAuthTypeResponse"/>
+  <message name="IVRDEServer_setAllowMultiConnectionResultMsg">
+    <part name="parameters" element="vbox:IVRDEServer_setAllowMultiConnectionResponse"/>
   </message>
-  <!-- read/write attribute IVRDPServer::authTimeout-->
-  <message name="IVRDPServer_getAuthTimeoutRequestMsg">
-    <part name="parameters" element="vbox:IVRDPServer_getAuthTimeout"/>
+  <!-- read/write attribute IVRDEServer::reuseSingleConnection-->
+  <message name="IVRDEServer_getReuseSingleConnectionRequestMsg">
+    <part name="parameters" element="vbox:IVRDEServer_getReuseSingleConnection"/>
   </message>
-  <message name="IVRDPServer_getAuthTimeoutResultMsg">
-    <part name="parameters" element="vbox:IVRDPServer_getAuthTimeoutResponse"/>
+  <message name="IVRDEServer_getReuseSingleConnectionResultMsg">
+    <part name="parameters" element="vbox:IVRDEServer_getReuseSingleConnectionResponse"/>
   </message>
-  <message name="IVRDPServer_setAuthTimeoutRequestMsg">
-    <part name="parameters" element="vbox:IVRDPServer_setAuthTimeout"/>
+  <message name="IVRDEServer_setReuseSingleConnectionRequestMsg">
+    <part name="parameters" element="vbox:IVRDEServer_setReuseSingleConnection"/>
   </message>
-  <message name="IVRDPServer_setAuthTimeoutResultMsg">
-    <part name="parameters" element="vbox:IVRDPServer_setAuthTimeoutResponse"/>
+  <message name="IVRDEServer_setReuseSingleConnectionResultMsg">
+    <part name="parameters" element="vbox:IVRDEServer_setReuseSingleConnectionResponse"/>
   </message>
-  <!-- read/write attribute IVRDPServer::allowMultiConnection-->
-  <message name="IVRDPServer_getAllowMultiConnectionRequestMsg">
-    <part name="parameters" element="vbox:IVRDPServer_getAllowMultiConnection"/>
+  <!-- read/write attribute IVRDEServer::videoChannel-->
+  <message name="IVRDEServer_getVideoChannelRequestMsg">
+    <part name="parameters" element="vbox:IVRDEServer_getVideoChannel"/>
   </message>
-  <message name="IVRDPServer_getAllowMultiConnectionResultMsg">
-    <part name="parameters" element="vbox:IVRDPServer_getAllowMultiConnectionResponse"/>
+  <message name="IVRDEServer_getVideoChannelResultMsg">
+    <part name="parameters" element="vbox:IVRDEServer_getVideoChannelResponse"/>
   </message>
-  <message name="IVRDPServer_setAllowMultiConnectionRequestMsg">
-    <part name="parameters" element="vbox:IVRDPServer_setAllowMultiConnection"/>
+  <message name="IVRDEServer_setVideoChannelRequestMsg">
+    <part name="parameters" element="vbox:IVRDEServer_setVideoChannel"/>
   </message>
-  <message name="IVRDPServer_setAllowMultiConnectionResultMsg">
-    <part name="parameters" element="vbox:IVRDPServer_setAllowMultiConnectionResponse"/>
+  <message name="IVRDEServer_setVideoChannelResultMsg">
+    <part name="parameters" element="vbox:IVRDEServer_setVideoChannelResponse"/>
   </message>
-  <!-- read/write attribute IVRDPServer::reuseSingleConnection-->
-  <message name="IVRDPServer_getReuseSingleConnectionRequestMsg">
-    <part name="parameters" element="vbox:IVRDPServer_getReuseSingleConnection"/>
+  <!-- read/write attribute IVRDEServer::videoChannelQuality-->
+  <message name="IVRDEServer_getVideoChannelQualityRequestMsg">
+    <part name="parameters" element="vbox:IVRDEServer_getVideoChannelQuality"/>
   </message>
-  <message name="IVRDPServer_getReuseSingleConnectionResultMsg">
-    <part name="parameters" element="vbox:IVRDPServer_getReuseSingleConnectionResponse"/>
+  <message name="IVRDEServer_getVideoChannelQualityResultMsg">
+    <part name="parameters" element="vbox:IVRDEServer_getVideoChannelQualityResponse"/>
   </message>
-  <message name="IVRDPServer_setReuseSingleConnectionRequestMsg">
-    <part name="parameters" element="vbox:IVRDPServer_setReuseSingleConnection"/>
+  <message name="IVRDEServer_setVideoChannelQualityRequestMsg">
+    <part name="parameters" element="vbox:IVRDEServer_setVideoChannelQuality"/>
   </message>
-  <message name="IVRDPServer_setReuseSingleConnectionResultMsg">
-    <part name="parameters" element="vbox:IVRDPServer_setReuseSingleConnectionResponse"/>
+  <message name="IVRDEServer_setVideoChannelQualityResultMsg">
+    <part name="parameters" element="vbox:IVRDEServer_setVideoChannelQualityResponse"/>
   </message>
-  <!-- read/write attribute IVRDPServer::videoChannel-->
-  <message name="IVRDPServer_getVideoChannelRequestMsg">
-    <part name="parameters" element="vbox:IVRDPServer_getVideoChannel"/>
+  <!-- method IVRDEServer::setVRDEProperty-->
+  <message name="IVRDEServer_setVRDEPropertyRequestMsg">
+    <part name="parameters" element="vbox:IVRDEServer_setVRDEProperty"/>
   </message>
-  <message name="IVRDPServer_getVideoChannelResultMsg">
-    <part name="parameters" element="vbox:IVRDPServer_getVideoChannelResponse"/>
+  <message name="IVRDEServer_setVRDEPropertyResultMsg">
+    <part name="parameters" element="vbox:IVRDEServer_setVRDEPropertyResponse"/>
   </message>
-  <message name="IVRDPServer_setVideoChannelRequestMsg">
-    <part name="parameters" element="vbox:IVRDPServer_setVideoChannel"/>
+  <!-- method IVRDEServer::getVRDEProperty-->
+  <message name="IVRDEServer_getVRDEPropertyRequestMsg">
+    <part name="parameters" element="vbox:IVRDEServer_getVRDEProperty"/>
   </message>
-  <message name="IVRDPServer_setVideoChannelResultMsg">
-    <part name="parameters" element="vbox:IVRDPServer_setVideoChannelResponse"/>
-  </message>
-  <!-- read/write attribute IVRDPServer::videoChannelQuality-->
-  <message name="IVRDPServer_getVideoChannelQualityRequestMsg">
-    <part name="parameters" element="vbox:IVRDPServer_getVideoChannelQuality"/>
-  </message>
-  <message name="IVRDPServer_getVideoChannelQualityResultMsg">
-    <part name="parameters" element="vbox:IVRDPServer_getVideoChannelQualityResponse"/>
-  </message>
-  <message name="IVRDPServer_setVideoChannelQualityRequestMsg">
-    <part name="parameters" element="vbox:IVRDPServer_setVideoChannelQuality"/>
-  </message>
-  <message name="IVRDPServer_setVideoChannelQualityResultMsg">
-    <part name="parameters" element="vbox:IVRDPServer_setVideoChannelQualityResponse"/>
+  <message name="IVRDEServer_getVRDEPropertyResultMsg">
+    <part name="parameters" element="vbox:IVRDEServer_getVRDEPropertyResponse"/>
   </message>
   <!--
         *************************************
@@ -17135,6 +17125,13 @@
   </message>
   <message name="IEventSource_createListenerResultMsg">
     <part name="parameters" element="vbox:IEventSource_createListenerResponse"/>
+  </message>
+  <!-- method IEventSource::createAggregator-->
+  <message name="IEventSource_createAggregatorRequestMsg">
+    <part name="parameters" element="vbox:IEventSource_createAggregator"/>
+  </message>
+  <message name="IEventSource_createAggregatorResultMsg">
+    <part name="parameters" element="vbox:IEventSource_createAggregatorResponse"/>
   </message>
   <!-- method IEventSource::registerListener-->
   <message name="IEventSource_registerListenerRequestMsg">
@@ -17642,12 +17639,12 @@
   </message>
   <!--
         *************************************
-        messages for interface IVRDPServerChangedEvent
+        messages for interface IVRDEServerChangedEvent
         *************************************
       -->
   <!--
         *************************************
-        messages for interface IRemoteDisplayInfoChangedEvent
+        messages for interface IVRDEServerInfoChangedEvent
         *************************************
       -->
   <!--
@@ -18054,6 +18051,12 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
+    <operation name="IVirtualBox_composeMachineFilename">
+      <input message="vbox:IVirtualBox_composeMachineFilenameRequestMsg"/>
+      <output message="vbox:IVirtualBox_composeMachineFilenameResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
     <operation name="IVirtualBox_createMachine">
       <input message="vbox:IVirtualBox_createMachineRequestMsg"/>
       <output message="vbox:IVirtualBox_createMachineResultMsg"/>
@@ -18069,12 +18072,6 @@
     <operation name="IVirtualBox_registerMachine">
       <input message="vbox:IVirtualBox_registerMachineRequestMsg"/>
       <output message="vbox:IVirtualBox_registerMachineResultMsg"/>
-      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
-      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
-    </operation>
-    <operation name="IVirtualBox_getMachine">
-      <input message="vbox:IVirtualBox_getMachineRequestMsg"/>
-      <output message="vbox:IVirtualBox_getMachineResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -18144,12 +18141,6 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IVirtualBox_waitForPropertyChange">
-      <input message="vbox:IVirtualBox_waitForPropertyChangeRequestMsg"/>
-      <output message="vbox:IVirtualBox_waitForPropertyChangeResultMsg"/>
-      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
-      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
-    </operation>
     <operation name="IVirtualBox_createDHCPServer">
       <input message="vbox:IVirtualBox_createDHCPServerRequestMsg"/>
       <output message="vbox:IVirtualBox_createDHCPServerResultMsg"/>
@@ -18171,6 +18162,24 @@
     <operation name="IVirtualBox_checkFirmwarePresent">
       <input message="vbox:IVirtualBox_checkFirmwarePresentRequestMsg"/>
       <output message="vbox:IVirtualBox_checkFirmwarePresentResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IVirtualBox_VRDERegisterLibrary">
+      <input message="vbox:IVirtualBox_VRDERegisterLibraryRequestMsg"/>
+      <output message="vbox:IVirtualBox_VRDERegisterLibraryResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IVirtualBox_VRDEUnregisterLibrary">
+      <input message="vbox:IVirtualBox_VRDEUnregisterLibraryRequestMsg"/>
+      <output message="vbox:IVirtualBox_VRDEUnregisterLibraryResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IVirtualBox_VRDEListLibraries">
+      <input message="vbox:IVirtualBox_VRDEListLibrariesRequestMsg"/>
+      <output message="vbox:IVirtualBox_VRDEListLibrariesResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -18738,9 +18747,9 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IMachine_getVRDPServer">
-      <input message="vbox:IMachine_getVRDPServerRequestMsg"/>
-      <output message="vbox:IMachine_getVRDPServerResultMsg"/>
+    <operation name="IMachine_getVRDEServer">
+      <input message="vbox:IMachine_getVRDEServerRequestMsg"/>
+      <output message="vbox:IMachine_getVRDEServerResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -19218,21 +19227,9 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IMachine_getSnapshot">
-      <input message="vbox:IMachine_getSnapshotRequestMsg"/>
-      <output message="vbox:IMachine_getSnapshotResultMsg"/>
-      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
-      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
-    </operation>
     <operation name="IMachine_findSnapshot">
       <input message="vbox:IMachine_findSnapshotRequestMsg"/>
       <output message="vbox:IMachine_findSnapshotResultMsg"/>
-      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
-      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
-    </operation>
-    <operation name="IMachine_setCurrentSnapshot">
-      <input message="vbox:IMachine_setCurrentSnapshotRequestMsg"/>
-      <output message="vbox:IMachine_setCurrentSnapshotResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -19364,7 +19361,7 @@
     </operation>
     <!--
           *************************************
-          operations in portType for interface IRemoteDisplayInfo
+          operations in portType for interface IVRDEServerInfo
           *************************************
         -->
     <!--
@@ -19427,9 +19424,9 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IConsole_getRemoteDisplayInfo">
-      <input message="vbox:IConsole_getRemoteDisplayInfoRequestMsg"/>
-      <output message="vbox:IConsole_getRemoteDisplayInfoResultMsg"/>
+    <operation name="IConsole_getVRDEServerInfo">
+      <input message="vbox:IConsole_getVRDEServerInfoRequestMsg"/>
+      <output message="vbox:IConsole_getVRDEServerInfoResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -19964,18 +19961,6 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="ISystemProperties_getDefaultHardDiskFolder">
-      <input message="vbox:ISystemProperties_getDefaultHardDiskFolderRequestMsg"/>
-      <output message="vbox:ISystemProperties_getDefaultHardDiskFolderResultMsg"/>
-      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
-      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
-    </operation>
-    <operation name="ISystemProperties_setDefaultHardDiskFolder">
-      <input message="vbox:ISystemProperties_setDefaultHardDiskFolderRequestMsg"/>
-      <output message="vbox:ISystemProperties_setDefaultHardDiskFolderResultMsg"/>
-      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
-      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
-    </operation>
     <operation name="ISystemProperties_getMediumFormats">
       <input message="vbox:ISystemProperties_getMediumFormatsRequestMsg"/>
       <output message="vbox:ISystemProperties_getMediumFormatsResultMsg"/>
@@ -20042,15 +20027,15 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="ISystemProperties_getRemoteDisplayAuthLibrary">
-      <input message="vbox:ISystemProperties_getRemoteDisplayAuthLibraryRequestMsg"/>
-      <output message="vbox:ISystemProperties_getRemoteDisplayAuthLibraryResultMsg"/>
+    <operation name="ISystemProperties_getVRDEAuthLibrary">
+      <input message="vbox:ISystemProperties_getVRDEAuthLibraryRequestMsg"/>
+      <output message="vbox:ISystemProperties_getVRDEAuthLibraryResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="ISystemProperties_setRemoteDisplayAuthLibrary">
-      <input message="vbox:ISystemProperties_setRemoteDisplayAuthLibraryRequestMsg"/>
-      <output message="vbox:ISystemProperties_setRemoteDisplayAuthLibraryResultMsg"/>
+    <operation name="ISystemProperties_setVRDEAuthLibrary">
+      <input message="vbox:ISystemProperties_setVRDEAuthLibraryRequestMsg"/>
+      <output message="vbox:ISystemProperties_setVRDEAuthLibraryResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -20063,6 +20048,18 @@
     <operation name="ISystemProperties_setWebServiceAuthLibrary">
       <input message="vbox:ISystemProperties_setWebServiceAuthLibraryRequestMsg"/>
       <output message="vbox:ISystemProperties_setWebServiceAuthLibraryResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="ISystemProperties_getDefaultVRDELibrary">
+      <input message="vbox:ISystemProperties_getDefaultVRDELibraryRequestMsg"/>
+      <output message="vbox:ISystemProperties_getDefaultVRDELibraryResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="ISystemProperties_setDefaultVRDELibrary">
+      <input message="vbox:ISystemProperties_setDefaultVRDELibraryRequestMsg"/>
+      <output message="vbox:ISystemProperties_setDefaultVRDELibraryResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -21587,114 +21584,102 @@
     </operation>
     <!--
           *************************************
-          operations in portType for interface IVRDPServer
+          operations in portType for interface IVRDEServer
           *************************************
         -->
-    <operation name="IVRDPServer_getEnabled">
-      <input message="vbox:IVRDPServer_getEnabledRequestMsg"/>
-      <output message="vbox:IVRDPServer_getEnabledResultMsg"/>
+    <operation name="IVRDEServer_getEnabled">
+      <input message="vbox:IVRDEServer_getEnabledRequestMsg"/>
+      <output message="vbox:IVRDEServer_getEnabledResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IVRDPServer_setEnabled">
-      <input message="vbox:IVRDPServer_setEnabledRequestMsg"/>
-      <output message="vbox:IVRDPServer_setEnabledResultMsg"/>
+    <operation name="IVRDEServer_setEnabled">
+      <input message="vbox:IVRDEServer_setEnabledRequestMsg"/>
+      <output message="vbox:IVRDEServer_setEnabledResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IVRDPServer_getPorts">
-      <input message="vbox:IVRDPServer_getPortsRequestMsg"/>
-      <output message="vbox:IVRDPServer_getPortsResultMsg"/>
+    <operation name="IVRDEServer_getAuthType">
+      <input message="vbox:IVRDEServer_getAuthTypeRequestMsg"/>
+      <output message="vbox:IVRDEServer_getAuthTypeResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IVRDPServer_setPorts">
-      <input message="vbox:IVRDPServer_setPortsRequestMsg"/>
-      <output message="vbox:IVRDPServer_setPortsResultMsg"/>
+    <operation name="IVRDEServer_setAuthType">
+      <input message="vbox:IVRDEServer_setAuthTypeRequestMsg"/>
+      <output message="vbox:IVRDEServer_setAuthTypeResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IVRDPServer_getNetAddress">
-      <input message="vbox:IVRDPServer_getNetAddressRequestMsg"/>
-      <output message="vbox:IVRDPServer_getNetAddressResultMsg"/>
+    <operation name="IVRDEServer_getAuthTimeout">
+      <input message="vbox:IVRDEServer_getAuthTimeoutRequestMsg"/>
+      <output message="vbox:IVRDEServer_getAuthTimeoutResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IVRDPServer_setNetAddress">
-      <input message="vbox:IVRDPServer_setNetAddressRequestMsg"/>
-      <output message="vbox:IVRDPServer_setNetAddressResultMsg"/>
+    <operation name="IVRDEServer_setAuthTimeout">
+      <input message="vbox:IVRDEServer_setAuthTimeoutRequestMsg"/>
+      <output message="vbox:IVRDEServer_setAuthTimeoutResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IVRDPServer_getAuthType">
-      <input message="vbox:IVRDPServer_getAuthTypeRequestMsg"/>
-      <output message="vbox:IVRDPServer_getAuthTypeResultMsg"/>
+    <operation name="IVRDEServer_getAllowMultiConnection">
+      <input message="vbox:IVRDEServer_getAllowMultiConnectionRequestMsg"/>
+      <output message="vbox:IVRDEServer_getAllowMultiConnectionResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IVRDPServer_setAuthType">
-      <input message="vbox:IVRDPServer_setAuthTypeRequestMsg"/>
-      <output message="vbox:IVRDPServer_setAuthTypeResultMsg"/>
+    <operation name="IVRDEServer_setAllowMultiConnection">
+      <input message="vbox:IVRDEServer_setAllowMultiConnectionRequestMsg"/>
+      <output message="vbox:IVRDEServer_setAllowMultiConnectionResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IVRDPServer_getAuthTimeout">
-      <input message="vbox:IVRDPServer_getAuthTimeoutRequestMsg"/>
-      <output message="vbox:IVRDPServer_getAuthTimeoutResultMsg"/>
+    <operation name="IVRDEServer_getReuseSingleConnection">
+      <input message="vbox:IVRDEServer_getReuseSingleConnectionRequestMsg"/>
+      <output message="vbox:IVRDEServer_getReuseSingleConnectionResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IVRDPServer_setAuthTimeout">
-      <input message="vbox:IVRDPServer_setAuthTimeoutRequestMsg"/>
-      <output message="vbox:IVRDPServer_setAuthTimeoutResultMsg"/>
+    <operation name="IVRDEServer_setReuseSingleConnection">
+      <input message="vbox:IVRDEServer_setReuseSingleConnectionRequestMsg"/>
+      <output message="vbox:IVRDEServer_setReuseSingleConnectionResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IVRDPServer_getAllowMultiConnection">
-      <input message="vbox:IVRDPServer_getAllowMultiConnectionRequestMsg"/>
-      <output message="vbox:IVRDPServer_getAllowMultiConnectionResultMsg"/>
+    <operation name="IVRDEServer_getVideoChannel">
+      <input message="vbox:IVRDEServer_getVideoChannelRequestMsg"/>
+      <output message="vbox:IVRDEServer_getVideoChannelResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IVRDPServer_setAllowMultiConnection">
-      <input message="vbox:IVRDPServer_setAllowMultiConnectionRequestMsg"/>
-      <output message="vbox:IVRDPServer_setAllowMultiConnectionResultMsg"/>
+    <operation name="IVRDEServer_setVideoChannel">
+      <input message="vbox:IVRDEServer_setVideoChannelRequestMsg"/>
+      <output message="vbox:IVRDEServer_setVideoChannelResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IVRDPServer_getReuseSingleConnection">
-      <input message="vbox:IVRDPServer_getReuseSingleConnectionRequestMsg"/>
-      <output message="vbox:IVRDPServer_getReuseSingleConnectionResultMsg"/>
+    <operation name="IVRDEServer_getVideoChannelQuality">
+      <input message="vbox:IVRDEServer_getVideoChannelQualityRequestMsg"/>
+      <output message="vbox:IVRDEServer_getVideoChannelQualityResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IVRDPServer_setReuseSingleConnection">
-      <input message="vbox:IVRDPServer_setReuseSingleConnectionRequestMsg"/>
-      <output message="vbox:IVRDPServer_setReuseSingleConnectionResultMsg"/>
+    <operation name="IVRDEServer_setVideoChannelQuality">
+      <input message="vbox:IVRDEServer_setVideoChannelQualityRequestMsg"/>
+      <output message="vbox:IVRDEServer_setVideoChannelQualityResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IVRDPServer_getVideoChannel">
-      <input message="vbox:IVRDPServer_getVideoChannelRequestMsg"/>
-      <output message="vbox:IVRDPServer_getVideoChannelResultMsg"/>
+    <operation name="IVRDEServer_setVRDEProperty">
+      <input message="vbox:IVRDEServer_setVRDEPropertyRequestMsg"/>
+      <output message="vbox:IVRDEServer_setVRDEPropertyResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IVRDPServer_setVideoChannel">
-      <input message="vbox:IVRDPServer_setVideoChannelRequestMsg"/>
-      <output message="vbox:IVRDPServer_setVideoChannelResultMsg"/>
-      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
-      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
-    </operation>
-    <operation name="IVRDPServer_getVideoChannelQuality">
-      <input message="vbox:IVRDPServer_getVideoChannelQualityRequestMsg"/>
-      <output message="vbox:IVRDPServer_getVideoChannelQualityResultMsg"/>
-      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
-      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
-    </operation>
-    <operation name="IVRDPServer_setVideoChannelQuality">
-      <input message="vbox:IVRDPServer_setVideoChannelQualityRequestMsg"/>
-      <output message="vbox:IVRDPServer_setVideoChannelQualityResultMsg"/>
+    <operation name="IVRDEServer_getVRDEProperty">
+      <input message="vbox:IVRDEServer_getVRDEPropertyRequestMsg"/>
+      <output message="vbox:IVRDEServer_getVRDEPropertyResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -22123,6 +22108,12 @@
     <operation name="IEventSource_createListener">
       <input message="vbox:IEventSource_createListenerRequestMsg"/>
       <output message="vbox:IEventSource_createListenerResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IEventSource_createAggregator">
+      <input message="vbox:IEventSource_createAggregatorRequestMsg"/>
+      <output message="vbox:IEventSource_createAggregatorResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -22580,12 +22571,12 @@
     </operation>
     <!--
           *************************************
-          operations in portType for interface IVRDPServerChangedEvent
+          operations in portType for interface IVRDEServerChangedEvent
           *************************************
         -->
     <!--
           *************************************
-          operations in portType for interface IRemoteDisplayInfoChangedEvent
+          operations in portType for interface IVRDEServerInfoChangedEvent
           *************************************
         -->
     <!--
@@ -23263,6 +23254,21 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
+    <operation name="IVirtualBox_composeMachineFilename">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
     <operation name="IVirtualBox_createMachine">
       <soap:operation soapAction="" style="document"/>
       <input>
@@ -23294,21 +23300,6 @@
       </fault>
     </operation>
     <operation name="IVirtualBox_registerMachine">
-      <soap:operation soapAction="" style="document"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="InvalidObjectFault">
-        <soap:fault name="InvalidObjectFault" use="literal"/>
-      </fault>
-      <fault name="RuntimeFault">
-        <soap:fault name="RuntimeFault" use="literal"/>
-      </fault>
-    </operation>
-    <operation name="IVirtualBox_getMachine">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -23488,21 +23479,6 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IVirtualBox_waitForPropertyChange">
-      <soap:operation soapAction="" style="document"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="InvalidObjectFault">
-        <soap:fault name="InvalidObjectFault" use="literal"/>
-      </fault>
-      <fault name="RuntimeFault">
-        <soap:fault name="RuntimeFault" use="literal"/>
-      </fault>
-    </operation>
     <operation name="IVirtualBox_createDHCPServer">
       <soap:operation soapAction="" style="document"/>
       <input>
@@ -23549,6 +23525,51 @@
       </fault>
     </operation>
     <operation name="IVirtualBox_checkFirmwarePresent">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IVirtualBox_VRDERegisterLibrary">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IVirtualBox_VRDEUnregisterLibrary">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IVirtualBox_VRDEListLibraries">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -24928,7 +24949,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IMachine_getVRDPServer">
+    <operation name="IMachine_getVRDEServer">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -26128,37 +26149,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IMachine_getSnapshot">
-      <soap:operation soapAction="" style="document"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="InvalidObjectFault">
-        <soap:fault name="InvalidObjectFault" use="literal"/>
-      </fault>
-      <fault name="RuntimeFault">
-        <soap:fault name="RuntimeFault" use="literal"/>
-      </fault>
-    </operation>
     <operation name="IMachine_findSnapshot">
-      <soap:operation soapAction="" style="document"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="InvalidObjectFault">
-        <soap:fault name="InvalidObjectFault" use="literal"/>
-      </fault>
-      <fault name="RuntimeFault">
-        <soap:fault name="RuntimeFault" use="literal"/>
-      </fault>
-    </operation>
-    <operation name="IMachine_setCurrentSnapshot">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -26490,7 +26481,7 @@
     </operation>
     <!--
           *************************************
-          operations in portType for interface IRemoteDisplayInfo
+          operations in portType for interface IVRDEServerInfo
           *************************************
         -->
     <!--
@@ -26634,7 +26625,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IConsole_getRemoteDisplayInfo">
+    <operation name="IConsole_getVRDEServerInfo">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -27954,36 +27945,6 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="ISystemProperties_getDefaultHardDiskFolder">
-      <soap:operation soapAction="" style="document"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="InvalidObjectFault">
-        <soap:fault name="InvalidObjectFault" use="literal"/>
-      </fault>
-      <fault name="RuntimeFault">
-        <soap:fault name="RuntimeFault" use="literal"/>
-      </fault>
-    </operation>
-    <operation name="ISystemProperties_setDefaultHardDiskFolder">
-      <soap:operation soapAction="" style="document"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="InvalidObjectFault">
-        <soap:fault name="InvalidObjectFault" use="literal"/>
-      </fault>
-      <fault name="RuntimeFault">
-        <soap:fault name="RuntimeFault" use="literal"/>
-      </fault>
-    </operation>
     <operation name="ISystemProperties_getMediumFormats">
       <soap:operation soapAction="" style="document"/>
       <input>
@@ -28149,7 +28110,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="ISystemProperties_getRemoteDisplayAuthLibrary">
+    <operation name="ISystemProperties_getVRDEAuthLibrary">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -28164,7 +28125,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="ISystemProperties_setRemoteDisplayAuthLibrary">
+    <operation name="ISystemProperties_setVRDEAuthLibrary">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -28195,6 +28156,36 @@
       </fault>
     </operation>
     <operation name="ISystemProperties_setWebServiceAuthLibrary">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="ISystemProperties_getDefaultVRDELibrary">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="ISystemProperties_setDefaultVRDELibrary">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -31836,10 +31827,10 @@
     </operation>
     <!--
           *************************************
-          operations in portType for interface IVRDPServer
+          operations in portType for interface IVRDEServer
           *************************************
         -->
-    <operation name="IVRDPServer_getEnabled">
+    <operation name="IVRDEServer_getEnabled">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -31854,7 +31845,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IVRDPServer_setEnabled">
+    <operation name="IVRDEServer_setEnabled">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -31869,7 +31860,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IVRDPServer_getPorts">
+    <operation name="IVRDEServer_getAuthType">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -31884,7 +31875,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IVRDPServer_setPorts">
+    <operation name="IVRDEServer_setAuthType">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -31899,7 +31890,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IVRDPServer_getNetAddress">
+    <operation name="IVRDEServer_getAuthTimeout">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -31914,7 +31905,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IVRDPServer_setNetAddress">
+    <operation name="IVRDEServer_setAuthTimeout">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -31929,7 +31920,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IVRDPServer_getAuthType">
+    <operation name="IVRDEServer_getAllowMultiConnection">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -31944,7 +31935,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IVRDPServer_setAuthType">
+    <operation name="IVRDEServer_setAllowMultiConnection">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -31959,7 +31950,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IVRDPServer_getAuthTimeout">
+    <operation name="IVRDEServer_getReuseSingleConnection">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -31974,7 +31965,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IVRDPServer_setAuthTimeout">
+    <operation name="IVRDEServer_setReuseSingleConnection">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -31989,7 +31980,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IVRDPServer_getAllowMultiConnection">
+    <operation name="IVRDEServer_getVideoChannel">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -32004,7 +31995,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IVRDPServer_setAllowMultiConnection">
+    <operation name="IVRDEServer_setVideoChannel">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -32019,7 +32010,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IVRDPServer_getReuseSingleConnection">
+    <operation name="IVRDEServer_getVideoChannelQuality">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -32034,7 +32025,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IVRDPServer_setReuseSingleConnection">
+    <operation name="IVRDEServer_setVideoChannelQuality">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -32049,7 +32040,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IVRDPServer_getVideoChannel">
+    <operation name="IVRDEServer_setVRDEProperty">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -32064,37 +32055,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IVRDPServer_setVideoChannel">
-      <soap:operation soapAction="" style="document"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="InvalidObjectFault">
-        <soap:fault name="InvalidObjectFault" use="literal"/>
-      </fault>
-      <fault name="RuntimeFault">
-        <soap:fault name="RuntimeFault" use="literal"/>
-      </fault>
-    </operation>
-    <operation name="IVRDPServer_getVideoChannelQuality">
-      <soap:operation soapAction="" style="document"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="InvalidObjectFault">
-        <soap:fault name="InvalidObjectFault" use="literal"/>
-      </fault>
-      <fault name="RuntimeFault">
-        <soap:fault name="RuntimeFault" use="literal"/>
-      </fault>
-    </operation>
-    <operation name="IVRDPServer_setVideoChannelQuality">
+    <operation name="IVRDEServer_getVRDEProperty">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -33104,6 +33065,21 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
+    <operation name="IEventSource_createAggregator">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
     <operation name="IEventSource_registerListener">
       <soap:operation soapAction="" style="document"/>
       <input>
@@ -34026,12 +34002,12 @@
     </operation>
     <!--
           *************************************
-          operations in portType for interface IVRDPServerChangedEvent
+          operations in portType for interface IVRDEServerChangedEvent
           *************************************
         -->
     <!--
           *************************************
-          operations in portType for interface IRemoteDisplayInfoChangedEvent
+          operations in portType for interface IVRDEServerInfoChangedEvent
           *************************************
         -->
     <!--

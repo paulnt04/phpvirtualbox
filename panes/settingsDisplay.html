@@ -102,7 +102,7 @@
 	</tr>
 	<tr>
 		<th><span class='translate'>Extended Features</span>:</th>
-		<td><input type='checkbox' class='vboxCheckbox' name='vboxSettingsDisplayRDPMulti' /> <span class='translate'>Allow Multiple Connections</span></td>
+		<td><input type='checkbox' class='vboxCheckbox' name='vboxSettingsDisplayRDPMulti' /> <span class='translate vboxEnablerListen'>Allow Multiple Connections</span></td>
 	</tr>	
 </table>
 </div>
@@ -128,20 +128,25 @@ document.forms['frmVboxSettings'].vboxSettingsDisplay2d.checked = ($('#vboxSetti
  * No VRDP?
  *
  */
-if(!$('#vboxSettingsDialog').data('vboxMachineData').VRDPServer) {
+if(!$('#vboxSettingsDialog').data('vboxMachineData').VRDEServer) {
 	
 	$('#vboxSettingsTabDisplayRemote').remove();
 	$('#vboxSettingsTabDisplayVideo').prev().children('li:eq(1)').remove();
 
 } else {
 	
-	document.forms['frmVboxSettings'].vboxSettingsDisplayRDPPort.value = $('#vboxSettingsDialog').data('vboxMachineData').VRDPServer.ports;
-	document.forms['frmVboxSettings'].vboxSettingsDisplayRDPAuth.value = $('#vboxSettingsDialog').data('vboxMachineData').VRDPServer.authType;
-	document.forms['frmVboxSettings'].vboxSettingsDisplayRDPAuthTimeout.value = $('#vboxSettingsDialog').data('vboxMachineData').VRDPServer.authTimeout;
+	document.forms['frmVboxSettings'].vboxSettingsDisplayRDPPort.value = $('#vboxSettingsDialog').data('vboxMachineData').VRDEServer.ports;
+	document.forms['frmVboxSettings'].vboxSettingsDisplayRDPAuth.value = $('#vboxSettingsDialog').data('vboxMachineData').VRDEServer.authType;
+	document.forms['frmVboxSettings'].vboxSettingsDisplayRDPAuthTimeout.value = $('#vboxSettingsDialog').data('vboxMachineData').VRDEServer.authTimeout;
 	
-	if(($('#vboxSettingsDialog').data('vboxMachineData').VRDPServer.enabled)) {
+	if(($('#vboxSettingsDialog').data('vboxMachineData').VRDEServer.enabled)) {
 		document.forms['frmVboxSettings'].vboxSettingsDisplayRDPEnabled.checked = true;
 	}
+
+	if(($('#vboxSettingsDialog').data('vboxMachineData').VRDEServer.allowMultiConnection)) {
+		document.forms['frmVboxSettings'].vboxSettingsDisplayRDPMulti.checked = true;
+	}
+	
 }
 
 /* Change settings onSave() */
@@ -155,12 +160,12 @@ $('#vboxSettingsDialog').bind('save',function(){
 	$('#vboxSettingsDialog').data('vboxMachineData').accelerate2DVideoEnabled = (document.forms['frmVboxSettings'].vboxSettingsDisplay2d.checked ? 1 : 0);
 	*/
 	
-	if($('#vboxSettingsDialog').data('vboxMachineData').VRDPServer) {
-		$('#vboxSettingsDialog').data('vboxMachineData').VRDPServer.ports = document.forms['frmVboxSettings'].vboxSettingsDisplayRDPPort.value;
-		$('#vboxSettingsDialog').data('vboxMachineData').VRDPServer.authType = document.forms['frmVboxSettings'].vboxSettingsDisplayRDPAuth.value;
-		$('#vboxSettingsDialog').data('vboxMachineData').VRDPServer.authTimeout = document.forms['frmVboxSettings'].vboxSettingsDisplayRDPAuthTimeout.value;
-		$('#vboxSettingsDialog').data('vboxMachineData').VRDPServer.enabled = (document.forms['frmVboxSettings'].vboxSettingsDisplayRDPEnabled.checked ? 1 : 0);
-		$('#vboxSettingsDialog').data('vboxMachineData').VRDPServer.allowMultiConnection = (document.forms['frmVboxSettings'].vboxSettingsDisplayRDPMulti.checked ? 1 : 0);
+	if($('#vboxSettingsDialog').data('vboxMachineData').VRDEServer) {
+		$('#vboxSettingsDialog').data('vboxMachineData').VRDEServer.ports = document.forms['frmVboxSettings'].vboxSettingsDisplayRDPPort.value;
+		$('#vboxSettingsDialog').data('vboxMachineData').VRDEServer.authType = document.forms['frmVboxSettings'].vboxSettingsDisplayRDPAuth.value;
+		$('#vboxSettingsDialog').data('vboxMachineData').VRDEServer.authTimeout = document.forms['frmVboxSettings'].vboxSettingsDisplayRDPAuthTimeout.value;
+		$('#vboxSettingsDialog').data('vboxMachineData').VRDEServer.enabled = (document.forms['frmVboxSettings'].vboxSettingsDisplayRDPEnabled.checked ? 1 : 0);
+		$('#vboxSettingsDialog').data('vboxMachineData').VRDEServer.allowMultiConnection = (document.forms['frmVboxSettings'].vboxSettingsDisplayRDPMulti.checked ? 1 : 0);
 	}
 });
 

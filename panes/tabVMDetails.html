@@ -697,20 +697,20 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	$(vboxDetailsTable).append(__vboxDetailRow(trans("Video Memory"), data['VRAMSize'] + " " + trans('MB')));
 	
 	// RDP
-	if(data['VRDPServer'] && data['VRDPServer']['enabled'] && data['VRDPServer']['ports']) {
-		if(data['VRDPServer']['netAddress']) {
-			$(vboxDetailsTable).append(__vboxDetailRow(trans("Remote Console")+ ': ' +trans("Net Address"), data['VRDPServer']['netAddress']));
+	if(data['VRDEServer'] && data['VRDEServer']['enabled'] && data['VRDEServer']['ports']) {
+		if(data['VRDEServer']['netAddress']) {
+			$(vboxDetailsTable).append(__vboxDetailRow(trans("Remote Console")+ ': ' +trans("Net Address"), data['VRDEServer']['netAddress']));
 		}
-		var chost = data['VRDPServer']['netAddress'];
+		var chost = data['VRDEServer']['netAddress'];
 		if(!chost) chost = $('#vboxIndex').data('vboxConfig').consoleHost;
 		if(!chost || chost == 'localhost' || chost == '127.0.0.1') {chost = location.host;}
 		
 		if(links) {
-			tr = __vboxDetailRow(trans("Ports"), data['VRDPServer']['ports']);
-			tr.childNodes[1].innerHTML = "<a href='rdp.php?host=" + chost + '&port=' + data['VRDPServer']['ports'] + "&vm=" + encodeURIComponent(data['name']) + "'>" + data['VRDPServer']['ports'] + "</a>";
+			tr = __vboxDetailRow(trans("Ports"), data['VRDEServer']['ports']);
+			tr.childNodes[1].innerHTML = "<a href='rdp.php?host=" + chost + '&port=' + data['VRDEServer']['ports'] + "&vm=" + encodeURIComponent(data['name']) + "'>" + data['VRDEServer']['ports'] + "</a>";
 			$(vboxDetailsTable).append(tr);
 		} else {
-			$(vboxDetailsTable).append(__vboxDetailRow(trans("Remote Console")+ ': ' +trans("Ports"), data['VRDPServer']['ports']));
+			$(vboxDetailsTable).append(__vboxDetailRow(trans("Remote Console")+ ': ' +trans("Ports"), data['VRDEServer']['ports']));
 		}
 		
 	}

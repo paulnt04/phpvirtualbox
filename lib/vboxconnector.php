@@ -250,7 +250,7 @@ class vboxconnector {
 
 		$this->__vboxwebsrvConnect();
 
-		$m = $this->__getMachineRef($args['vm']);
+		$m = $this->vbox->findMachine($args['vm']);
 
 		$response['data'] = $m->enumerateGuestProperties($args['pattern']);
 		$m->releaseRemote();
@@ -267,7 +267,7 @@ class vboxconnector {
 		$this->__vboxwebsrvConnect();
 
 		// create session and lock machine
-		$machine = $this->__getMachineRef($args['id']);
+		$machine = $this->vbox->findMachine($args['id']);
 		$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
 		$machine->lockMachine($this->session->handle, 'Write');
 
@@ -315,11 +315,11 @@ class vboxconnector {
 
 		// VRDP settings
 		if(!$version['ose']) {
-			$m->VRDPServer->enabled = $args['VRDPServer']['enabled'] ? 1 : 0;
-			$m->VRDPServer->ports = $args['VRDPServer']['ports'];
-			$m->VRDPServer->authType = ($args['VRDPServer']['authType'] ? $args['VRDPServer']['authType'] : null);
-			$m->VRDPServer->authTimeout = intval($args['VRDPServer']['authTimeout']);
-			$m->VRDPServer->allowMultiConnection = intval($args['VRDPServer']['allowMultiConnection']);
+			$m->VRDEServer->enabled = $args['VRDEServer']['enabled'] ? 1 : 0;
+			$m->VRDEServer->setVRDEProperty('TCP/Ports',$args['VRDEServer']['ports']);
+			$m->VRDEServer->authType = ($args['VRDEServer']['authType'] ? $args['VRDEServer']['authType'] : null);
+			$m->VRDEServer->authTimeout = intval($args['VRDEServer']['authTimeout']);
+			$m->VRDEServer->allowMultiConnection = intval($args['VRDEServer']['allowMultiConnection']);
 		}
 
 		// Audio controller settings
@@ -817,8 +817,7 @@ class vboxconnector {
 		$this->__vboxwebsrvConnect();
 
 		$this->vbox->systemProperties->defaultMachineFolder = $args['SystemProperties']['defaultMachineFolder'];
-		$this->vbox->systemProperties->defaultHardDiskFolder = $args['SystemProperties']['defaultHardDiskFolder'];
-		$this->vbox->systemProperties->remoteDisplayAuthLibrary = $args['SystemProperties']['remoteDisplayAuthLibrary'];
+		$this->vbox->systemProperties->VRDEAuthLibrary = $args['SystemProperties']['VRDEAuthLibrary'];
 
 		$this->cache->expire('getSystemProperties');
 
@@ -968,7 +967,7 @@ class vboxconnector {
 
 
 		foreach($args['vms'] as $vm) {
-			$m = $this->vbox->getMachine($vm['id']);
+			$m = $this->vbox->findMachine($vm['id']);
 			$desc = $m->export($app->handle);
 			$props = $desc->getDescription();
 			$ptypes = array();
@@ -1257,7 +1256,7 @@ class vboxconnector {
 		$this->__vboxwebsrvConnect();
 
 		// Machine state
-		$machine = $this->__getMachineRef($vm);
+		$machine = &$this->vbox->findMachine($vm);
 		$mstate = $machine->state->__toString();
 
 		// If state has an expected result, check
@@ -1358,7 +1357,7 @@ class vboxconnector {
 
 			// VRDP is not supported in OSE
 			$version = $this->getVersion();
-			$sessionType = ($version['ose'] ? 'headless' : 'vrdp');
+			$sessionType = 'headless'; #($version['ose'] ? 'headless' : 'vrdp');
 
 			$progress = $machine->launchVMProcess($this->session->handle, $sessionType, '');
 
@@ -1520,7 +1519,7 @@ class vboxconnector {
 
 		} else {
 
-			$machine = &$this->__getMachineRef($args['vm']);
+			$machine = &$this->vbox->findMachine($args['vm']);
 
 
 			// For correct caching, always use id
@@ -1582,7 +1581,7 @@ class vboxconnector {
 				if($console === false || $console['lastStateChange'] < $mdlm) {
 					$this->session = &$this->websessionManager->getSessionObject($this->vbox->handle);
 					$machine->lockMachine($this->session->handle, 'Shared');
-					$data['consolePort'] = $this->session->console->remoteDisplayInfo->port;
+					$data['consolePort'] = $this->session->console->VRDEServerInfo->port;
 					$this->session->unlockMachine();
 					$this->session = null;
 					$console = array(
@@ -1632,7 +1631,7 @@ class vboxconnector {
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
 
-		$machine = $this->__getMachineRef($args['vm']);
+		$machine = $this->vbox->findMachine($args['vm']);
 
 		$cache = array('__consolePort'.$args['vm'],'__getMachine'.$args['vm'],'__getNetworkAdapters'.$args['vm'],'__getStorageControllers'.$args['vm'],
 			'__getSharedFolders'.$args['vm'],'__getUSBController'.$args['vm'],'getMediums');
@@ -1709,7 +1708,7 @@ class vboxconnector {
 			$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
 
 			// Lock VM
-			$machine = $this->__getMachineRef($vm);
+			$machine = $this->vbox->findMachine($vm);
 			$machine->lockMachine($this->session->handle,'Write');
 
 			// OS defaults
@@ -1721,7 +1720,7 @@ class vboxconnector {
 			$this->session->machine->USBController->enabled = true;
 			$this->session->machine->USBController->enabledEhci = true;
 			if(!$version['ose']) {
-				$this->session->machine->VRDPServer->authTimeout = 5000;
+				$this->session->machine->VRDEServer->authTimeout = 5000;
 			}
 
 			// Other defaults
@@ -1978,12 +1977,13 @@ class vboxconnector {
 			'firmwareType' => $m->firmwareType->__toString(),
 			'snapshotFolder' => $m->snapshotFolder,
 			'monitorCount' => $m->monitorCount,
-			'VRDPServer' => ($version['ose'] ? null : array(
-				'enabled' => $m->VRDPServer->enabled,
-				'ports' => $m->VRDPServer->ports,
-				'netAddress' => $m->VRDPServer->netAddress,
-				'authType' => $m->VRDPServer->authType->__toString(),
-				'authTimeout' => $m->VRDPServer->authTimeout
+			'VRDEServer' => ($version['ose'] ? null : array(
+				'enabled' => $m->VRDEServer->enabled,
+				'ports' => $m->VRDEServer->getVRDEProperty('TCP/Ports'),
+				'netAddress' => $m->VRDEServer->getVRDEProperty('TCP/Address'),
+				'authType' => $m->VRDEServer->authType->__toString(),
+				'authTimeout' => $m->VRDEServer->authTimeout,
+				'allowMultiConnection' => intval($m->VRDEServer->allowMultiConnection)
 				)),
 			'audioAdapter' => array(
 				'enabled' => $m->audioAdapter->enabled,
@@ -2072,9 +2072,9 @@ class vboxconnector {
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
 
-		$vm = $this->__getMachineRef($args['vm']);
+		$vm = $this->vbox->findMachine($args['vm']);
 
-		$snapshot = $vm->getSnapshot($args['snapshot']);
+		$snapshot = $vm->findSnapshot($args['snapshot']);
 		$snapshot->name = $args['name'];
 		$snapshot->description = $args['description'];
 
@@ -2093,8 +2093,8 @@ class vboxconnector {
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
 
-		$vm = $this->__getMachineRef($args['vm']);
-		$snapshot = $vm->getSnapshot($args['snapshot']);
+		$vm = $this->vbox->findMachine($args['vm']);
+		$snapshot = $vm->findSnapshot($args['snapshot']);
 		$machine = array();
 		$this->getVMDetails(array(),$machine,$snapshot->machine);
 
@@ -2124,10 +2124,10 @@ class vboxconnector {
 			// Open session to machine
 			$this->session = &$this->websessionManager->getSessionObject($this->vbox->handle);
 
-			$machine = $this->__getMachineRef($args['vm']);
+			$machine = $this->vbox->findMachine($args['vm']);
 			$machine->lockMachine($this->session->handle,'Write');
 
-			$snapshot = $this->session->machine->getSnapshot($args['snapshot']);
+			$snapshot = $this->session->machine->findSnapshot($args['snapshot']);
 
 			$progress = $this->session->console->restoreSnapshot($snapshot->handle);
 
@@ -2172,7 +2172,7 @@ class vboxconnector {
 			// Open session to machine
 			$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
 
-			$machine = $this->__getMachineRef($args['vm']);
+			$machine = $this->vbox->findMachine($args['vm']);
 			$machine->lockMachine($this->session->handle, 'Write');
 
 			$progress = $this->session->console->deleteSnapshot($args['snapshot']);
@@ -2212,7 +2212,7 @@ class vboxconnector {
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
 
-		$machine = $this->__getMachineRef($args['vm']);
+		$machine = $this->vbox->findMachine($args['vm']);
 
 		$progress = $this->session = null;
 
@@ -2262,14 +2262,14 @@ class vboxconnector {
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
 
-		$machine = &$this->__getMachineRef($args['vm']);
+		$machine = &$this->vbox->findMachine($args['vm']);
 
 		/* No snapshots? Empty array */
 		if($machine->snapshotCount < 1) {
 			$response['data'] = array();
 		} else {
 
-			$s = $machine->getSnapshot(null);
+			$s = $machine->findSnapshot(null);
 			$response['data'] = $this->__getSnapshot($s,true);
 		}
 
@@ -2447,7 +2447,7 @@ class vboxconnector {
 
 			// Find medium attachment
 			try {
-				$mach = $this->vbox->getMachine($uuid);
+				$mach = $this->vbox->findMachine($uuid);
 			} catch (Exception $e) {
 				// TODO: error message indicating machine no longer exists?
 				continue;
@@ -2548,7 +2548,7 @@ class vboxconnector {
 		$this->__vboxwebsrvConnect();
 
 		// Find medium attachment
-		$machine = $this->__getMachineRef($args['vm']);
+		$machine = $this->vbox->findMachine($args['vm']);
 		$state = $machine->sessionState->__toString();
 		$save = ($save || $machine->getExtraData('GUI/SaveMountedAtRuntime'));
 
@@ -2594,10 +2594,11 @@ class vboxconnector {
 		foreach($machines as $mid) {
 			$sids = $m->getSnapshotIds($mid);
 			try {
-				$mid = $this->vbox->getMachine($mid);
+				$mid = $this->vbox->findMachine($mid);
 			} catch (Exception $e) {
 				continue;
 			}
+
 			$c = count($sids);
 			$hasSnapshots = max($hasSnapshots,$c);
 			for($i = 0; $i < $c; $i++) {
@@ -2605,7 +2606,7 @@ class vboxconnector {
 					unset($sids[$i]);
 				} else {
 					try {
-						$name = $mid->getSnapshot($sids[$i])->name;
+						$name = $mid->findSnapshot($sids[$i])->name;
 						$sids[$i] = $name;
 					} catch(Exception $e) { }
 				}
@@ -2691,9 +2692,9 @@ class vboxconnector {
 			'networkAdapterCount' => (string)$this->vbox->systemProperties->networkAdapterCount,
 			'maxBootPosition' => (string)$this->vbox->systemProperties->maxBootPosition,
 			'defaultMachineFolder' => (string)$this->vbox->systemProperties->defaultMachineFolder,
-			'defaultHardDiskFolder' => (string)$this->vbox->systemProperties->defaultHardDiskFolder,
 			'defaultHardDiskFormat' => (string)$this->vbox->systemProperties->defaultHardDiskFormat,
-			'remoteDisplayAuthLibrary' => (string)$this->vbox->systemProperties->remoteDisplayAuthLibrary,
+			'homeFolder' => $this->vbox->homeFolder,
+			'VRDEAuthLibrary' => (string)$this->vbox->systemProperties->VRDEAuthLibrary,
 			'defaultAudioDriver' => (string)$this->vbox->systemProperties->defaultAudioDriver,
 			'maxGuestMonitors' => $this->vbox->systemProperties->maxGuestMonitors
 		);
@@ -2710,7 +2711,7 @@ class vboxconnector {
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
 
-		$m = $this->__getMachineRef($args['vm']);
+		$m = $this->vbox->findMachine($args['vm']);
 		$logs = array();
 		try { $i = 0; while($l = $m->queryLogFilename($i++)) $logs[] = $l;
 		} catch (Exception $null) {}
@@ -2728,7 +2729,7 @@ class vboxconnector {
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
 
-		$m = $this->__getMachineRef($args['vm']);
+		$m = $this->vbox->findMachine($args['vm']);
 		try {
 			$o = 0; $s = 8192; // 8k chunks
 			while($l = $m->readLog(intval($args['log']),$o,$s)) {
@@ -2739,24 +2740,6 @@ class vboxconnector {
 		$m->releaseRemote();
 	}
 
-	/*
-	 *
-	 * Return ref to vbox machine object
-	 *
-	 */
-	public function &__getMachineRef(&$id) {
-		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
-
-		// Simple UUID passed
-		if(!$id || strpos($id,'-')) {
-			return $this->vbox->getMachine($id);
-		}
-		// VM name passed. Update ID after getting vm
-		$res = $this->vbox->findMachine($id);
-		$id = $res->id;
-		return $res;
-	}
 
 	/*
 	 *

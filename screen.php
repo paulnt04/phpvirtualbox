@@ -73,7 +73,7 @@ try {
 	}
 
 	//Get a list of registered machines
-	$machine = $vbox->__getMachineRef($_REQUEST['vm']);
+	$machine = $vbox->vbox->findMachine($_REQUEST['vm']);
 	switch($machine->state->__toString()) {
 		case 'Running':
 		case 'Saved':

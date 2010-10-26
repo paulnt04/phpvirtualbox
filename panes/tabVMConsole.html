@@ -64,7 +64,7 @@ $('#vboxTabVMConsole').parent().bind('vmloading',function(){
 
 $('#vboxTabVMConsole').bind('show',function(e,vm){
 
-	if(!vm || vm.id == 'host' || !vm.VRDPServer || !vm.consolePort || !vm.VRDPServer.enabled || vm.state != 'Running') {
+	if(!vm || vm.id == 'host' || !vm.VRDEServer || !vm.consolePort || !vm.VRDEServer.enabled || vm.state != 'Running') {
 		$('#vboxRDPFormContainer').css({'display':'none'});
 		$('#FlashRDPContainer').css({'visibility':'hidden'});
 		$('#vboxTabVMUnavailable').css({'display':''});
@@ -84,7 +84,7 @@ $('#vboxTabVMConsole').bind('show',function(e,vm){
 	$("#vboxRDPStatus").html('');
 	if(vboxConsoleDetached) window.status = $("#vboxRDPStatus").text();
 	
-	var chost = (vm.VRDPServer.netAddress ? vm.VRDPServer.netAddress : $('#vboxIndex').data('vboxConfig').consoleHost);
+	var chost = (vm.VRDEServer.netAddress ? vm.VRDEServer.netAddress : $('#vboxIndex').data('vboxConfig').consoleHost);
 	if(!chost) { chost = location.hostname;}
 	chost+=':'+vm.consolePort;
 	$(document.vboxRDPForm.serverAddress).val(chost);

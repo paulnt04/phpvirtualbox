@@ -118,7 +118,7 @@ function wizardHDBrowseLocation() {
 		os = 'unix';
 	} else {
 		// no path set
-		loc = $('#vboxIndex').data('vboxSystemProperties').defaultHardDiskFolder;
+		loc = $('#vboxIndex').data('vboxSystemProperties').homeFolder;
 	}
 		
 	vboxFileBrowser(loc,function(f){
@@ -137,7 +137,7 @@ $('#wizardNewHDStep4').bind('show',function(){
 
 	var loc = document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value;
 	if(loc.search(/[\/|\\]/) < 0) {
-		loc = $('#vboxIndex').data('vboxSystemProperties').defaultHardDiskFolder + '/' + loc;
+		loc = $('#vboxIndex').data('vboxSystemProperties').homeFolder + '/' + loc;
 	}
 	document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value = loc;
 	$('#wizardNewHDLocationLabel').html($('<div />').text(loc).html());
