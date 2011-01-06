@@ -1,27 +1,44 @@
 -------------------------------------
 -------------------------------------
-Changed temp file prefix to use an md5 of the location setting. This
-will cleanly separate > 1 instance of phpVirtualBox running on the
-same physical server.
+UI and back-end changes to match new version of VirtualBox.
 
-Fixed Console tab bug when a virtual machine has a range or list
-of RDP ports configured.
+Updated jquery-ui to 1.8.2.
 
-Default host in location setting is now 127.0.0.1 instead of 
-"localhost" to get around problems when "localhost" resolves to
-an IPv6 address.
+Updated jquery to 1.4.4
 
-Fixed bug in file / folder browser when file extension is not
-lower case.
+Fixed bug that would not allow console connections if accessing
+phpVirtualBox through a URL where a port is specified. E.g.
+http://myhost:8080/phpVirtualBox
 
-Added missing "Stop" to english translation file.
+Added json_encode() for PHP compiled with --disable-json and
+PHP versions < 5.2.0.
+
+Fixed compatibility issues with PHP 5.1.x.
+
+"rdpHost" setting changed to "consoleHost"
+
+Added VirtualBox version to host in VM list and on the host
+details tab.
+
+Added multiple server functionality.
+
+Fixed case sensitivity for $browserRestrictFiles setting.
+
+Fixed bug when using OSE where the Shared Folders section would
+not be selected when "Shared Folders" is clicked on from the
+Details tab / section.
+
+Exporting a VM defaults to '.ova' file.
+
+Added language contexts.
 
 Changed cache temp dir location to try environment variables
 first.
 
-Console tab no longer overwrites rdpHost setting.
+Fixed bug that would not send the 'Esc' key to the console when
+pressed.
 
-Added "Allow Multiple Connections" to Remote Display settings.
+Changed back to GPL license.
 
 -------------------------------------
 		0.5 - 2010-08-10

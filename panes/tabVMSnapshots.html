@@ -1,18 +1,19 @@
 <!-- 
 
-	VM Snapshots
+	VM Snapshots Pane
+	Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
 	
 	$Id$
 
  -->
-<div id='vboxTabVMSnapshots' class='vboxTabContent'>
+<div id='vboxTabVMSnapshots' class='vboxInvisible' style='display: none;'>
 
 	<table class='vboxInvisible' style='height: 99%; width: 99%'>
 		<tr style='vertical-align: top; height: 1%'>
 			<td><div id='vboxSnapshotToolbar'></div></td>
 		</tr>
 		<tr style='vertical-align: top;'>
-			<td><ul style='width: 80%; min-height: 400px' class='vboxBordered vboxTreeView' id='vboxSnapshotList'></ul></td>
+			<td><ul style='min-height: 400px' class='vboxBordered vboxTreeView' id='vboxSnapshotList'></ul></td>
 		</tr>
 	</table>
 <!-- 
@@ -77,6 +78,11 @@
 
 <script type='text/javascript'>
 
+setLangContext('vboxSnapshots');
+vboxInitDisplay('vboxSnapshotNew');
+vboxInitDisplay('vboxSnapshotDetails');
+
+
 var tButtons = [
             	
   	{
@@ -89,7 +95,7 @@ var tButtons = [
   		},
   		'click' : function () {
 
-  			$('#vboxSnapshotNewImg').attr('src',"images/vbox/" + vmGuestOSTypeIcon($('#vboxTabVMSnapshots').data('machine').OSTypeId));
+  			$('#vboxSnapshotNewImg').attr('src',"images/vbox/" + vboxGuestOSTypeIcon($('#vboxTabVMSnapshots').data('machine').OSTypeId));
   			$('#vboxSnapshotNewName').val(trans('Snapshot') + ' ' + $('#vboxSnapshotList').find('li').length);
   			$('#vboxSnapshotNewDesc').val('');
 
@@ -98,7 +104,7 @@ var tButtons = [
   			buttons[trans('OK')] = function() {
 	  	  		var l = new vboxLoader();
 	  	  		l.mode = 'save';
-	  	  		l.add('takeSnapshot',function(d){
+	  	  		l.add('snapshotTake',function(d){
 					if(d && d.progress) {
 						vboxProgress(d.progress,function(){
 							$('#vboxTabVMSnapshots').trigger('refresh');
@@ -128,10 +134,11 @@ var tButtons = [
   		'click' : function () {
   	  		var snapshot = $('#vboxSnapshotList').find('div.vboxListItemSelected').first().parent().data();
 			var buttons = {};
+			setLangContext('vboxSnapshots');
 			buttons[trans('Restore')] = function() {
 	  	  		var l = new vboxLoader();
 	  	  		l.mode = 'save';
-	  	  		l.add('restoreSnapshot',function(d){
+	  	  		l.add('snapshotRestore',function(d){
 					if(d && d.progress) {
 						vboxProgress(d.progress,function(){
 							$('#vboxTabVMSnapshots').trigger('refresh');
@@ -143,6 +150,7 @@ var tButtons = [
 	  	  		$(this).remove();
 				l.run();				
 			};
+			unsetLangContext();
 			vboxConfirm(trans('Restore Snapshot Message').replace('%s','<b>'+$('<div />').text(snapshot.name).html()+'</b>'),buttons);
   	  	},
   	},
@@ -157,10 +165,11 @@ var tButtons = [
   		'click' : function () {
   	  		var snapshot = $('#vboxSnapshotList').find('div.vboxListItemSelected').first().parent().data();
 			var buttons = {};
+			setLangContext('vboxSnapshots');
 			buttons[trans('Delete')] = function() {
 	  	  		var l = new vboxLoader();
 	  	  		l.mode = 'save';
-	  	  		l.add('deleteSnapshot',function(d){
+	  	  		l.add('snapshotDelete',function(d){
 					if(d && d.progress) {
 						vboxProgress(d.progress,function(){
 							$('#vboxTabVMSnapshots').trigger('refresh');
@@ -172,6 +181,7 @@ var tButtons = [
 	  	  		$(this).remove();
 				l.run();				
 			};
+			unsetLangContext();
 			vboxConfirm(trans('Delete Snapshot Message1')+'<p>'+trans('Delete Snapshot Message2').replace('%s','<b>'+$('<div />').text(snapshot.name).html()+'</b>')+'</p>',buttons);  	  		
   	  	},
   		'separator' : true
@@ -238,6 +248,8 @@ snapshotToolbar.disabledString = 'dis';
 snapshotToolbar.addButtons('vboxSnapshotToolbar');
 
 vboxInitDisplay('vboxSnapshotToolbar');
+
+unsetLangContext();
 
 $('#vboxTabVMSnapshots').parent().bind('vmloading',snapshotToolbar.disable);
 $('#vboxSnapshotList').bind('select',snapshotToolbar.update);
@@ -387,7 +399,7 @@ function __vboxTabSnapshotCurrent() {
 	var li = document.createElement('li');
 	$(li).data('state','current');
 	$(li).data('name',trans('Current State'));
-	$(li).html(' <div class="vboxListItem"><img src="images/vbox/'+machineStateIcon($('#vboxTabVMSnapshots').data('machine').state)+'" /> ' + $('<div />').text(trans('Current State')).html()+'</div>');
+	$(li).html(' <div class="vboxListItem"><img src="images/vbox/'+vboxMachineStateIcon($('#vboxTabVMSnapshots').data('machine').state)+'" /> ' + $('<div />').text(trans('Current State')).html()+'</div>');
 
 	if($('#vboxTabVMSnapshots').data('machine').currentStateModified) {
 		$(li).children().first().append(' (' + trans('changed') +')');

@@ -24,21 +24,17 @@
 global $vbox, $localbrowser, $allowed;
 
 require_once(dirname(dirname(__FILE__)).'/config.php');
+require_once(dirname(__FILE__).'/utils.php');
 require_once(dirname(__FILE__).'/vboxconnector.php');
 
 $vbox = new vboxconnector();
 $vbox->connect();
 
-if(stripos($vbox->vbox->host->operatingSystem,'windows') === false) {
-	define('DSEP','/');
-} else {
-	define('DSEP','\\');
-}
 
 $settings = new phpVBoxConfig();
 
 
-$allowed = explode(',',$settings->browserRestrictFiles);
+$allowed = explode(',',strtolower($settings->browserRestrictFiles));
 if($allowed[0]) $allowed = array_combine($allowed,$allowed);
 else $allowed = array();
 
@@ -48,12 +44,32 @@ else $folders = array();
 
 error_reporting(E_ALL ^ E_NOTICE);
 
-$dir = urldecode($_REQUEST['dir']);
+/*
+ * Clean request
+ */
+$vboxRequest = clean_request();
 
-$localbrowser = $settings->browserLocal;
 
+// Force localbrowser if we're on the same host or sunos is detected
+$vbhost = parse_url($settings->location);
+$vbhost = $vbhost['host'];
+$localbrowser = ($vbhost == 'localhost' || $vbhost == '127.0.0.1' || $settings->browserLocal);
+
+if($localbrowser) {
+	define('DSEP', DIRECTORY_SEPARATOR);
+} else if(stripos($vbox->vbox->host->operatingSystem,'windows') === false) {
+	define('DSEP','/');
+} else {
+	define('DSEP','\\');
+}
+
+/* In some cases, "dir" passed is just a file name */
+if(strpos($vboxRequest['dir'],DSEP)===false) $vboxRequest['dir'] = DSEP;
+
+
+$dir = $vboxRequest['dir'];
 /* Check that folder restriction validates if it exists */
-if($_REQUEST['dir'] != '/' && count($folders)) {
+if($vboxRequest['dir'] != '/' && count($folders)) {
 	$valid = false;
 	foreach($folders as $f) {
 		if(strpos(strtoupper($dir),strtoupper($f)) === 0) {
@@ -63,14 +79,14 @@ if($_REQUEST['dir'] != '/' && count($folders)) {
 	}
 	if(!$valid) {
 		folder_start();
-		echo('<li>Access denied to '.htmlentities($dir).' (' . htmlentities(urldecode($_REQUEST['dir'])).')</li>');
+		echo('<li>Access denied to '.htmlentities($dir).' (' . htmlentities(urldecode($vboxRequest['dir'])).')</li>');
 		folder_end();
-		$_REQUEST['dir'] = '/';
+		$vboxRequest['dir'] = '/';
 	}
 }
 
 /* Folder Restriction with root '/' requested */
-if($_REQUEST['dir'] == '/' && count($folders)) {
+if($vboxRequest['dir'] == '/' && count($folders)) {
 	folder_start();
 	foreach($folders as $f) folder_folder($f,true);
 	folder_end();
@@ -78,7 +94,7 @@ if($_REQUEST['dir'] == '/' && count($folders)) {
 }
 
 /* Full, expanded path to $dir */
-if($_REQUEST['fullpath']) {
+if($vboxRequest['fullpath']) {
 	folder_start();
 	if(count($folders)) {
 		folder_start();
@@ -169,7 +185,7 @@ function printdir($dir, $recurse=array()) {
 			}
 		}
 	}
-	if(!$_REQUEST['dirsOnly']) {
+	if(!$vboxRequest['dirsOnly']) {
 		// All files
 		for($i = 0; $i < count($files); $i++) {
 			$file = $files[$i];
@@ -179,7 +195,7 @@ function printdir($dir, $recurse=array()) {
 
 				$ext = strtolower(preg_replace('/^.*\./', '', $file));
 
-				if(count($allowed) && !@$allowed['.'.$ext]) continue;
+				if(count($allowed) && !@$allowed['.'.strtolower($ext)]) continue;
 
 				folder_file($file);
 			}
@@ -219,7 +235,7 @@ function printdirlocal($dir, $recurse=array()) {
 			}
 		}
 	}
-	if(!$_REQUEST['dirsOnly']) {
+	if(!$vboxRequest['dirsOnly']) {
 		// All files
 		foreach( $files as $file ) {
 			$file = $dir.DSEP.$file;

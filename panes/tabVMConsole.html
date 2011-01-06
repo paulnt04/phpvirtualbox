@@ -1,4 +1,12 @@
-<div id='vboxTabVMConsole' class='vboxTabContent'>
+<!--
+
+	VM Console tab
+	Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
+	
+	$Id$
+	
+ -->
+<div id='vboxTabVMConsole' class='vboxTabContent' style='display:none;'>
   <div id='vboxTabVMUnavailable' style='display: none' class='translate'>Virtual machine is not running or RDP configured.</div>
   <div id='vboxRDPFormContainer'  style='padding-top: 8px; display: none'>
 	<form name="vboxRDPForm" onsubmit="return false">
@@ -47,10 +55,12 @@ if($("#vboxIndex").data('vboxConfig').consoleResolutions) {
 	}
 }
 // Translations
+setLangContext('vboxVMConsole');
 $('#vboxTabVMConsole').find(".translate").html(function(i,h){return trans(h);}).removeClass('translate');
 $(document.vboxRDPForm.connectionButton).val(trans('Connect'));
 $(document.vboxRDPForm.cadButton).val(trans("Ctrl-Alt-Del"));
 $(document.vboxRDPForm.vboxVRDPDetachBtn).val(trans("Detach"));
+unsetLangContext();
 $("#vboxRDPStatus").html(trans("Loading ..."));
 if(vboxConsoleDetached) window.status = $("#vboxRDPStatus").text();
 
@@ -62,7 +72,7 @@ $('#vboxTabVMConsole').parent().bind('vmloading',function(){
 
 $('#vboxTabVMConsole').bind('show',function(e,vm){
 
-	if(!vm || vm.id == 'host' || !vm.VRDPServer || !vm.consolePort || !vm.VRDPServer.enabled || vm.state != 'Running') {
+	if(!vm || vm.id == 'host' || !vm.VRDEServer || !vm.consolePort || !vm.VRDEServer.enabled || vm.state != 'Running') {
 		$('#vboxRDPFormContainer').css({'display':'none'});
 		$('#FlashRDPContainer').css({'visibility':'hidden'});
 		$('#vboxTabVMUnavailable').css({'display':''});
@@ -82,7 +92,7 @@ $('#vboxTabVMConsole').bind('show',function(e,vm){
 	$("#vboxRDPStatus").html('');
 	if(vboxConsoleDetached) window.status = $("#vboxRDPStatus").text();
 	
-	var chost = (vm.VRDPServer.netAddress ? vm.VRDPServer.netAddress : $('#vboxIndex').data('vboxConfig').rdpHost);
+	var chost = (vm.VRDEServer.netAddress ? vm.VRDEServer.netAddress : $('#vboxIndex').data('vboxConfig').consoleHost);
 	if(!chost) { chost = location.hostname;}
 	chost+=':'+vm.consolePort;
 	$(document.vboxRDPForm.serverAddress).val(chost);
@@ -98,7 +108,7 @@ $('#vboxTabVMConsole').bind('show',function(e,vm){
 		var params = {};
 		params.wmode="opaque";
 		params.menu="true";
-		params.bgcolor="#FFFFFF";
+		params.bgcolor="#e9e9e9";
 		params.quality="low";
 		params.allowScriptAccess="always";
 		params.flashId="FlashRDP";
@@ -119,7 +129,7 @@ RDPL.onLoad = function(){
 	var params = {};
 	params.wmode="opaque";
 	params.menu="true";
-	params.bgcolor="#FFFFFF";
+	params.bgcolor="#e9e9e9";
 	params.quality="low";
 	params.allowScriptAccess="always";
 	params.flashId="FlashRDP";
@@ -189,14 +199,18 @@ function RDPWebEventLoaded(flashId) {
    
 function RDPWebEventConnected(flashId) {
 	$("#vboxRDPStatus").data('vmConnected',true);
+	setLangContext('vboxVMConsole');
 	$("#vboxRDPStatus").html(trans("Connected to") + " " + $(document.vboxRDPForm.serverAddress).val());
+	unsetLangContext();
 	if(vboxConsoleDetached) window.status = $("#vboxRDPStatus").text();
 	$('#vboxVRDPDetachBtn').show();
 }
 
 function RDPWebEventServerRedirect(flashId) {
+	setLangContext('vboxVMConsole');
 	$("#vboxRDPStatus").html(trans("Redirection by") + " " + vboxRDPgetFlashProperty("FlashRDP", "serverAddress"));
 	if(vboxConsoleDetached) window.status = $("#vboxRDPStatus").text();
+	unsetLangContext();
 }
 
 function RDPWebEventDisconnected(flashId) {
@@ -207,14 +221,17 @@ function RDPWebEventDisconnected(flashId) {
    	$('#vboxVRDPDetachBtn').hide();
        
     /* RDP connection has been lost */
+    setLangContext('vboxVMConsole');
     $("#vboxRDPStatus").html(trans("Disconnect reason")+":\n" + vboxRDPgetFlashProperty("FlashRDP", "lastError"));
+    unsetLangContext();
     if(vboxConsoleDetached) {
     	alert($("#vboxRDPStatus").text());
     	window.close();
     }
+    setLangContext('vboxVMConsole');
     document.vboxRDPForm.connectionButton.value = trans("Connect");
-    document.vboxRDPForm.onsubmit=function() {return vboxRDPConnect();}
-   
+    document.vboxRDPForm.connectionButton.onclick=function() {return vboxRDPConnect();}
+    unsetLangContext();
 }
 
    
@@ -226,9 +243,11 @@ function vboxRDPConnect() {
     if (!flash) return;
 
     $('#vboxRDPConnParams').css({'visibility':'hidden'});      
-    
+
+    setLangContext('vboxVMConsole');
     document.vboxRDPForm.connectionButton.value = trans("Disconnect");
     document.vboxRDPForm.connectionButton.onclick=function(){return vboxRDPDisconnect();}
+    unsetLangContext();
     
 	$('#FlashRDPContainer').css({'visibility':'visible'});
 
@@ -248,9 +267,11 @@ function vboxRDPConnect() {
     $('#vboxRDPFormContainer').find(".vboxRDPSet").each(function(){
   	   flash.setProperty($(this).attr('name'),$(this).val());
     });
-     
+
+    setLangContext('vboxVMConsole');
     $("#vboxRDPStatus").html(trans("Connecting to") + ": " + $(document.vboxRDPForm.serverAddress).val() + "...");
     if(vboxConsoleDetached) window.status = $("#vboxRDPStatus").html();
+    unsetLangContext();
      
     /* Establish the connection. */
     flash.connect();
@@ -261,9 +282,11 @@ function vboxRDPDisconnect() {
 	var flash = RDPWebClient.getFlashById("FlashRDP");
 	if (flash) try { flash.disconnect(); } catch (err) {};
 	/* Restore the "Connect" form.  And resize flash*/
+	setLangContext('vboxVMConsole');
 	document.vboxRDPForm.connectionButton.value = trans("Connect");
 	document.vboxRDPForm.connectionButton.onclick=function() {vboxRDPConnect();this.blur();}
 	$(flash).css({'height':'100px','width':'100px'});
+	unsetLangContext();
           
 }
 
@@ -278,10 +301,12 @@ function vboxRDPDetach() {
 
 	var wh = $('#vboxRDPSize').val().split('x');
 	var newwin = window.open('about:blank','vboxConsoledatached','toolbar=0,menubar=0,location=0,directories=0,status=true,resize=true,width='+(parseInt(wh[0])+20)+',height='+(parseInt(wh[1])+20)+'');
-	
+
+	setLangContext('vboxVMConsole');
 	newwin.document.open();	
 	newwin.document.write('<html><head><title>'+$('#vboxTabVMConsole').data('vmname') + ' - ' + trans('Console')+'</title></head><body style="margin: 0px; border: 0px; padding: 0px; overflow: hidden;"><div style="margin: 0px; border: 0px; padding: 0px" id="vboxIndex"><img src="images/spinner.gif" /></div></body></html>');
 	newwin.document.close();
+	unsetLangContext();
 	var newHead = newwin.document.getElementsByTagName('HEAD')[0];
 	var headTags = $('head').children('script');
 	for(var i = 0; i < headTags.length; i++) {

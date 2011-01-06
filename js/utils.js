@@ -1,5 +1,7 @@
 /*
  * $Id$
+ * Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
+ * 		except function strnatcasecmp
  */
 
 /*
@@ -8,24 +10,24 @@
  * 
  */
 $(document).ready(function(){
-    $(window).keydown(function(i){if(i.keyCode&&i.keyCode===27){
-        i.preventDefault()
-        try {
-                var flash = RDPWebClient.getFlashById("FlashRDP");
-                flash.keyboardSendScancodes('01');
-        } catch (e) {
-                //alert(e.message);
-        }
-	}});
-	$(document).keydown(function(i){if(i.keyCode&&i.keyCode===27){
-	        i.preventDefault()
-	        try {
-	                var flash = RDPWebClient.getFlashById("FlashRDP");
-	                flash.keyboardSendScancodes('01');
-	        } catch (e) {
-	                //alert(e.message);
-	        }
-	}});
+        $(window).keydown(function(i){if(i.keyCode&&i.keyCode===27){
+                i.preventDefault()
+                try {
+                        var flash = RDPWebClient.getFlashById("FlashRDP");
+                        flash.keyboardSendScancodes('01');
+                } catch (e) {
+                        //alert(e.message);
+                }
+        }});
+        $(document).keydown(function(i){if(i.keyCode&&i.keyCode===27){
+                i.preventDefault()
+                try {
+                        var flash = RDPWebClient.getFlashById("FlashRDP");
+                        flash.keyboardSendScancodes('01');
+                } catch (e) {
+                        //alert(e.message);
+                }
+        }});
 });
 
 /*
@@ -64,7 +66,17 @@ function vboxAjaxRequest(fn,params,callback,xtra) {
 							
 							$('#vboxIndex').data('vboxFatalError',1);
 							$('#vboxIndex').css({'display':'none'});
-							vboxAlert('<p>'+trans('Fatal error')+'</p>',{'width':'50%'});
+							
+							var s = '';
+							// Multiple Servers check
+							if($('#vboxIndex').data('vboxConfig').servers.length) {
+								var servers = $('#vboxIndex').data('vboxConfig').servers;
+								for(var i = 0; i < servers.length; i++) {
+									servers[i] = "<a href='?server="+servers[i].name+"'>"+$('<div />').html(servers[i].name).text()+"</a>";
+								}
+								s = '<div style="display: block">'+trans('Server List')+': '+servers.join(', ')+'</div>';
+							}
+							vboxAlert('<p>'+trans('Fatal error')+'</p>'+s,{'width':'50%'});
 						}
 					}
 				}
@@ -85,7 +97,127 @@ function vboxGetFile(file,callback,cparams) {
 	return jQuery.get(file,function(f){callback(f,cparams);});
 }
 
+/*
+ * The below 2 functions have been taken from vboxweb
+(http://code.google.com/p/vboxweb/), distributed
+ * under the MIT License. See the vboxweb website
+ * actual for copyright date and holders.
+ * 
+ */
+	function vboxGuestOSTypeIcon(osTypeId)
+    {
+        var strIcon = "os_other.png";
+        switch (osTypeId)
+        {
+            case "Other":           strIcon = "os_other.png"; break;
+            case "DOS":             strIcon = "os_dos.png"; break;
+            case "Netware":         strIcon = "os_netware.png"; break;
+            case "L4":              strIcon = "os_l4.png"; break;
+            case "Windows31":       strIcon = "os_win31.png"; break;
+            case "Windows95":       strIcon = "os_win95.png"; break;
+            case "Windows98":       strIcon = "os_win98.png"; break;
+            case "WindowsMe":       strIcon = "os_winme.png"; break;
+            case "WindowsNT4":      strIcon = "os_winnt4.png"; break;
+            case "Windows2000":     strIcon = "os_win2k.png"; break;
+            case "WindowsXP":       strIcon = "os_winxp.png"; break;
+            case "WindowsXP_64":    strIcon = "os_winxp_64.png"; break;
+            case "Windows2003":     strIcon = "os_win2k3.png"; break;
+            case "Windows2003_64":  strIcon = "os_win2k3_64.png"; break;
+            case "WindowsVista":    strIcon = "os_winvista.png"; break;
+            case "WindowsVista_64": strIcon = "os_winvista_64.png"; break;
+            case "Windows2008":     strIcon = "os_win2k8.png"; break;
+            case "Windows2008_64":  strIcon = "os_win2k8_64.png"; break;
+            case "Windows7":        strIcon = "os_win7.png"; break;
+            case "Windows7_64":     strIcon = "os_win7_64.png"; break;
+            case "WindowsNT":       strIcon = "os_win_other.png"; break;
+            case "OS2Warp3":        strIcon = "os_os2warp3.png"; break;
+            case "OS2Warp4":        strIcon = "os_os2warp4.png"; break;
+            case "OS2Warp45":       strIcon = "os_os2warp45.png"; break;
+            case "OS2eCS":          strIcon = "os_os2ecs.png"; break;
+            case "OS2":             strIcon = "os_os2_other.png"; break;
+            case "Linux22":         strIcon = "os_linux22.png"; break;
+            case "Linux24":         strIcon = "os_linux24.png"; break;
+            case "Linux24_64":      strIcon = "os_linux24_64.png"; break;
+            case "Linux26":         strIcon = "os_linux26.png"; break;
+            case "Linux26_64":      strIcon = "os_linux26_64.png"; break;
+            case "ArchLinux":       strIcon = "os_archlinux.png"; break;
+            case "ArchLinux_64":    strIcon = "os_archlinux_64.png"; break;
+            case "Debian":          strIcon = "os_debian.png"; break;
+            case "Debian_64":       strIcon = "os_debian_64.png"; break;
+            case "OpenSUSE":        strIcon = "os_opensuse.png"; break;
+            case "OpenSUSE_64":     strIcon = "os_opensuse_64.png"; break;
+            case "Fedora":          strIcon = "os_fedora.png"; break;
+            case "Fedora_64":       strIcon = "os_fedora_64.png"; break;
+            case "Gentoo":          strIcon = "os_gentoo.png"; break;
+            case "Gentoo_64":       strIcon = "os_gentoo_64.png"; break;
+            case "Mandriva":        strIcon = "os_mandriva.png"; break;
+            case "Mandriva_64":     strIcon = "os_mandriva_64.png"; break;
+            case "RedHat":          strIcon = "os_redhat.png"; break;
+            case "RedHat_64":       strIcon = "os_redhat_64.png"; break;
+            case "Turbolinux":      strIcon = "os_turbolinux.png"; break;
+            case "Ubuntu":          strIcon = "os_ubuntu.png"; break;
+            case "Ubuntu_64":       strIcon = "os_ubuntu_64.png"; break;
+            case "Xandros":         strIcon = "os_xandros.png"; break;
+            case "Xandros_64":      strIcon = "os_xandros_64.png"; break;
+            case "Linux":           strIcon = "os_linux_other.png"; break;
+            case "FreeBSD":         strIcon = "os_freebsd.png"; break;
+            case "FreeBSD_64":      strIcon = "os_freebsd_64.png"; break;
+            case "OpenBSD":         strIcon = "os_openbsd.png"; break;
+            case "OpenBSD_64":      strIcon = "os_openbsd_64.png"; break;
+            case "NetBSD":          strIcon = "os_netbsd.png"; break;
+            case "NetBSD_64":       strIcon = "os_netbsd_64.png"; break;
+            case "Solaris":         strIcon = "os_solaris.png"; break;
+            case "Solaris_64":      strIcon = "os_solaris_64.png"; break;
+            case "OpenSolaris":     strIcon = "os_opensolaris.png"; break;
+            case "OpenSolaris_64":  strIcon = "os_opensolaris_64.png"; break;
+            case "QNX":             strIcon = "os_qnx.png"; break;
+            case 'MacOS':			strIcon = "os_macosx.png"; break;
+            case 'MacOS_64':			strIcon = "os_macosx_64.png"; break;
+            case 'Oracle':			strIcon = "os_oracle.png"; break;
+            case 'Oracle_64':			strIcon = "os_oracle_64.png"; break;
+            case "VirtualBox_Host":	strIcon = "os_virtualbox.png"; break;
 
+            default:
+                break;
+        }
+        return strIcon;
+}
+
+    
+function vboxMachineStateIcon(state)
+   {
+        var strIcon = "state_powered_off_16px.png";
+        var strNoIcon = "state_running_16px.png";
+
+        switch (state)
+        {
+            case "PoweredOff": strIcon = "state_powered_off_16px.png"; break;
+            case "Saved": strIcon = "state_saved_16px.png"; break;
+            case "Teleported": strIcon = strNoIcon; break;
+            case "LiveSnapshotting": strIcon = "online_snapshot_16px.png"; break;
+            case "Aborted": strIcon = "state_aborted_16px.png"; break;
+            case "Running": strIcon = "state_running_16px.png"; break;
+            case "Paused": strIcon = "state_paused_16px.png"; break;
+            case "Stuck": strIcon = "state_stuck_16px.png"; break;
+            case "Teleporting": strIcon = strNoIcon; break;
+            case "Starting": strIcon = strNoIcon; break;
+            case "Stopping": strIcon = strNoIcon; break;
+            case "Saving": strIcon = "state_discarding_16px.png"; break;
+            case "Restoring": strIcon = "settings_16px.png"; break;
+            case "TeleportingPausedVM": strIcon = strNoIcon; break;
+            case "TeleportingIn": strIcon = strNoIcon; break;
+            case "RestoringSnapshot": strIcon = "discard_cur_state_16px.png"; break;
+            case "DeletingSnapshot": strIcon = "state_discarding_16px.png"; break;
+            case "SettingUp": strIcon = strNoIcon; break;
+            case "Hosting" : strIcon = "settings_16px.png"; break;
+            case "Inaccessible": strIcon = "state_aborted_16px.png"; break;
+            default:
+                break;
+        }
+        
+        return strIcon;
+
+}
 /* File or Folder browser */
 function browseFolder(root,fn) {
 	vboxFileBrowser(root,fn,true);
@@ -125,9 +257,9 @@ function vboxFileBrowser(root,fn,foldersonly) {
 /* Byte / MByte -> Human readable conversion */
 function vboxMbytesConvert(mb) {return vboxBytesConvert(parseFloat(mb) * 1024 * 1024);}
 function vboxBytesConvert(bytes) {
-	var ext = new Array('B','KB','MB','GB','TB');
+	var ext = new Array('B','KB','MB','GB','TB','PB');
 	var unitCount;
-	for(unitCount=0; bytes >= 1024 && unitCount < 5; unitCount++) bytes = parseFloat(parseFloat(bytes)/1024);
+	for(unitCount=0; bytes >= 1024 && unitCount < ext.length; unitCount++) bytes = parseFloat(parseFloat(bytes)/1024);
 	return Math.round(parseFloat(bytes)*Math.pow(10,2))/Math.pow(10,2) + " " + trans(ext[unitCount]);
 }
 
@@ -135,7 +267,7 @@ function vboxConvertMbytes(str) {
 	str = str.replace('  ',' ');
 	str = str.split(' ',2);
 	if(!str[1]) str[1] = trans('MB');
-	var ext = new Array(trans('B'),trans('KB'),trans('MB'),trans('GB'),trans('TB'));
+	var ext = new Array(trans('B'),trans('KB'),trans('MB'),trans('GB'),trans('TB'),trans('PB'));
 	var index = jQuery.inArray(str[1],ext);
 	if(index == -1) index = 2;
 	switch(index) {
@@ -497,19 +629,100 @@ function vboxProgressUpdate(d,e) {
 	
 }
 
+/* Position element to mouse event */
+function vboxPositionEvent(elm,e) {
+	
+	var d = {}, posX, posY;
+	
+	if( self.innerHeight ) {
+		d.pageYOffset = self.pageYOffset;
+		d.pageXOffset = self.pageXOffset;
+		d.innerHeight = self.innerHeight;
+		d.innerWidth = self.innerWidth;
+	} else if( document.documentElement &&
+		document.documentElement.clientHeight ) {
+		d.pageYOffset = document.documentElement.scrollTop;
+		d.pageXOffset = document.documentElement.scrollLeft;
+		d.innerHeight = document.documentElement.clientHeight;
+		d.innerWidth = document.documentElement.clientWidth;
+	} else if( document.body ) {
+		d.pageYOffset = document.body.scrollTop;
+		d.pageXOffset = document.body.scrollLeft;
+		d.innerHeight = document.body.clientHeight;
+		d.innerWidth = document.body.clientWidth;
+	}
+
+	$(elm).css({'left':0,'top':0});
+
+	(e.pageX) ? x = e.pageX : x = e.clientX + d.scrollLeft;
+	(e.pageY) ? y = e.pageY : y = e.clientY + d.scrollTop;
+	
+	//adjust to ensure element is inside viewable screen
+	var right = x + $(elm).outerWidth();
+	var bottom = y + $(elm).outerHeight();
+	
+	var windowWidth = $(window).width() + $(window).scrollLeft()-5;
+	var windowHeight = $(window).height() + $(window).scrollTop()-5;
+	
+	x = (right > windowWidth) ? x - (right - windowWidth) : x;
+	y = (bottom > windowHeight) ? y - (bottom - windowHeight) : y;
+	
+	$(elm).css({ top: y, left: x });
+}
+
+/*
+ * keycode input validation functions 
+ */
+function vboxValidateNum(k) {
+	return ((k >= 96 && k <= 105)||(k >= 48 && k <= 57))
+}
+function vboxValidateIP(k) {
+	return (vboxValidateNum(k) || k == 190); 
+}
+/* ctrl keyboard chars */
+function vboxValidateCtrl(k) {
+	switch(k) {
+		case 8: // backspace
+		case 37: // left | right
+		case 39:
+		case 27: // esc
+		case 16: // shift
+		case 17: // ctrl
+		case 35: // end
+		case 36: // home
+		case 46: // del
+		case 144: // numlock
+		case 20: // capslock
+		case 18: // alt
+			return true;
+	}
+	return false;
+}
+
+/* Parse Cookies */
+function vboxParseCookies() {
+	if($('#vboxIndex').data('vboxCookiesParsed')) return;
+	var cookies = {};
+	var c = document.cookie.split('; ');
+	for(var i = 0; i < c.length; i++) {
+		var nv = c[i].split('=');
+		cookies[nv[0]] = nv[1];
+	}	
+	$('#vboxIndex').data('vboxCookies', cookies);
+	$('#vboxIndex').data('vboxCookiesParsed',true);
+}
+
 /* Check version against supported versions */
 function vboxVersionCheck(ver) {
 	
-	var supported = {'3':{'2':1}};
+	var supported = {'4':{'0':1}};
 	
 	// No ver passed?
 	if(ver && !supported[ver.major][ver.minor]) {
 		
-		var c = document.cookie.split('; ');
-		for(var i = 0; i < c.length; i++) {
-			var nv = c[i].split('=');
-			if(nv[0] == "vboxIgnoreVersion"+ver.string && nv[1] == '1') return;
-		}
+		vboxParseCookies();
+		
+		if($('#vboxIndex').data('vboxCookies')["vboxIgnoreVersion"+ver.string]) return;
 		
 		var d = document.createElement('span');
 		

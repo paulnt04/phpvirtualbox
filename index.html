@@ -3,6 +3,7 @@
 <head>
 
 	<!-- $Id$ -->
+	<!-- Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com) -->
 	<title>phpVirtualBox - VirtualBox Web Console</title>
 
 	<!-- Icon -->
@@ -27,19 +28,18 @@
 
        
     <!-- External / vendor scripts -->
-    <script type="text/javascript" src="js/jquery-1-4-2.js"></script>
-    <script type="text/javascript" src="js/jqueryui-1-8-1.js"></script>
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/jquery-ui.js"></script>
     <script type="text/javascript" src="js/jquery.contextMenu.js"></script>
 	<script type="text/javascript" src="js/jquery.tipped-1.5.min.js"></script>
 	<script type="text/javascript" src="js/jqueryFileTree.js"></script>	
-	<script type="text/javascript" src="js/vboxweb.js"></script>
 	<script type="text/javascript" src="js/jquery.jec-1.2.5.js"></script>
 	
 	<!-- Internal Scripts -->
     <script type="text/javascript" src="js/language.php"></script>
 	<script type="text/javascript" src="js/jquery.vbtree.js"></script>		
-   	<script type="text/javascript" src="js/jquery.mediumselect.js"></script>	
-	<script type="text/javascript" src="js/phpvirtualbox.js"></script>
+   	<script type="text/javascript" src="js/jquery.mediumselect.js"></script>
+   	<script type="text/javascript" src="js/phpvirtualbox.js"></script>
     <script type="text/javascript" src="js/utils.js"></script>
 	<script type="text/javascript" src="js/dialogs.js"></script>
 
@@ -67,44 +67,91 @@
 				return;
 			}
 
+			/* Check for server setting */
+			if(document.location.search) {
+				var query = document.location.search.substr(1).split('&');
+				for(var kv in query) {
+					kv = query[kv].split('=');
+					if(kv[0] == 'server') {
+						var exp = new Date(2020,12,24);
+						document.cookie = "vboxServer="+unescape(kv[1])+"; expires="+exp.toGMTString()+"; path=/";
+					}
+				}
+			}
 			
 			// Data mediator ready for use
 			dataMediator = new vboxDataMediator();
 
 			var l = new vboxLoader();
 			
-			l.add('VMs',function(d){$('#vboxIndex').data('VMList',d);});
+			l.add('Config',function(d){$('#vboxIndex').data('vboxConfig',d);});
 			l.add('GuestOSTypes',function(d){$('#vboxIndex').data('vboxOSTypes',d);});
 			l.add('SystemProperties',function(d){$('#vboxIndex').data('vboxSystemProperties',d);});
 			l.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
-			l.add('Config',function(d){$('#vboxIndex').data('vboxConfig',d);});
 			l.add('HostDetails',function(d){$('#vboxIndex').data('vboxHostDetails',d);});
 
 			l.addFile('panes/topmenu.html',function(f){$('#vboxIndex').append(f);},{});
-			l.addFile('panes/tabs.html',function(f){$('#tabsMain').append(f);},{})
-			l.addFile('panes/vmlist.html',function(f){$('#vboxVMListColumn').append(f);},{});
+			l.addFile('panes/tabs.html',function(f){$('#vboxPaneTabContent').append(f);},{})
+			l.addFile('panes/vmlistToolbar.html',function(f){$('#vboxIndex').append(f);},{});
+			l.addFile('panes/vmlist.html',function(f){$('#vboxPaneVMList').append(f);},{});
 
 			l.onLoad = function() {
 				
 				// Check supported version
 				vboxVersionCheck($('#vboxIndex').data('vboxConfig').version);
+
+				// Resizable
+				$('#vboxResizeBar').draggable({cursor:(jQuery.browser.opera ? 'e-resize' : 'col-resize'),axis:'x',zIndex:1000,helper:'clone',scroll:false,'start':function(e){
+					document.body.style.cursor = (jQuery.browser.opera ? 'e-resize' : 'col-resize');
+					$('#vboxResizeBar').data('vboxX',e.pageX);
+				},'stop':function(e){
+
+					document.body.style.cursor = 'default';
+
+					var nx = $('#vboxVMList').width() + (e.pageX - $('#vboxResizeBar').data('vboxX'));
+					$('#vboxVMList').css('width',(nx)+'px');
+					
+					// Constraint check
+					if($('#vboxVMList').width() < $('#vboxVMList').parent().innerWidth())
+						$('#vboxVMList').css('width',($('#vboxVMList').parent().innerWidth())+'px');
+					
+					var exp = new Date(2020,12,24);
+					document.cookie = "vboxPaneX="+($('#vboxVMList').width())+"; expires="+exp.toGMTString()+"; path=/";
+								
+					
+				}}).css('cursor',(jQuery.browser.opera ? 'e-resize' : 'col-resize'));
+
+				// Resize to last setting
+				vboxParseCookies();
+				if($('#vboxIndex').data('vboxCookies')['vboxPaneX']) {
+					$('#vboxVMList').css('width',($('#vboxIndex').data('vboxCookies')['vboxPaneX'])+'px');
+				}
+				
 			}
+			l.onShow = function() { $(window).trigger('resize'); }
 
 			l.hideRoot = true;
 			l.run();
 
 			// Resize table elements
 			$(window).resize(function(){
-				$('#vboxTableMain').find('.vboxResize').css({'display':'none'}).each(function(){
-					var h = $(this).parent().innerHeight();
-					// Does browser include padding?
-					if(jQuery.browser.msie || jQuery.browser.opera) {
-						h -= (parseInt($(this).css('padding-top')) + parseInt($(this).css('padding-bottom')));
-					}
-					$(this).css({'height':h+'px','overflow':'auto'});
-					$(this).css({'display':''});
-				});
+				$('#vboxResize').children().children().css({'display':'none'});
 				
+				var h = $('#vboxResize').find('td').first().innerHeight();
+				$('#vboxResize').children().children().css({'height':h+'px','overflow':'auto','display':''});
+			});
+
+			// Refresh data when host changes
+			$('#vboxIndex').bind('hostChange',function(){
+				var l = new vboxLoader();
+				
+				l.add('Config',function(d){$('#vboxIndex').data('vboxConfig',d);});
+				l.add('GuestOSTypes',function(d){$('#vboxIndex').data('vboxOSTypes',d);});
+				l.add('SystemProperties',function(d){$('#vboxIndex').data('vboxSystemProperties',d);});
+				l.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
+				l.add('HostDetails',function(d){$('#vboxIndex').data('vboxHostDetails',d);});
+
+				l.run();
 			});
 			
 		});
@@ -113,31 +160,42 @@
 </head>
 <body>
 <div id='vboxIndex'>
-<table id='vboxTableMain' cellpadding=0 cellspacing=0 style="width: 100%; height: 100%; padding: 0px; margin: 0px; border: 0px; border-spacing: 0px;">
+<table id='vboxTableMain' cellpadding=0 cellspacing=0 style="width: 100%; padding: 0px; margin: 0px; border: 0px; border-spacing: 0px;">
 	<tr style='vertical-align: top;'>
-		<td colspan='2' id='vboxMenu'>
+		<td colspan='3' id='vboxMenu'>
 			<!--
 				Menu Bar will be placed here 
 			 -->
 		</td>
 	</tr>
-	<tr style='vertical-align: top;'>
-		<td id='vboxVMListColumn' style='height: 100%; '>
-				<!--
-				
-				VM Toolbar and List
-				
-				-->
-		</td>
-		<td style="width: 100%; height: 100%; padding-left: 8px; padding-right: 8px;">
-			<div id="tabsMain" style='height: 100%'>
-				<!--
-				
-					Tab content will go here
-				
-				 -->
-			</div>
+	<tr style='vertical-align: middle;'>
+		<td class='vboxPaneTop vboxInvisible' colspan='3'>
+			<!-- VMList toolbar -->
+			<div id='vboxPaneToolbar'></div>
+			<!-- Tabs / Buttons -->
+			<div id='vboxTabsList'></div>
 		</td>
 	</tr>
-</table></div></body>
+	<tr style='vertical-align: top;' id='vboxResize'>
+		<td id="vboxPaneVMList" class='vboxBordered'>
+			<!--
+			
+			VM List
+				
+			-->
+		</td>
+		<td id='vboxResizeTD' style='border: 0px; width: 2px; margin: 0px; padding: 0px; text-align: center;'>
+			<div style='z-index: 5; position: absolute; margin:0px; padding:2px; width: 0px; height: 90%;' id='vboxResizeBar' onMouseOver='this.style.backgroundColor="#cccccc";' onMouseOut="this.style.backgroundColor='';" ></div>
+		</td>
+		<td id="vboxPaneTabContent">
+			<!--
+			
+				Tab content will go here
+			
+			 -->
+		</td>
+	</tr>
+</table>
+</div>
+</body>
 </html>

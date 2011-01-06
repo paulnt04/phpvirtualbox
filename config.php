@@ -10,11 +10,8 @@ var $username = 'vbox';
 var $password = 'pass';
 var $location = 'http://127.0.0.1:18083/';
 
-
-
 /* See languages folder for more language options */
 var $language = 'en_us';
-
 
 
 /*
@@ -23,8 +20,39 @@ var $language = 'en_us';
  *
  */
 
-// Default host/ip to use for RDP
-//var $rdpHost = '192.168.1.40';
+// Multiple servers example config. Uncomment (remove /* and */) to use.
+// Add ALL the servers you want to use. Even if you have the server set
+// above. The default server will be the first one in the list.
+/*
+var $servers = array(
+	array(
+		'name' => 'London',
+		'username' => 'user',
+		'password' => 'pass',
+		'location' => 'http://192.168.1.1:18083/'
+	),
+	array(
+		'name' => 'New York',
+		'username' => 'user2',
+		'password' => 'pass2',
+		'location' => 'http://192.168.1.2:18083/'
+	),
+);
+*/
+
+
+
+// Default host/ip to use for console
+//var $consoleHost = '192.168.1.40';
+
+// Disable "preview" box
+//var $noPreview = true;
+
+// Default preview box update interval in seconds
+//var $previewUpdateInterval = 30;
+
+// Preview box pixel width
+var $previewWidth = 180;
 
 /*
 Allow to prompt deletion harddisk files on removal from Virtual Media Manager.
@@ -58,10 +86,9 @@ var $browserRestrictFiles = '.iso,.vdi,.vmdk,.img,.bin,.vhd,.hdd,.ovf,.ova';
 /* Disable any of phpVirtualBox's main tabs */
 #var $disableTabVMSnapshots = true; // Snapshots tab
 #var $disableTabVMConsole = true; // Console tab
-#var $disableTabVMDescription = true; // Description tab
 
-/* Custom screen resolutions for console tab */
-#var $consoleResolutions = '640x480,800x600,1024x768';
+/* Screen resolutions for console tab */
+var $consoleResolutions = '640x480,800x600,1024x768';
 
 /* Max number of network cards per VM. Do not set above VirtualBox's limit (typically 8) or below 1 */
 var $nicMax = 4;
@@ -105,6 +132,41 @@ var $cacheSettings = array(
 );
 */
 
+/* END SETTINGS - BEGIN CLASS CODE */
+
+/*
+ * Multiple server functionality
+ */
+function __construct() {
+	// Ignore any server settings if we have servers
+	// in the servers array
+	if(is_array($this->servers) && is_array($this->servers[0])) {
+		unset($this->location);
+		unset($this->user);
+		unset($this->pass);
+	}
+	// Set to selected server based on browser cookie
+	if(@$_COOKIE['vboxServer'] && is_array($this->servers) && count($this->servers)) {
+		foreach($this->servers as $s) {
+			if($s['name'] == $_COOKIE['vboxServer'])
+				foreach($s as $k=>$v) $this->$k = $v;
+		}
+	// If servers is not an array, set to empty array
+	} elseif(!is_array($this->servers)) {
+		$this->servers = array();
+	}
+	// We still have no server set, use the first one from
+	// the servers array
+	if(!$this->location && @is_array($this->servers[0])) {
+		foreach($this->servers[0] as $k=>$v) $this->$k = $v;
+	}
+	// Make sure name is set
+	if(!$this->name) {
+		$this->name = parse_url($this->location);
+		$this->name = $this->name['host'];
+	}
+	$this->key = md5($this->location.$this->username);
+}
 
 }
 

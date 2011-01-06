@@ -7,7 +7,7 @@
  * was made in case the PHP back-end needs to inject translated
  * messages into the interface.
  *
- * $Id: en_us.php 697 2010-07-08 02:31:17Z ian $
+ * $Id$
  *
  */
 
@@ -60,6 +60,7 @@ public static $trans = array(
 'Finish' => 'Finish',
 'Select File' => 'Select File',
 'Select Folder' => 'Select Folder',
+'Server List' => 'Server List',
 
 // Power button
 'Stop' => 'Stop',
@@ -77,6 +78,12 @@ public static $trans = array(
 'seconds' => 'seconds',
 'hours' => 'hours',
 'days' => 'days',
+
+/* Preview box */
+'Preview' => 'Preview',
+'Update Disabled' => 'Update Disabled',
+'Every X seconds' => 'Every %s seconds', /* %s will be replaced with numeric values */
+'Open in new window' => 'Open in new window', /* View saved VM screenshot */
 
 /* Snapshots */
 'Snapshots' => 'Snapshots',
@@ -104,6 +111,9 @@ public static $trans = array(
 'VM Inaccessible' => 'The selected VM is inaccessible. Please respect the error message shown below and press the Refresh button if you wish to repeat the accessibility check.',
 'Delete VM Message1' => 'Are you sure you want to permanently delete the virtual machine %s?',
 'Delete VM Message2' => 'This operation cannot be undone.',
+'Delete VM Message3' => 'If you select <b>Delete All</b> everything gets removed. This includes the machine itself, but also the virtual disks attached to it. If you want preserve the virtual disks for later use, select <b>Keep Harddisks</b>.',
+'Delete All' => 'Delete All',
+'Keep Harddisks' => 'Keep Harddisks',
 'Unregister VM Message1' => 'Are you sure you want to unregister the inaccessible virtual machine %s?',
 'Unregister VM Message2' => 'You will not be able to register it again from this GUI',
 'Unregister' => 'Unregister',
@@ -122,7 +132,7 @@ public static $trans = array(
 /* Options in Preferences / Global Settings */
 'Default Hard Disk Folder' => 'Default Hard Disk Folder',
 'Default Machine Folder' => 'Default Machine Folder',
-'VRDP Authentication Library' => 'VRDP Authentication Library',
+'VRDE Authentication Library' => 'VRDE Authentication Library',
 'Add host-only network' => 'Add host-only network',
 'Remove host-only network' => 'Remove host-only network',
 'Edit host-only network' => 'Edit host-only network',
@@ -169,7 +179,7 @@ public static $trans = array(
 'Video Memory' => 'Video Memory',
 
 'Remote Display' => 'Remote Display',
-'Remote Console' => 'Remote Console (RDP)',
+'Remote Console' => 'Remote Console',
 'Ports' => 'Ports',
 'Net Address' => 'Net Address',
 'Enable Server' => 'Enable Server',
@@ -178,7 +188,6 @@ public static $trans = array(
 'Authentication Method' => 'Authentication Method',
 'External' => 'External',
 'Guest' => 'Guest',
-'Extended Features' => 'Extended Features',
 'Allow Multiple Connections' => 'Allow Multiple Connections',
 
 'Storage' => 'Storage',
@@ -273,6 +282,7 @@ public static $trans = array(
 // read only & read/write
 'ro' => 'Read-Only',
 'rw' => 'Writable',
+'Auto-Mount' => 'Auto-Mount', // 3.2.8
 'Full Access' => 'Full Access',
 'Add Shared Folder' => 'Add Shared Folder',
 'Edit Shared Folder' => 'Edit Shared Folder',
@@ -294,6 +304,7 @@ public static $trans = array(
 'Pulse' => 'Pulse Audio',
 'SolAudio' => 'Solaris Audio',
 
+'HDA' => 'Intel HD Audio', // 3.2.8
 'AC97' => 'ICH AC97',
 'SB16' => 'SoundBlaster 16',
 
@@ -320,6 +331,21 @@ public static $trans = array(
 'Cable connected' => 'Cable connected',
 'netMediumType' => 'Type',
 'Guest Network Adapters' => 'Guest Network Adapters',
+/* New */
+'Port Forwarding' => 'Port Forwarding',
+'Port Forwarding Rules' => 'Port Forwarding Rules',
+'Protocol' => 'Protocol',
+'Host IP' => 'Host IP',
+'Host Port' => 'Host Port',
+'Guest IP' => 'Guest IP',
+'Guest Port' => 'Guest Port',
+'TCP' => 'TCP',
+'UDP' => 'UDP',
+'Rule' => 'Rule',
+'Insert new rule' => 'Insert new rule',
+'Delete selected rule' => 'Delete selected rule',
+'Invalid IP Address' => 'Invalid IP Address',
+'The current port forwarding rules are not valid' => 'The current port forwarding rules are not valid. None of the host or guest port values may be set to zero.',
 
 
 'Am79C970A' => 'AMD PCNet-PCI II network card',
@@ -479,7 +505,7 @@ public static $trans = array(
 /* Guest properties error */
 'Unable to retrieve guest properties' => 'Unable to retrieve guest properties. Make sure the virtual machine is running and has the VirtualBox Guest Additions installed.',
 
-/*RDP */
+/*Remote Console */
 'User name' => 'User name',
 'Password' => 'Password',
 'Connecting to' => 'Connecting to',

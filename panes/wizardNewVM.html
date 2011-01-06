@@ -1,6 +1,7 @@
 <!-- 
 
 	Panes for new virtual machine wizard. Logic in vboxWizard()
+	Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
 	
 	$Id$
 
@@ -227,7 +228,7 @@ function newVMUpdateOSList(osfam) {
 
 function newVMUpdateOS(ostype) {
 
-	document.images["vboxOSTypeImg"].src = "images/vbox/" + vmGuestOSTypeIcon(ostype);
+	document.images["vboxOSTypeImg"].src = "images/vbox/" + vboxGuestOSTypeIcon(ostype);
 
 	ostype = newVMOSTypesObj[ostype];
 
@@ -268,7 +269,7 @@ for(var i in vboxOSTypes) {
 	
 	// Preload icons
 	vboxOSTypes[i].icon = new Image();
-	vboxOSTypes[i].icon.src = "images/vbox/" + vmGuestOSTypeIcon(vboxOSTypes[i].id);
+	vboxOSTypes[i].icon.src = "images/vbox/" + vboxGuestOSTypeIcon(vboxOSTypes[i].id);
 
 }
 // clear all options

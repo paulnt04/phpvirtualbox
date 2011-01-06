@@ -1,5 +1,6 @@
 /*
  * $Id$
+ * Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
  */
 
 /*
@@ -101,6 +102,37 @@ function vboxExportApplianceDialogInit() {
 	vbw.run();
 
 }
+
+/*
+ * 
+ * Port forwarding configuration dialog
+ * 
+ */
+function vboxPortForwardConfigInit(rules,callback) {
+	var l = new vboxLoader();
+	l.addFile("panes/settingsPortForwarding.html",function(f){$('#vboxIndex').append(f);});
+	l.onLoad = function(){
+		vboxSettingsPortForwardingInit(rules);
+		var buttons = {};
+		buttons[trans('OK')] = function(){
+			// Get rules
+			var rules = $('#vboxSettingsPortForwardingList').children('tr');
+			for(var i = 0; i < rules.length; i++) {
+				if($(rules[i]).data('vboxRule')[3] == 0 || $(rules[i]).data('vboxRule')[5] == 0) {
+					vboxAlert(trans('The current port forwarding rules are not valid'));
+					return;
+				}
+				rules[i] = $(rules[i]).data('vboxRule');
+			}
+			callback(rules);
+			$(this).remove();
+		};
+		buttons[trans('Cancel')] = function(){$(this).remove();};
+		$('#vboxSettingsPortForwarding').dialog({'closeOnEscape':false,'width':600,'height':400,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':trans('Port Forwarding Rules')});
+	}
+	l.run();
+}
+
 /*
  * 
  * 
@@ -155,6 +187,7 @@ function vboxShowLogsDialogInit(vm) {
 	l.addFile('panes/vmlogs.html',function(f){$('#vboxVMLogsDialog').append(f);});
 	l.onLoad = function(){
 		var buttons = {};
+		setLangContext('vboxVMLogs');
 		buttons[trans('Refresh')] = function() {
 			l = new vboxLoader();
 			l.add('VMLogFileNames',function(r){$('#vboxVMLogsDialog').data('logs',r);},{'vm':vm});
@@ -164,6 +197,7 @@ function vboxShowLogsDialogInit(vm) {
 			l.run();
 		};
 		buttons[trans('Close')] = function(){$(this).remove();};
+		unsetLangContext();
 		$('#vboxVMLogsDialog').dialog({'closeOnEscape':false,'width':800,'height':500,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':trans('Logs')});
 		vboxShowLogsInit(vm);
 	};
@@ -205,7 +239,9 @@ function vboxVMMDialogInit(callback,type,hideDiff,attached) {
 						sel = $('#vboxVMMFDList').find('tr.vboxListItemSelected').first();
 				}
 				if(!$(sel).html()) {
+					setLangContext('vboxVMM');
 					vboxAlert(trans('Please select a medium.'));
+					unsetLangContext();
 					return;
 				}
 				callback($(sel).data());
@@ -394,7 +430,7 @@ function vboxVMsettingsInit(vm,callback,pane) {
 		{'name':'Storage','label':'Storage','icon':'attachment'},
 		{'name':'Audio','label':'Audio','icon':'sound'},
 		{'name':'Network','label':'Network','icon':'nw','tabbed':true},
-		{'name':'USB','label':'USB','icon':'usb','disabled':($('#vboxIndex').data('vboxConfig').version.ose)},
+		{'name':'USB','label':'USB','icon':'usb'},
 		{'name':'SharedFolders','label':'Shared Folders','icon':'shared_folder'}
 			
 	);
@@ -517,7 +553,9 @@ function vboxSettingsInit(title,panes,data,onsave,pane) {
 	loader.onLoad = function(){
 		
 		/* Init UI Items */
+		setLangContext('vboxSettings');
 		vboxInitDisplay('vboxSettingsDialog');
+		unsetLangContext();
 		
 		// Opera hidden select box bug
 		////////////////////////////////
@@ -554,13 +592,24 @@ function vboxSettingsInit(title,panes,data,onsave,pane) {
 
 	    /* Select first or passed menu item */
 	    var i = 0;
+	    var offset = 0;
+	    var tab = undefined;
 	    if(typeof pane == "string") {
+	    	var section = pane.split(':');
+	    	if(section[1]) tab = section[1];
 	    	for(i = 0; i < panes.length; i++) {
-	    		if(panes[i].name == pane) break;
+	    		if(panes[i].disabled) offset++;
+	    		if(panes[i].name == section[0]) break;
 	    	}
 	    }
-	    
-	    $('#vboxSettingsMenuList').children('li:eq('+i+')').first().click();
+	    i-=offset;
+	    if(i >= panes.length) i = 0;
+	    $('#vboxSettingsMenuList').children('li:eq('+i+')').first().click().each(function(){
+	    	if(tab !== undefined) {
+	    		$('#vboxSettingsPane-'+$(this).data('name')).tabs('select', tab);	    		
+	    	}
+	    	
+	    });
 	    
 		
 		

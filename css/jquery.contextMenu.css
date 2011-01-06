@@ -29,17 +29,17 @@
 	padding-left: 28px;
 }
 
-.contextMenu LI.hover A {
+.contextMenu LI.hover, .contextMenu LI.hover A {
 	color: #FFF;
 	background-color: #3399FF;
 }
 
-.contextMenu LI.disabled A {
+.contextMenu LI.hover.disabled, .contextMenu LI.disabled A {
 	color: #AAA;
 	cursor: default;
 }
 
-.contextMenu LI.hover.disabled A {
+.contextMenu LI.hover.disabled, .contextMenu LI.hover.disabled A {
 	background-color: transparent;
 }
 

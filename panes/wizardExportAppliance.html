@@ -1,6 +1,7 @@
 <!-- 
 
-	Panes export appliance wizard. Logic in vboxWizard()
+	Panes export appliance wizard. Logic in vboxWizard() class
+	Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
 	
 	$Id$
 
@@ -43,10 +44,8 @@
 
 	<table width='100%' style='width: 100%;' class='vboxInvisible'>
 		<tr>
-			<td style='width: 100%; white-space: nowrap'>
-				<input type='text' class='vboxText' name='wizardExportApplianceLocation' style='width: 100%'/>
-			</td>
-			<td style='width: auto; white-space: nowrap;' class='vboxFileFolderInput'>
+			<td style='width: 100%; white-space: nowrap' class='vboxFileFolderInput'>
+				<input type='text' class='vboxText' name='wizardExportApplianceLocation' />
 				<input type="button" class="vboxImgButton" style="background-image: url(images/vbox/select_file_16px.png)" onClick="wizardExportApplianceBrowseLocation()" />
 			</td>
 		</tr>
@@ -72,7 +71,7 @@ l.onLoad = function() {
 		$(li).data('vm',vms[i]);
 		$(li).addClass('vboxListItem');
 		$(li).click(function(){$(this).toggleClass('vboxListItemSelected');});
-		li.innerHTML = "<img style='width: 16px; height: 16px;' src='images/vbox/" + vmGuestOSTypeIcon(vms[i].OSTypeId) + "' /> " + vms[i].name;
+		li.innerHTML = "<img style='width: 16px; height: 16px;' src='images/vbox/" + vboxGuestOSTypeIcon(vms[i].OSTypeId) + "' /> " + vms[i].name;
 		$(vmlist).append(li);
 	}
 	vboxColorRows(vmlist);
@@ -108,7 +107,7 @@ function wizardExportApplianceBrowseLocation() {
 		loc = loc.replace(r,'');
 	} else {
 		// no path set
-		loc = $('#vboxIndex').data('vboxSystemProperties').defaultMachineFolder;
+		loc = $('#vboxIndex').data('vboxConfig').version.settingsFilePath.substring(0,$('#vboxIndex').data('vboxConfig').version.settingsFilePath.length - 27);
 	}
 	vboxFileBrowser(loc,function(f){
 		if(!f) return;
@@ -168,6 +167,7 @@ $('#wizardExportApplianceStep2').bind('show',function(e,wiz){
 		$(tbl).append(trparent);
 		
 		// VM properties
+		setLangContext('vboxAppliance');
 		for(var p in vboxApplianceProps) {
 			
 			var tr = document.createElement('tr');
@@ -185,6 +185,7 @@ $('#wizardExportApplianceStep2').bind('show',function(e,wiz){
 			$(tr).append(td);
 			$(tbl).append(tr);
 		}
+		unsetLangContext();
 	}
 	vboxColorRows(tbl);
 
@@ -201,7 +202,7 @@ $('#wizardExportApplianceStep3').bind('show',function(e,wiz){
 		document.forms['frmwizardExportAppliance'].elements.wizardExportApplianceLegacy.disabled = false;
 	}
 	if($(document.forms['frmwizardExportAppliance'].elements.wizardExportApplianceLocation).val()) return;
-	name = $('#vboxIndex').data('vboxSystemProperties').defaultMachineFolder + $('#vboxIndex').data('vboxConfig').DSEP + name + '.ovf';
+	name = $('#vboxIndex').data('vboxConfig').version.settingsFilePath.substring(0,$('#vboxIndex').data('vboxConfig').version.settingsFilePath.length - 27) + $('#vboxIndex').data('vboxConfig').DSEP + name + '.ova';
 	$(document.forms['frmwizardExportAppliance'].elements.wizardExportApplianceLocation).val(name);
 });
 

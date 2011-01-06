@@ -1,6 +1,7 @@
 <!-- 
 
-	Panes import appliance wizard. Logic in vboxWizard()
+	Panes import appliance wizard. Logic in vboxWizard() class
+	Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
 	
 	$Id$
 
@@ -14,10 +15,8 @@
 
 	<table width='100%' style='width: 100%;' class='vboxInvisible'>
 		<tr>
-			<td style='width: 100%; white-space: nowrap'>
-				<input type='text' class='vboxText' name='wizardImportApplianceLocation' style='width: 100%'/>
-			</td>
-			<td style='width: auto; white-space: nowrap;' class='vboxFileFolderInput'>
+			<td style='width: 100%; white-space: nowrap' class='vboxFileFolderInput'>
+				<input type='text' class='vboxText' name='wizardImportApplianceLocation' />
 				<input type="button" class="vboxImgButton" style="background-image: url(images/vbox/select_file_16px.png)" onClick="wizardImportApplianceBrowseLocation()" />
 			</td>
 		</tr>
@@ -52,7 +51,7 @@
  */
 var vboxApplianceImportProps = {
 		'OS' : {'label':'OS Type','icon':'os_type','edit':null,'display':function(val){
-			return '<img src="images/vbox/'+vmGuestOSTypeIcon(val)+'" style="height: 16px; width: 16px" /> ' + trans(val);
+			return '<img src="images/vbox/'+vboxGuestOSTypeIcon(val)+'" style="height: 16px; width: 16px" /> ' + trans(val);
 		}},
 		'Name' : {'label':'Name','icon':'name','edit':'text'},
 		'Description' : {'label':'Description','icon':'description','edit':'textarea'},
@@ -91,6 +90,7 @@ var vboxApplianceImportProps = {
 // Storage controllers
 var st = new vboxStorage();
 var stTypes = st.getBusTypes();
+setLangContext('vboxAppliance');
 for(var i = 0; i < stTypes.length; i++) {
 	
 	if(!vboxApplianceImportProps['HardDiskController'+stTypes[i]]) continue;
@@ -108,6 +108,8 @@ for(var i = 0; i < stTypes.length; i++) {
 	vboxApplianceImportProps['HardDiskController'+stTypes[i]]['edit'] = 'options';
 	vboxApplianceImportProps['HardDiskController'+stTypes[i]]['options'] = opts;
 }
+unsetLangContext();
+
 // Network adapters
 vboxApplianceImportProps['NetworkAdapter']['options'] = $('#vboxIndex').data('vboxNetworkAdapterTypes');
 // delete 'Null' network adapter type
@@ -187,6 +189,7 @@ function wizardImportApplianceParsed(d) {
 		// Hard Disks are handled differently
 		var hds = [];
 
+		setLangContext('vboxAppliance');
 		for(var i = 0; i < d.descriptions[vm][0].length; i++) {
 
 			var desc = vboxApplianceImportProps[d.descriptions[vm][0][i]];
@@ -270,6 +273,7 @@ function wizardImportApplianceParsed(d) {
 			}
 			
 		} // </ foreach description item >
+		unsetLangContext();
 		
 		// Attach hard disks
 		hds.sort(function(a,b){
@@ -289,7 +293,9 @@ function wizardImportApplianceParsed(d) {
 
 		var div = document.createElement('div');
 		var ul = document.createElement('ul');
+		setLangContext('vboxAppliance');
 		$(div).append(trans('Warnings')+':');
+		unsetLangContext();
 
 		for(var i = 0; i < d.warnings.length; i++) {
 			var li = document.createElement('li');
@@ -318,9 +324,11 @@ function vboxImportAppliancePropEditOptions(elm,desc) {
 	var val = $(elm).data('descValue');
 	$(s).attr('id','vboxImportAppSelect');
 	$(s).css({'width':'100%'});
+	setLangContext('vboxAppliance');
 	for(var i in desc.options) {
 		s.options[s.options.length] = new Option(trans(desc.options[i]),i,(i == val),(i == val));
 	}
+	unsetLangContext();
 	$(s).change(function(){
 		$(this).parent().data('descValue',$(this).val());
 		if(desc.display) {

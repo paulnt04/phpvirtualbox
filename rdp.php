@@ -3,6 +3,7 @@
  * Simple RDP connection file generator
  *
  * $Id$
+ * Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
  *
  */
 

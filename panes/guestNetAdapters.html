@@ -1,4 +1,6 @@
-<!-- $Id$ -->
+<!-- $Id$ 
+Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
+-->
 <div id='vboxGuestNetAdapters'>
 	
 </div>
@@ -43,6 +45,8 @@ function vboxVMNetAdaptersInit(vm,index) {
 }
 
 function vboxVMNetAdaptersDisplay(d) {
+	
+	setLangContext('vboxGuestNetAdapters');
 	
 	// Create hash / assoc array / mapping
 	var data = {};
@@ -95,6 +99,8 @@ function vboxVMNetAdaptersDisplay(d) {
 
 	// Update it all
 	vboxInitDisplay('vboxGuestNetAdapters');
+
+	unsetLangContext();
 
 }
 

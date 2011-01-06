@@ -43,18 +43,9 @@
 // Clean request
 $_REQUEST = array_merge($_GET,$_POST);
 
-// Does PHP installation have GD?
-if(!function_exists('imagepng')) {
-	echo("PHP does not have the GD extension installed and/or enabled.");
-	exit;
-// Is VM Specified
-} else if(!$_REQUEST['vm']) {
-	echo("Please specify a *RUNNING* VM to take a screen shot of. E.g. http://webserver/phpvirtualbox/screen.php?vm=VMName");
-	exit;
-}
-
 require_once(dirname(__FILE__).'/config.php');
 require_once(dirname(__FILE__).'/lib/vboxconnector.php');
+
 
 $settings = new phpVBoxConfig();
 
@@ -65,101 +56,123 @@ $vbox->connect();
 // AND we need to build an image from each pixel, the memory usage
 // of this script can get rather large. 800px wide usually keeps
 // it right under 150M.
-ini_set('memory_limit', '512M'); // so swap if you need to swap
-if($_REQUEST['width']) {
+@ini_set('memory_limit', '512M');
+
+// Set width. Else assume we want real time updates if VM is running below
+if($_REQUEST['width'])
 	$force_width = $_REQUEST['width'];
-} else {
-	$force_width = ($settings->screenShotWidth ? $settings->screenShotWidth : 800);
-}
+
 
 
 try {
 
-	//Get a list of registered machines
-	$machine = $vbox->__getMachineRef($_REQUEST['vm']);
-	if ( 'Running' != $machine->state ) {
-		$machine->releaseRemote();
-		throw new Exception('The specified virtual machine is not in a Running state.');
+	// Is VM Specified
+	if(!$_REQUEST['vm']) {
+		echo("Please specify a VM to take a screen shot of. E.g. http://webserver/phpvirtualbox/screen.php?vm=VMName");
+		exit;
 	}
 
+	//Get a list of registered machines
+	$machine = $vbox->vbox->findMachine($_REQUEST['vm']);
+	switch($machine->state->__toString()) {
+		case 'Running':
+		case 'Saved':
+		case 'Restoring':
+			break;
+		default:
+			$machine->releaseRemote();
+			throw new Exception('The specified virtual machine is not in a Running state.');
+	}
+
+	// Date last modified
+	$dlm = floor($machine->lastStateChange/1000);
+
+	// Set last modified header
+	header("Last-Modified: " . gmdate("D, d M Y H:i:s", $dlm) . " GMT");
+
 	$_REQUEST['vm'] = $machine->id;
-	$machine->releaseRemote();
 
-	$vbox->session = $vbox->websessionManager->getSessionObject($vbox->vbox);
-	$vbox->vbox->openExistingSession($vbox->session, $_REQUEST['vm']);
 
-	$res = $vbox->session->console->display->getScreenResolution(0);
 
-    $screenWidth = array_shift($res);
-    $screenHeight = array_shift($res);
+	// Take active screenshot if machine is running
+	if($machine->state->__toString() == 'Running') {
 
-	$factor  = (float)$force_width / (float)$screenWidth;
-	$screenHeight = $factor * $screenHeight;
-	$screenWidth = $force_width;
+		$vbox->session = $vbox->websessionManager->getSessionObject($vbox->vbox->handle);
+		$machine->lockMachine($vbox->session->handle,'Shared');
 
-	$imageraw = $vbox->session->console->display->takeScreenShotToArray(0,$screenWidth, $screenHeight);
+		$res = $vbox->session->console->display->getScreenResolution(0);
 
-	$vbox->session->close();
+	    $screenWidth = array_shift($res);
+	    $screenHeight = array_shift($res);
+
+	    // Force screenshot width while maintaining aspect ratio
+	    if($force_width) {
+
+			$factor  = (float)$force_width / (float)$screenWidth;
+
+			$screenWidth = $force_width;
+			if($factor > 0) {
+				$screenHeight = $factor * $screenHeight;
+			} else {
+				$screenHeight = ($screenWidth * 3.0/4.0);
+			}
+
+		// If no width is set, assume we want real-time updates
+	    } else {
+
+			//Set no caching
+			header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+			header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+			header("Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0");
+			header("Pragma: no-cache");
+	    }
+
+		// array() for compatibility with readSavedScreenshotPNGToArray return value
+		$imageraw = array($vbox->session->console->display->takeScreenShotPNGToArray(0,$screenWidth, $screenHeight));
+
+		$vbox->session->unlockMachine();
+
+	} else {
+
+		// Let the browser cache images
+    	if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) >= $dlm) {
+			if (php_sapi_name()=='CGI') {
+				Header("Status: 304 Not Modified");
+			} else {
+				Header("HTTP/1.0 304 Not Modified");
+			}
+      		exit;
+    	}
+
+
+    	if($_REQUEST['full'])
+    		$imageraw = $machine->readSavedScreenshotPNGToArray(0);
+    	else
+			$imageraw = $machine->readSavedThumbnailPNGToArray(0);
+
+	}
 	$vbox->session = null;
 
 
-    $image = imagecreatetruecolor($screenWidth, $screenHeight);
+	header("Content-type: image/png",true);
 
-
-    for ($height = 0; $height < $screenHeight; $height++) {
-
-		for ($width = 0; $width < $screenWidth; $width++) {
-
-			$start = ($height*$screenWidth + $width)*4;
-			$red = $imageraw[$start];
-			$green = $imageraw[$start+1];
-			$blue = $imageraw[$start+2];
-			$imageraw[$start] = $imageraw[$start+1] = $imageraw[$start+2] = $imageraw[$start+3] = null;
-
-			$colour = imagecolorallocate($image, $red, $green, $blue);
-
-            imagesetpixel($image, $width, $height, $colour);
-		}
+	foreach($imageraw as $i) {
+		if(is_array($i))
+			foreach($i as $b) echo(chr($b));
 	}
 
 
 } catch (Exception $ex) {
 
-	$string = $ex->getMessage();
-
 	// Ensure we close the VM Session if we hit a error, ensure we don't have a aborted VM
-	if($vbox->session) $vbox->session->close();
+	if($vbox && $vbox->session && $vbox->session->handle) {
+		try {
+			$vbox->session->unlockMachine();
+		} catch (Exception $e) {}
+	}
 
-
-	$font = 6;
-	$width = ImageFontWidth($font)* strlen($string);
-	$height = ImageFontHeight($font);
-	$im = ImageCreate($width,$height);
-
-	$x=imagesx($im)-$width ;
-	$y=imagesy($im)-$height;
-	$background_color = imagecolorallocate ($im, 242, 242, 242); //white background
-	$text_color = imagecolorallocate ($im, 0, 0,0);//black text
-	imagestring ($im, $font, $x, $y, $string, $text_color);
-
-	//$image = imagecreatetruecolor(800, 600);
-	header("content-type: image/png");
-	imagepng($im);
-
-
-
-
-	return;
-}
-
-
-if($_REQUEST['debug']) {
-	echo('<pre>');
-	echo("Completed\n");
-	if(function_exists('memory_get_peak_usage'))
-		echo('Peak memory usage: ' . ((memory_get_peak_usage(true) / 1024) / 1024) ."MB\n");
-	echo('</pre>');
-} else {
-	header("content-type: image/png",true);
-	imagepng($image);
+	if($_REQUEST['debug']) {
+		echo("<pre>");
+		print_r($ex);
+	}
 }

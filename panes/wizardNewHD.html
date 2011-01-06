@@ -1,6 +1,7 @@
 <!-- 
 
 	Panes for new hard disk wizard. Logic in vboxWizard()
+	Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
 	
 	$Id$
 
@@ -118,7 +119,7 @@ function wizardHDBrowseLocation() {
 		os = 'unix';
 	} else {
 		// no path set
-		loc = $('#vboxIndex').data('vboxSystemProperties').defaultHardDiskFolder;
+		loc = $('#vboxIndex').data('vboxSystemProperties').homeFolder;
 	}
 		
 	vboxFileBrowser(loc,function(f){
@@ -137,7 +138,7 @@ $('#wizardNewHDStep4').bind('show',function(){
 
 	var loc = document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value;
 	if(loc.search(/[\/|\\]/) < 0) {
-		loc = $('#vboxIndex').data('vboxSystemProperties').defaultHardDiskFolder + '/' + loc;
+		loc = $('#vboxIndex').data('vboxSystemProperties').homeFolder + '/' + loc;
 	}
 	document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value = loc;
 	$('#wizardNewHDLocationLabel').html($('<div />').text(loc).html());
@@ -168,7 +169,7 @@ document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value = HDname;
 
 /* Size slider */
 var min = 1024;
-var max = Math.min(parseInt($('#vboxIndex').data('vboxSystemProperties').maxVDISize),(512*1024));
+var max = Math.min(parseInt($('#vboxIndex').data('vboxSystemProperties').infoVDSize),(512*1024));
 $('#wizardNewHDSize').data('form','frmwizardNewHD');
 $('#wizardNewHDSize').data('display',vboxMbytesConvert);
 $('#wizardNewHDSize').slider({'min':min,'max':max,'step':1024});

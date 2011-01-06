@@ -3,6 +3,7 @@
  * Simple data -> filesystem caching class
  *
  * $Id$
+ * Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
  *
  */
 
@@ -46,6 +47,12 @@ class cache {
 		$d = $this->_getCachedData($key);
 		if($this->logfile) $this->_log("Returning cached data for {$key}");
 		return ($d === false ? $d : unserialize($d));
+	}
+
+	/* get date last modified for */
+	function getDLM($key,$expire=60) {
+		if(!$this->cached($key,$expire)) return time();
+		return @filemtime($this->_fname($key)) || time();
 	}
 
 	/*

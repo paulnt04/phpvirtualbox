@@ -1,12 +1,9 @@
-
 /*
- * 
- * 
- * 
+
  * 	Common classes used
  * 
  * $Id$
- * 
+ * Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
  * 
  */
 
@@ -92,7 +89,9 @@ function vboxWizard(name, title, img) {
 			buttons[trans('Next')+' >'] = self.displayNext;
 			buttons[trans('Cancel')] = self.close;
 			
+			setLangContext('vbox'+self.name);
 			vboxInitDisplay(self.name+'Content');
+			unsetLangContext();
 			
 			$(d).dialog({'closeOnEscape':false,'width':self.width,'height':self.height,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':self.title});
 
@@ -190,12 +189,12 @@ function vboxToolbar(buttons) {
 	}
 	
 	self.enableButton = function(b) {
-		$('#vboxToolbarButton-'+self.id+'-'+b.name).css('background-image','url(images/vbox/'+b.icon+'_'+self.size+'px.png)');
+		$('#vboxToolbarButton-'+self.id+'-'+b.name).children('img').attr('src','images/vbox/'+b.icon+'_'+self.size+'px.png');
 		$('#vboxToolbarButton-'+self.id+'-'+b.name).addClass('buttonEnabled').removeClass('buttonDisabled');
 	}
 
 	self.disableButton = function(b) {
-		$('#vboxToolbarButton-'+self.id+'-'+b.name).css('background-image','url(images/vbox/'+b.icon+'_disabled_'+self.size+'px.png)');
+		$('#vboxToolbarButton-'+self.id+'-'+b.name).children('img').attr('src','images/vbox/'+b.icon+'_disabled_'+self.size+'px.png');
 		$('#vboxToolbarButton-'+self.id+'-'+b.name).addClass('buttonDisabled').removeClass('buttonEnabled');
 	}
 
@@ -212,8 +211,8 @@ function vboxToolbar(buttons) {
 		var td = document.createElement('td');
 		td.setAttribute('id','vboxToolbarButton-' + self.id + '-' + b.name);
 		td.setAttribute('class','vboxToolbarButton buttonEnabled vboxToolbarButton'+self.size);
-		td.setAttribute('style',self.buttonStyle+'; padding: 0px; margin: 0px; min-width: '+(self.size+12)+'px; background-image: url(images/vbox/'+b.icon+'_'+self.size+'px.png);height:'+self.height+'px;');
-		td.innerHTML = $('<div />').html(trans(b.label)).text();
+		td.setAttribute('style',self.buttonStyle+'; min-width: '+(self.size+12)+'px;');
+		td.innerHTML = '<img src="images/vbox/'+b.icon+'_'+self.size+'px.png" /><br />' + $('<div />').html(trans(b.label)).text();
 		
 		// bind click
 		td.onclick = function(){
@@ -249,6 +248,10 @@ function vboxToolbar(buttons) {
 		for(var i = 0; i < self.buttons.length; i++) {
 			self.buttons[i].toolbar = self;
 			$(tr).append(self.buttonElement(self.buttons[i]));
+			// If button can be enabled / disabled, disable by default
+			if(self.buttons[i].enabled) {
+				self.disableButton(self.buttons[i]);
+			}
 			if(self.buttons[i].separator) {
 				var td = document.createElement('td');
 				td.setAttribute('class','vboxToolbarSeparator');
@@ -339,7 +342,7 @@ function vboxToolbarSmall(buttons) {
 		// Pre-load disabled version of icon if enabled function exists
 		if(b.enabled) {
 			var a = new Image();
-			a.src = "images/vbox/" + b.icon + "_" + self.disabledString + "_" + self.size+"px.png";
+			a.src = "images/vbox/" + b.icon + "_" + self.disabledString + "_" + self.size + "px.png";
 		}
 		
 		var btn = document.createElement('input');
@@ -485,244 +488,6 @@ function vboxDataMediator() {
 
 
 
-/*
- * Virtual Machine list object.
- * 
- * This may seem a bit odd: "self.FOO" instead of "this.FOO" used
- * to get around JavaScript limitation. When a method is called
- * as a result of an ajax request returning, "this" refers to the
- * JavaScript window object rather than the originating object.
- * Creating and using a class local "self" variable that refers
- * to the object gets around this (no pun intended) limitation.
- */
-
-function vboxVMList(anchorid) {
-
-	var self = this;
-	this.vms = null;
-	this.anchorid = anchorid;
-	this.sortDefault = function(a,b){return strnatcasecmp(a.name,b.name);}
-	
-	// Update list of VMs
-	/////////////////////////
-	self.updateList = function(currVMList) {
-
-		var currTime = new Date()
-		self.time = currTime.getTime();
-		
-		if(!currVMList || (!currVMList.length && !currVMList['empty']) && self._running) {
-			vboxAlert(trans('Error vmlist 1')+'<p>'+trans('Error vmlist 2')+'</p>');
-			self.stop();
-			$('#'+self.anchorid).children().remove();
-			return;
-		}
-			
-		// First time run?
-		if(self.vms === null) {
-			$('#'+self.anchorid).children().first().remove();
-			self.vms = {};
-		}
-
-		// check for empty VM list
-		if(currVMList['empty']) { currVMList = []; }
-		else if(self.sort) {
-			try {
-				currVMList.sort(self.sort);
-			} catch (err) {
-				vboxAlert('There was an error running your custom sort function. It will not be used.<p>'+err+'</p>');
-				self.sort = null;
-				currVMList.sort(self.sortDefault);
-			}
-		} else {
-			currVMList.sort(self.sortDefault);
-		}
-		
-		
-		// Host machine added manually
-		host = [{'id':'host','state':'Hosting','name':'VirtualBox' + ($('#vboxIndex').data('vboxConfig').host ? ' ('+$('#vboxIndex').data('vboxConfig').host+')' : ''),'OSTypeId':'VirtualBox_Host'}];
-		currVMList = host.concat(currVMList);
-
-		
-		// Each item in list
-		for(var i in currVMList) {	
-		
-			// Does not exist, add to list
-			if(!self.vms[currVMList[i].id]) {
-				self.addVM(currVMList[i]);
-			// Update
-			} else {
-				self.updateVM(currVMList[i]);
-			}
-
-			self.vms[currVMList[i].id].lastUpdated = self.time;
-			
-			// Sort actual element
-			if($('#vboxVMListItem-'+self.anchorid+'-'+currVMList[i].id).index() != i) {
-				$('#'+self.anchorid).children('table:eq('+i+')').before($('#vboxVMListItem-'+self.anchorid+'-'+currVMList[i].id).detach());
-			}
-		}
-
-		// Check for any vms that should be removed
-		for(var id in self.vms) {
-			if(self.vms[id].lastUpdated != self.time) {
-				self.removeVM(id);
-			}
-		}
-		
-		var hours = currTime.getHours()
-		var minutes = currTime.getMinutes()
-		var secs = currTime.getSeconds();
-		if (minutes < 10) minutes = "0" + minutes;
-		if (secs < 10) secs = "0" + secs;
-		
-		$('#lastUpdated').html(hours+':'+minutes+':'+secs);
-	}
-	
-
-	// Update a VM in our list
-	self.updateVM = function(vmUpdate,index) {
-
-		var changed = false;
-		var changedProps = ['currentSnapshot','state','sessionState','OSTypeId','name'];
-		
-		for(var i = 0; i < changedProps.length; i++) {
-			if(self.vms[vmUpdate.id][changedProps[i]] != vmUpdate[changedProps[i]]) {
-				changed = true;
-				break;
-			}
-		}
-		
-		vmUpdate.selected = self.vms[vmUpdate.id].selected;
-
-		if(changed && vmUpdate.id != 'host') {
-			
-			$('#vboxVMListItem-'+self.anchorid+'-'+vmUpdate.id).replaceWith(self.vmHTML(vmUpdate));
-			
-			if(self.vms[vmUpdate.id].selected) {
-				
-				// update selected vm
-				self.vms[vmUpdate.id] = vmUpdate;
-				$('#vboxVMListItem-'+self.anchorid+'-'+vmUpdate.id).trigger('click');
-			}
-			
-		}
-		if(!vmUpdate.selected)
-			self.vms[vmUpdate.id] = vmUpdate;
-
-	}
-
-	self.addVM = function(vm, index) {
-		self.vms[vm.id] = vm;
-		vmn = self.vms[vm.id];
-		$('#'+self.anchorid).append(self.vmHTML(vmn));
-	
-	}
-
-	self.vmHTML = function (vmn) {
-		
-		var tbl = document.createElement('table');
-		$(tbl).data(vmn);
-		tbl.setAttribute('id','vboxVMListItem-'+self.anchorid+'-'+vmn.id);
-		tbl.setAttribute('class',"vboxVMListVM vboxListItem" + (self.vms[vmn.id].selected ? "Selected" : ""));
-		$(tbl).bind('click',function(){$('#vboxIndex').data('selectedVM',$(this).data());$('#vboxIndex').trigger('vmselect',[$(this).data()]);});
-
-		var tr = document.createElement('tr');
-		
-		// VM OS type icon
-		var td = document.createElement('td');
-		td.setAttribute('rowspan','2');
-		td.innerHTML = "<img src='images/vbox/" + vmGuestOSTypeIcon(vmn.OSTypeId) + "' />";
-		
-		tr.appendChild(td);
-		
-		// VM Name
-		var td = document.createElement('td');
-		td.setAttribute('class', 'vboxVMTitle');
-		td.appendChild(document.createTextNode(vmn.name + (vmn.currentSnapshot ? ' (' + vmn.currentSnapshot + ')' : '')));
-		
-		tr.appendChild(td);
-		
-		tbl.appendChild(tr);
-		
-		var tr = document.createElement('tr');
-		
-		var td = document.createElement('td');
-		if(vmn.id != 'host' && vmn.sessionState != 'Closed') td.setAttribute('class','vboxVMSessionOpen');
-		td.innerHTML = "<img src='images/vbox/" + machineStateIcon(vmn.state) +"' /> " + trans(vmn.state);
-		
-		tr.appendChild(td);
-		tbl.appendChild(tr);
-		
-		return tbl;
-	}
-
-	self.removeVM = function(id) {
-		//return;
-		if(self.vms[id].selected) { $('#vboxIndex').trigger('vmselect',null); }
-		$('#vboxVMListItem-'+self.anchorid+'-'+id).remove();
-		delete self.vms[id];
-	}
-
-	// select VM in list
-	self.selectVM = function(e,vm) {
-		var uuidsel = (vm && vm.id ? vm.id : 'null');
-		var vsel = null
-		for(var id in self.vms) {
-		    if (typeof self.vms[id] !== 'function') {
-				if(id == uuidsel) {
-					self.vms[id].selected = true;
-					$('#vboxVMListItem-'+self.anchorid+'-'+id).removeClass('vboxListItem').addClass('vboxListItemSelected');
-					vsel = self.vms[id];
-				} else {
-					self.vms[id].selected = false;
-					$('#vboxVMListItem-'+self.anchorid+'-'+id).addClass('vboxListItem').removeClass('vboxListItemSelected');
-				}
-		    }
-		}
-		self.selected = uuidsel;
-	}
-
-	// return currently selected VM
-	self.getSelectedVM = function () {
-		return (self.selected == null ? null : self.vms[self.selected]);
-	}
-	
-	self.run = function(interval) {
-		
-		if(self._running) return;
-
-		// Subscribe to selected VM changes
-		$('#vboxIndex').bind('vmselect',self.selectVM);
-		$('#vboxIndex').bind('vmlistrefresh',self.refresh);
-		
-		// Custom sort function?
-		if($('#vboxIndex').data('vboxConfig').vmListSort) {
-			try {
-				eval("self.sort = " + $('#vboxIndex').data('vboxConfig').vmListSort);
-			} catch (err) {
-				vboxAlert('There was an error parsing your custom sort function. It will not be used.<p>'+err+'</p>');
-				self.sort = null;
-			}
-		}
-
-		self.refresh();
-		// secs to milisecs
-		interval *= 1000;
-		// Run every X seconds?
-		self._running = window.setInterval(this.refresh,interval);
-	}
-	
-	self.stop = function() {
-		if(!self._running) return;
-		window.clearInterval(self._running);
-		self._running = null;
-	}
-	
-	self.refresh = function() {
-		dataMediator.get('VMs',null,self.updateList);
-	}
-
-}
 
 /*
  * 
@@ -1002,14 +767,13 @@ function vboxLoader() {
 	/* Removes loading screen and show body */
 	this._stop = function() {
 
-		if (self.onLoad)
-			self.onLoad();
+		if (self.onLoad) self.onLoad();
 
-		if(!self.noLoadingScreen)
-			$('#vboxLoaderDialog').remove();
+		if(!self.noLoadingScreen) $('#vboxLoaderDialog').remove();
 		
-		if(self.hideRoot)
-			$('#vboxIndex').css('display', '');
+		if(self.hideRoot) $('#vboxIndex').css('display', '');
+		
+		if(self.onShow) self.onShow();
 	}
 
 }

@@ -3,8 +3,7 @@
  */
 
 html,body,#vboxIndex {
-   	  background: #d9d9e9;
-   	  height: 99%;
+   	  background: #e9e9e9;
       border:0px solid transparent;
    	  margin:0px;
    	  padding: 0px;
@@ -14,6 +13,16 @@ html,body,#vboxIndex {
 html,body,input,select,.ui-widget, .ui-tabs, .ui-widget-content,textarea {
 	  font: 12px Tahoma,"Trebuchet MS",Verdana,Arial,Sans-serif;
 }
+
+/* 
+	Height Layout
+*/
+html,body,#vboxIndex,#vboxTableMain {
+	height: 100%;
+}
+#vboxMenu { height: 20px; }
+#vboxTableMain td.vboxPaneTop { height: 70px; } 
+
 
 /* Common */
 #vboxIndex img, div.vboxDialogContent img { vertical-align: middle; border: 0px; }
@@ -32,7 +41,7 @@ html,body,input,select,.ui-widget, .ui-tabs, .ui-widget-content,textarea {
 .ui-widget-content div.vboxDialogContent, div.ui-dialog div.ui-dialog-content, div.ui-dialog div.ui-dialog-buttonpane { background: #fff; }
 div.ui-dialog div.ui-dialog-buttonpane { padding: 4px; margin: 0px; text-align: center; }
 div.ui-dialog div.ui-dialog-titlebar { color: #fff; background: #369; }
-div.ui-dialog .ui-button { background: #d9d9e9; color: #000; }
+div.ui-dialog .ui-button { background: #e9e9e9; color: #000; }
 div.ui-dialog .disabled { color: #aaa; }
 div.ui-dialog div.ui-dialog-buttonpane button {text-align: center; display: inline; float: none; }
 div.ui-dialog .ui-button .ui-button-text { display: block; line-height: 1;  }
@@ -41,6 +50,8 @@ div.ui-dialog .ui-button-text-icon .ui-button-text, .ui-button-text-icons .ui-bu
 div.ui-dialog div.vboxDialogContent th { width: auto; white-space: nowrap; text-align: right;}
 div.ui-dialog div.vboxDialogContent td { width: 100%; white-space: nowrap; text-align: left; }
 div.ui-progressbar div.ui-progressbar-value { background: #00CD00 }
+div.ui-widget-overlay { padding: 0px; margin: 0px; border: 0px; }
+div.ui-tabs ul.ui-tabs-nav { margin: 0px; padding: 0px; border: 0px;}
 
 /* sliders and slider Scales */
 div.slider { margin-left: 8px; margin-right: 8px; }
@@ -52,7 +63,17 @@ div.sliderScale tr { padding: 0px; margin: 0px; }
 div.sliderScale td { height: 8px; border-right: 1px solid #000; }
 div.sliderScale td:first-child { height: 8px; border-left: 1px solid #000; }
 
-input.vboxImgButton { border:none;padding:0px;vertical-align:middle;margin:2px;padding:0px;height:20px;width:20px;background-position:2px 2px;background-repeat:no-repeat;background-color:transparent;} 
+input.vboxImgButton { 
+	border:none;
+	padding:0px;
+	vertical-align:middle;
+	margin: 0px 2px 2px 2px;
+	height:20px;
+	width:20px;
+	background-position:2px 2px;
+	background-repeat:no-repeat;
+	background-color:transparent;
+} 
 
 /* bordered item */
 .vboxBordered { border: 2px solid #999; }
@@ -67,7 +88,7 @@ ul.vboxList li table tr { vertical-align: middle; }
 ul.vboxList li table td { border: 1px solid #f00; }
 ul.vboxList li img { vertical-align: middle; }
 
-.vboxListItem, a.vboxListItem, .vboxListItem a { cursor: pointer; color: #000; }
+.vboxListItem, a.vboxListItem, .vboxListItem a { cursor: pointer; color: #000; background: #fff; }
 .vboxListItemSelected, .vboxListItemSelected a, a.vboxListItemSelected { background-color: #69F !important; cursor: default !important; color: #fff !important; }
 .vboxListItemTitle { font-weight: bold; }
 
@@ -79,16 +100,20 @@ table.vboxVertical th { white-space: nowrap; text-align: right; font-weight: bol
 table.vboxVertical td { text-align: left; width: 100%; white-space: nowrap; padding: 4px; }
 table.vboxHorizontal th { border-bottom: 1px solid #666; background: #ccc; padding: 2px; white-space: nowrap; text-align: left; font-weight: bold; }
 table.vboxVertical input.vboxText, table.vboxVertical select { width: 100%; }
-table.vboxInvisible { padding: 0px; margin: 0px; border: 0px; border-spacing: 0px; }
+table.vboxInvisible, table.vboxInvisible td { padding: 0px; margin: 0px; border: 0px; border-spacing: 0px; }
 .vboxOddRow { background-color: #efefef; }
 
 /* File / Folder select tables */
 table tr td.vboxFileFolderInput { white-space: nowrap; }
 table tr td.vboxFileFolderInput input.vboxText { width: 95%; }
-table tr td.vboxFileFolderInput input.vboxImgButton { width: 20px;}
+table tr td.vboxFileFolderInput input.vboxImgButton { width: 20px; margin-left: 2px;}
 
 /* Buttons and Toolbars */
-.vboxToolbarButton { border: 2px solid transparent; text-align: center; background-repeat:no-repeat;background-position: top center; padding: 4px;}
+.vboxToolbarButton { 
+	border: 2px solid transparent;
+	text-align: center;
+	padding: 4px;
+}
 .vboxToolbarButtonHover {
 	border-bottom: 2px solid #777;
 	border-right: 2px solid #777;
@@ -97,8 +122,8 @@ table tr td.vboxFileFolderInput input.vboxImgButton { width: 20px;}
 	cursor: pointer;
 }
 /* Small Toolbar buttons */
-.vboxToolbarSmallButton { border: 1px solid transparent; }
-.vboxToolbarSmallButtonHover {
+input.vboxToolbarSmallButton { border: 1px solid transparent; }
+input.vboxToolbarSmallButtonHover {
 	border-bottom: 1px solid #777;
 	border-right: 1px solid #777;
 	border-left: 1px solid #999;
@@ -132,6 +157,7 @@ div.vboxVMLog form textarea, div.vboxAjaxErrorDetails form textarea {
 
 /* Snapshots */
 #vboxSnapshotList, #vboxSnapshotList table { height: 100%; }
+#vboxSnapshotList { background: #fff; width: 100%; }
 #vboxSnapshotList img { padding-right: 4px; }
 #vboxSnapshotDetails table.vboxDetailsTable tr th.vboxDetailName,
 	#vboxSnapshotDetails table.vboxDetailsTable tr th.vboxDetailNameIndent { width: auto; padding-right: 20px; }
@@ -140,8 +166,8 @@ div.vboxVMLog form textarea, div.vboxAjaxErrorDetails form textarea {
 #vboxSnapshotDetails td.vboxSnapshotDetailsMachine { height: 300px; }
 	
 /* Virtual Media Manager */
-#vboxVMMDialog { background: #d9d9e9; }
-#vboxVirtualMediaManager .ui-tabs { background: #d9d9e9; margin: 0px 6px 0px 6px;}
+#vboxVMMDialog { background: #e9e9e9; }
+#vboxVirtualMediaManager .ui-tabs { background: #e9e9e9; margin: 0px 6px 0px 6px;}
 #vboxVirtualMediaManager .ui-tabs-panel { background: #fff; }
 #vboxVirtualMediaManager .vboxListTable td { white-space: nowrap; padding: 2px; }
 .vboxVMMSpacer { width: 12px; height: 1px; margin: 0px; padding: 0px; }
@@ -171,18 +197,24 @@ div.vboxWizard h3 { border-bottom: 1px solid #aaa; }
 #vboxImportProps td.vboxHideOverflow, #vboxImportProps td.vboxHideOverflow div { text-wrap: unrestricted !important; word-wrap: break-word !important; overflow: hidden !important; white-space: wrap !important;}
 
 /* Main Tabs */
-#tablistMain { padding: 0.2em 0 0; }
-#tabsMain { background: #d9d9e9; }
-#tabsMain .vboxTabContent { margin-left: 2px; background: #fff; }
-#tabsMain div.vboxTabContent { text-align: left; }
-#tabsMain div.vboxTabLoading { text-align: center; vertical-align: middle; height: 100%; }
-#tabsMain div.vboxTabLoading img { position: absolute; top: 45%; left: 45%; text-align: center; }
+#tabMainContent  {padding-left: 6px; padding-right: 8px;} /* less left to account for resize bar */
+#vboxTabsList { float: right; text-align: right; white-space: nowrap;}
+#vboxPaneTabContent { width: 100%; }
+#vboxPaneTabContent div.vboxTabLoading { text-align: center; vertical-align: middle; height: 100%; background: #fff; }
+#vboxPaneTabContent div.vboxTabLoading img { text-align: center; margin: 20px; position: relative; top: 30%; }
+#tablistMain { margin-right: 20px; margin-top: 22px; }
+#tablistMain li img { margin-right: 4px; }
+#tablistMain li a, #tablistMain li a:visited { color: #000; }
+#tablistMain li.vboxDisabled a, #tablistMain li.vboxDisabled a:visited { color: #aaa; cursor: default; }
+#tablistMain li { border: 2px solid transparent; list-style: none; text-align: right; margin: 10px; display: inline; padding: 8px; padding-right: 10px;} 
+#tablistMain li.hover { border: 2px solid #aaa; cursor: pointer; background: #e2e2f2; }
+#tablistMain li.selected { border: 2px solid #999; cursor: pointer; background: #d0d0e0; }
 
 /* Menu bars */
-#vboxIndex div.vboxMenuBar, div.vboxDialogContent div.vboxMenuBar { border-bottom: 1px solid #aaa; padding: 2px 0; margin-top: 0px; }
+#vboxIndex div.vboxMenuBar, div.vboxDialogContent div.vboxMenuBar { border-bottom: 1px solid #aaa; padding-top: 0px; margin-top: 0px; }
 #vboxIndex div.vboxMenuBar span, div.vboxDialogContent div.vboxMenuBar span { padding: 1px 8px 1px 4px; font-size: 1.1em; border: 1px solid transparent; cursor: default; }
 #vboxIndex div.vboxMenuBar span.vboxBordered, div.vboxDialogContent div.vboxMenuBar span.vboxBordered { border: 1px solid #aaa; }
-#vboxIndex ul.vboxMenuBar, div.vboxDialogContent ul.vboxMenuBar { font-size: 1.2em; background: #d9d9e9; border: 2px solid #aaa; margin: 0px; padding: 0px; }
+#vboxIndex ul.vboxMenuBar, div.vboxDialogContent ul.vboxMenuBar { font-size: 1.2em; background: #e9e9e9; border: 2px solid #aaa; margin: 0px; padding: 0px; }
 #vboxIndex ul.vboxMenuBar a,div.vboxDialogContent ul.vboxMenuBar a { padding: 2px 18px 2px 28px; }
 
 /* Tree Views */
@@ -210,35 +242,102 @@ div.vboxWizard h3 { border-bottom: 1px solid #aaa; }
 
 
 /* Virtual Machine List and Top Toolbar*/
-#vboxPaneToolbar { background: #d9d9e9; }
-#vboxPaneVMList { background: #fff; padding: 0; }
-#vboxPaneVMList table, #vboxPaneVMList div { width: 100%; }
+#vboxPaneVMList { background: #fff;  }
+#vboxPaneVMList span.vboxServerLink { text-decoration: underline; cursor: pointer; }
+#vboxVMList { width: 300px; overflow: scroll; } /* Initial Width */
+#vboxVMList table, #vboxVMList div { width: 100%; }
 #vboxPaneVMList td.vboxVMTitle { width: 100% }
-table.vboxVMListVM { vertical-align: top; padding: 5px 0 5px 4px; }
-table.vboxVMListVM td { padding: 2px; }
+table.vboxVMListVM { margin-bottom: 5px; vertical-align: top; }
+table.vboxVMListVM td { padding: 2px; white-space: nowrap; }
 table.vboxVMListVM td.vboxVMSessionOpen { font-style: italic; }
 
 /* Toolbar above vm list */
-#vboxPaneToolbar table { border-spacing: 14px 5px; }
+#vboxPaneToolbar { float: left; }
+#vboxPaneToolbar table td { margin-right: 6px; }
 #vboxPaneToolbar table td.buttonEnabled { cursor: pointer; }
 #vboxPaneToolbar table td.buttonDisabled { cursor: default; }
 
-/* Details Table */
+/* Details Tab and Table */
+#vboxTabVMDetails { font-size: 0.9em; }
+#vboxDetailsWelcome { background: #fff; }
 table.vboxDetailsTable { width: auto; }
+table.vboxDetailsTableBox tr.vboxDetailsHead th { white-space: nowrap; }
+table.vboxDetailsTable td { padding: 2px; }
 table.vboxDetailsTable a, table.vboxDetailsTable a:visited { color: #0000FF; }
-table.vboxDetailsTable tr th.vboxDetailsSection { text-align: left; font-weight: bold; padding-top: 10px }
+table.vboxDetailsTable tr th.vboxDetailsSection { text-align: left; font-weight: bold; margin-top: 10px }
 table.vboxDetailsTable tr th.vboxDetailName { text-align: left; width: 300px; padding-left: 20px; font-weight: normal; }
-table.vboxDetailsTable tr th.vboxDetailNameIndent { text-align: left; width: 300px; padding-left: 35px; font-weight: normal;}
+table.vboxDetailsTable tr th.vboxDetailNameIndent { text-align: left; width: 265px; padding-left: 35px; font-weight: normal;}
 table.vboxDetailsTable tr td.vboxDetailsValue { text-align: left; white-space: normal; width: auto;  }
 table.vboxDetailsTableError { background: #eee; margin-top: 8px; }
 table.vboxDetailsTableError tr { vertical-align: top; }
+/* Details table boxes */
+table.vboxDetailsTableBox { background: #fff; margin-bottom: 10px; width: 100%; border-collapse: collapse; border-spacing: 0px;
+	-moz-border-radius-topleft: 4px/*{cornerRadius}*/; -webkit-border-top-left-radius: 4px/*{cornerRadius}*/; border-top-left-radius: 4px/*{cornerRadius}*/; -moz-border-radius-topright: 4px/*{cornerRadius}*/; -webkit-border-top-right-radius: 4px/*{cornerRadius}*/; border-top-right-radius: 4px/*{cornerRadius}*/;
+}
+/* Safari / Chrome "fix" */
+table.vboxDetailsTableBox img::selection { color: transparent; }
+
+table.vboxDetailsTableBox tr.vboxDetailsHead {
+	-moz-border-radius-topleft: 4px/*{cornerRadius}*/; -webkit-border-top-left-radius: 4px/*{cornerRadius}*/; border-top-left-radius: 4px/*{cornerRadius}*/; -moz-border-radius-topright: 4px/*{cornerRadius}*/; -webkit-border-top-right-radius: 4px/*{cornerRadius}*/; border-top-right-radius: 4px/*{cornerRadius}*/;
+}
+table.vboxDetailsTableBox tr.vboxDetailsHead th.vboxDetailsSection {
+	-moz-border-radius-topleft: 4px/*{cornerRadius}*/; -webkit-border-top-left-radius: 4px/*{cornerRadius}*/; border-top-left-radius: 4px/*{cornerRadius}*/; -moz-border-radius-topright: 4px/*{cornerRadius}*/; -webkit-border-top-right-radius: 4px/*{cornerRadius}*/; border-top-right-radius: 4px/*{cornerRadius}*/;
+	padding: 1px;
+	margin: 0px;
+	background-color: #cccccc;
+}
+table.vboxDetailsTableBox tr.vboxDetailsHead th.vboxDetailsSection div {
+	-moz-border-radius-topleft: 4px/*{cornerRadius}*/; -webkit-border-top-left-radius: 4px/*{cornerRadius}*/; border-top-left-radius: 4px/*{cornerRadius}*/; -moz-border-radius-topright: 4px/*{cornerRadius}*/; -webkit-border-top-right-radius: 4px/*{cornerRadius}*/; border-top-right-radius: 4px/*{cornerRadius}*/;
+	background-image: url(../images/header_grad.png);
+	padding: 3px 3px 3px 6px;
+	margin: 0px;
+	height: 16px;
+}
+table.vboxDetailsTableBox tr.vboxDetailsHead th.vboxDetailsSectionCollapsed {
+	-moz-border-radius-bottomleft: 4px/*{cornerRadius}*/; -webkit-border-bottom-left-radius: 4px/*{cornerRadius}*/; border-bottom-left-radius: 4px/*{cornerRadius}*/; -moz-border-radius-bottomright: 4px/*{cornerRadius}*/; -webkit-border-bottom-right-radius: 4px/*{cornerRadius}*/; border-bottom-right-radius: 4px/*{cornerRadius}*/;
+}
+
+table.vboxDetailsTableBox tr.vboxDetailsHead a, table.vboxDetailsTableBox tr.vboxDetailsHead th.hover div.vboxNoLinks a {
+	color: #000;
+	cursor: default;
+}
+table.vboxDetailsTableBox tr.vboxDetailsHead th.hover a {
+	color: #0000ff;
+	cursor: pointer;
+}
+
+table.vboxDetailsTableBox tr.vboxDetailsHead th span.vboxDetailsUpDnImgSpan { display: none; }
+table.vboxDetailsTableBox tr.vboxDetailsHead th.hover span.vboxDetailsUpDnImgSpan { display: inline; }
+
+table.vboxDetailsTableBox tr.vboxDetailsHead th { padding: 4px; padding-left: 8px; }
+table.vboxDetailsTableBox tr.vboxDetailsHead img { padding-right: 4px; }
+/* same as th.vboxDetailName */
+table.vboxDetailsTable td.vboxDetailDescriptionCell { padding-left: 20px; }
+
+/* menus */
+#vboxDetailsShowMenu li { padding: 2px; padding-right: 4px; }
+#vboxDetailsPreviewMenu li { cursor: pointer; }
+#vboxDetailsPreviewMenu li { padding: 2px; padding-right: 4px; vertical-align: middle; }
+#vboxDetailsPreviewMenu li input { display: inline; padding: 0px; margin: 0px; margin-right: 4px; }
+
+/* preview box */
+#vboxDetailsTableBoxPreviewSpacer { padding: 4px; }
+#vboxDetailsTableBoxPreview { text-align: center; }
+#vboxDetailsTableBoxPreview table, #vboxDetailsTableBoxPreview td, #vboxDetailsTableBoxPreview img { padding: 0px; margin: 0px; border: 0px; }
+div.vboxPreviewSaved {
+	background-color:#000;
+}
+div.vboxPreviewSaved img {
+	opacity: .75;
+	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=75)";
+}
 
 /* Description tab */
 #vboxTabVMDescription input { margin: 8px; }
 #vboxTabVMDescription textarea { width: 100%; display: block; }
 
 /* Settings Tables */
-#vboxSettingsDialog { background: #d9d9e9; }
+#vboxSettingsDialog { background: #e9e9e9; }
 #vboxSettingsDialog tr { vertical-align: top; }
 #vboxSettingsPane { width: 100%; }
 
@@ -259,22 +358,22 @@ table.vboxDetailsTableError tr { vertical-align: top; }
 #vboxSettingsGlobalNetList li { padding-left: 4px; }
 #vboxSettingsGlobalNetEditAdapter th { text-align: right; width: auto; white-space: nowrap;}
 #vboxSettingsGlobalNetEditAdapter td, #vboxSettingsGlobalNetEditAdapter td input { text-align: left; width: 100%; white-space: nowrap;}
-#vboxSettingsGlobalNetEditDialog { background: #d9d9e9; }
-#vboxSettingsGlobalNetEditDialog .ui-tabs { background: #d9d9e9; margin: 0px 6px 0px 6px;}
+#vboxSettingsGlobalNetEditDialog { background: #e9e9e9; }
+#vboxSettingsGlobalNetEditDialog .ui-tabs { background: #e9e9e9; margin: 0px 6px 0px 6px;}
 #vboxSettingsGlobalNetEditDialog .ui-tabs-panel { background: #fff; }
 
 
 
 /* settings general tabs and panes */
-#vboxSettingsPane .vboxSettingsPaneSection { border: 2px solid #999; background: #d9d9f0; }
-#vboxSettingsPane .vboxSettingsPaneSection .ui-state-default { background: #aaa; }
+#vboxSettingsPane .vboxSettingsPaneSection { background: #999; }
+#vboxSettingsPane .vboxSettingsPaneSection .ui-state-default { background: #c1c1c1; }
 #vboxSettingsPane .vboxSettingsPaneSection .ui-tabs-selected,
 	#vboxSettingsPane .vboxNonTabbed,
 	#vboxSettingsPane .vboxSettingsPaneSection .ui-tabs-panel { background: #eee; }
-#vboxSettingsPane .vboxNonTabbed { padding: 6px; }
 #vboxSettingsPane .vboxSettingsPaneSection .vboxNonTabbed .vboxNonTabbed { background: #aaa; }
 #vboxSettingsPane div.slider .ui-state-default { background: #ff8; border: 1px solid #000; }
-
+#vboxSettingsPane .vboxTabbed { border: 0px solid #999; padding: 2px; margin: 0px; }
+#vboxSettingsPane .vboxNonTabbed { border: 2px solid #999; padding: 6px; }
 
 /* Storage Settings */
 #vboxSettingsStorageTree { background: #fff; height: 250px; padding: 4px 0px 2px 6px; overflow: scroll; overflow-y: auto; overflow-x: hidden; }
@@ -329,6 +428,13 @@ table.vboxDetailsTableError tr { vertical-align: top; }
 
 /* USB Settings */
 #vboxSettingsUSBFilters { background: #fff; }
-#vboxSettingsUSBFilters li { width: 100%; margin: 0px; padding: 2px }
+#vboxSettingsUSBFilters li { width: 100%; margin: 0px; padding: 2px 0px 2px 0px; }
 #vboxSettingsUSBFilters ul { list-style: none; margin: 0px; padding: 0px;}
 #vboxSettingsUSBFilters ul input { vertical-align: bottom; }
+
+/* Port Forwarding */
+#vboxSettingsPortForwarding {background: #e9e9e9; }
+#vboxSettingsPortForwarding th { width: 16%; text-align: center; border-left: 1px solid #000; border-right: 1px solid #000; }
+#vboxSettingsPortForwardingList td { padding: 4px; }
+#vboxSettingsPortForwardingList td.vboxProto { text-align: center; }
+#vboxSettingsPortForwardingList td.vboxPort { text-align: center; }

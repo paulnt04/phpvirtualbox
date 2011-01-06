@@ -1,4 +1,6 @@
-<!-- $Id$ -->
+<!-- $Id$
+Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
+-->
 <div id='vboxMount'>
 <form name='frmVboxMount'>
 <table>
@@ -74,8 +76,15 @@ function vboxMountPostInit(bus,port,device,onmount) {
 function vboxMountMedium(bus,busName,port,device,onmount) {
 	
 	// get values
+
 	var vm = $('#vboxIndex').data('vboxMachineData');	
 	var medium = $('#vboxMountMediums').val();
+	
+	if(medium != '0') {
+		var storage = new vboxStorage();
+		medium = storage.getMediumById(medium);
+	}
+	
 	var args = {'vm':vm.id,'medium':medium,'port':port,'device':device,'bus':bus,'controller':busName};
 
 	// Ajax request to mount medium
@@ -97,6 +106,8 @@ function vboxMountMedium(bus,busName,port,device,onmount) {
 
 function vboxMountFillMediums(type,medium,selected) {
 
+	setLangContext('vboxMountMediums');
+	
 	var storage = new vboxStorage();
 	
 	/* Mediums select box */
@@ -126,6 +137,8 @@ function vboxMountFillMediums(type,medium,selected) {
 	for(var i = 0; i < mediums.length; i++) {
 		sel.options[sel.options.length] = new Option(storage.getMediumName(mediums[i]),mediums[i].id,(selected == mediums[i].id));
 	}
+
+	unsetLangContext();
 	
 }
 </script>

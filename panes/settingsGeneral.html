@@ -1,6 +1,7 @@
 <!--
 
 	General Machine Settings
+	Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
 	
 	$Id$
 
@@ -69,7 +70,7 @@ function vboxSettingsUpdateOSList(osfam) {
 		document.forms['frmVboxSettings'].vboxSettingsGeneralOSType.options[i] = new Option(vboxSettingsOSTypes[osfam].osTypes[i].description, vboxSettingsOSTypes[osfam].osTypes[i].id);
 	}
 	// Update image
-	document.images["vboxOSTypeImg"].src = "images/vbox/" + vmGuestOSTypeIcon(vboxSettingsOSTypes[osfam].osTypes[0].id)
+	document.images["vboxOSTypeImg"].src = "images/vbox/" + vboxGuestOSTypeIcon(vboxSettingsOSTypes[osfam].osTypes[0].id)
 }
 
 var vboxSettingsOSTypes = new Array();
@@ -89,7 +90,7 @@ for(var i in vboxOSTypes) {
 	if(!vboxSettingsOSTypes[vboxOSTypes[i].familyId]) {
 		vboxSettingsOSTypes[vboxOSTypes[i].familyId] = {'id':vboxOSTypes[i].familyId,'description':vboxOSTypes[i].familyDescription,'osTypes':[]};
 	}
-	
+
 	// We're on the default os type, record family id and index number
 	// so that we can set it later on
 	if(vboxOSTypes[i].id == vboxDefaultOSTypeId) {
@@ -103,7 +104,7 @@ for(var i in vboxOSTypes) {
 	
 	// Preload icons
 	vboxOSTypes[i].icon = new Image();
-	vboxOSTypes[i].icon.src = "images/vbox/" + vmGuestOSTypeIcon(vboxOSTypes[i].id);
+	vboxOSTypes[i].icon.src = "images/vbox/" + vboxGuestOSTypeIcon(vboxOSTypes[i].id);
 
 }
 // clear all options
@@ -116,7 +117,7 @@ for(var i in vboxSettingsOSTypes) {
 }
 // OnChange, update os type list and icon
 document.getElementById('vboxSettingsGeneralOSFamily').setAttribute('onChange','vboxSettingsUpdateOSList(this.value)');
-document.getElementById('vboxSettingsGeneralOSType').setAttribute('onChange','document.images["vboxOSTypeImg"].src = "images/vbox/" + vmGuestOSTypeIcon(this.value)');
+document.getElementById('vboxSettingsGeneralOSType').setAttribute('onChange','document.images["vboxOSTypeImg"].src = "images/vbox/" + vboxGuestOSTypeIcon(this.value)');
 
 document.forms['frmVboxSettings'].vboxSettingsGeneralOSFamily.selectedIndex = dosfam;
 vboxSettingsUpdateOSList(document.forms['frmVboxSettings'].vboxSettingsGeneralOSFamily.value);
