@@ -48,6 +48,15 @@ You can now power off a VM that is in a "Stuck" state.
 Versioning scheme is now
 	(VirtualBox compatible version)-(phpVirtualBox version)
 
+Fixed bug that would not display error message on failure to
+connect to vboxwebsrv.
+
+Removed old imgpng requirement as VirtualBox can now export
+screen shots as PNG data.
+
+Fixed media mounting bug that would not allow anything other than
+host drives to be mounted.
+
 -------------------------------------
 		0.5 - 2010-08-10
 -------------------------------------

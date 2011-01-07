@@ -62,11 +62,12 @@ switch($vboxRequest['fn']) {
 		try {
 			$vbox = new vboxconnector();
 			$response['data']['version'] = $vbox->getVersion();
-
-		} catch (Exception $null) { }
+			$response['data']['hostOS'] = $vbox->vbox->host->operatingSystem;
+		} catch (Exception $null) {
+			// error logging in or connecting
+		}
 
 		// Host OS and directory seperator
-		$response['data']['hostOS'] = $vbox->vbox->host->operatingSystem;
 		if(stripos($response['data']['hostOS'],'windows') === false) {
         		 $response['data']['DSEP'] = '/';
 		} else {
@@ -76,8 +77,6 @@ switch($vboxRequest['fn']) {
 		// What vboxconnector considers to be a fatal error
 		$response['data']['PHPVB_ERRNO_FATAL'] = vboxconnector::PHPVB_ERRNO_FATAL;
 
-		// "Preview" functionality available?
-		$response['data']['imagepng'] = (function_exists('imagepng') && !$response['data']['noPreview']);
 		// Update interval
 		$response['data']['previewUpdateInterval'] = max(3,intval($response['data']['previewUpdateInterval']));
 

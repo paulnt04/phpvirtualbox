@@ -103,6 +103,7 @@ class vboxconnector {
 				'connection_timeout' => ($this->settings['connectionTimeout'] ? $this->settings['connectionTimeout'] : 20),
 		        'location'=>$this->settings['location']
 		    ));
+		    
 
 		/* Try / catch / throw here hides login credentials from exception if one is thrown */
 		try {
@@ -2557,7 +2558,7 @@ class vboxconnector {
 
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
-
+		
 		// Find medium attachment
 		$machine = $this->vbox->findMachine($args['vm']);
 		$state = $machine->sessionState->__toString();
@@ -2579,7 +2580,7 @@ class vboxconnector {
 			$med = null;
 		} else {
 			// Host drive
-			if($args['medium']['hostDrive']) {
+			if(strtolower($args['medium']['hostDrive']) == 'true') {
 				// CD / DVD Drive
 				if($args['medium']['deviceType'] == 'DVD') {
 					$drives = $this->vbox->host->DVDDrives;
@@ -2598,8 +2599,7 @@ class vboxconnector {
 				$med = $this->vbox->findMedium($args['medium']['id'],$args['medium']['deviceType']);
 			}
 		}
-
-
+		
 		$this->session->machine->mountMedium($args['controller'],$args['port'],$args['device'],(is_object($med) ? $med->handle : null),true);
 
 		if($save) $this->session->machine->saveSettings();
