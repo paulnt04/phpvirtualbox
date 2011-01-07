@@ -58,7 +58,7 @@ var tButtons = [
 		'label' : 'Stop',
 		'icon' : 'vm_poweroff',
 		'click' : function () { return true; /* handled by stop menu */ },
-		'enabled' : function (vm) { return (vm && (jQuery.inArray(vm.state,['Running','Paused']) > -1));}
+		'enabled' : function (vm) { return (vm && (jQuery.inArray(vm.state,['Running','Paused','Stuck']) > -1));}
 	}
 ];
 
@@ -88,7 +88,7 @@ var vboxVMListStopMenu = {
 	'powerdown' : {
 		'label' : 'Power Off',
 		'icon' : 'poweroff',
-		'states' : ['Running','Paused']
+		'states' : ['Running','Paused','Stuck']
 	},	
 	'reset' : {
 		'label' : 'Reset',

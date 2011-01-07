@@ -1994,7 +1994,7 @@ class vboxconnector {
 				'authType' => $m->VRDEServer->authType->__toString(),
 				'authTimeout' => $m->VRDEServer->authTimeout,
 				'allowMultiConnection' => intval($m->VRDEServer->allowMultiConnection),
-				'VRDEExtPack' => $m->VRDEServer->VRDEExtPack
+				'VRDEExtPack' => (string)$m->VRDEServer->VRDEExtPack
 				)),
 			'audioAdapter' => array(
 				'enabled' => $m->audioAdapter->enabled,

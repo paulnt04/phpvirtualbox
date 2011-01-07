@@ -30,12 +30,6 @@ for(var i = 0; i < tabs.length; i++) {
 	if($('#vboxIndex').data('vboxConfig')['disable' + tabs[i].name.substring(4)])
 		continue;
 
-	// Hide Console tab if OSE is detected
-	/*
-	if(tabs[i].name == 'vboxTabVMConsole' && $('#vboxIndex').data('vboxConfig').version.ose)
-		continue;
-	*/
-
 	// Tab link
 	var li = document.createElement('li');
 	$(li).attr('class','ui-corner-all');
@@ -55,12 +49,6 @@ tabLoader.onLoad = function(){
 		if($('#vboxIndex').data('vboxConfig')['disable' + tabs[i].name.substring(4)])
 			continue;
 
-		// Hide Console tab if OSE is detected
-		/*
-		if(tabs[i].name == 'vboxTabVMConsole' && $('#vboxIndex').data('vboxConfig').version.ose)
-			continue;
-		*/
-		
 		tabsMain.addTab(tabs[i]);
 		
 	}
@@ -150,7 +138,7 @@ function vboxTabs(id) {
 
 		// No longer selected?
 		if(vm && vm.id && (self.selected != vm.id)) return;
-
+				
 		// Check for valid data
 		if(!vm || !vm.id || vm.id == 'host' || !vm.accessible) {
 
@@ -159,7 +147,8 @@ function vboxTabs(id) {
 			$('#tablistMain').children().addClass('vboxDisabled');
 			$('#tablistMain').children().first().removeClass('vboxDisabled');
 			
-			
+		
+		// Non-console - normal VM
 		} else if(vm.state != 'Running' || !vm.VRDEServer || !vm.VRDEServer.VRDEExtPack){
 	
 			$('#tablistMain').children().addClass('vboxDisabled');
@@ -169,6 +158,9 @@ function vboxTabs(id) {
 			if(self.tabSelected == '#'+self.tabs[1].name)
 				self.showTab('#'+self.tabs[0].name);
 
+		// VM with console
+		} else {
+			$('#tablistMain').children().removeClass('vboxDisabled');
 		}
 
 		

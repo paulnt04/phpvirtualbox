@@ -1,4 +1,5 @@
 -------------------------------------
+	4-0 - 2011-01-07
 -------------------------------------
 UI and back-end changes to match new version of VirtualBox.
 
@@ -39,6 +40,13 @@ Fixed bug that would not send the 'Esc' key to the console when
 pressed.
 
 Changed back to GPL license.
+
+Added multiple server support.
+
+You can now power off a VM that is in a "Stuck" state.
+
+Versioning scheme is now
+	(VirtualBox compatible version)-(phpVirtualBox version)
 
 -------------------------------------
 		0.5 - 2010-08-10

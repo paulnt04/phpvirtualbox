@@ -636,7 +636,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 			
 			var divOut1 = document.createElement('div');
 			$(divOut1).attr('id','vboxDetailsPreviewVMName');
-			$(divOut1).attr('style','position:absolute;z-index:19;height:'+height+'px;width:'+width+'px');
+			$(divOut1).attr('style','overflow:hidden;position:absolute;z-index:19;height:'+height+'px;width:'+width+'px');
 			var divOut2 = document.createElement('div');
 			$(divOut2).attr('style','position:relative;left:0px;display:table-cell;vertical-align:middle;padding:4px;color:#fff;font-weight:bold;text-align:center;height:'+height+'px;width:'+width+'px');
 			$(divOut2).html($('<div />').html(data.name).text());
