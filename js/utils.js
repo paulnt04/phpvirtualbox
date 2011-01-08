@@ -257,7 +257,7 @@ function vboxFileBrowser(root,fn,foldersonly) {
 /* Byte / MByte -> Human readable conversion */
 function vboxMbytesConvert(mb) {return vboxBytesConvert(parseFloat(mb) * 1024 * 1024);}
 function vboxBytesConvert(bytes) {
-	var ext = new Array('B','KB','MB','GB','TB','PB');
+	var ext = new Array('B','KB','MB','GB','TB');
 	var unitCount;
 	for(unitCount=0; bytes >= 1024 && unitCount < ext.length; unitCount++) bytes = parseFloat(parseFloat(bytes)/1024);
 	return Math.round(parseFloat(bytes)*Math.pow(10,2))/Math.pow(10,2) + " " + trans(ext[unitCount]);
@@ -267,7 +267,7 @@ function vboxConvertMbytes(str) {
 	str = str.replace('  ',' ');
 	str = str.split(' ',2);
 	if(!str[1]) str[1] = trans('MB');
-	var ext = new Array(trans('B'),trans('KB'),trans('MB'),trans('GB'),trans('TB'),trans('PB'));
+	var ext = new Array(trans('B'),trans('KB'),trans('MB'),trans('GB'),trans('TB'));
 	var index = jQuery.inArray(str[1],ext);
 	if(index == -1) index = 2;
 	switch(index) {

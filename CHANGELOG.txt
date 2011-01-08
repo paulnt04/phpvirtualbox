@@ -1,4 +1,14 @@
 -------------------------------------
+	4-1
+-------------------------------------
+Changed behavior of file browser to always use config setting
+for browserLocal regardless of browser's host. This should be
+OK now that IVFSExplorer bugs are fixed in VirtualBox 4.0.
+
+Fixed bug in Create HardDisk wizard functionality that would
+only allow a disk of size 1MB to be created.
+
+-------------------------------------
 	4-0 - 2011-01-07
 -------------------------------------
 UI and back-end changes to match new version of VirtualBox.

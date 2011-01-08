@@ -49,11 +49,7 @@ error_reporting(E_ALL ^ E_NOTICE);
  */
 $vboxRequest = clean_request();
 
-
-// Force localbrowser if we're on the same host or sunos is detected
-$vbhost = parse_url($settings->location);
-$vbhost = $vbhost['host'];
-$localbrowser = ($vbhost == 'localhost' || $vbhost == '127.0.0.1' || $settings->browserLocal);
+$localbrowser = @$settings->browserLocal;
 
 if($localbrowser) {
 	define('DSEP', DIRECTORY_SEPARATOR);

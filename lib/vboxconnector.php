@@ -2424,9 +2424,8 @@ class vboxconnector {
 		$format = strtoupper(preg_replace('/.*\./','',$args['file']));
 		if($format != 'VDI' && $format != 'VMDK') $format = 'VDI';
 		$hd = $this->vbox->createHardDisk($format,$args['file']);
-
 		$type = ($args['type'] == 'fixed' ? 'Fixed' : 'Standard');
-		$progress = $hd->createBaseStorage(intval($args['size']),$type);
+		$progress = $hd->createBaseStorage(intval($args['size'])*1024*1024,$type);
 
 		// Does an exception exist?
 		try {
