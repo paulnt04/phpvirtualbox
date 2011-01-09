@@ -1,5 +1,5 @@
 -------------------------------------
-	4-1
+	4-1 - 2011-01-09
 -------------------------------------
 Changed behavior of file browser to always use config setting
 for browserLocal regardless of browser's host. This should be
