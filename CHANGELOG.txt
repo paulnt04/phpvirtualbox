@@ -19,6 +19,11 @@ distributed with the flash control does not work. It appears
 that RDPWebEventLoaded event is never triggered after the
 flash control loads.
 
+Max HD slider size in New HD wizard is now limited to 512GB.
+Anything over that and the slider loses so much precision that
+it becomes useless. You may still type a larger size in the
+size text box. E.g. "1 TB"
+
 -------------------------------------
 	4-0 - 2011-01-07
 -------------------------------------
