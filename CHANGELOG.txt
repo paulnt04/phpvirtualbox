@@ -8,6 +8,17 @@ OK now that IVFSExplorer bugs are fixed in VirtualBox 4.0.
 Fixed bug in Create HardDisk wizard functionality that would
 only allow a disk of size 1MB to be created.
 
+Fixed bug in display settings when the RDP extension pack is
+not installed.
+
+Fixed "Detach" console bug.
+
+Disable Console tab when IE is detected. The Flash RDP client
+from Oracle does not appear to work with IE. Even the demo
+distributed with the flash control does not work. It appears
+that RDPWebEventLoaded event is never triggered after the
+flash control loads.
+
 -------------------------------------
 	4-0 - 2011-01-07
 -------------------------------------

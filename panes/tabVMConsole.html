@@ -102,29 +102,12 @@ $('#vboxTabVMConsole').bind('show',function(e,vm){
 
 	$('#vboxRDPFormContainer').css({'display':''});
 
-	if(!fFlashLoaded) {
-		
-		var flashvars = {};
-		var params = {};
-		params.wmode="opaque";
-		params.menu="true";
-		params.bgcolor="#e9e9e9";
-		params.quality="low";
-		params.allowScriptAccess="always";
-		params.flashId="FlashRDP";
-		
-		var attributes = {};
-		swfobject.embedSWF("rdpweb/RDPClientUI.swf", "FlashRDP", "100", "100", "9.0.0","", flashvars, params, attributes);		
-	}
+	vboxRDPLoad();
 	
 });
-	
-var RDPL = new vboxLoader();
-RDPL.addScript("rdpweb/webclient.js");
-RDPL.addScript("rdpweb/swfobject.js");
-RDPL.hideRoot = false;
-RDPL.noLoadingScreen = true;
-RDPL.onLoad = function(){
+   
+function vboxRDPLoad() {
+
 	var flashvars = {};
 	var params = {};
 	params.wmode="opaque";
@@ -135,14 +118,18 @@ RDPL.onLoad = function(){
 	params.flashId="FlashRDP";
 	
 	var attributes = {};
-	swfobject.embedSWF("rdpweb/RDPClientUI.swf", "FlashRDP", "100", "100", "9.0.0","", flashvars, params, attributes);
-};
-RDPL.run();
-   
+	swfobject.embedSWF("rdpweb/RDPClientUI.swf", "FlashRDP", "100", "100", "9.0.0","", flashvars, params, attributes);		
+	
+}
 
 function vboxRDPgetFlashProperty(id, name) {
+	id = "FlashRDP";
 	var flash = RDPWebClient.getFlashById(id);
-	return (flash ? flash.getProperty(name) : '');
+	try {
+		return flash.getProperty(name);
+	} catch (e) {
+		return '';
+	}
 }
    
 /*
@@ -150,12 +137,13 @@ function vboxRDPgetFlashProperty(id, name) {
  * They will be called when the flash movie is ready and some event occurs.
  * Note: the function name must be the "flash_id" + "event name".
  */
-function RDPWebEventLoaded(flashId) {
+function RDPWebEventLoaded(flashid) {
 	
 	fFlashLoaded = true;
 	FlashVersion = vboxRDPgetFlashProperty("FlashRDP", "version");
 	$("#vboxRDPStatus").html(trans("Version") + ": " + FlashVersion);
 	if(vboxConsoleDetached) window.status = $("#vboxRDPStatus").text();
+	
 
     var flash = RDPWebClient.getFlashById("FlashRDP");
 	if (window.addEventListener) {
@@ -308,7 +296,8 @@ function vboxRDPDetach() {
 	newwin.document.close();
 	unsetLangContext();
 	var newHead = newwin.document.getElementsByTagName('HEAD')[0];
-	var headTags = $('head').children('script');
+	
+	var headTags = document.getElementsByTagName('HEAD')[0].getElementsByTagName('SCRIPT');
 	for(var i = 0; i < headTags.length; i++) {
 		
 		// Ignore runtime scripts
@@ -329,7 +318,7 @@ function vboxRDPDetach() {
 			function vboxConsoleDetachedOnload(){\
 			l = new vboxLoader();\
 			l.add('Config',function(d){$('#vboxIndex').data('vboxConfig',d);});\
-			l.addFile('panes/tabVMConsole.html',function(d){$('#vboxIndex').children().remove();$('#vboxIndex').append(d);});\
+			l.addFile('panes/tabVMConsole.html',function(d){$('#vboxIndex').children().remove();$('#vboxIndex').append(d);$('#vboxTabVMConsole').css('display','');vboxRDPLoad();});\
 			l.run();};\
 			setTimeout(\"vboxConsoleCheckLoad()\",1000);";
 	newHead.appendChild(script);

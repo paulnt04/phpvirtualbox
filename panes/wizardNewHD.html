@@ -169,7 +169,8 @@ document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value = HDname;
 
 /* Size slider */
 var min = 1024;
-var max = Math.min(parseInt($('#vboxIndex').data('vboxSystemProperties').infoVDSize),(512*1024));
+var max = Math.max(parseInt($('#vboxIndex').data('vboxSystemProperties').infoVDSize),2199022206980);
+
 $('#wizardNewHDSize').data('form','frmwizardNewHD');
 $('#wizardNewHDSize').data('display',vboxMbytesConvert);
 $('#wizardNewHDSize').slider({'min':min,'max':max,'step':1024});

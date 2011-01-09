@@ -3713,7 +3713,7 @@ class ISystemProperties extends VBox_ManagedObject {
        $request = new stdClass();
        $request->_this = $this->handle;
        $response = $this->connection->__soapCall('ISystemProperties_getInfoVDSize', array((array)$request));
-       return (float)$response->returnval;
+       return (string)$response->returnval;
    }
 
    public function getNetworkAdapterCount() {
