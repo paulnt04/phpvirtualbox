@@ -158,7 +158,12 @@ function vboxWizardNewVMInit(callback) {
 			var mem = parseInt(document.forms['frmwizardNewVM'].wizardNewVMSizeValue.value);
 			if(!document.forms['frmwizardNewVM'].newVMBootDisk.checked) disk = null;
 
-			vboxAjaxRequest('createVM',{'disk':disk,'ostype':ostype,'memory':mem,'name':name},function(){if(callback){callback();}});
+			vboxAjaxRequest('createVM',{'disk':disk,'ostype':ostype,'memory':mem,'name':name},function(){
+				var lm = new vboxLoader();
+				lm.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
+				if(callback){ lm.onLoad = callback;}
+				lm.run();
+			});
 			
 			$(dialog).remove();
 

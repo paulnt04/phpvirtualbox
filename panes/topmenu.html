@@ -79,7 +79,11 @@ var menu = {
 			'icon_disabled':'refresh_disabled',
 			'click':function(){
 				var l = new vboxLoader();
-				l.add('VMDetails',function(){
+				l.add('VMDetails',function(d){
+					// Special case for host refresh
+					if(d.id == 'host') {
+						$('#vboxIndex').data('vboxHostDetails',d);
+					}
 					$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);
 				},{'vm':$('#vboxIndex').data('selectedVM').id,'force_refresh':1});
 				l.run();

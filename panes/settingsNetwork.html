@@ -84,6 +84,7 @@ for(var i = 1; i < nics.length; i++) { // index 0 is 'Null' and not used
 
 // Shorthand
 var vboxHostNetworking = $('#vboxSettingsDialog').data('vboxHostNetworking');
+vboxHostNetworking.networkInterfaces = $('#vboxSettingsDialog').data('vboxHostDetails').networkInterfaces;
 
 for(var i = 0; i < vboxHostNetworking.networkInterfaces.length; i++) {
 	if(vboxHostNetworking.networkInterfaces[i].interfaceType == 'Bridged') {

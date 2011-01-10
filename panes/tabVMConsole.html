@@ -118,8 +118,15 @@ function vboxRDPLoad() {
 	params.flashId="FlashRDP";
 	
 	var attributes = {};
-	swfobject.embedSWF("rdpweb/RDPClientUI.swf", "FlashRDP", "100", "100", "9.0.0","", flashvars, params, attributes);		
+	swfobject.embedSWF("rdpweb/RDPClientUI.swf", "FlashRDP", "100", "100", "9.0.0","", flashvars, params, attributes);
 	
+	var ua = swfobject.ua;
+	
+	// No flash installed
+	if(!ua || ua.pv[0] == '0') {
+		$('#vboxRDPFormContainer').css('display','none');
+		$("#FlashRDP").css('width','100%').html("The Adobe Flash plugin is not installed.");
+	}
 }
 
 function vboxRDPgetFlashProperty(id, name) {

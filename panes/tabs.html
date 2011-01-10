@@ -27,9 +27,6 @@ var tabLoader = new vboxLoader();
 
 for(var i = 0; i < tabs.length; i++) {
 
-	// Flash RDP console does not work in IE.
-	if($.browser.msie && tabs[i].name == 'vboxTabVMConsole') continue;
-
 	// Tab disabled?
 	if($('#vboxIndex').data('vboxConfig')['disable' + tabs[i].name.substring(4)])
 		continue;
@@ -48,9 +45,6 @@ for(var i = 0; i < tabs.length; i++) {
 tabLoader.onLoad = function(){
 
 	for(var i = 0; i < tabs.length; i++) {
-
-		// Flash RDP console does not work in IE.
-		if($.browser.msie && tabs[i].name == 'vboxTabVMConsole') continue;
 
 		// Tab disabled?
 		if($('#vboxIndex').data('vboxConfig')['disable' + tabs[i].name.substring(4)])

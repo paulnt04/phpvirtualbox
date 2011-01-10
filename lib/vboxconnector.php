@@ -1023,16 +1023,6 @@ class vboxconnector {
 		$this->__vboxwebsrvConnect();
 
 		/*
-		 * NICs
-		 */
-		foreach($this->vbox->host->networkInterfaces as $d) {
-			$response['data']['networkInterfaces'][] = array(
-				'name' => $d->name,
-				'interfaceType' => $d->interfaceType->__toString(),
-			);
-		}
-
-		/*
 		 * Existing Networks
 		 */
 		$networks = array();
@@ -1697,9 +1687,9 @@ class vboxconnector {
 		$this->__vboxwebsrvConnect();
 
 		$version = $this->getVersion();
-
+		
 		// create machine
-		$m = $this->vbox->createMachine($args['name'],$args['ostype'],null,null);
+		$m = $this->vbox->createMachine(null,$args['name'],$args['ostype'],null,null);
 
 		// Set memory
 		$m->memorySize = intval($args['memory']);
@@ -1728,9 +1718,10 @@ class vboxconnector {
 			$this->session->machine->USBController->enabled = true;
 			$this->session->machine->USBController->enabledEhci = true;
 			try {
-				if($this->session->machine->VRDEServer)
+				if($this->session->machine->VRDEServer) {
 					$this->session->machine->VRDEServer->authTimeout = 5000;
-
+					$this->session->machine->VRDEServer->setVRDEProperty('TCP/Ports','3389-4000');
+				}
 			} catch (Exception $e) {
 			}
 

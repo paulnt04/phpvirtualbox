@@ -139,7 +139,7 @@ if(!($('#vboxSettingsDialog').data('vboxMachineData').VRDEServer && $('#vboxSett
 	
 	document.forms['frmVboxSettings'].vboxSettingsDisplayRDPPort.value = $('#vboxSettingsDialog').data('vboxMachineData').VRDEServer.ports;
 	if(!document.forms['frmVboxSettings'].vboxSettingsDisplayRDPPort.value)
-		document.forms['frmVboxSettings'].vboxSettingsDisplayRDPPort.value = '3389';
+		document.forms['frmVboxSettings'].vboxSettingsDisplayRDPPort.value = '3389-4000';
 	document.forms['frmVboxSettings'].vboxSettingsDisplayRDPAuth.value = $('#vboxSettingsDialog').data('vboxMachineData').VRDEServer.authType;
 	document.forms['frmVboxSettings'].vboxSettingsDisplayRDPAuthTimeout.value = $('#vboxSettingsDialog').data('vboxMachineData').VRDEServer.authTimeout;
 	

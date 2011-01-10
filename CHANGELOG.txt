@@ -1,4 +1,33 @@
 -------------------------------------
+	4-2	-
+-------------------------------------
+Viewing a VM's screen shot in a new window while running now
+prints a descriptive error rather than displaying a blank
+screen if the Oracle VM Extension Pack is not installed.
+
+Re-enabled console tab in IE. Disabling it in the first place
+was because of a HUGE oversight on my part :) Which leads to
+the next feature.
+
+Console tab now displays a message if the Adobe Flash plugin is
+not installed.
+
+Host network card and drive list is now properly refreshed when
+refreshing host info via the Machine -> Refresh menu item.
+
+Added MAC Address to Guest Network Adapters dialog.
+
+Default RDP port when creating a VM is now 3389-4000. Allowing
+for a range of ports.
+
+Fixed VM creation bug that created all VMs with an Unknown OS
+type and name set to the specified OS type.
+
+Fixed VM creation bug that would incorrectly display 'None' as
+the hard drive after creation until the newly created VM was
+refreshed.
+
+-------------------------------------
 	4-1 - 2011-01-09
 -------------------------------------
 Changed behavior of file browser to always use config setting
@@ -17,7 +46,7 @@ Disable Console tab when IE is detected. The Flash RDP client
 from Oracle does not appear to work with IE. Even the demo
 distributed with the flash control does not work. It appears
 that RDPWebEventLoaded event is never triggered after the
-flash control loads.
+flash control loads. -- Invalid - 2011-1-10
 
 Max HD slider size in New HD wizard is now limited to 512GB.
 Anything over that and the slider loses so much precision that
