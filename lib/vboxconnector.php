@@ -261,6 +261,152 @@ class vboxconnector {
 	}
 
 	/*
+	 * Save Running VM shared folder settings
+	 */
+	public function saveVMSharedFolders($args,&$response) {
+
+		$this->__vboxwebsrvConnect();
+		
+		$machine = $this->vbox->findMachine($args['id']);
+		$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
+		$machine->lockMachine($this->session->handle, 'Shared');
+		
+		// Compose incoming list
+		$sf_inc = array();
+		foreach($args['sharedFolders'] as $s) {
+			$sf_inc[$s['name']] = $s;
+		}
+		
+		
+		// Get list of perm shared folders
+		$psf_tmp = $this->session->machine->sharedFolders;
+		$psf = array();
+		foreach($psf_tmp as $sf) {
+			$psf[$sf->name] = $sf;
+		}
+
+		// Get a list of temp shared folders
+		$tsf_tmp = $this->session->console->sharedFolders;
+		$tsf = array();
+		foreach($tsf_tmp as $sf) {
+			$tsf[$sf->name] = $sf;
+		}
+
+		/*
+		 *  Step through list and remove non-matching folders
+		 */
+		foreach($sf_inc as $sf) {
+			
+			// Already exists in list. Check Settings.
+			if($psf[$sf['name']] || $tsf[$sf['name']]) {
+				
+				/* Remove if it doesn't match */
+				if(($tsf[$sf['name']] && $sf['type'] == 'machine') || ($psf[$sf['name']] && $sf['type'] != 'machine') || $sf['hostPath'] != $psf[$sf['name']]->hostPath || (bool)$sf['autoMount'] != (bool)$psf[$sf['name']]->autoMount || (bool)$sf['writable'] != (bool)$psf[$sf['name']]->writable) {
+					
+					if($psf[$sf['name']]) $this->session->machine->removeSharedFolder($sf['name']);
+					else $this->session->console->removeSharedFolder($sf['name']);
+					
+					unset($psf[$sf['name']]);
+					unset($tsf[$sf['name']]);
+					
+				/* Matches. Don't add or remove. */
+				} else {
+					unset($psf[$sf['name']]);
+					unset($tsf[$sf['name']]);
+					continue;
+				}
+			}
+			
+			// Does not exist or was removed. Add it.
+			if($sf['type'] != 'machine') $this->session->console->createSharedFolder($sf['name'],$sf['hostPath'],(bool)$sf['writable'],(bool)$sf['autoMount']);
+			else $this->session->machine->createSharedFolder($sf['name'],$sf['hostPath'],(bool)$sf['writable'],(bool)$sf['autoMount']);
+		}
+
+		/*
+		 * Remove remaining
+		 */
+		foreach($psf as $sf) $this->session->machine->removeSharedFolder($sf->name);
+		foreach($tsf as $sf) $this->session->console->removeSharedFolder($sf->name);
+		
+		// Expire shared folder info
+		$this->cache->expire('__getSharedFolders'.$args['id']);
+		
+		$this->session->machine->saveSettings();
+		$this->session->unlockMachine();
+		$this->session->releaseRemote();
+			
+	}
+	
+	/*
+	 * Save Running VM Network settings
+	 */
+	public function saveVMNetwork($args,&$response) {
+		
+		$this->__vboxwebsrvConnect();
+		
+		// create session and lock machine
+		$machine = $this->vbox->findMachine($args['id']);
+		$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
+		$machine->lockMachine($this->session->handle, 'Shared');
+
+		// Network Adapters
+		$netprops = array('internalNetwork','NATNetwork','cableConnected','attachmentType');
+		
+		for($i = 0; $i < count($args['networkAdapters']); $i++) {
+
+			$n = $this->session->machine->getNetworkAdapter($i);
+			
+			// Skip disabled adapters
+			if(!$n->enabled) continue;
+			
+			for($p = 0; $p < (count($netprops) - 1); $p++) {
+				if($netprops[$p] == 'internalNetwork') continue;
+				if($netprops[$p] == 'attachmentType') continue;
+				$n->{$netprops[$p]} = $args['networkAdapters'][$i][$netprops[$p]];
+			}
+
+			switch($args['networkAdapters'][$i]['attachmentType']) {
+				case 'Bridged':
+					$n->attachToBridgedInterface();
+					break;
+				case 'Internal':
+					$n->attachToInternalNetwork();
+					$n->internalNetwork = (string)$args['networkAdapters'][$i]['internalNetwork'];
+					break;
+				case 'HostOnly':
+					$n->attachToHostOnlyInterface();
+					break;
+				case 'NAT':
+					$n->attachToNAT();
+
+					// Remove existing redirects
+					foreach($n->NatDriver->getRedirects() as $r) {
+						$n->NatDriver->removeRedirect(array_shift(split(',',$r)));
+					}
+					// Add redirects
+					foreach($args['networkAdapters'][$i]['redirects'] as $r) {
+						$r = split(',',$r);
+						$n->NatDriver->addRedirect($r[0],$r[1],$r[2],$r[3],$r[4],$r[5]);
+					}
+
+					break;
+				default:
+					$n->detach();
+			}
+			$n->releaseRemote();
+		}
+		
+		// Expire network info
+		$this->cache->expire('__getNetworkAdapters'.$args['id']);
+		$this->cache->expire('getHostNetworking');
+		
+		$this->session->machine->saveSettings();
+		$this->session->unlockMachine();
+		$this->session->releaseRemote();
+		
+	}
+	
+	/*
 	 * Save all VM settings
 	 */
 	public function saveVM($args,&$response) {
@@ -1036,8 +1182,9 @@ class vboxconnector {
 					break;
 				}
 
-				if($h->enabled && $h->internalNetwork)
+				if($h->internalNetwork) {
 					$networks[$h->internalNetwork] = 1;
+				}
 
 			}
 		}
@@ -2038,12 +2185,48 @@ class vboxconnector {
 				'accessible' => $sf->accessible,
 				'writable' => $sf->writable,
 				'autoMount' => $sf->autoMount,
-				'lastAccessError' => $sf->lastAccessError
+				'lastAccessError' => $sf->lastAccessError,
+				'type' => 'machine'
 			);
 		}
 		return $return;
 	}
+	
 
+	/*
+	 *
+	 * Fill transient shared folders
+	 *
+	 */
+	public function getVMTransientSharedFolders($args,&$response) {
+		
+		$this->__vboxwebsrvConnect();
+		
+		$response['data'] = array();
+
+		$this->session = &$this->websessionManager->getSessionObject($this->vbox->handle);
+		$machine = $this->vbox->findMachine($args['vm']);
+		$machine->lockMachine($this->session->handle,'Shared');
+
+		$sfs = $this->session->console->sharedFolders;
+		
+		foreach($sfs as $sf) {
+			$response['data'][] = array(
+				'name' => $sf->name,
+				'hostPath' => $sf->hostPath,
+				'accessible' => $sf->accessible,
+				'writable' => $sf->writable,
+				'autoMount' => $sf->autoMount,
+				'lastAccessError' => $sf->lastAccessError,
+				'type' => 'transient'
+			);
+		}
+		
+		$this->session->unlockMachine();
+		
+		return true;
+	}
+	
 	/*
 	 *
 	 * Fill medium attachments

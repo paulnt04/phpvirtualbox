@@ -319,6 +319,9 @@ $('#vboxDetailsTableBoxPreview').css('min-width',$('#vboxIndex').data('vboxConfi
 function vboxDetailSettingsLink(section) {
 	if($('#vboxIndex').data('selectedVM').sessionState == 'Unlocked' && $('#vboxIndex').data('selectedVM').state != 'Saved') {
 		vboxVMsettingsInit($('#vboxIndex').data('selectedVM').id,function(){$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);},section);
+	} else if($('#vboxIndex').data('selectedVM').state == 'Running') {
+		var fn = 'vboxVMsettingsInit' + section;
+		window[fn]($('#vboxIndex').data('selectedVM').id,function(){$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);});
 	}
 }
 
@@ -975,6 +978,12 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	} else {
 		$(targetdiv).append(vboxDetailsTable);
 	}
+	
+	// Manually enable settings that are allowed to be changed while VM is running or saved
+	if(links && data.state == 'Running') {
+		$('#vboxDetailsTableBoxNetwork').find('div').removeClass('vboxNoLinks');
+		$('#vboxDetailsTableBoxSharedFolders').find('div').removeClass('vboxNoLinks');
+	}
 }
 
 //Display details data for VirtualBox Host
@@ -1037,11 +1046,6 @@ ul.setAttribute('id','vboxDetailsShowMenu');
 var sections = new Array('General','System','Preview','Display','Storage','Audio','Network','USB','Shared Folders','Description');
 for(var i = 0; i < sections.length; i++) {
 
-	// No USB in OSE
-	/*
-	if($('#vboxIndex').data('vboxConfig').version.ose && sections[i] == 'USB')
-		continue;
-	*/
 	
 	// Preview is not enabled?
 	if($('#vboxIndex').data('vboxConfig').noPreview && sections[i] == 'Preview')

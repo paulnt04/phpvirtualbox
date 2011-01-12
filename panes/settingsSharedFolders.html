@@ -6,7 +6,7 @@
 	$Id$
 	
 -->
-<table style='width: 100%'>
+<table style='width: 100%' id='vboxSettingsSharedFoldersTable'>
 	<tr style='vertical-align: middle'>
 		<td style='width: 100%'>
 		<table class='vboxSettingsHeadingLine' style='width:100%;border-spacing:0;border:0px;margin:0px;padding:0px;'><tr style='vertical-align:middle'><td style='white-space: nowrap; width: auto;'><span class='translate'>Folders List</span></td><td style='width: 100%'><hr style='width: 100%;'  class='vboxSeperatorLine'/></td></tr></table>
@@ -66,10 +66,16 @@ var sButtons = new Array(
 			$('#vboxSettingsSFName').val('');
 			$('#vboxSettingsSFAM').attr('checked','');
 			$('#vboxSettingsSFRO').attr('checked','');
+			$('#vboxSettingsSFPerm').attr('checked','');
+			
 			var buttons = { };
 			buttons[trans('OK')] = function() {
 				if($('#vboxSettingsSFName').val() && $('#vboxSettingsSFPath').val()) {
 					var f = {'name':$('#vboxSettingsSFName').val(),'hostPath':$('#vboxSettingsSFPath').val(),'autoMount':($('#vboxSettingsSFAM').attr('checked')),'writable':!($('#vboxSettingsSFRO').attr('checked'))};
+					if($('#vboxSettingsSFPerm').attr('id'))
+						f['type'] = ($('#vboxSettingsSFPerm').attr('checked') ? 'machine' : '');
+					else
+						f['type'] = 'machine';
 					var row = vboxSettingsAddSharedFolder(f);
 					$(row).children('td').last().trigger('click');
 				}
@@ -95,6 +101,7 @@ var sButtons = new Array(
 			$('#vboxSettingsSFName').val(($(def).data('name')||''));
 			$('#vboxSettingsSFAM').attr('checked',($(def).data('autoMount') ? 'checked' : ''));
 			$('#vboxSettingsSFRO').attr('checked',($(def).data('writable') ? '' : 'checked'));
+			$('#vboxSettingsSFPerm').attr('checked',($(def).data('type') == 'machine' ? 'checked' : ''));
 
 			var buttons = { };
 			buttons[trans('OK')] = function() {
@@ -104,6 +111,10 @@ var sButtons = new Array(
 					$(item).data('name',$('#vboxSettingsSFName').val());
 					$(item).data('autoMount',($('#vboxSettingsSFAM').attr('checked')));
 					$(item).data('writable',!($('#vboxSettingsSFRO').attr('checked')));
+					if($('#vboxSettingsSFPerm').attr('id'))
+						$(item).data('type',($('#vboxSettingsSFPerm').attr('checked') ? 'machine' : ''));
+					else
+						$(item).data('type','machine');
 					$(item).trigger('refresh');
 				}
 				$(dialog).remove();
@@ -143,13 +154,24 @@ function vboxSettingsAddSharedFolder(f) {
 	
 	var tr = document.createElement('tr');
 	tr.setAttribute('class','vboxListItem');
+	
+	if(f.type == 'machine') {
+		$(tr).addClass('vboxSFMachine');
+	} else {
+		$(tr).addClass('vboxSFTransient');
+	}
 
 	// Bind data
 	$(tr).data(f);
 	
 	var td = document.createElement('td');
 	td.setAttribute('class','vboxSettingsSFNameCell');
-	td.innerHTML = $('<div/>').text(f.name).html();
+	var img = document.createElement('img');
+	$(img).attr({'src':'images/vbox/blank.gif','style':'height: 10px; width: 30px;'});
+	td.appendChild(img);
+	var sp = document.createElement('span');
+	sp.innerHTML = $('<div/>').text(f.name).html();
+	td.appendChild(sp);
 	tr.appendChild(td);
 	var td = document.createElement('td');
 	td.setAttribute('class','vboxSettingsSFPathCell');
@@ -176,13 +198,25 @@ function vboxSettingsAddSharedFolder(f) {
 
 	// bind refresh
 	$(tr).bind('refresh',function(){
-		$(this).children('.vboxSettingsSFNameCell').html($('<div/>').text($(this).data('name')).html());
+		
+		$(this).children('.vboxSettingsSFNameCell span').html($('<div/>').text($(this).data('name')).html());
 		$(this).children('.vboxSettingsSFPathCell').html($('<div/>').text($(this).data('hostPath')).html());
 		$(this).children('.vboxSettingsSFAMCell').html($(this).data('autoMount') ? trans('Yes') : trans('No'));
 		$(this).children('.vboxSettingsSFROCell').html($(this).data('writable') ? trans('Full Access') : trans('ro'));
+		
+		// Move from one type to another
+		if($(this).data('type') == 'machine' && $(this).hasClass('vboxSFTransient')) {
+			$(this).removeClass('vboxSFTransient').addClass('vboxSFMachine').detach().insertAfter('#vboxSFMachineHeader');
+		} else if($(this).data('type') != 'machine' && $(this).hasClass('vboxSFMachine')) {
+			$(this).removeClass('vboxSFMachine').addClass('vboxSFTransient').detach().insertAfter('#vboxSFTransientHeader');
+		}
 	});
 	
-	$('#vboxSettingsSharedFoldersList').append(tr);
+	if(f.type == 'machine') {
+		$('#vboxSFMachineHeader').after(tr);
+	} else {
+		$('#vboxSFTransientHeader').after(tr);
+	}
 
 	return tr;
 }
@@ -191,7 +225,99 @@ function vboxSettingsAddSharedFolder(f) {
 var sfh = $('#vboxSettingsSharedFoldersList');
 $(sfh).children().remove(); // clear list
 
-// add each folder
+/* 
+ * 
+  Add 'Machine Folder's
+ *
+ */ 
+var tr = document.createElement('tr');
+tr.setAttribute('class','vboxListItemDisabled');
+tr.setAttribute('id','vboxSFMachineHeader');
+var td = document.createElement('td');
+td.setAttribute('class','vboxSettingsSFNameCell');
+var btn = document.createElement('input');
+btn.setAttribute('type','button');
+btn.setAttribute('class','vboxImgButton');
+btn.setAttribute('style','background-image: url(images/vbox/arrow_down_10px.png); width: 12px; height: 12px; margin-right: 4px;');
+$(btn).toggle(function(){
+		$(this).css({'background-image':'url(images/vbox/arrow_right_10px.png)'});
+		$('#vboxSettingsSharedFoldersList').trigger('select',null).find('tr.vboxSFMachine').css('display','none');
+		$('#vboxSettingsSharedFoldersList').children('tr').removeClass('vboxListItemSelected');
+	},function(){
+		$(this).css({'background-image':'url(images/vbox/arrow_down_10px.png)'});
+		$('#vboxSettingsSharedFoldersList').trigger('select',null).find('tr.vboxSFMachine').css('display','');
+		$('#vboxSettingsSharedFoldersList').children('tr').removeClass('vboxListItemSelected');
+});
+$(td).append(btn);
+var sp = document.createElement('span');
+sp.innerHTML  = $('<div/>').text(trans('Machine Folders')).html();
+td.appendChild(sp);
+tr.appendChild(td);
+var td = document.createElement('td');
+td.setAttribute('class','vboxSettingsSFPathCell');
+tr.appendChild(td);
+var td = document.createElement('td');
+td.setAttribute('class','vboxSettingsSFAMCell');
+tr.appendChild(td);			
+var td = document.createElement('td');
+td.setAttribute('class','vboxSettingsSFROCell');
+tr.appendChild(td);		
+$(tr).attr('unselectable','on').css('MozUserSelect','none');
+$('#vboxSettingsSharedFoldersList').append(tr);
+
+
+/*
+ * 
+ * Add 'Transient Folders' if machine is running
+ *
+ */
+ if($('#vboxSettingsDialog').data('vboxMachineData').state != 'PoweredOff') {
+
+	 var tr = document.createElement('tr');
+	 tr.setAttribute('class','vboxListItemDisabled');
+	 tr.setAttribute('id','vboxSFTransientHeader');
+
+	 var td = document.createElement('td');
+	 td.setAttribute('class','vboxSettingsSFNameCell');
+	 var btn = document.createElement('input');
+	 btn.setAttribute('type','button');
+	 btn.setAttribute('class','vboxImgButton');
+	 btn.setAttribute('style','background-image: url(images/vbox/arrow_down_10px.png); width: 12px; height: 12px; margin-right: 4px;');
+	 $(btn).toggle(function(){
+	 		$(this).css({'background-image':'url(images/vbox/arrow_right_10px.png)'});
+	 		$('#vboxSettingsSharedFoldersList').trigger('select',null).find('tr.vboxSFTransient').css('display','none');
+	 		$('#vboxSettingsSharedFoldersList').children('tr').removeClass('vboxListItemSelected');
+	 	},function(){
+	 		$(this).css({'background-image':'url(images/vbox/arrow_down_10px.png)'});
+	 		$('#vboxSettingsSharedFoldersList').trigger('select',null).find('tr.vboxSFTransient').css('display','');
+	 		$('#vboxSettingsSharedFoldersList').children('tr').removeClass('vboxListItemSelected');
+	 });
+	 $(td).append(btn);
+	 var sp = document.createElement('span');
+	 sp.innerHTML  = $('<div/>').text(trans('Transient Folders')).html();
+	 td.appendChild(sp);
+	 tr.appendChild(td);
+	 var td = document.createElement('td');
+	 td.setAttribute('class','vboxSettingsSFPathCell');
+	 tr.appendChild(td);
+	 var td = document.createElement('td');
+	 td.setAttribute('class','vboxSettingsSFAMCell');
+	 tr.appendChild(td);			
+	 var td = document.createElement('td');
+	 td.setAttribute('class','vboxSettingsSFROCell');
+	 tr.appendChild(td);		
+	 $(tr).attr('unselectable','on').css('MozUserSelect','none');
+	 $('#vboxSettingsSharedFoldersList').append(tr);
+
+	// add each transient folder
+	 for(var i = 0; i < $('#vboxSettingsDialog').data('vboxTransientSharedFolders').length; i++) {
+	 	vboxSettingsAddSharedFolder($('#vboxSettingsDialog').data('vboxTransientSharedFolders')[i]);
+	 }
+	 
+
+ }
+ 
+// add each machine folder
 for(var i = 0; i < $('#vboxSettingsDialog').data('vboxMachineData').sharedFolders.length; i++) {
 	vboxSettingsAddSharedFolder($('#vboxSettingsDialog').data('vboxMachineData').sharedFolders[i]);
 }
@@ -263,6 +389,17 @@ function vboxSettingsSFEditDialog() {
 	tr.appendChild(td);
 	tbl.appendChild(tr);
 	
+	// Add "Make Permanent"?
+	if($('#vboxSettingsDialog').data('vboxMachineData').state != 'PoweredOff') {
+		var tr = document.createElement('tr');
+		var th = document.createElement('th');
+		tr.appendChild(th);
+		var td = document.createElement('td');
+		td.innerHTML = '<input type="checkbox" class="vboxCheckbox" id="vboxSettingsSFPerm" /> ' + trans('Make Permanent');
+		tr.appendChild(td);
+		tbl.appendChild(tr);		
+	}
+	
 	d.appendChild(tbl);
 	
 	$('#vboxIndex').append(d);
@@ -281,7 +418,10 @@ $('#vboxSettingsDialog').bind('save',function(){
 
 	var folders = new Array();	
 	$('#vboxSettingsSharedFoldersList').children('tr').each(function(){
-		folders[folders.length] = {'name':$(this).data('name'),'hostPath':$(this).data('hostPath'),'autoMount':($(this).data('autoMount') ? 1 : 0),'writable':($(this).data('writable') ? 1 : 0)};
+		// Skip headers
+		if(!$(this).hasClass('vboxListItemDisabled')) {
+			folders[folders.length] = {'name':$(this).data('name'),'hostPath':$(this).data('hostPath'),'autoMount':($(this).data('autoMount') ? 1 : 0),'writable':($(this).data('writable') ? 1 : 0),'type':$(this).data('type')};
+		}
 	});
 	$('#vboxSettingsDialog').data('vboxMachineData').sharedFolders = folders;
 

@@ -449,7 +449,7 @@ function vboxVMsettingsInit(vm,callback,pane) {
 		{'fn':'EnumNetworkAdapterType','callback':function(d){$('#vboxSettingsDialog').data('vboxNetworkAdapterTypes',d);}},
 		{'fn':'EnumAudioControllerType','callback':function(d){$('#vboxSettingsDialog').data('vboxAudioControllerTypes',d);}}
 
-	);	
+	);
 
 	vboxSettingsInit(trans('Settings'),panes,data,function(){
 		var loader = new vboxLoader();
@@ -459,7 +459,55 @@ function vboxVMsettingsInit(vm,callback,pane) {
 	},pane);
 }
 
-		
+/*
+ * Network settings dialog for VM when VM is running 
+ */
+function vboxVMsettingsInitNetwork(vm,callback) {
+	
+	var panes = new Array(
+		{'name':'Network','label':'Network','icon':'nw','tabbed':true}
+	);
+	
+	var data = new Array(
+			{'fn':'HostNetworking','callback':function(d){$('#vboxSettingsDialog').data('vboxHostNetworking',d);}},
+			{'fn':'HostDetails','callback':function(d){$('#vboxSettingsDialog').data('vboxHostDetails',d);}},
+			{'fn':'VMDetails','callback':function(d){$('#vboxSettingsDialog').data('vboxMachineData',d);},'args':{'vm':vm}},
+			{'fn':'EnumNetworkAdapterType','callback':function(d){$('#vboxSettingsDialog').data('vboxNetworkAdapterTypes',d);}},
+			{'fn':'EnumAudioControllerType','callback':function(d){$('#vboxSettingsDialog').data('vboxAudioControllerTypes',d);}}
+
+	);
+
+	vboxSettingsInit(trans('Settings'),panes,data,function(){
+		var loader = new vboxLoader();
+		loader.mode = 'save';
+		loader.add('saveVMNetwork',function(){if(callback){callback();}},$('#vboxSettingsDialog').data('vboxMachineData'));
+		loader.run();
+	},'Network');
+}
+
+/*
+ * SharedFolders settings dialog for VM when VM is running 
+ */
+function vboxVMsettingsInitSharedFolders(vm,callback) {
+	
+	var panes = new Array(
+		{'name':'SharedFolders','label':'Shared Folders','icon':'shared_folder','tabbed':true}
+	);
+	
+	var data = new Array(
+			{'fn':'HostDetails','callback':function(d){$('#vboxSettingsDialog').data('vboxHostDetails',d);}},
+			{'fn':'VMDetails','callback':function(d){$('#vboxSettingsDialog').data('vboxMachineData',d);},'args':{'vm':vm}},
+			{'fn':'VMTransientSharedFolders','callback':function(d){$('#vboxSettingsDialog').data('vboxTransientSharedFolders',d);},'args':{'vm':vm}}
+	);
+
+	vboxSettingsInit(trans('Settings'),panes,data,function(){
+		var loader = new vboxLoader();
+		loader.mode = 'save';
+		loader.add('saveVMSharedFolders',function(){if(callback){callback();}},$('#vboxSettingsDialog').data('vboxMachineData'));
+		loader.run();
+	},'SharedFolders');
+}
+
 /*
  * 
  * 	Initialize a settings dialog (generic)
@@ -616,6 +664,13 @@ function vboxSettingsInit(title,panes,data,onsave,pane) {
 	    	
 	    });
 	    
+	    /* Only 1 pane? Hide menu */
+	    if(panes.length == 1) {
+	    	$('#vboxSettingsMenu').css('display','none');
+	    	$('#vboxSettingsDialog table.vboxSettingsTable').css('width','100%');
+	    }
+	    
+	    $('#vboxSettingsDialog').trigger('show');
 		
 		
 	};

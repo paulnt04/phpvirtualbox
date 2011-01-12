@@ -68,7 +68,7 @@ var $deleteOnRemove = true;
  */
 
 // Restrict file types
-var $browserRestrictFiles = '.iso,.vdi,.vmdk,.img,.bin,.vhd,.hdd,.ovf,.ova';
+var $browserRestrictFiles = '.iso,.vdi,.vmdk,.img,.bin,.vhd,.hdd,.ovf,.ova,.xml,.vbox';
 
 // Restrict locations / folders
 #var $browserRestrictFolders = 'D:\\,C:\\Users\\Ian'; // Or something like '/home/vbox,/var/ISOs'

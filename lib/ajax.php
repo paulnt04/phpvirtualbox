@@ -9,6 +9,10 @@
  * Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
 */
 
+# Turn off PHP notices
+error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT);
+
+
 //Set no caching
 header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");

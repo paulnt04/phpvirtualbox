@@ -40,6 +40,9 @@
  * $Id$
  */
 
+# Turn off PHP notices
+error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT);
+
 // Clean request
 $_REQUEST = array_merge($_GET,$_POST);
 

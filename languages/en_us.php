@@ -277,12 +277,15 @@ public static $trans = array(
 'Shared Folders' => 'Shared Folders',
 'Shared Folder' => 'Shared Folder',
 'Folders List' => 'Folders List',
+'Machine Folderes' => 'Machine Folders',
+'Transient Folders' => 'Transient Folders',
 'Path' => 'Path',
 'Access' => 'Access',
 // read only & read/write
 'ro' => 'Read-Only',
 'rw' => 'Writable',
 'Auto-Mount' => 'Auto-Mount', // 3.2.8
+'Make Permanent' => 'Make Permanent',
 'Full Access' => 'Full Access',
 'Add Shared Folder' => 'Add Shared Folder',
 'Edit Shared Folder' => 'Edit Shared Folder',

@@ -21,6 +21,9 @@
 //
 //
 
+# Turn off PHP notices
+error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT);
+
 global $vbox, $localbrowser, $allowed;
 
 require_once(dirname(dirname(__FILE__)).'/config.php');

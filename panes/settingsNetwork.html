@@ -109,7 +109,7 @@ for(var i = 0; i < document.forms['frmVboxSettings'].vboxSettingsNetAdapter.opti
 }
 
 /* Network advanced show / hide */
-$('#vboxSettingsTabNetAdapter').find('.netImgAdvanced').toggle(
+$('#vboxSettingsTabNetAdapter').find('input.netImgAdvanced').toggle(
 		function() {
 			$(this).parentsUntil('table').parent().find('.vboxSettingsNetToggleAdvanced').css('display','');
 			$(this).css('background-image','url(images/downArrow.png)');
@@ -121,7 +121,7 @@ $('#vboxSettingsTabNetAdapter').find('.netImgAdvanced').toggle(
 );
 
 /* Mac address generator */
-$('#vboxSettingsTabNetAdapter').find('.vboxSettingsNetMacGen').click(function(){
+$('#vboxSettingsTabNetAdapter').find('input.vboxSettingsNetMacGen').click(function(){
 	var prefix = '080027';
 	for(var i=0;i<6;i++) {
 		var m = Math.floor(Math.random()*16);
@@ -197,6 +197,7 @@ for(var i = 0; i < parseInt($('#vboxIndex').data('vboxConfig').nicMax); i++) {
 	document.forms['frmVboxSettings'].elements['vboxSettingsNetMAC'+a].value = $('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].MACAddress;
 	document.forms['frmVboxSettings'].elements['vboxSettingsNetConnected'+a].checked = ($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].cableConnected);
 
+	// Enabled adapter
 	if($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].enabled) {
 		document.forms['frmVboxSettings'].elements['vboxSettingsNetEnabled'+a].checked = true;
 	}
@@ -279,6 +280,37 @@ function vboxSettingsUpdateNetworkOptions(sel) {
 	}
 	
 }
+
+/* Change settings onShow() when VM is running */
+$('#vboxSettingsDialog').bind('show',function(){
+	
+	if($('#vboxSettingsDialog').data('vboxMachineData').state != 'PoweredOff') {
+		
+		for(var i = 0; i < parseInt($('#vboxIndex').data('vboxConfig').nicMax); i++) {
+			
+			var a = (i + 1);
+			// Disable tabs for disabled adapters	
+			if(!document.forms['frmVboxSettings'].elements['vboxSettingsNetEnabled'+a].checked) {
+				$(vboxSettingsNetContainer).tabs('disable', i);	
+			}
+			
+			/* Disable these inputs */
+			document.forms['frmVboxSettings'].elements['vboxSettingsNetEnabled'+a].disabled ='disabled';
+		    document.forms['frmVboxSettings'].elements['vboxSettingsNetAdapter'+a].disabled ='disabled';
+			document.forms['frmVboxSettings'].elements['vboxSettingsNetMAC'+a].disabled ='disabled';
+			
+			/* Disable these labels */
+			$(document.forms['frmVboxSettings'].elements['vboxSettingsNetEnabled'+a]).parentsUntil('tr').parent().children().addClass('vboxDisabled');
+			$(document.forms['frmVboxSettings'].elements['vboxSettingsNetAdapter'+a]).parentsUntil('tr').parent().children().addClass('vboxDisabled');
+			$(document.forms['frmVboxSettings'].elements['vboxSettingsNetMAC'+a]).parentsUntil('tr').parent().children().addClass('vboxDisabled');
+			
+		}
+		// Expand all advanced settings
+		$('#vboxSettingsDialog').find('input.netImgAdvanced').click().attr('disabled','disabled');
+		// Disable mac address generation
+		$('#vboxSettingsDialog').find('input.vboxSettingsNetMacGen').attr('disabled','disabled');
+	}
+});
 
 /* Change settings onSave() */
 $('#vboxSettingsDialog').bind('save',function(){

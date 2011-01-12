@@ -419,6 +419,7 @@ div.vboxPreviewSaved img {
 #vboxSettingsMediaInfo table td { text-align: left; width: 100%; white-space: normal; } 
 	
 /* Shared folder settings */
+#vboxSettingsSharedFoldersTable { background: #eee; }
 #vboxSettingsSharedFolders { background: #fff; }
 #vboxSettingsSharedFolders td, #vboxSettingsSharedFolders th { padding-left: 8px; padding-right: 8px; }
 #vboxSettingsSharedFoldersList td { white-space: nowrap; }

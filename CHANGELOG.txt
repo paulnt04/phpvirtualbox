@@ -27,6 +27,20 @@ Fixed VM creation bug that would incorrectly display 'None' as
 the hard drive after creation until the newly created VM was
 refreshed.
 
+Tuned down PHP error reporting to keep Notices from being
+displayed when PHP's default error reporting is set too high
+in user's PHP config.
+
+Fixed bug that would not display a list of internal networks
+in VM network settings.
+
+Network settings are now (somewhat) changable while a VM is
+running. This mimics the same functionality as the VirtualBox
+GUI.
+
+Shared folder settings are now changable while a VM is
+running.
+
 -------------------------------------
 	4-1 - 2011-01-09
 -------------------------------------
