@@ -552,27 +552,68 @@ function vboxDivOverflowHidden(p) {
 	$(d).css({'width':(w-4)+'px','overflow':'hidden','padding':'0px','margin':'0px','border':'0px'});
 	return d;
 }
+
+/*
+ * Install Guest Additions
+ */
+function vboxInstallGuestAdditions(vmid) {
+
+	var l = new vboxLoader();
+	l.mode = 'save';
+	l.add('installGuestAdditions',function(d){
+		if(d && d.progress) {
+			vboxProgress(d.progress,function(){
+				$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);
+			},{},'progress_install_guest_additions_90px.png');
+		} else if(d && d.result && d.result == 'mounted') {
+
+			// Mediums and VM data must be refreshed
+			var ml = new vboxLoader();
+			ml.add('Mediums',function(dat){$('#vboxIndex').data('vboxMediums',dat);});
+			ml.onLoad = function() { $('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]); }
+			ml.run();
+			
+			vboxAlert(trans('Guest Additions Mounted'));
+		}
+	},{'vm':vmid});
+	l.run();
+}
+
 /*
  * 
  * Progress dialog and supporting functions
  * 
  */
-function vboxProgress(pid,callback,args) {
+function vboxProgress(pid,callback,args,icon) {
 	
 	var div = document.createElement('div');
 	div.setAttribute('id','vboxProgressDialog');
 	div.setAttribute('title','phpVirtualBox');
 	div.setAttribute('style','text-align: center');
 	
+	var tbl = document.createElement('table');
+	$(tbl).css({'width':'100%'});
+	var tr = document.createElement('tr');
+	var td = document.createElement('td');
+	if(icon) {
+		var img = document.createElement('img');
+		$(img).attr({'src':'images/vbox/'+icon});
+		$(td).append(img);
+	}
+	$(tr).append(td);
+	
+	var td = document.createElement('td');
+	
+
 	var divp = document.createElement('div');
 	divp.setAttribute('id','vboxProgressBar');
-	div.appendChild(divp);
+	td.appendChild(divp);
 	
 	var divpt = document.createElement('div');
 	divpt.setAttribute('id','vboxProgressText');
 	divpt.innerHTML = '<img src="images/spinner.gif" />';
-	div.appendChild(divpt);
-
+	td.appendChild(divpt);
+	
 	// Cancel button
 	var cdiv = document.createElement('div');
 	$(cdiv).attr('id','vboxProgressCancel')
@@ -587,7 +628,11 @@ function vboxProgress(pid,callback,args) {
 		vboxAjaxRequest('cancelProgress',{'progress':$(this).data('pid')},function(d){return;});
 	});
 	$(cdiv).append(b);
-	$(div).append(cdiv);
+	$(td).append(cdiv);
+	
+	$(tr).append(td);
+	$(tbl).append(tr);
+	$(div).append(tbl);
 	
 	$('#vboxIndex').append(div);
 	
@@ -618,7 +663,7 @@ function vboxProgressUpdate(d,e) {
 
 	// update percent
 	$("#vboxProgressBar").progressbar({ value: d.info.percent });
-	$("#vboxProgressText").html(d.info.percent+'%<br />'+d.info.description);
+	$("#vboxProgressText").html(d.info.percent+'%<p>'+d.info.description+'</p>');
 	
 	// Cancelable?
 	if(d.info.cancelable) {

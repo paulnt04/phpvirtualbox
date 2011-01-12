@@ -41,7 +41,7 @@ function vboxImportApplianceDialogInit() {
 						var ml = new vboxLoader();
 						ml.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
 						ml.run();
-					});
+					},{},'progress_import_90px.png');
 				}
 			},{'descriptions':descriptions,'file':file});
 			$(dialog).remove();
@@ -92,7 +92,7 @@ function vboxExportApplianceDialogInit() {
 		l.mode = 'save';
 		l.add('applianceExport',function(d){
 			if(d && d.progress)
-				vboxProgress(d.progress,function(){return;});
+				vboxProgress(d.progress,function(){return;},{},'progress_export_90px.png');
 		},{'format':format,'file':file,'vms':vms});
 		$(dialog).remove();
 		l.run();
@@ -293,6 +293,11 @@ function vboxWizardNewHDInit(callback,suggested) {
 	var l = new vboxLoader();
 	l.add('SystemProperties',function(d){$('#vboxIndex').data('vboxSystemProperties',d);});
 	l.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
+	
+	// Compose folder if suggested name exists
+	if(suggested && suggested.name) {
+		l.add('ComposedMachineFilename',function(d){suggested.path = d.folder},{'name':suggested.name})
+	}
 	l.onLoad = function() {
 		var vbw = new vboxWizard('wizardNewHD',trans('Create New Virtual Disk'),'images/vbox/vmw_new_harddisk.png');
 		vbw.steps = 4;
@@ -309,7 +314,7 @@ function vboxWizardNewHDInit(callback,suggested) {
 			l.mode = 'save';
 			l.add('mediumCreateBaseStorage',function(d,e){
 				if(d && d.progress) {
-					vboxProgress(d.progress,callback,d.id);
+					vboxProgress(d.progress,callback,d.id,'progress_media_create_90px.png');
 				} else {
 					callback(d);
 				}

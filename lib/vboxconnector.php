@@ -336,6 +336,77 @@ class vboxconnector {
 		$this->session->releaseRemote();
 			
 	}
+
+	/*
+	 * Install Guest Additions in VM
+	 */
+	public function installGuestAdditions($args,&$response) {
+		
+		$this->__vboxwebsrvConnect();
+		
+		$response['data'] = array();
+		$gem = null;
+		foreach($this->vbox->DVDImages as $m) {
+			if(strtolower($m->name) == 'vboxguestadditions.iso') {
+				$gem = $m;
+				break;
+			}
+		}
+		
+		// No guest additions found
+		if(!$gem) {
+			throw new Exception("Could not find VirtualBox guest additions image in the media registry.");
+		}
+		
+		// create session and lock machine
+		$machine = $this->vbox->findMachine($args['vm']);
+		$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
+		$machine->lockMachine($this->session->handle, 'Shared');
+		
+		// Try update from guest if it is supported
+		try {
+			$progress = $this->session->console->guest->updateGuestAdditions($gem->location);
+			// Does an exception exist?
+			try {
+				if($progress->errorInfo->handle) {
+					$response['data']['result'] = $this->resultcodes['0x'.strtoupper(dechex($progress->resultCode))];
+				}				
+			} catch (Exception $null) {
+				// No error info. Save progress.
+				$this->__storeProgress($progress);
+				$response['data']['progress'] = $progress->handle;
+				$this->cache->expire('__getStorageControllers'.$args['vm']);
+				$this->cache->expire('getMediums');
+				return true;
+			}
+			
+		} catch (Exception $e) {
+			// Error. Assume updateGuestAdditions is not supported.
+		}
+		
+		// updateGuestAdditions is not supported. Just try to mount image.
+		$mounted = false;
+		foreach($machine->storageControllers as $sc) {
+			foreach($machine->getMediumAttachmentsOfController($sc->name) as $ma) {
+				if($ma->type->__toString() == 'DVD') {
+					$this->session->machine->mountMedium($sc->name, $ma->port, $ma->device, $gem, true);
+					$response['data']['result'] = 'mounted';
+					$this->cache->expire('__getStorageControllers'.$args['vm']);
+					$this->cache->expire('getMediums');
+					$mounted = true;
+					break;
+				}
+			}
+			if($mounted) break;
+		}
+
+		if($mounted && strtolower($this->session->machine->getExtraData('GUI/SaveMountedAtRuntime')) == 'yes')
+			$this->session->machine->saveSettings();
+			
+		$this->session->unlockMachine();
+		$this->session->releaseRemote();
+		
+	}
 	
 	/*
 	 * Save Running VM Network settings
@@ -727,7 +798,20 @@ class vboxconnector {
 		return true;
 	}
 
+	/*
+	 * Add a VM from settings file
+	 */
+	public function addVM($args,&$response) {
 
+		$this->__vboxwebsrvConnect();
+
+		$m = $this->vbox->openMachine($args['file']);
+		$this->vbox->registerMachine(m);
+		
+		return ($response['data']['result'] = 1);
+
+	}
+	
 	/*
 	 * Return cached result from machine request
 	 */
@@ -2588,6 +2672,21 @@ class vboxconnector {
 	}
 
 	/*
+	 * Compose a filename for VM
+	 */
+	public function getComposedMachineFilename($args,&$response) {
+		
+		// Connect to vboxwebsrv
+		$this->__vboxwebsrvConnect();
+		
+		$response['data']['file'] = $this->vbox->composeMachineFilename($args['name'],$this->vbox->systemProperties->defaultMachineFolder);
+		$response['data']['folder'] = preg_replace('#(.+[/|\/]).+#','\1',$response['data']['file']); 
+		
+		return true;
+
+	}
+	
+	/*
 	 * Create base storage medium
 	 */
 	public function mediumCreateBaseStorage($args,&$response) {
@@ -2735,7 +2834,7 @@ class vboxconnector {
 		// Find medium attachment
 		$machine = $this->vbox->findMachine($args['vm']);
 		$state = $machine->sessionState->__toString();
-		$save = ($save || $machine->getExtraData('GUI/SaveMountedAtRuntime'));
+		$save = ($save || strtolower($machine->getExtraData('GUI/SaveMountedAtRuntime')) == 'yes');
 
 		// create session
 		$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);

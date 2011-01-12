@@ -138,7 +138,10 @@ $('#wizardNewHDStep4').bind('show',function(){
 
 	var loc = document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value;
 	if(loc.search(/[\/|\\]/) < 0) {
-		loc = $('#vboxIndex').data('vboxSystemProperties').homeFolder + '/' + loc;
+		if($('#wizardNewHDStep4').data('suggestedpath'))
+			loc = $('#wizardNewHDStep4').data('suggestedpath') + loc;
+		else
+			loc = $('#vboxIndex').data('vboxSystemProperties').homeFolder + $('#vboxIndex').data('vboxConfig').DSEP + loc;
 	}
 	document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value = loc;
 	$('#wizardNewHDLocationLabel').html($('<div />').text(loc).html());
@@ -190,10 +193,13 @@ $('#wizardNewHDStep1').bind('show',function(e,wiz){
 	if(wiz.suggested.name) {
 		document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value = wiz.suggested.name + '.vdi';
 	}
-
+	
 	if(wiz.suggested.size) {
 		$('#wizardNewHDSize').slider('value',wiz.suggested.size);
 	}
+	
+	if(wiz.suggested.path)
+		$('#wizardNewHDStep4').data('suggestedpath',wiz.suggested.path);
 
 	$('#wizardNewHDStep1').data('init',true);
 	

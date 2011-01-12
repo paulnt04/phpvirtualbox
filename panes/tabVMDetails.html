@@ -320,8 +320,8 @@ function vboxDetailSettingsLink(section) {
 	if($('#vboxIndex').data('selectedVM').sessionState == 'Unlocked' && $('#vboxIndex').data('selectedVM').state != 'Saved') {
 		vboxVMsettingsInit($('#vboxIndex').data('selectedVM').id,function(){$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);},section);
 	} else if($('#vboxIndex').data('selectedVM').state == 'Running') {
-		var fn = 'vboxVMsettingsInit' + section;
-		window[fn]($('#vboxIndex').data('selectedVM').id,function(){$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);});
+		if(window['vboxVMsettingsInit' + section])
+			window['vboxVMsettingsInit' + section]($('#vboxIndex').data('selectedVM').id,function(){$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);});
 	}
 }
 
@@ -546,6 +546,11 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 
 	$(vboxDetailsTable).append(__vboxDetailRow(trans("Name"), data['name']));
 	$(vboxDetailsTable).append(__vboxDetailRow(trans("OS Type"), trans(data['OSTypeId'])));
+	
+	// Guest additions link?
+	if(links && data.state == 'Running') {
+		$(vboxDetailsTable).append(__vboxDetailRow('', '<a href="javascript:vboxInstallGuestAdditions(\''+data.id+'\')">('+trans('Install Guest Additions')+')</a>',true));
+	}
 
 
 

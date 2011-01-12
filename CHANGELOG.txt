@@ -41,6 +41,22 @@ GUI.
 Shared folder settings are now changable while a VM is
 running.
 
+Added VirtualBox guest additions installation feature.
+
+Added 'Add VM' feature.
+
+Fixed issue where VM disks were created in the VirtualBox
+folder rather than being created in the VM folder when using
+the New Virtual Machine Wizard.
+
+Fixed bug that would not import SCSI controllers and attached
+disk images when using the Import Appliance Wizard.
+
+Added progress operation images.
+
+Updated text when deleting / removing a VM to match VirtualBox
+GUI.
+
 -------------------------------------
 	4-1 - 2011-01-09
 -------------------------------------

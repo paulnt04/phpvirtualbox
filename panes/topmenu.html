@@ -62,6 +62,26 @@ var menu = {
 			'click':function(){vboxWizardNewVMInit(function(){$('#vboxIndex').trigger('vmlistrefresh');})}
         },
         {
+			'name':'machineAdd',
+			'title':'Add',
+			'icon':'vm_add',
+			'click':function(){
+				vboxFileBrowser($('#vboxIndex').data('vboxSystemProperties').defaultMachineFolder,function(f){
+					if(!f) return;
+					var l = new vboxLoader();
+					l.mode = 'save';
+					l.add('addVM',function(){},{'file':f});
+					l.onLoad = function(){
+						var lm = new vboxLoader();
+						lm.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
+						lm.run();
+					}
+					l.run();
+					
+				},false);
+			}
+        },        
+        {
 			'name':'machineSettings',
 			'title':'Settings',
 			'icon':'settings',
@@ -92,7 +112,7 @@ var menu = {
         },        
         {
 			'name':'machineDelete',
-			'title':'Delete',
+			'title':'Remove',
 			'icon':'delete',
 			'click':function(){
 
@@ -112,18 +132,18 @@ var menu = {
 					var q = trans('Unregister VM Message1').replace('%s','<b>'+$('#vboxIndex').data('selectedVM').name+'</b>') + '<p>'+trans('Unregister VM Message2')+'</p>';
 					
 				} else {
-					buttons[trans('Delete All')] = function(){
+					buttons[trans('Delete all files')] = function(){
 						$(this).remove();
 						vboxAjaxRequest('removeVM',{'vm':$('#vboxIndex').data('selectedVM').id,'delete':1},function(d){
 							// check for progress operation
 							if(d && d.progress) {
-								vboxProgress(d.progress,function(){$('#vboxIndex').trigger('vmlistrefresh');});
+								vboxProgress(d.progress,function(){$('#vboxIndex').trigger('vmlistrefresh');},{},'progress_delete_90px.png');
 								return;
 							}
 							$('#vboxIndex').trigger('vmlistrefresh');
 						});
 					}
-					buttons[trans('Keep Harddisks')] = function(){
+					buttons[trans('Remove only')] = function(){
 						$(this).remove();
 						vboxAjaxRequest('removeVM',{'vm':$('#vboxIndex').data('selectedVM').id,'keep':1},function(d){
 							// check for progress operation
@@ -135,7 +155,7 @@ var menu = {
 						});
 					}
 					
-					var q = trans('Delete VM Message1').replace('%s','<b>'+$('#vboxIndex').data('selectedVM').name+'</b>') + '<p><b>'+trans('Delete VM Message2')+'</b></p><p>'+trans('Delete VM Message3')+'</p>';
+					var q = trans('Delete VM Message1').replace('%s','<b>'+$('#vboxIndex').data('selectedVM').name+'</b>') + '<p>'+trans('Delete VM Message2')+'</p>';
 				}				
 				vboxConfirm(q,buttons);
         	

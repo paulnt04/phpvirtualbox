@@ -44,7 +44,10 @@ var tButtons = [
 			vboxAjaxRequest('setStateVMpowerUp',{'vm':$('#vboxIndex').data('selectedVM').id},function(d){
 				// check for progress operation
 				if(d && d.progress) {
-					vboxProgress(d.progress,function(){$('#vboxIndex').trigger('vmlistrefresh');});
+					var icon = null;
+					if($('#vboxIndex').data('selectedVM').state == 'Saved') icon = 'progress_state_restore_90px.png';
+					else icon = 'progress_start_90px.png';
+					vboxProgress(d.progress,function(){$('#vboxIndex').trigger('vmlistrefresh');},{},icon);
 					return;
 				}
 				$('#vboxIndex').trigger('vmlistrefresh');
@@ -139,11 +142,12 @@ $("#vboxToolbarButton-vboxPaneToolbar-vmstop").contextMenu({
 	},
 	function(a, el, pos) {
 		var fn = null;
+		var icon = null;
 		switch(a) {
-			case 'powerdown': fn = 'setStateVMpowerDown'; break;
+			case 'powerdown': fn = 'setStateVMpowerDown'; icon='progress_media_delete_90px.png'; break;
 			case 'powerbutton': fn = 'setStateVMpowerButton'; break;
 			case 'sleep': fn = 'setStateVMsleepButton'; break;
-			case 'savestate': fn = 'setStateVMsaveState'; break;
+			case 'savestate': fn = 'setStateVMsaveState'; icon='progress_state_save_90px.png'; break;
 			case 'pause': fn = 'setStateVMpause'; break;
 			case 'reset': fn = 'setStateVMreset'; break;
 		}
@@ -151,7 +155,7 @@ $("#vboxToolbarButton-vboxPaneToolbar-vmstop").contextMenu({
 		vboxAjaxRequest(fn,{'vm':$('#vboxIndex').data('selectedVM').id},function(d){
 			// check for progress operation
 			if(d && d.progress) {
-				vboxProgress(d.progress,function(){$('#vboxIndex').trigger('vmlistrefresh');});
+				vboxProgress(d.progress,function(){$('#vboxIndex').trigger('vmlistrefresh');},{},icon);
 				return;
 			}
 			$('#vboxIndex').trigger('vmlistrefresh');

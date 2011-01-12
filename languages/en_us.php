@@ -109,11 +109,10 @@ public static $trans = array(
 
 /* Delete or Unregister Inaccessible Machine */
 'VM Inaccessible' => 'The selected VM is inaccessible. Please respect the error message shown below and press the Refresh button if you wish to repeat the accessibility check.',
-'Delete VM Message1' => 'Are you sure you want to permanently delete the virtual machine %s?',
-'Delete VM Message2' => 'This operation cannot be undone.',
-'Delete VM Message3' => 'If you select <b>Delete All</b> everything gets removed. This includes the machine itself, but also the virtual disks attached to it. If you want preserve the virtual disks for later use, select <b>Keep Harddisks</b>.',
-'Delete All' => 'Delete All',
-'Keep Harddisks' => 'Keep Harddisks',
+'Delete VM Message1' => 'You are about to remove the virtual machine %s from the machine list.',
+'Delete VM Message2' => 'Would you like to delete the files containing the virtual machine from your hard disk as well? Doing this will also remove the files containing the machine\'s virtual hard disks if they are not in use by another machine.',
+'Delete all files' => 'Delete all files',
+'Remove only' => 'Remove only',
 'Unregister VM Message1' => 'Are you sure you want to unregister the inaccessible virtual machine %s?',
 'Unregister VM Message2' => 'You will not be able to register it again from this GUI',
 'Unregister' => 'Unregister',
@@ -521,6 +520,10 @@ public static $trans = array(
 'Disconnect reason' => 'Disconnect reason',
 "Redirection by" => "Redirection by",
 'Virtual machine is not running or RDP configured.' => 'Virtual machine is not running or is not configured to accept RDP connections.',
+
+/* Guest Additions */
+'Install Guest Additions' => 'Install Guest Additions',
+'Guest Additions Mounted' => 'The VirtualBox Guest Additions CD image has been mounted on a CD/DVD drive in the virtual machine. To complete the installation process, you must log into the virtual machine and manually install the VirtualBox Guest Additions.',
 
 /* Operating Systems */
 'Other' => 'Other/Unknown',
