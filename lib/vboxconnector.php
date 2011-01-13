@@ -732,7 +732,7 @@ class vboxconnector {
 					break;
 				case 'Internal':
 					$n->attachToInternalNetwork();
-					$n->internalNetwork = (string)$adapters[$i]['internalNetwork'];
+					$n->internalNetwork = (string)$args['networkAdapters'][$i]['internalNetwork'];
 					break;
 				case 'HostOnly':
 					$n->attachToHostOnlyInterface();

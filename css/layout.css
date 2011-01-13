@@ -20,8 +20,6 @@ html,body,input,select,.ui-widget, .ui-tabs, .ui-widget-content,textarea {
 html,body,#vboxIndex,#vboxTableMain {
 	height: 100%;
 }
-#vboxMenu { height: 20px; }
-#vboxTableMain td.vboxPaneTop { height: 70px; } 
 
 
 /* Common */
@@ -242,7 +240,7 @@ div.vboxWizard h3 { border-bottom: 1px solid #aaa; }
 
 
 /* Virtual Machine List and Top Toolbar*/
-#vboxPaneVMList { background: #fff;  }
+#vboxPaneVMList { background: #fff;  border: 2px solid #999; }
 #vboxPaneVMList span.vboxServerLink { text-decoration: underline; cursor: pointer; }
 #vboxVMList { width: 300px; overflow: scroll; } /* Initial Width */
 #vboxVMList table, #vboxVMList div { width: 100%; }
@@ -253,7 +251,7 @@ table.vboxVMListVM td.vboxVMSessionOpen { font-style: italic; }
 
 /* Toolbar above vm list */
 #vboxPaneToolbar { float: left; }
-#vboxPaneToolbar table td { margin-right: 6px; }
+#vboxPaneToolbar table td { margin-right: 10px; }
 #vboxPaneToolbar table td.buttonEnabled { cursor: pointer; }
 #vboxPaneToolbar table td.buttonDisabled { cursor: default; }
 

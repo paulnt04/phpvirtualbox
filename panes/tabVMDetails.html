@@ -197,8 +197,8 @@
 		</div>
 	</div>
 	<!-- Welcome -->
-	<div id='vboxDetailsWelcome' class='vboxBordered' style='#position:absolute;#top:50%;display:none;vertical-align:middle;width:50%;height:50%;'>
-		<div style='#position:relative;#top:-50%;padding:4px;text-align:center;width:100%'>
+	<div id='vboxDetailsWelcome' class='vboxBordered' style='#position:absolute;#top:50%;display:none;vertical-align:middle;width:50%;height:50%;text-align:center'>
+		<div style='#position:relative;#top:-50%;padding:0px;text-align:center;width:100%'>
 			<img src='images/vbox/welcome.png' />
 		</div>
 	</div>
@@ -265,7 +265,7 @@ $('#vboxTabVMDetails').parent().bind('vmloading',function(){
 	} else {
 
 		// Hide all tab children first
-		$('#vboxTabVMDetails').css({'display':'table'}).children().hide();
+		$('#vboxTabVMDetails').css({'display':'table','width':'100%'}).children().hide();
 
 		$('#vboxDetailsWelcome').show().css('display','table-cell');
 
@@ -435,7 +435,10 @@ function __vboxDrawPreview(fromSelf) {
 			
 			$('#vboxDetailsPreviewVMName').css('display','none');
 			$('#vboxDetailsPreviewImg').css({'display':'','height':height+'px','width':width+'px'});
-			$('#vboxDetailsPreviewImg').attr('src',this.src);
+			if($.browser.msie)
+				$('#vboxDetailsPreviewImg').css({"filter":"progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled='true', src='"+this.src+"', sizingMethod='scale')"});
+			else
+				$('#vboxDetailsPreviewImg').css({'background':'url('+this.src+') top left no-repeat','-moz-background-size':'100% 100%','background-size':'100% 100%','-webkit-background-size':'100% 100%'});
 
 			// Keep refreshing preview if VM is running
 			if($('#vboxIndex').data('selectedVM').state == 'Running') {
@@ -446,7 +449,7 @@ function __vboxDrawPreview(fromSelf) {
 			
 		}
 		$('#vboxDetailsPreviewWrap').css({'height':height+'px','width':width+'px'});
-		$('#vboxDetailsPreviewMonitor').css({'height':height+'px','width':width+'px'});
+		//$('#vboxDetailsPreviewMonitor').css({'height':height+'px','width':width+'px'});
 		$('#vboxDetailsTableBoxPreview').find('img.vboxPreviewMonitor').css('width',width+'px');
 		$('#vboxDetailsTableBoxPreview').find('img.vboxPreviewMonitorSide').css('height',height+'px');
 	};
@@ -616,15 +619,10 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	
 
 		var divWrapImg = document.createElement('img');
-		$(divWrapImg).attr('id','vboxDetailsPreviewImg');
-		$(divWrapImg).css({'display':'none','margin':'0px','border':'0px','padding':'0px','position':'absolute','float':'left','height':height+'px','width':width+'px','z-index':19});
+		$(divWrapImg).attr({'id':'vboxDetailsPreviewImg','src':'images/monitor_glossy.png'});
+		$(divWrapImg).css({'display':'none','top':'0px','margin':'0px','border':'0px','padding':'0px','position':'relative','height':height+'px','width':width+'px','float':'left'});
 		$(divWrap).append(divWrapImg);
 
-		var divWrapImg = document.createElement('img');
-		$(divWrapImg).attr({'id':'vboxDetailsPreviewMonitor','src':'images/monitor_glossy.png'});
-		$(divWrapImg).css({'margin':'0px','border':'0px','padding':'0px','position':'absolute','float':'left','height':height+'px','width':width+'px','z-index':20});
-		$(divWrap).append(divWrapImg);
-		
 		// Preview disabled
 		if($('#vboxIndex').data('vboxConfig').noPreview) {
 
@@ -650,9 +648,13 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 			
 			var divOut1 = document.createElement('div');
 			$(divOut1).attr('id','vboxDetailsPreviewVMName');
-			$(divOut1).attr('style','overflow:hidden;position:absolute;z-index:19;height:'+height+'px;width:'+width+'px');
+			$(divOut1).attr('style','overflow:hidden;position:relative;height:'+height+'px;width:'+width+'px');
 			var divOut2 = document.createElement('div');
 			$(divOut2).attr('style','position:relative;left:0px;display:table-cell;vertical-align:middle;padding:4px;color:#fff;font-weight:bold;text-align:center;height:'+height+'px;width:'+width+'px');
+			if($.browser.msie)
+				$(divOut2).css({"filter":"progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled='true', src='images/monitor_glossy.png', sizingMethod='scale')"});
+			else
+				$(divOut2).css({'background':'url(images/monitor_glossy.png) top left no-repeat','-moz-background-size':'100% 100%','background-size':'100% 100%','-webkit-background-size':'100% 100%'});
 			$(divOut2).html($('<div />').html(data.name).text());
 			$(divOut1).append(divOut2);
 			$(divWrap).append(divOut1);
