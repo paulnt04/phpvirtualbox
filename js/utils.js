@@ -68,8 +68,9 @@ function vboxAjaxRequest(fn,params,callback,xtra) {
 							$('#vboxIndex').css({'display':'none'});
 							
 							var s = '';
+							
 							// Multiple Servers check
-							if($('#vboxIndex').data('vboxConfig').servers.length) {
+							if($('#vboxIndex').data('vboxConfig').servers && $('#vboxIndex').data('vboxConfig').servers.length) {
 								var servers = $('#vboxIndex').data('vboxConfig').servers;
 								for(var i = 0; i < servers.length; i++) {
 									servers[i] = "<a href='?server="+servers[i].name+"'>"+$('<div />').html(servers[i].name).text()+"</a>";
@@ -574,6 +575,8 @@ function vboxInstallGuestAdditions(vmid) {
 			ml.run();
 			
 			vboxAlert(trans('Guest Additions Mounted'));
+		} else if(d && d.result && d.result == 'nocdrom') {
+			vboxAlert(trans('Guest Additions No CDROM'));
 		}
 	},{'vm':vmid});
 	l.run();

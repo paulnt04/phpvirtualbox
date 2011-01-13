@@ -268,7 +268,7 @@ table.vboxDetailsTable tr th.vboxDetailsSection { text-align: left; font-weight:
 table.vboxDetailsTable tr th.vboxDetailName { text-align: left; width: 300px; padding-left: 20px; font-weight: normal; }
 table.vboxDetailsTable tr th.vboxDetailNameIndent { text-align: left; width: 265px; padding-left: 35px; font-weight: normal;}
 table.vboxDetailsTable tr td.vboxDetailsValue { text-align: left; white-space: normal; width: auto;  }
-table.vboxDetailsTableError { background: #eee; margin-top: 8px; }
+table.vboxDetailsTableError { background: #eee; margin-top: 8px;; border: 2px solid #aaa; }
 table.vboxDetailsTableError tr { vertical-align: top; }
 /* Details table boxes */
 table.vboxDetailsTableBox { background: #fff; margin-bottom: 10px; width: 100%; border-collapse: collapse; border-spacing: 0px;

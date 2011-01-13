@@ -524,7 +524,13 @@ public static $trans = array(
 /* Guest Additions */
 'Install Guest Additions' => 'Install Guest Additions',
 'Guest Additions Mounted' => 'The VirtualBox Guest Additions CD image has been mounted on a CD/DVD drive in the virtual machine. To complete the installation process, you must log into the virtual machine and manually install the VirtualBox Guest Additions.',
+'Guest Additions No CDROM' => 'Could not insert the VirtualBox Guest Additions installer CD image into the virtual machine, as the machine has no CD/DVD-ROM drives. Please add a drive using the storage page of the virtual machine settings dialog.',
 
+/* USB devices */
+'USB Device' => 'Device', // USB device name
+'USB Attached' => 'Attached', // Is it attached to the VM
+'USB Available' => 'Available', // 	Is it available
+ 
 /* Operating Systems */
 'Other' => 'Other/Unknown',
 'Windows31' => 'Windows 3.1',

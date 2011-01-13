@@ -240,6 +240,7 @@ $('#vboxTabVMDetails').parent().bind('vmloading',function(){
 	// Hide all tab children first
 	$('#vboxTabVMDetails').children().hide();
 	
+	$('#vboxVMDetails').data('vmusb', false);
 	
 	// vboxTabVMDetails
 	if(vm && vm.id) {
@@ -257,6 +258,7 @@ $('#vboxTabVMDetails').parent().bind('vmloading',function(){
 			__vboxDisplayHostDetailsData(vm);
 			
 		} else {
+			$('#vboxVMDetails').data('vmusb',(vm['USBController'] && vm['USBController']['enabled']));
 			__vboxDisplayDetailsData(vm,null,true,true);
 		}
 			
@@ -320,6 +322,10 @@ function vboxDetailSettingsLink(section) {
 	if($('#vboxIndex').data('selectedVM').sessionState == 'Unlocked' && $('#vboxIndex').data('selectedVM').state != 'Saved') {
 		vboxVMsettingsInit($('#vboxIndex').data('selectedVM').id,function(){$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);},section);
 	} else if($('#vboxIndex').data('selectedVM').state == 'Running') {
+		
+		// Special case for USB
+		if(section == 'USB' && !$('#vboxVMDetails').data('vmusb')) return;
+		
 		if(window['vboxVMsettingsInit' + section])
 			window['vboxVMsettingsInit' + section]($('#vboxIndex').data('selectedVM').id,function(){$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);});
 	}
@@ -715,8 +721,11 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		if(!chost || chost == 'localhost' || chost == '127.0.0.1') {chost = location.host;}
 		
 		if(links) {
-			tr = __vboxDetailRow(trans("Ports"), data['VRDEServer']['ports']);
+			tr = __vboxDetailRow(trans("Server Port"), data['VRDEServer']['ports']);
 			tr.childNodes[1].innerHTML = "<a href='rdp.php?host=" + chost + '&port=' + data['VRDEServer']['ports'] + "&vm=" + encodeURIComponent(data['name']) + "'>" + data['VRDEServer']['ports'] + "</a>";
+			if(data['state'] == 'Running' && data['consolePort']) {
+				tr.childNodes[1].innerHTML += ' (' + chost + ':' + data['consolePort'] + ')';
+			}
 			$(vboxDetailsTable).append(tr);
 		} else {
 			$(vboxDetailsTable).append(__vboxDetailRow(trans("Remote Console")+ ': ' +trans("Ports"), data['VRDEServer']['ports']));
@@ -753,6 +762,16 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		var con = data['storageControllers'][a];
 		
 		$(vboxDetailsTable).append(__vboxDetailRow(con.name, ''));
+		
+		data['storageControllers'][a]['mediumAttachments'].sort(function(a,b){
+			if(a.port == b.port) {
+				if(a.device < b.device) return -1;
+				if(a.device > b.device) return 1;
+				return 0;
+			}
+			if(a.port < b.port) return -1;
+			return 1;
+		});
 		
 		for(var b = 0; b < data['storageControllers'][a]['mediumAttachments'].length; b++) {
 			
@@ -988,6 +1007,9 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	if(links && data.state == 'Running') {
 		$('#vboxDetailsTableBoxNetwork').find('div').removeClass('vboxNoLinks');
 		$('#vboxDetailsTableBoxSharedFolders').find('div').removeClass('vboxNoLinks');
+		if(data['USBController'] && data['USBController']['enabled']) {
+			$('#vboxDetailsTableBoxUSB').find('div').removeClass('vboxNoLinks');
+		}
 	}
 }
 

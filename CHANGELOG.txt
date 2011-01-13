@@ -57,6 +57,18 @@ Added progress operation images.
 Updated text when deleting / removing a VM to match VirtualBox
 GUI.
 
+USB devices can now be attached / detached to a running VM.
+
+Medium attachments for storage controllers on VM details tab
+are now properly sorted instead of returned in the arbitrary
+order that they are read from VirtualBox.
+
+VRDE Server (remote display) is now enabled by default when
+creating a new VM.
+
+Refreshing the VirualBox host in the machine list now refreshes
+system properties cache as well.
+
 -------------------------------------
 	4-1 - 2011-01-09
 -------------------------------------

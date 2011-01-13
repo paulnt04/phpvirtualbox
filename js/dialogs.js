@@ -491,12 +491,35 @@ function vboxVMsettingsInitNetwork(vm,callback) {
 }
 
 /*
+ * USB settings dialog for VM when VM is running 
+ */
+function vboxVMsettingsInitUSB(vm,callback) {
+	
+	var panes = new Array(
+		{'name':'USBDevices','label':'USB','icon':'usb'}
+	);
+	
+	var data = new Array(
+			{'fn':'HostUSBDevices','callback':function(d){$('#vboxSettingsDialog').data('vboxHostUSBDevices',d);}},
+			{'fn':'VMDetails','callback':function(d){$('#vboxSettingsDialog').data('vboxMachineData',d);},'args':{'vm':vm}},
+			{'fn':'VMUSBDevices','callback':function(d){$('#vboxSettingsDialog').data('vboxMachineUSBDevices',d);},'args':{'vm':vm}}
+	);
+
+	vboxSettingsInit(trans('Settings'),panes,data,function(){
+		var loader = new vboxLoader();
+		loader.mode = 'save';
+		loader.add('saveVMUSBDevices',function(){if(callback){callback();}},$('#vboxSettingsDialog').data('vboxMachineData'));
+		loader.run();
+	},'USBDevices');
+}
+
+/*
  * SharedFolders settings dialog for VM when VM is running 
  */
 function vboxVMsettingsInitSharedFolders(vm,callback) {
 	
 	var panes = new Array(
-		{'name':'SharedFolders','label':'Shared Folders','icon':'shared_folder','tabbed':true}
+		{'name':'SharedFolders','label':'Shared Folders','icon':'shared_folder','tabbed':false}
 	);
 	
 	var data = new Array(

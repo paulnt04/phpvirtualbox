@@ -353,6 +353,44 @@ class vboxconnector {
 			}
 		}
 		
+		// Not in media registry. Try to register it.
+		if(!$gem) {
+			$checks = array(
+				'linux' => '/usr/share/virtualbox/VBoxGuestAdditions.iso',
+				'osx' => '/Applications/VirtualBox.app/Contents/MacOS/VBoxGuestAdditions.iso',
+				'sunos' => '/opt/VirtualBox/additions/VBoxGuestAdditions.iso',
+				'windows' => 'C:\\Program Files\\Oracle\\VirtualBox\\VBoxGuestAdditions.iso',
+				'windowsx86' => 'C:\\Program Files (x86)\\Oracle\\VirtualBox\\VBoxGuestAdditions.iso'
+			);
+			$hostos = $vbox->vbox->host->operatingSystem;
+			if(stripos($hostos,'windows') !== false) {
+				$checks = array($checks['windows'],$checks['windowsx86']);
+			} elseif(stripos($hostos,'solaris') !== false || stripos($hostos,'sunos') !== false) {
+				$checks = array($checks['sunos']);
+			} elseif(stripos($hostos,'mac') !== false || stripos($hostos,'apple') !== false || stripos($hostos,'osx') !== false || stripos($hostos,'os x') !== false || stripos($hostos,'darwin') !== false) {
+				$checks = array($checks['osx']);
+			} elseif(stripos($hostos,'linux') !== false) {
+				$checks = array($checks['linux']);
+			}
+			
+			// Check for config setting
+			if(@$this->settings['vboxGuestAdditionsISO'])
+				$checks = array($this->settings['vboxGuestAdditionsISO']);
+			
+			// Unknown os and no config setting leaves all checks in place.
+			
+			// Try to register medium.
+			foreach($checks as $iso) {
+				try {
+					$gem = $this->vbox->openMedium($iso,'DVD','ReadWrite');
+					$this->cache->expire('getMediums');
+					break;
+				} catch (Exception $e) {
+					// Ignore
+				}
+			}
+		}
+		
 		// No guest additions found
 		if(!$gem) {
 			throw new Exception("Could not find VirtualBox guest additions image in the media registry.");
@@ -385,6 +423,7 @@ class vboxconnector {
 		}
 		
 		// updateGuestAdditions is not supported. Just try to mount image.
+		$response['data']['result'] = 'nocdrom';
 		$mounted = false;
 		foreach($machine->storageControllers as $sc) {
 			foreach($machine->getMediumAttachmentsOfController($sc->name) as $ma) {
@@ -403,6 +442,41 @@ class vboxconnector {
 		if($mounted && strtolower($this->session->machine->getExtraData('GUI/SaveMountedAtRuntime')) == 'yes')
 			$this->session->machine->saveSettings();
 			
+		$this->session->unlockMachine();
+		$this->session->releaseRemote();
+		
+	}
+	
+	/*
+	 * Save Running VM USB device attachments
+	 */
+	public function saveVMUSBDevices($args,&$response) {
+
+		$this->__vboxwebsrvConnect();
+		
+		// create session and lock machine
+		$machine = $this->vbox->findMachine($args['id']);
+		$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
+		$machine->lockMachine($this->session->handle, 'Shared');
+		
+		// Existing USB devices
+		$attached = array();
+		foreach($this->session->console->USBDevices as $u) {
+			$attached[$u->id] = 1;
+		}
+		
+		if(!is_array($args['usbdevs'])) $args['usbdevs'] = array();
+		foreach($args['usbdevs'] as $u) {
+			try {
+				if(intval($u['attached']) && !$attached[$u['id']])
+					$this->session->console->attachUSBDevice($u['id']);
+				else if(!intval($u['attached']) && $attached[$u['id']])
+					$this->session->console->detachUSBDevice($u['id']);
+			} catch (Exception $e) {
+				$this->errors[] = $e;
+			}
+		}
+
 		$this->session->unlockMachine();
 		$this->session->releaseRemote();
 		
@@ -1946,14 +2020,21 @@ class vboxconnector {
 
 			// Always set
 			$this->session->machine->setExtraData('GUI/SaveMountedAtRuntime', 'yes');
-			$this->session->machine->USBController->enabled = true;
-			$this->session->machine->USBController->enabledEhci = true;
 			try {
-				if($this->session->machine->VRDEServer) {
+				$this->session->machine->USBController->enabled = true;
+				$this->session->machine->USBController->enabledEhci = true;
+			} catch (Exception $e) {
+				// Ignore
+			}
+			
+			try {
+				if($this->session->machine->VRDEServer && $this->vbox->systemProperties->defaultVRDEExtPack) {
+					$this->session->machine->VRDEServer->enabled = 1;
 					$this->session->machine->VRDEServer->authTimeout = 5000;
 					$this->session->machine->VRDEServer->setVRDEProperty('TCP/Ports','3389-4000');
 				}
 			} catch (Exception $e) {
+				//Ignore
 			}
 
 			// Other defaults
@@ -3005,7 +3086,8 @@ class vboxconnector {
 			'homeFolder' => $this->vbox->homeFolder,
 			'VRDEAuthLibrary' => (string)$this->vbox->systemProperties->VRDEAuthLibrary,
 			'defaultAudioDriver' => (string)$this->vbox->systemProperties->defaultAudioDriver,
-			'maxGuestMonitors' => $this->vbox->systemProperties->maxGuestMonitors
+			'maxGuestMonitors' => $this->vbox->systemProperties->maxGuestMonitors,
+			'defaultVRDEExtPack' => $this->vbox->systemProperties->defaultVRDEExtPack
 		);
 		return true;
 	}
@@ -3049,6 +3131,29 @@ class vboxconnector {
 		$m->releaseRemote();
 	}
 
+	/*
+	 * 
+	 * List of attached USB devices
+	 * 
+	 */
+	public function getVMUSBDevices($args,&$response) {
+
+		// Connect to vboxwebsrv
+		$this->__vboxwebsrvConnect();
+		
+		$machine = $this->vbox->findMachine($args['vm']);
+		$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
+		$machine->lockMachine($this->session->handle, 'Shared');
+		
+		$response['data'] = array();
+		foreach($this->session->console->USBDevices as $u) {
+			$response['data'][$u->id] = array('id'=>$u->id,'remote'=>$u->remote);
+		}
+		
+		$this->session->unlockMachine();
+		$this->session->releaseRemote();
+		
+	}
 
 	/*
 	 *

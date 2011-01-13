@@ -1,0 +1,96 @@
+<!--
+
+	VM USB Settings
+	Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
+	
+	$Id: settingsUSB.html 69 2011-01-06 21:35:50Z imooreyahoo $
+	
+-->
+<table style='width: 100%' id='vboxSettingsUSBTable'>
+	<tr>
+		<td style='width: 100%'>
+		<table style='width: 100%'>
+			<tr>
+				<td style='width: 100%'>
+				<div style='overflow: auto;' class='vboxBordered'>
+				<table class='vboxHorizontal'>
+					<thead>
+						<tr id='vboxSettingsUSBDevicesHeading'>
+							<th style='text-align: center; width: 100px;'><span class='translate'>USB Attached</span></th>
+							<th style=''><span class='translate'>USB Device</span></th>
+							<th style='text-align: center; width: 100px;'><span class='translate'>USB Available</span></th>
+						</tr>
+					</thead>
+					<tbody id='vboxSettingsUSBDevicesList'>
+						<tr class='vboxListItem'>
+							<td style='white-space: nowrap; text-align: center'>space</td>
+							<td style='white-space: nowrap'>/SPACEHUB/space/some/other/path</td>
+							<td style='white-space: nowrap; text-align: center;'>No</td>
+						</tr>
+					</tbody>
+				</table>
+				</div>
+				</td>
+				<td id='vboxSettingsSFButtons'></td>
+			</tr>
+		</table>
+		</td>
+	</tr>
+
+</table>
+<script type='text/javascript'>
+
+// shorthand
+var hostdev = $('#vboxSettingsDialog').data('vboxHostUSBDevices');
+var vmdev = $('#vboxSettingsDialog').data('vboxMachineUSBDevices');
+	
+/* Fill Devices */
+$('#vboxSettingsUSBDevicesList').children().remove();
+for(var i = 0; i < hostdev.length; i++) {
+	
+	if(!hostdev[i].product)
+		var dname = trans('Unknown Device')+' '+hostdev[i].vendorId+':'+hostdev[i].productId;
+	else
+		var dname = hostdev[i].manufacturer + ' ' + hostdev[i].product;
+	dname += ' [' + hostdev[i].revision + ']';
+	var capt = (hostdev[i].state == 'Captured' && vmdev[hostdev[i].id]);
+	var avail = (capt || (hostdev[i].state != 'NotSupported' && hostdev[i].state != 'Unavailable' && hostdev[i].state != 'Captured'));
+	
+	
+	var tr = document.createElement('tr');
+	if(avail)
+		$(tr).attr('class','vboxListItem');
+	$(tr).attr('style','vertical-align: middle').data('usbdev', hostdev[i]);	
+	var td = document.createElement('td');
+	$(td).attr('style','text-align: center');
+	var chk = document.createElement('input');
+	$(chk).attr({'type':'checkbox','class':'vboxCheckbox','checked':(capt ? 'checked' : ''),'disabled':(avail ? '' : 'disabled')});
+	$(td).append(chk);
+	$(tr).append(td);
+	var td = document.createElement('td');
+	td.innerHTML = dname;
+	$(tr).append(td);
+	var td = document.createElement('td');
+	$(td).attr('style','text-align: center');
+	td.innerHTML = (avail ? trans('Yes') : trans('No'));
+	$(tr).append(td);
+	
+	$('#vboxSettingsUSBDevicesList').append(tr);
+	
+}
+
+/* Change settings onSave() */
+$('#vboxSettingsDialog').bind('save',function(){
+
+	
+	$('#vboxSettingsDialog').data('vboxMachineData').usbdevs = new Array();
+
+	$('#vboxSettingsUSBDevicesList').children('tr').each(function(){
+		$(this).data('usbdev').attached = ($(this).find('input:checkbox').first().attr('checked') ? 1 : 0);
+		$('#vboxSettingsDialog').data('vboxMachineData').usbdevs[$('#vboxSettingsDialog').data('vboxMachineData').usbdevs.length] = $(this).data('usbdev');
+	});
+	
+});
+
+
+</script>
