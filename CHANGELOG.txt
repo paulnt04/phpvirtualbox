@@ -1,5 +1,5 @@
 -------------------------------------
-	4-2	-
+	4-2	-2011-1-14
 -------------------------------------
 Viewing a VM's screen shot in a new window while running now
 prints a descriptive error rather than displaying a blank
