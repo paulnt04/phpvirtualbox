@@ -370,44 +370,43 @@ function vboxSettingsAddController(con,list) {
     $(list).append(li);
 
     /* Generate Toolbars */
-    if(con.bus == 'IDE') {
-        // CD/DVD drive
-	    var b = {
-			'name' : con.bus+'addcd',
-			'label' : trans('Add CD/DVD Device'),
-			'icon' : 'cd_add',
-			'enabled' : function (item) {
-				return true;
-			},
-			'click' : function () { vboxSettingsStorageAddMedium('IDE','DVD'); }
-		};
-		var tb = new vboxToolbarSmall([b]);
-		tb.buttonStyle = 'margin:0px;padding:0px;border:0px;background-repeat:no-repeat;background-position:0px 0px;';
-		tb.noHover = true;
-		tb.addButtons('vboxSettingsController' + con.bus + 'BtnCD');
-    }
-    
-    var b = {
-    		'name' : con.bus+'adddrive',
-    		'label' : trans('Add Hard Disk'),
-    		'icon' : 'hd_add',
-    		'enabled' : function (item) {
-    			return true;
-    		},
-    		'click' : function (item) { vboxSettingsStorageAddMedium(con.bus); }
-    	};
-
-	if(con.bus == 'Floppy') {
-		b.label = trans('Add Floppy Device');
-		b.icon = 'fd_add';
-		b.click = function (item) { vboxSettingsStorageAddMedium(con.bus,'Floppy'); }
+    var dtypes = vboxSettingsStorageBusses.storage[con.bus].driveTypes;
+    for(var i = 0; i < dtypes.length; i++) {
+    	var b = null;
+    	if(dtypes[i] == 'dvd') {
+		    b = {
+				'name' : con.bus+'addcd',
+				'label' : trans('Add CD/DVD Device'),
+				'icon' : 'cd_add',
+				'enabled' : function (item) {
+					return true;
+				},
+				'click' : function () { vboxSettingsStorageAddMedium(con.bus,'DVD'); }
+			};
+    	} else if(dtypes[i] == 'disk') {
+		    b = {
+		    		'name' : con.bus+'adddrive',
+		    		'label' : trans('Add Hard Disk'),
+		    		'icon' : 'hd_add',
+		    		'enabled' : function (item) {
+		    			return true;
+		    		},
+		    		'click' : function (item) { vboxSettingsStorageAddMedium(con.bus); }
+		    	};
+    		
+    	} else if(dtypes[i] == 'floppy') {
+    		b = {'label':trans('Add Floppy Device'),
+				'icon' : 'fd_add',
+				'click' : function (item) { vboxSettingsStorageAddMedium(con.bus,'Floppy'); }
+				};
+    	}
+	    var tb = new vboxToolbarSmall([b]);
+	   	tb.buttonStyle = 'margin:0px;padding:0px;border:0px;background-repeat:no-repeat;background-position:0px 0px;';
+	   	tb.noHover = true;
+	   	tb.addButtons('vboxSettingsController' + con.bus + 'BtnDrive');
 		
 	}
 
-    var tb = new vboxToolbarSmall([b]);
-   	tb.buttonStyle = 'margin:0px;padding:0px;border:0px;background-repeat:no-repeat;background-position:0px 0px;';
-   	tb.noHover = true;
-   	tb.addButtons('vboxSettingsController' + con.bus + 'BtnDrive');
     	
 }
 

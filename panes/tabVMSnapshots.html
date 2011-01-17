@@ -96,7 +96,17 @@ var tButtons = [
   		'click' : function () {
 
   			$('#vboxSnapshotNewImg').attr('src',"images/vbox/" + vboxGuestOSTypeIcon($('#vboxTabVMSnapshots').data('machine').OSTypeId));
-  			$('#vboxSnapshotNewName').val(trans('Snapshot') + ' ' + $('#vboxSnapshotList').find('li').length);
+  			
+  			var snRegEx = new RegExp('^' + trans('Snapshot X').replace('%s','([0-9]+)') + '$');
+  			
+  			// Get max snapshot name
+  			var snMax = 0;
+  			var snList = $('#vboxSnapshotList').find('li');
+  			for(var i = 0; i < snList.length; i++) {
+  				var snNum = snRegEx.exec($(snList[i]).data('name'));
+  				if(snNum) snMax = Math.max(parseInt(snNum[1]), snMax);
+  			}
+  			$('#vboxSnapshotNewName').val(trans('Snapshot X').replace('%s',(snMax+1)));
   			$('#vboxSnapshotNewDesc').val('');
 
   			
@@ -160,7 +170,7 @@ var tButtons = [
   		'icon' : 'delete_snapshot',
   		'enabled' : function(item) {
 			var vm = $('#vboxTabVMSnapshots').data('machine');
-  			return (item && $(item).data('name') && $(item).data('state') != 'current' && vm.state != 'Running');
+  			return (item && $(item).data('name') && $(item).data('state') != 'current' && $(item).data('children').length <= 1);
   		},
   		'click' : function () {
   	  		var snapshot = $('#vboxSnapshotList').find('div.vboxListItemSelected').first().parent().data();
@@ -247,6 +257,17 @@ snapshotToolbar.size = 22;
 snapshotToolbar.disabledString = 'dis';
 snapshotToolbar.addButtons('vboxSnapshotToolbar');
 
+// Hold timer and date vars
+snapshotToolbar._timer = null;
+snapshotToolbar._timeSpans = new Array();
+snapshotToolbar._timeSpans['days'] = 86400;
+snapshotToolbar._timeSpans['hours'] = 3600,
+snapshotToolbar._timeSpans['minutes'] = 60,
+snapshotToolbar._timeSpans['seconds'] = 1;
+snapshotToolbar._timeSpans.sort(function(a,b){return (a > b ? -1 : 1);});
+
+
+
 vboxInitDisplay('vboxSnapshotToolbar');
 
 unsetLangContext();
@@ -271,6 +292,11 @@ $('#vboxTabVMSnapshots').bind('refresh',function(){
 /* Loading VM */
 $('#vboxTabVMSnapshots').parent().bind('vmloading',function(){
 
+	if(snapshotToolbar._timer) {
+		window.clearTimeout(snapshotToolbar._timer);
+		snapshotToolbar._timer = null;
+	}
+		
 	$('#vboxTabVMSnapshots').data('lastVM',0);
 	
 	$('#vboxSnapshotList').children().remove();
@@ -291,11 +317,20 @@ $('#vboxTabVMSnapshots').parent().bind('vmloaded',function(e,vm){
 	$('#vboxTabVMSnapshots').data('machine',vm);
 	
 	$('#vboxTabVMSnapshotsTitle').html(trans('Snapshots') + (vm && vm.snapshotCount ? ' (' + vm.snapshotCount + ')' : ''));
+	
+	if(snapshotToolbar._timer)
+		window.clearTimeout(snapshotToolbar._timer);
+
 });
 
 
 // Load snapshots on show
 $('#vboxTabVMSnapshots').bind('show',function(e,vm){
+
+	if(snapshotToolbar._timer) {
+		window.clearTimeout(snapshotToolbar._timer);
+		snapshotToolbar._timer = null;
+	}
 
 	if(vm && vm.id) {
 		if($('#vboxTabVMSnapshots').data('lastVM') == vm.id) return;
@@ -330,7 +365,12 @@ function __vboxTabSnapshotsFill(s) {
 
 	var list = $('#vboxSnapshotList');
 	$(list).children().remove();
-	 
+
+	if(snapshotToolbar._timer) {
+		window.clearTimeout(snapshotToolbar._timer);
+		snapshotToolbar._timer = null;
+	}
+	
 	if(!s) return;
 
 	// Snapshots exist
@@ -351,7 +391,7 @@ function __vboxTabSnapshotsFill(s) {
 				$('#'+$('#vboxTabVMSnapshots').data('machine').currentSnapshot.id).append(ul);
 			}
 		}			
-
+		
 	// No snapshots. Append current state to list
 	} else {
 		$(list).append(__vboxTabSnapshotCurrent());
@@ -363,7 +403,9 @@ function __vboxTabSnapshotsFill(s) {
 	snapshotToolbar.enable();
 
 	$('#vboxSnapshotList').trigger('select');
-	
+
+	__vboxTabSnapshotTimestamps();	
+
 }
 
 /* Snapshot list item */
@@ -372,13 +414,16 @@ function __vboxTabSnapshot(s) {
 	var li = document.createElement('li');
 	$(li).attr('id',s.id);
 	$(li).data(s);
+	
 	// Use timestamp
 	var t = '';
+	if(s.timeStampSplit['seconds'] == 0)
+		s.timeStampSplit['seconds'] = 1;
 	for(var i in s.timeStampSplit) {
 		t = trans('X ago').replace('%s',(s.timeStampSplit[i] + ' ' + trans(i)));
 		break;
 	}
-	
+		
 	$(li).html(' <div class="vboxListItem"><img src="images/vbox/'+(s.online ? 'online' : 'offline')+'_snapshot_16px.png" /> ' + $('<div />').text(s.name).html()+' (<span class="timestamp" title="'+s.timeStamp +'">'+t+'</span>)</div>');
 	if(s.children.length) {
 		var ul = document.createElement('ul');
@@ -404,8 +449,48 @@ function __vboxTabSnapshotCurrent() {
 	if($('#vboxTabVMSnapshots').data('machine').currentStateModified) {
 		$(li).children().first().append(' (' + trans('changed') +')');
 	}
-	$(li).addClass('last');
+	$(li).addClass('last').addClass('vboxSnapshotCurrent');
 	return li;
+}
+
+/* Update snapshot timestamps */
+function __vboxTabSnapshotTimestamps() {
+	
+	// Shorthand
+	var timeSpans = snapshotToolbar._timeSpans;
+	
+	// Keep minimum timestamp
+	var minTs = 60;
+
+	var currentTime = new Date();
+	currentTime = Math.floor(currentTime.getTime() / 1000);
+
+	$('#vboxTabVMSnapshots').find('span.timestamp').each(function(){
+		
+		var sts = parseInt($(this).attr('title'));
+		var t = Math.max(currentTime - sts, 1);
+		var ts = $(this).html();
+		
+		minTs = Math.min(minTs,t);
+		
+		// Check for max age.
+		if(Math.floor(t / 86400) > 30) {
+			var sdate = new Date(sts * 1000);
+			$(this).html(sdate.toLocaleString());
+			return;
+		}
+		
+		for(var i in timeSpans) {
+			if(Math.floor(t / timeSpans[i]) > 0) {
+				ts =  trans('X ago').replace('%s',(Math.floor(t / timeSpans[i]) + ' ' + trans(i)));
+				break;
+			}
+		}
+		$(this).html(ts);
+	});
+	
+	var timerSet = (minTs >= 60 ? 60 : 10);
+	snapshotToolbar._timer = window.setTimeout(__vboxTabSnapshotTimestamps,(timerSet * 1000));
 }
 </script>
 </div>

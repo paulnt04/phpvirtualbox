@@ -87,6 +87,7 @@ public static $trans = array(
 
 /* Snapshots */
 'Snapshots' => 'Snapshots',
+'Snapshot X' => 'Snapshot %s', /* %s will be replaced with snapshot number to generate a snapshot name */
 'Snapshot Folder' => 'Snapshot Folder',
 'Current State' => 'Current State',
 'Restore' => 'Restore',
@@ -161,6 +162,7 @@ public static $trans = array(
 'Removable Media' => 'Removable Media',
 'Remember Runtime Changes' => 'Remember Runtime Changes',
 'Motherboard' => 'Motherboard',
+'Chipset' => 'Chipset',
 'Acceleration' => 'Acceleration',
 'Extended Features' => 'Extended Features',
 'CPUs' => 'CPUs',

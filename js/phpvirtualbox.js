@@ -859,6 +859,7 @@ function vboxStorage() {
 		'slotName' : function(p,d) {
 			return trans((p ? 'Secondary' : 'Primary') +' '+(d ? 'Slave' : 'Master'));
 		},
+		'driveTypes' : ['dvd','disk'],
 		'slots' : function() { return {
 		          	'0-0' : (trans('Primary Master')),
 		          	'0-1' : (trans('Primary Slave')),
@@ -871,6 +872,7 @@ function vboxStorage() {
 		'maxPortCount' : 30,
 		'maxDevicesPerPortCount' : 1,
 		'types' : ['IntelAhci'],
+		'driveTypes' : ['dvd','disk'],
 		'slotName' : function(p,d) { return trans('SATA Port') + ' ' + p; },
 		'slots' : function() {
 					var s = {};
@@ -884,6 +886,7 @@ function vboxStorage() {
 	this.SCSI = {
 		'maxPortCount' : 16,
 		'maxDevicesPerPortCount' : 1,
+		'driveTypes' : ['disk'],
 		'types' : ['LsiLogic','BusLogic'],
 		'slotName' : function(p,d) { return trans('SCSI Port') + ' ' + p; },
 		'slots' : function() {
@@ -899,6 +902,7 @@ function vboxStorage() {
 		'maxPortCount' : 1,
 		'maxDevicesPerPortCount' : 2,
 		'types' : ['I82078'],
+		'driveTypes' : ['floppy'],
 		'slotName' : function(p,d) { return trans('Floppy Device')+' '+d; },
 		'slots' : function() { return { '0-0':trans('Floppy Device')+' 0', '0-1':trans('Floppy Device')+' 1' }; }
 	};
@@ -908,6 +912,7 @@ function vboxStorage() {
 			'maxPortCount' : 8,
 			'maxDevicesPerPortCount' : 1,
 			'types' : ['LsiLogicSas'],
+			'driveTypes' : ['disk'],
 			'slotName' : function(p,d) { return trans('SAS Port') + ' ' + p; },
 			'slots' : function() {
 							var s = {};

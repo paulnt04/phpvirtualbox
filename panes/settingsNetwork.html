@@ -284,7 +284,7 @@ function vboxSettingsUpdateNetworkOptions(sel) {
 /* Change settings onShow() when VM is running */
 $('#vboxSettingsDialog').bind('show',function(){
 	
-	if($('#vboxSettingsDialog').data('vboxMachineData').state != 'PoweredOff') {
+	if($('#vboxSettingsDialog').data('vboxMachineData').state == 'Running') {
 		
 		for(var i = 0; i < parseInt($('#vboxIndex').data('vboxConfig').nicMax); i++) {
 			

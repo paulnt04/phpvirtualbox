@@ -1,5 +1,24 @@
 -------------------------------------
-	4-2	-2011-1-14
+	4-3
+-------------------------------------
+UI fixes for some browsers when dragging the resize bar.
+
+SATA controllers can now have CD/DVD media attachments.
+
+Support for Chipset option on Motherboard tab in VM settings.
+
+Snapshots with no children can be deleted while VM is running.
+
+Improved snapshot name generation.
+
+Snapshot ages are now periodically updated when viewing the
+Snapshots tab.
+
+Snapshot dates are now displayed instead of age if for snapshots
+taken more than 30 days ago.
+
+-------------------------------------
+	4-2 - 2011-1-14
 -------------------------------------
 Viewing a VM's screen shot in a new window while running now
 prints a descriptive error rather than displaying a blank

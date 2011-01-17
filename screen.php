@@ -175,12 +175,14 @@ try {
 		}
 	}
 
-	if($_REQUEST['debug']) {
-		echo("<pre>");
-		print_r($ex);
-	} else if($_REQUEST['full'] && strpos($ex->faultstring,'VERR_NOT_SUPPORTED') > 0) {
+	if($_REQUEST['full'] && strpos($ex->faultstring,'VERR_NOT_SUPPORTED') > 0) {
 		@header("Content-type: text/html");
 		echo("Screen shots are not supported by your VirtualBox installation. To enable screen shots, please install a VirtualBox exteionsion pack that supports VRDE ");
 		echo("such as the Oracle VM VirtualBox Extension Pack found in the Downloads section of <a href='http://www.virtualbox.org'>http://www.virtualbox.org</a>.");
+	} else if($_REQUEST['full'] || $_REQUEST['debug']) {
+		header("Content-type: text/html", true);
+		echo("<pre>");
+		print_r($ex);
+		echo("</pre>");
 	}
 }

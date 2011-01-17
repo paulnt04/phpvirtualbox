@@ -271,7 +271,7 @@ $('#vboxSettingsSharedFoldersList').append(tr);
  * Add 'Transient Folders' if machine is running
  *
  */
- if($('#vboxSettingsDialog').data('vboxMachineData').state != 'PoweredOff') {
+ if($('#vboxSettingsDialog').data('vboxMachineData').state == 'Running') {
 
 	 var tr = document.createElement('tr');
 	 tr.setAttribute('class','vboxListItemDisabled');

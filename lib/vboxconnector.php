@@ -579,6 +579,7 @@ class vboxconnector {
 		$m->CPUCount = $args['CPUCount'];
 		$m->memorySize = $args['memorySize'];
 		$m->firmwareType = $args['firmwareType'];
+		if($args['chipsetType']) $m->chipsetType = $args['chipsetType']; 
 		if($m->snapshotFolder != $args['snapshotFolder']) $m->snapshotFolder = $args['snapshotFolder'];
 
 		$m->VRAMSize = $args['VRAMSize'];
@@ -2314,6 +2315,7 @@ class vboxconnector {
 				'PAE' => $m->getCpuProperty('PAE')
 				),
 			'bootOrder' => $this->__getBootOrder($m),
+			'chipsetType' => $m->chipsetType->__toString(),
 			'GUI' => array('SaveMountedAtRuntime' => $m->getExtraData('GUI/SaveMountedAtRuntime')),
 
 		);
@@ -2524,7 +2526,7 @@ class vboxconnector {
 			$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
 
 			$machine = $this->vbox->findMachine($args['vm']);
-			$machine->lockMachine($this->session->handle, 'Write');
+			$machine->lockMachine($this->session->handle, 'Shared');
 
 			$progress = $this->session->console->deleteSnapshot($args['snapshot']);
 

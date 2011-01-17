@@ -62,6 +62,14 @@
 			</table>
 		</td>
 	</tr>
+	<tr id='vboxSettingsSystemChipsetRow'>
+		<th><span class='translate'>Chipset</span>:</th>
+		<td><select name='vboxSettingsSystemChipset'>
+				<option value='PIIX3' class='translate'>PIIX3</option>
+				<option value='ICH9' class='translate'>ICH9</option>
+			</select>
+		</td>
+	</tr>	
 	<tr>
 		<th><span class='translate'>Extended Features</span>:</th>
 		<td><input type='checkbox' class='vboxCheckbox' name='vboxSettingsSystemIOAPIC' /> <span class='translate'>Enable IO APIC</span></td>
@@ -173,6 +181,12 @@ for(var i in bootItems) {
 	delete bootItems[i];
 }
 
+/* Hide Chipset selection if we didn't get one. A safeguard */
+if(!$('#vboxSettingsDialog').data('vboxMachineData').chipsetType) {
+	$('#vboxSettingsSystemChipsetRow').css('display','none');
+} else {
+	$(document.forms['frmVboxSettings'].vboxSettingsSystemChipset).val($('#vboxSettingsDialog').data('vboxMachineData').chipsetType);
+}
 /*
  * 
  * Ordered lists (Boot order)
@@ -243,6 +257,10 @@ $('#vboxSettingsDialog').bind('save',function(){
 	$('#vboxSettingsDialog').data('vboxMachineData').CpuProperties.PAE = (document.forms['frmVboxSettings'].vboxSettingsSystemPAE.checked ? 1 : 0);
 	$('#vboxSettingsDialog').data('vboxMachineData').RTCUseUTC = (document.forms['frmVboxSettings'].vboxSettingsSystemRTCUseUTC.checked ? 1 : 0);
 
+	/* Only if we had a chipset */
+	if($('#vboxSettingsDialog').data('vboxMachineData').chipsetType)
+		$('#vboxSettingsDialog').data('vboxMachineData').chipsetType = $(document.forms['frmVboxSettings'].vboxSettingsSystemChipset).val();
+		
 	/* Only if acceleration config is enabled */
 	if($('#vboxIndex').data('vboxConfig').enableAccelerationConfig) {
 		$('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.Enabled = (document.forms['frmVboxSettings'].settingsSystemVT.checked ? 1 : 0);
