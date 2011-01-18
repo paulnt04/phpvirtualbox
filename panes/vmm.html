@@ -15,68 +15,66 @@
 	<div id='vboxMMToolbar' style='padding: 4px'></div>
 
 	<!-- Tabs for Media -->
-	<div id='vboxMMTabs'>
+	<div id='vboxVMMTabs'>
 
-		<div id='vboxVMMTabs'>
-			<ul>
-				<li><a href="#vmmDisks"><span><img style="vertical-align: middle" src="images/vbox/hd_16px.png" border="0" /> <span class='translate'>Hard Disks</span></span></a></li>
-				<li><a href="#vmmCDs"><span><img style="vertical-align: middle" src="images/vbox/cd_16px.png" border="0" /> <span class='translate'>CD/DVD Images</span></span></a></li>
-				<li><a href="#vmmFloppys"><span><img style="vertical-align: middle" src="images/vbox/fd_16px.png" border="0" /> <span class='translate'>Floppy Images</span></span></a></li>
-				
-			</ul>
-			<!-- 
-			
-					HARD DISKS
-			
-			 -->
-			<div id='vmmDisks'>
-				<div class='vboxBordered vboxVMMList'>
-				<table width='100%' style='border-spacing: 0px; border: 0px;' class='vboxHorizontal vboxListTable vboxVMMList'>
-					<thead>
-						<tr>
-							<th style='width: 100%;'><span class='translate'>Name</span></th>
-							<th style='width: auto'><span class='translate'>Virtual Size</span></th>
-							<th style='width: auto'><span class='translate'>Actual Size</span></th>
-						</tr>
-					</thead>
-					<tbody id='vboxVMMHDList'>
-						<tr>
-							<td>Item 1</td>
-							<td>Item 2</td>
-							<td>Item 3</td>
-						</tr>
-					</tbody>
-				</table>
-				</div>
-				<div class='vboxVMMMediumInfo'>
-					<table>
-						<tr>
-							<th><span class='translate'>Location</span>:</th>
-							<td><span class='vmmMediumLocation'></span></td>
-						</tr>
-						<tr>
-							<th><span class='translate'>Type (Format)</span>:</th>
-							<td><span class='vmmMediumType'></span></td>
-						</tr>
-						<tr>
-							<th><span class='translate'>Attached to</span>:</th>
-							<td><span class='vmmMediumAttachedTo'></span></td>
-						</tr>
-						
-					</table>
-				</div>
-				
+		<ul>
+			<li><a href="#vmmDisks"><span><img style="vertical-align: middle" src="images/vbox/hd_16px.png" border="0" /> <span class='translate'>Hard Disks</span></span></a></li>
+			<li><a href="#vmmCDs"><span><img style="vertical-align: middle" src="images/vbox/cd_16px.png" border="0" /> <span class='translate'>CD/DVD Images</span></span></a></li>
+			<li><a href="#vmmFloppys"><span><img style="vertical-align: middle" src="images/vbox/fd_16px.png" border="0" /> <span class='translate'>Floppy Images</span></span></a></li>		
+		</ul>
+		
+		<!-- 
+		
+				HARD DISKS
+		
+		 -->
+		<div id='vmmDisks'>
+			<div class='vboxBordered vboxVMMList'>
+			<table width='100%' style='border-spacing: 0px; border: 0px;' class='vboxHorizontal vboxListTable vboxVMMList'>
+				<thead>
+					<tr>
+						<th style='width: 100%;'><span class='translate'>Name</span></th>
+						<th style='width: auto'><span class='translate'>Virtual Size</span></th>
+						<th style='width: auto'><span class='translate'>Actual Size</span></th>
+					</tr>
+				</thead>
+				<tbody id='vboxVMMHDList'>
+					<tr>
+						<td>Item 1</td>
+						<td>Item 2</td>
+						<td>Item 3</td>
+					</tr>
+				</tbody>
+			</table>
 			</div>
-			
-			
-			
-			<!-- 
-			
-					CD / DVD IMAGES
-			
-			 -->
-			<div id='vmmCDs'>
-				<div class='vboxVMMList vboxBordered'>
+			<div class='vboxVMMMediumInfo'>
+				<table>
+					<tr>
+						<th><span class='translate'>Location</span>:</th>
+						<td><span class='vmmMediumLocation'></span></td>
+					</tr>
+					<tr>
+						<th><span class='translate'>Type (Format)</span>:</th>
+						<td><span class='vmmMediumType'></span></td>
+					</tr>
+					<tr>
+						<th><span class='translate'>Attached to</span>:</th>
+						<td><span class='vmmMediumAttachedTo'></span></td>
+					</tr>
+					
+				</table>
+			</div>
+		</div>
+		
+		
+		
+		<!-- 
+		
+				CD / DVD IMAGES
+		
+		 -->
+		<div id='vmmCDs'>
+			<div class='vboxVMMList vboxBordered'>
 				<table width='100%' style='border-spacing: 0px; border: 0px;' class='vboxHorizontal vboxListTable vboxVMMList'>
 					<thead>
 						<tr>
@@ -96,32 +94,32 @@
 						</tr>
 					</tbody>
 				</table>
-				</div>
-				<div class='vboxVMMMediumInfo'>
-					<table>
-						<tr>
-							<th><span class='translate'>Location</span>:</th>
-							<td><span class='vmmMediumLocation'></span></td>
-						</tr>
-						<tr>
-							<th><span class='translate'>Attached to</span>:</th>
-							<td><span class='vmmMediumAttachedTo'></span></td>
-						</tr>
-						
-					</table>
-				</div>		
 			</div>
-			
-			
-			
-			
-			<!-- 
-			
-				FLOPPY IMAGES
-			
-			 -->
-			<div id='vmmFloppys'>
-				<div class='vboxVMMList vboxBordered'>
+			<div class='vboxVMMMediumInfo'>
+				<table>
+					<tr>
+						<th><span class='translate'>Location</span>:</th>
+						<td><span class='vmmMediumLocation'></span></td>
+					</tr>
+					<tr>
+						<th><span class='translate'>Attached to</span>:</th>
+						<td><span class='vmmMediumAttachedTo'></span></td>
+					</tr>
+					
+				</table>
+			</div>		
+		</div>
+		
+		
+		
+		
+		<!-- 
+		
+			FLOPPY IMAGES
+		
+		 -->
+		<div id='vmmFloppys'>
+			<div class='vboxVMMList vboxBordered'>
 				<table width='100%' style='border-spacing: 0px; border: 0px;' class='vboxHorizontal vboxListTable vboxVMMList'>
 					<thead>
 						<tr>
@@ -136,22 +134,20 @@
 						</tr>
 					</tbody>
 				</table>
-				</div>
-				<div class='vboxVMMMediumInfo'>
-					<table>
-						<tr>
-							<th><span class='translate'>Location</span>:</th>
-							<td><span class='vmmMediumLocation'></span></td>
-						</tr>
-						<tr>
-							<th><span class='translate'>Attached to</span>:</th>
-							<td><span class='vmmMediumAttachedTo'></span></td>
-						</tr>
-						
-					</table>
-				</div>
 			</div>
-			
+			<div class='vboxVMMMediumInfo'>
+				<table>
+					<tr>
+						<th><span class='translate'>Location</span>:</th>
+						<td><span class='vmmMediumLocation'></span></td>
+					</tr>
+					<tr>
+						<th><span class='translate'>Attached to</span>:</th>
+						<td><span class='vmmMediumAttachedTo'></span></td>
+					</tr>
+					
+				</table>
+			</div>
 		</div>
 	</div>
 	
@@ -170,9 +166,11 @@ unsetLangContext();
  */
 $("#vboxVMMTabs").tabs().bind("tabsshow",function(ev,el){
 
+	/*
 	if(!$('#'+el.panel.id).find('tbody').children('tr.vboxListItemSelected').first().children().first().click().html()) {
 		$('#vboxVirtualMediaManager').trigger('mediumselect',[null]);
 	}
+	*/
 
 	
 	
@@ -225,7 +223,7 @@ var vmmButtons = new Array(
 			var td = document.createElement('td');
 			td.setAttribute('class','vboxFileFolderInput');
 			td.setAttribute('style','width: auto; white-space: nowrap;');
-			td.innerHTML = '<input type="button" class="vboxImgButton" style="background-image: url(images/vbox/select_file_16px.png); '+($('#vboxIndex').data('vboxConfig').browserDisable ? 'display: none;' : '')+'" onClick="vboxFileBrowser($(\'#vboxIndex\').data(\'vboxSystemProperties\').homeFolder,function(f){$(\'#vboxVMMAddMediumImage\').val((f ? f : undefined));},false);" />';
+			td.innerHTML = '<input type="button" class="vboxImgButton" style="background-image: url(images/vbox/select_file_16px.png); '+($('#vboxIndex').data('vboxConfig').browserDisable ? 'display: none;' : '')+'" onClick="vboxFileBrowser($(\'#vboxIndex\').data(\'vboxSystemProperties\').homeFolder,function(f){if(f) $(\'#vboxVMMAddMediumImage\').val(f);},false);" />';
 			tr.appendChild(td);
 			tbl.appendChild(tr);
 
@@ -440,7 +438,7 @@ var menu = {
 				var td = document.createElement('td');
 				td.setAttribute('class','vboxFileFolderInput');
 				td.setAttribute('style','width: auto; white-space: nowrap;');
-				td.innerHTML = '<input type="button" class="vboxImgButton" style="background-image: url(images/vbox/select_file_16px.png); '+($('#vboxIndex').data('vboxConfig').browserDisable ? 'display: none;' : '')+'" onClick="vboxFileBrowser($(\'#vboxIndex\').data(\'vboxSystemProperties\').homeFolder,function(f){$(\'#vboxVMMCloneMedium\').val((f ? f : undefined));},false);" />';
+				td.innerHTML = '<input type="button" class="vboxImgButton" style="background-image: url(images/vbox/select_file_16px.png); '+($('#vboxIndex').data('vboxConfig').browserDisable ? 'display: none;' : '')+'" onClick="vboxFileBrowser($(\'#vboxIndex\').data(\'vboxSystemProperties\').homeFolder,function(f){if(f) $(\'#vboxVMMCloneMedium\').val(f);},false);" />';
 				tr.appendChild(td);
 				tbl.appendChild(tr);
 

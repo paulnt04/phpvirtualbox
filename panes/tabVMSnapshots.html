@@ -118,7 +118,7 @@ var tButtons = [
 					if(d && d.progress) {
 						vboxProgress(d.progress,function(){
 							$('#vboxTabVMSnapshots').trigger('refresh');
-						},{},'progress_snapshot_create_90px.png');
+						},{},'progress_snapshot_create_90px.png',trans('Take Snapshot'));
 					} else if(d && d.error) {
 						vboxAlert(d.error);
 					}
@@ -152,7 +152,7 @@ var tButtons = [
 					if(d && d.progress) {
 						vboxProgress(d.progress,function(){
 							$('#vboxTabVMSnapshots').trigger('refresh');
-						},{},'progress_snapshot_restore_90px.png');
+						},{},'progress_snapshot_restore_90px.png',trans('Restore Snapshot'));
 					} else if(d && d.error) {
 						vboxAlert(d.error);
 					}
@@ -183,7 +183,7 @@ var tButtons = [
 					if(d && d.progress) {
 						vboxProgress(d.progress,function(){
 							$('#vboxTabVMSnapshots').trigger('refresh');
-						},{},'progress_snapshot_discard_90px.png');
+						},{},'progress_snapshot_discard_90px.png',trans('Delete Snapshot'));
 					} else if(d && d.error) {
 						vboxAlert(d.error);
 					}

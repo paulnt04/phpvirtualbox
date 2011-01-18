@@ -41,7 +41,7 @@ function vboxImportApplianceDialogInit() {
 						var ml = new vboxLoader();
 						ml.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
 						ml.run();
-					},{},'progress_import_90px.png');
+					},{},'progress_import_90px.png',trans('Import Appliance'));
 				}
 			},{'descriptions':descriptions,'file':file});
 			$(dialog).remove();
@@ -92,7 +92,7 @@ function vboxExportApplianceDialogInit() {
 		l.mode = 'save';
 		l.add('applianceExport',function(d){
 			if(d && d.progress)
-				vboxProgress(d.progress,function(){return;},{},'progress_export_90px.png');
+				vboxProgress(d.progress,function(){return;},{},'progress_export_90px.png',trans('Export Appliance'));
 		},{'format':format,'file':file,'vms':vms});
 		$(dialog).remove();
 		l.run();
@@ -314,7 +314,7 @@ function vboxWizardNewHDInit(callback,suggested) {
 			l.mode = 'save';
 			l.add('mediumCreateBaseStorage',function(d,e){
 				if(d && d.progress) {
-					vboxProgress(d.progress,callback,d.id,'progress_media_create_90px.png');
+					vboxProgress(d.progress,callback,d.id,'progress_media_create_90px.png',trans('Create New Virtual Disk'));
 				} else {
 					callback(d);
 				}

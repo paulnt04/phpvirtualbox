@@ -79,7 +79,7 @@ class vboxconnector {
 
 		if($this->settings['cachePath']) $this->cache->path = $this->settings['cachePath'];
 
-		$this->cache->prefix = 'pvbx-'.$this->settings['key'].'-';
+		$this->cache->prefix = 'pvbx-'.md5($this->settings['key'].'$Revision$').'-';
 
 	}
 
@@ -608,7 +608,7 @@ class vboxconnector {
 
 		// VRDE settings
 		try {
-			if($m->VRDEServer && $m->VRDEServer->VRDEExtPack) {
+			if($m->VRDEServer && $this->vbox->systemProperties->defaultVRDEExtPack) {
 				$m->VRDEServer->enabled = $args['VRDEServer']['enabled'] ? 1 : 0;
 				$m->VRDEServer->setVRDEProperty('TCP/Ports',$args['VRDEServer']['ports']);
 				$m->VRDEServer->authType = ($args['VRDEServer']['authType'] ? $args['VRDEServer']['authType'] : null);

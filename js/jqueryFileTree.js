@@ -47,6 +47,8 @@ if(jQuery) (function($){
 			if( o.collapseEasing == undefined ) o.collapseEasing = null;
 			if( o.multiFolder == undefined ) o.multiFolder = true;
 			if( o.loadMessage == undefined ) o.loadMessage = 'Loading...';
+			if( o.scrollTo == undefined ) o.scrollTo = null;
+			if( o.dirsOnly == undefined) o.dirsOnly = false;
 			
 			var top = this;
 			
@@ -59,6 +61,9 @@ if(jQuery) (function($){
 						$(c).find('.start').html('');
 						$(c).removeClass('wait').append(data);
 						if( o.root == t ) $(c).find('UL:hidden').show(); else $(c).find('UL:hidden').slideDown({ duration: o.expandSpeed, easing: o.expandEasing });
+						if(o.scrollTo) {
+							$(o.scrollTo).scrollTo('a[name='+t+']',{'axis':'y','offset':{'top':-15}});
+						}
 						bindTree(c);
 					});
 				}

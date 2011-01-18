@@ -17,10 +17,12 @@ Snapshots tab.
 Snapshot dates are now displayed instead of age if for snapshots
 taken more than 30 days ago.
 
+File / folder browser now scrolls to selected file / folder.
+
 -------------------------------------
 	4-2 - 2011-1-14
 -------------------------------------
-Viewing a VM's screen shot in a new window while running now
+Viewing a VM's screenshot in a new window while running now
 prints a descriptive error rather than displaying a blank
 screen if the Oracle VM Extension Pack is not installed.
 
@@ -176,7 +178,7 @@ Fixed bug that would not display error message on failure to
 connect to vboxwebsrv.
 
 Removed old imgpng requirement as VirtualBox can now export
-screen shots as PNG data.
+screenshots as PNG data.
 
 Fixed media mounting bug that would not allow anything other than
 host drives to be mounted.

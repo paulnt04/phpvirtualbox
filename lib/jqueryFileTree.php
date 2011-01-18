@@ -50,6 +50,7 @@ error_reporting(E_ALL ^ E_NOTICE);
 /*
  * Clean request
  */
+global $vboxRequest;
 $vboxRequest = clean_request();
 
 $localbrowser = @$settings->browserLocal;
@@ -127,7 +128,7 @@ printdir($dir);
 
 function printdir($dir, $recurse=array()) {
 
-	global $vbox, $localbrowser, $allowed;
+	global $vbox, $localbrowser, $allowed, $vboxRequest;
 
 	if($localbrowser) return printdirlocal($dir,$recurse);
 
@@ -206,7 +207,7 @@ function printdir($dir, $recurse=array()) {
 
 function printdirlocal($dir, $recurse=array()) {
 
-	global $allowed;
+	global $allowed, $vboxRequest;
 
 	if(!(file_exists($dir) && ($files = @scandir($dir)))) return;
 

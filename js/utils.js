@@ -242,7 +242,7 @@ function vboxFileBrowser(root,fn,foldersonly) {
 	
 	var d2 = document.createElement('div');
 	d2.setAttribute('id','vboxBrowseFolderList');
-	$(d2).fileTree({ 'root': (root ? root : '/'),'dirsOnly':(foldersonly ? 1 : 0) },function(f){
+	$(d2).fileTree({ 'root': (root ? root : '/'),'dirsOnly':(foldersonly ? 1 : 0),'loadMessage':trans('Loading ...'),'scrollTo':'#vboxBrowseFolder'},function(f){
     	buttons[trans('OK')](f);
     });
 	
@@ -565,7 +565,7 @@ function vboxInstallGuestAdditions(vmid) {
 		if(d && d.progress) {
 			vboxProgress(d.progress,function(){
 				$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);
-			},{},'progress_install_guest_additions_90px.png');
+			},{},'progress_install_guest_additions_90px.png',trans('Install Guest Additions'));
 		} else if(d && d.result && d.result == 'mounted') {
 
 			// Mediums and VM data must be refreshed
@@ -587,11 +587,11 @@ function vboxInstallGuestAdditions(vmid) {
  * Progress dialog and supporting functions
  * 
  */
-function vboxProgress(pid,callback,args,icon) {
+function vboxProgress(pid,callback,args,icon,title) {
 	
 	var div = document.createElement('div');
 	div.setAttribute('id','vboxProgressDialog');
-	div.setAttribute('title','phpVirtualBox');
+	div.setAttribute('title',(title ? title : 'phpVirtualBox'));
 	div.setAttribute('style','text-align: center');
 	
 	var tbl = document.createElement('table');

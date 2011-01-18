@@ -42,7 +42,7 @@
 		<th><span class='translate'>Snapshot Folder</span>:</th>
 		<td class='vboxFileFolderInput'>
 					<input type='text' class='vboxText' name='vboxSettingsGeneralSnapshotFolder' /><input type="button" class="vboxImgButton" style="background-image: url(images/vbox/select_file_16px.png)"
-						onClick="browseFolder($('input[name=vboxSettingsGeneralSnapshotFolder]').first().val(),function(f){$('input[name=vboxSettingsGeneralSnapshotFolder]').first().val((f ? f : undefined));});" />
+						onClick="browseFolder($('input[name=vboxSettingsGeneralSnapshotFolder]').first().val(),function(f){if(f) $('input[name=vboxSettingsGeneralSnapshotFolder]').first().val(f);});" />
 		</td>
 	</tr>
 	<tr>

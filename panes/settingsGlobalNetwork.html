@@ -121,7 +121,7 @@ var sButtons = new Array(
 						l.add('HostOnlyNetworking',function(d){$('#vboxSettingsDialog').data('vboxHostOnlyNetworking',d);});
 						l.onLoad = vboxSettingsGlobalNetworkAddAdpaters;
 						l.run();
-					});
+					},null,trans('Add host-only network'));
 				}
 				
 			});
@@ -160,7 +160,7 @@ var sButtons = new Array(
 							if(!$(target).children().first().trigger('click').hasClass('vboxListItemSelected')) {
 								$('#vboxSettingsGlobalNetList').trigger('select',null);
 							}
-						});
+						},null,trans('Remove host-only network'));
 					}
 					
 				},{'id':$(item).data('id')});

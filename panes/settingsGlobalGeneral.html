@@ -15,7 +15,7 @@
 				<td style="width: auto; white-space: nowrap;" class="vboxFileFolderInput">
 					<input type='text' class='vboxText' name='vboxSettingsDefaultMachineFolder' />
 					<input type="button" class="vboxImgButton" style="background-image: url(images/vbox/select_file_16px.png)"
-						onClick="browseFolder($('input[name=vboxSettingsDefaultMachineFolder]').first().val(),function(f){$('input[name=vboxSettingsDefaultMachineFolder]').first().val((f ? f : undefined));});" />
+						onClick="browseFolder($('input[name=vboxSettingsDefaultMachineFolder]').first().val(),function(f){if(f) $('input[name=vboxSettingsDefaultMachineFolder]').first().val(f);});" />
 				</td>
 			</tr>
 			</table>		
@@ -32,7 +32,7 @@
 				<td style="width: auto; white-space: nowrap;" class="vboxFileFolderInput">
 					<input type='text' class='vboxText' name='vboxSettingsVRDEAuthLibrary' />
 					<input type="button" class="vboxImgButton" style="background-image: url(images/vbox/select_file_16px.png)"
-						onClick="browseFolder($('input[name=vboxSettingsVRDEAuthLibrary]').first().val(),function(f){$('input[name=vboxSettingsVRDEAuthLibrary]').first().val((f ? f : undefined));});" />
+						onClick="browseFolder($('input[name=vboxSettingsVRDEAuthLibrary]').first().val(),function(f){if(f) $('input[name=vboxSettingsVRDEAuthLibrary]').first().val(f);});" />
 				</td>
 			</tr>
 			</table>				
