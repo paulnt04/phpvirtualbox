@@ -19,6 +19,8 @@ taken more than 30 days ago.
 
 File / folder browser now scrolls to selected file / folder.
 
+Added Russian translation.
+
 -------------------------------------
 	4-2 - 2011-1-14
 -------------------------------------
