@@ -1,11 +1,6 @@
 <?php
-
 /*
- * German / German language file
- *
- * The decision to use PHP for language files instead of JS
- * was made in case the PHP back-end needs to inject translated
- * messages into the interface.
+ * German language file
  *
  * $Id$
  *
@@ -28,10 +23,9 @@ public static $trans = array(
 'Yes' => 'Ja',
 'No' => 'Nein',
 'Close' => 'Schließen',
-'None' => 'Keine',
 'Any' => 'Alle',
 'New' => 'Neu',
-'Add' => 'Add', /* New */
+'Add' => 'Hinzufügen...',
 'Delete' => 'Löschen',
 'Keep' => 'Behalten',
 'Settings' => 'Einstellungen',
@@ -61,8 +55,11 @@ public static $trans = array(
 'Finish' => 'Beenden',
 'Select File' => 'Datei auswählen',
 'Select Folder' => 'Ordner auswählen',
+'Server List' => 'Server-Liste',
+'Interface Language' => 'Sprache der Nutzeroberfläche',
 
 // Power button
+'Stop' => 'Stoppen',
 'Pause' => 'Pausieren',
 'Reset' => 'Neu Starten',
 'Save State' => 'Zustand Speichern',
@@ -78,8 +75,15 @@ public static $trans = array(
 'hours' => 'Stunden',
 'days' => 'Tage',
 
+/* Preview box */
+'Preview' => 'Vorschau',
+'Update Disabled' => 'Update deaktiviert',
+'Every X seconds' => 'alle %s Sekunde(n)', /* %s will be replaced with numeric values */
+'Open in new window' => 'Neues Fenster', /* View VM screenshot in new window*/
+
 /* Snapshots */
 'Snapshots' => 'Momentaufnahme',
+'Snapshot X' => 'Sicherungspunkt %s', /* %s will be replaced with snapshot number to generate a snapshot name */
 'Snapshot Folder' => 'Ordner für Momentaufnahmen',
 'Current State' => 'Aktueller Zustand',
 'Restore' => 'Wiederherstellen',
@@ -96,14 +100,16 @@ public static $trans = array(
 'changed' => 'geändert',
 
 /* Discard State */
-'Discard' => 'Discard',
+'Discard' => 'Verwerfen',
 'Discard Message1' => 'Sind Sie sicher, dass Sie den gespeicherten Zustand der virtuellen Maschine %s verwerfen möchten?', // %s willl be replaced with VM name
 'Discard Message2' => 'Diese Aktion entspricht dem Neustart oder Ausschalten der Maschine ohne das Gastsystem ordnungsgemäß herunter zu fahren.',
 
 /* Delete or Unregister Inaccessible Machine */
 'VM Inaccessible' => 'Auf die ausgewählte virtuelle Maschine kann nicht zugegriffen werden. Bitte beachten Sie die nachstehende Fehlermeldung. Um die Möglichkeit des Zugriffs nochmals zu Überprüfen, drücken Sie den Konpf Neu Laden.',
-'Delete VM Message1' => 'Sind Sie sicher, dass Sie die virtuelle Maschine %s engültig löschen möchten?',
-'Delete VM Message2' => 'Diese Aktion kann nicht rückgängig gemacht werden.',
+'Delete VM Message1' => 'Sie sind im Begriff, die virtuelle Maschine %s aus der Liste der virtuellen Maschine zu entfernen.',
+'Delete VM Message2' => 'Möchten Sie die entsprechenden Dateien von der Festplatte ebenfalls löschen? Falls ja, werden die virtuellen Festplatten ebenfalls unwiderruflich gelöscht, falls diese nicht noch an eine andere VM gebunden sind.',
+'Delete all files' => 'Alle Dateien löschen',
+'Remove only' => 'Nur löschen',
 'Unregister VM Message1' => 'Sind Sie sicher, dass Sie die nicht verfügbare virtuelle Maschine %s deregistrieren möchten?',
 'Unregister VM Message2' => 'Sie können sie über diese grafische Oberfläche nicht mehr registrieren.',
 'Unregister' => 'Unregister',
@@ -122,7 +128,7 @@ public static $trans = array(
 /* Options in Preferences / Global Settings */
 'Default Hard Disk Folder' => 'Standardordner für Festplatten',
 'Default Machine Folder' => 'Standardordner für Maschinen',
-'VRDP Authentication Library' => 'VRDP Authentifizierungs Bibliothek',
+'VRDE Authentication Library' => 'VRDE-Authentisierungsbibliothek',
 'Add host-only network' => 'Host-only Netzwerk hinzufügen',
 'Remove host-only network' => 'Host-only Netzwerk entfernen',
 'Edit host-only network' => 'Host-only Netzwerk bearbeiten',
@@ -152,6 +158,7 @@ public static $trans = array(
 'Removable Media' => 'Wechseldatenträger',
 'Remember Runtime Changes' => 'Änderungen zur Laufzeit merken',
 'Motherboard' => 'Hauptplatine',
+'Chipset' => 'Chipsatz',
 'Acceleration' => 'Beschleunigung',
 'Extended Features' => 'Erweiterte Eigenschaften',
 'CPUs' => 'CPUs',
@@ -178,6 +185,7 @@ public static $trans = array(
 'Authentication Method' => 'Anmeldungsmethode',
 'External' => 'Extern',
 'Guest' => 'Gast',
+'Allow Multiple Connections' => 'Gleichzeitige Verbindungen erlauben',
 
 'Storage' => 'Speicherpaltz',
 'Storage Tree' => 'Storage Tree',
@@ -191,10 +199,10 @@ public static $trans = array(
 'Information' => 'Information',
 'Use host I/O cache' => 'Host I/O cache nutzen',
 'IDE Controller' => 'IDE Controller',
-'Primary Master' => 'Primary Master',
-'Primary Slave' => 'Primary Slave',
-'Secondary Master' => 'Secondary Master',
-'Secondary Slave' => 'Secondary Slave',
+'Primary Master' => 'Primärer Master',
+'Primary Slave' => 'Primärer Slave',
+'Secondary Master' => 'Sekundärer Master',
+'Secondary Slave' => 'Sekundärer Slave',
 'Floppy Controller' => 'Floppy Controller',
 'Floppy Device' => 'Floppy Device',
 'SCSI Controller' => 'SCSI Controller',
@@ -253,6 +261,7 @@ public static $trans = array(
 'Move Filter Down' => 'Filter nachrangig',
 'Device Filters' => 'Gerätefilter',
 'active' => 'aktiv',
+'no devices available' => 'keine Geräte verfügbar',
 
 'USB Filter' => 'USB Filter',
 'New Filter' => 'Neuer Filter',
@@ -266,11 +275,15 @@ public static $trans = array(
 'Shared Folders' => 'Gemeinsame Ordner',
 'Shared Folder' => 'Gemeinsamer Ordner',
 'Folders List' => 'Ordnerliste',
+'Machine Folders' => 'Ordner der virtuellen Maschine',
+'Transient Folders' => 'Transiente Ordner',
 'Path' => 'Pfad',
 'Access' => 'Zugriff',
 // read only & read/write
 'ro' => 'nur Lesen',
 'rw' => 'Lesen und Schreiben',
+'Auto-Mount' => 'automatisch einbinden', // 3.2.8
+'Make Permanent' => 'Permanent erzeugen',
 'Full Access' => 'Vollzugriff',
 'Add Shared Folder' => 'Gemeinsamen Ordner hinzufügen',
 'Edit Shared Folder' => 'Gemeinsamen Ordner bearbeiten',
@@ -292,6 +305,7 @@ public static $trans = array(
 'Pulse' => 'Pulse Audio',
 'SolAudio' => 'Solaris Audio',
 
+'HDA' => 'Intel HD Audio', // 3.2.8
 'AC97' => 'ICH AC97',
 'SB16' => 'SoundBlaster 16',
 
@@ -318,6 +332,21 @@ public static $trans = array(
 'Cable connected' => 'durch Kabel verbunden',
 'netMediumType' => 'Typ',
 'Guest Network Adapters' => 'Netzwerkkarte des Gastes',
+/* New */
+'Port Forwarding' => 'Port-Weiterleitung',
+'Port Forwarding Rules' => 'Regel für Port-Weiterleitung',
+'Protocol' => 'Protokoll',
+'Host IP' => 'Host-IP',
+'Host Port' => 'Host-Port',
+'Guest IP' => 'Gast-IP',
+'Guest Port' => 'Gast-Port',
+'TCP' => 'TCP',
+'UDP' => 'UDP',
+'Rule' => 'Regel',
+'Insert new rule' => 'Neue Regel hinzufügen',
+'Delete selected rule' => 'Ausgewählte Regel entfernen',
+'Invalid IP Address' => 'Ungültige IP-Adresse',
+'The current port forwarding rules are not valid' => 'Die Regeln für die Port-Weiterleitung enthalten momentan Fehler. Keiner der Host- oder Gast-Ports darf Null sein.',
 
 
 'Am79C970A' => 'AMD PCNet-PCI II Netzwerkkarte',
@@ -347,10 +376,6 @@ public static $trans = array(
 'RestoringSnapshot' => 'Momentaufnahme wiederherstellen',
 'DeletingSnapshot' => 'Momentaufnahme löschen',
 'SettingUp' => 'Vorbereitung',
-'FirstOnline' => 'First Online',
-'LastOnline' => 'Last Online',
-'FirstTransient' => 'First Transient',
-'LastTransient' => 'Last Transient',
 
 // Mount dialog
 'Mount' => 'Einbinden',
@@ -381,13 +406,11 @@ public static $trans = array(
 'Immutable' => 'Nicht veränderbar',
 'Actions' => 'Aktionen',
 'Clone' => 'Klonen',
-/* New */
-'Remove' => 'Remove',
-'Release' => 'Release',
-'Hard Disks' => 'Hard Disks',
-'CD/DVD Images' => 'CD/DVD Images',
-'Floppy Images' => 'Floppy Images',
-
+'Remove' => 'Entfernen',
+'Release' => 'Freigeben',
+'Hard Disks' => 'Festplatten',
+'CD/DVD Images' => 'CD/DVD-Abbilder',
+'Floppy Images' => 'Diskettenabbilder',
 
 /* New hard disk wizard */
 'Create New Virtual Disk' => 'Neue virtuelle Festplatte anlegen',
@@ -455,7 +478,7 @@ public static $trans = array(
 'appImport Step2 Message1' => 'Die Appliance enthält diese Maschinen und ihre vorgeschlagenen Einstellungen. Sie können die meisten Einstellungen durch Doppelklick oder an/abwählen nachstehender Auswahlboxen ändern.',
 'appImport Step3 Message1' => 'Bitte geben Sie einen Dateinamen für den Import der OVF an.',
 'Write legacy OVF' => 'in altem  OVF 0.9 speichern',
-'Virtual System X' => 'Virtual System %s', // %s will be replaced with the virtual system number
+'Virtual System X' => 'Virtuelles System %s', // %s will be replaced with the virtual system number
 'Product' => 'Produkt',
 'Product-URL' => 'Produkt-URL',
 'Vendor' => 'Lieferant',
@@ -479,7 +502,7 @@ public static $trans = array(
 /* Guest properties error */
 'Unable to retrieve guest properties' => 'Die Eigensachaften des Gastes können nicht ermittelt werden. Stellen Sie sicher, das die Maschine läuft und die Gasterweiterungen von VirtualBox installiert sind.',
 
-/*RDP */
+/*Remote Console */
 'User name' => 'Benutzername',
 'Password' => 'Passwort',
 'Connecting to' => 'Verbinden mit',
@@ -488,10 +511,20 @@ public static $trans = array(
 'Connect' => 'Verbinden',
 'Detach' => 'Trennen',
 'Disconnect' => 'Trennen',
-"Ctrl-Alt-Del" => "Strg-Alt-Entf senden",
+"Ctrl-Alt-Del" => "Send Ctrl-Alt-Del",
 'Disconnect reason' => 'Grund für die Trennung',
-"Redirection by" => "Weitergeleitet von",
+"Redirection by" => "Redirection by",
 'Virtual machine is not running or RDP configured.' => 'Die virtuelle Maschine läuft nicht oder sie ist nicht für Zugriffe über RDP konfiguriert.',
+
+/* Guest Additions */
+'Install Guest Additions' => 'Gasterweiterungen installieren',
+'Guest Additions Mounted' => 'The VirtualBox Guest Additions CD image has been mounted on a CD/DVD drive in the virtual machine. To complete the installation process, you must log into the virtual machine and manually install the VirtualBox Guest Additions.',
+'Guest Additions No CDROM' => 'Das CD-Abbild mit den Gast-Erweiterungen konnte nicht an die maschine gebunden werden, da diese Maschine kein CD/DVD-Laufwerk besitzt. Bitte fügen Sie ein solches auf der Seite Massenspeicher der Einstellungen für die virtuelle Maschine hinzu.',
+
+/* USB devices */
+'USB Device' => 'USB-Gerät', // USB device name
+'USB Attached' => 'angeschlossen', // Is it attached to the VM
+'USB Available' => 'verfügbar', // 	Is it available
 
 /* Operating Systems */
 'Other' => 'Anderes/Unbekannt',

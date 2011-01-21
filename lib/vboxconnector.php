@@ -54,6 +54,7 @@ class vboxconnector {
 		require_once(dirname(__FILE__).'/cache.php');
 		require_once(dirname(__FILE__).'/language.php');
 		require_once(dirname(__FILE__).'/vboxServiceWrappers.php');
+		#require_once(dirname(__FILE__).'/phplibs.php');
 
 		/* Set.. .. settings */
 		$settings = new phpVBoxConfig();
@@ -436,6 +437,7 @@ class vboxconnector {
 					break;
 				}
 			}
+			$sc->releaseRemote();
 			if($mounted) break;
 		}
 

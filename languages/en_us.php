@@ -61,6 +61,7 @@ public static $trans = array(
 'Select File' => 'Select File',
 'Select Folder' => 'Select Folder',
 'Server List' => 'Server List',
+'Interface Language' => 'Interface Language',
 
 // Power button
 'Stop' => 'Stop',
@@ -83,7 +84,7 @@ public static $trans = array(
 'Preview' => 'Preview',
 'Update Disabled' => 'Update Disabled',
 'Every X seconds' => 'Every %s seconds', /* %s will be replaced with numeric values */
-'Open in new window' => 'Open in new window', /* View saved VM screenshot */
+'Open in new window' => 'Open in new window', /* View VM screenshot in new window*/
 
 /* Snapshots */
 'Snapshots' => 'Snapshots',
@@ -265,6 +266,7 @@ public static $trans = array(
 'Move Filter Down' => 'Move Filter Down',
 'Device Filters' => 'Device Filters',
 'active' => 'active',
+'no devices available' => 'no devices available',
 
 'USB Filter' => 'USB Filter',
 'New Filter' => 'New Filter',
@@ -278,7 +280,7 @@ public static $trans = array(
 'Shared Folders' => 'Shared Folders',
 'Shared Folder' => 'Shared Folder',
 'Folders List' => 'Folders List',
-'Machine Folderes' => 'Machine Folders',
+'Machine Folders' => 'Machine Folders',
 'Transient Folders' => 'Transient Folders',
 'Path' => 'Path',
 'Access' => 'Access',
@@ -379,10 +381,6 @@ public static $trans = array(
 'RestoringSnapshot' => 'Restoring Snapshot',
 'DeletingSnapshot' => 'Deleting Snapshot',
 'SettingUp' => 'Setting Up',
-'FirstOnline' => 'First Online',
-'LastOnline' => 'Last Online',
-'FirstTransient' => 'First Transient',
-'LastTransient' => 'Last Transient',
 
 // Mount dialog
 'Mount' => 'Mount',

@@ -21,6 +21,16 @@ File / folder browser now scrolls to selected file / folder.
 
 Added Russian translation.
 
+Added Italian translation.
+
+Updated French and German translations to the best of my ability
+using nls files from VirtualBox source and Google translate.
+
+Improved multi-language support for PHP installations that do not
+have JSON enabled / installed.
+
+Language can now be changed in File -> Preferences -> Language.
+
 -------------------------------------
 	4-2 - 2011-1-14
 -------------------------------------

@@ -1,11 +1,7 @@
 <?php
 
 /*
- * French / France language file
- *
- * The decision to use PHP for language files instead of JS
- * was made in case the PHP back-end needs to inject translated
- * messages into the interface.
+ * French language file
  *
  * $Id$
  *
@@ -30,6 +26,7 @@ public static $trans = array(
 'Close' => 'Fermer',
 'Any' => 'Quelconque',
 'New' => 'Créer',
+'Add' => 'Ajouter',
 'Delete' => 'Supprimer',
 'Keep' => 'Conserver',
 'Settings' => 'Configuration',
@@ -43,8 +40,8 @@ public static $trans = array(
 'Configuration' => 'Configuration',
 'Operating System' => 'Système d\'exploitation',
 'Machine' => 'Machine',
-'Enabled' => 'Activer',
-'Disabled' => 'Désactiver',
+'Enabled' => 'Activé',
+'Disabled' => 'Désactivé',
 'Hosting' => 'Hébergeur',
 'Basic' => 'Simple',
 'Advanced' => 'Avancé',
@@ -59,10 +56,13 @@ public static $trans = array(
 'Finish' => 'Terminer',
 'Select File' => 'Sélectionner un fichier',
 'Select Folder' => 'Sélectionner un dossier',
+'Server List' => 'Liste des serveurs',
+'Interface Language' => 'Langue de l\'interface',
 
 // Power button
-'Pause' => 'Pause',
-'Reset' => 'Redémarrer',
+'Stop' => 'Extinction',
+'Pause' => 'Pauser',
+'Reset' => 'Redémarrage',
 'Save State' => 'Enregistrer l\'état',
 'ACPI Power Button' => 'ACPI Power Boutton',
 'ACPI Sleep Button' => 'ACPI Sleep Boutton',
@@ -76,8 +76,15 @@ public static $trans = array(
 'hours' => 'heures',
 'days' => 'jours',
 
+/* Preview box */
+'Preview' => 'Prévisualisation',
+'Update Disabled' => 'Prévisualisation',
+'Every X seconds' => 'Toutes les %ss', /* %s will be replaced with numeric values */
+'Open in new window' => 'Ouvrir dans une nouvelle fenêtre', /* View saved VM screenshot */
+
 /* Snapshots */
 'Snapshots' => 'Instantanés',
+'Snapshot X' => 'Instantané %s', /* %s will be replaced with snapshot number to generate a snapshot name */
 'Snapshot Folder' => 'Dossier des instantanés',
 'Current State' => 'État actuel',
 'Restore' => 'Restaurer',
@@ -100,8 +107,10 @@ public static $trans = array(
 
 /* Delete or Unregister Inaccessible Machine */
 'VM Inaccessible' => 'La VM sélectionnée est inaccessible. Prenez en compte le message d\'erreur ci-dessous et appuyez sur le bouton Actualiser si vous voulez répéter la vérification de l\'accessibilité.',
-'Delete VM Message1' => 'Voulez-vous vraiment supprimer la machine virtuelle %s?',
-'Delete VM Message2' => 'Cette opération est irréversible.',
+'Delete VM Message1' => 'Vous êtes sur le point d\'enlever la machine virtuelle %s de la liste des machines.',
+'Delete VM Message2' => 'Voulez-vous également suprimer les fichiers contenant la machine virtuelle de votre disque dur? Ceci enlevera également les fichiers contenant les disques durs virtuels de la machine s\'ils ne sont pas aussi en utilisation par une autre machine.',
+'Delete all files' => 'Supprimer tous les fichiers',
+'Remove only' => 'Supprimer de la liste',
 'Unregister VM Message1' => 'Êtes-vous sûr de vouloir supprimer la machine virtuelle inaccessible %s?',
 'Unregister VM Message2' => 'Vous ne pourrez pas l\'enregistrer à nouveau dans l\'interface graphique.',
 'Unregister' => 'Libérer',
@@ -120,7 +129,7 @@ public static $trans = array(
 /* Options in Preferences / Global Settings */
 'Default Hard Disk Folder' => 'Dossier par défaut des disques durs',
 'Default Machine Folder' => 'Dossiers par défaut des machines',
-'VRDP Authentication Library' => 'Authentication VRDP par défaut',
+'VRDE Authentication Library' => 'Authentification VRDE par défaut',
 'Add host-only network' => 'Ajouter réseau privé hôte',
 'Remove host-only network' => 'Supprimer réseau privé hôte',
 'Edit host-only network' => 'Modifier réseau privé hôte',
@@ -142,7 +151,6 @@ public static $trans = array(
 'Base Memory' => 'Mémoire vive',
 'Memory' => 'Mémoire',
 'free' => 'libre', // as in free/available memory
-
 'Enable IO APIC' => 'Activer les IO APIC',
 'Enable EFI' => 'Activer EFI (OS spéciaux seulement)',
 'Hardware clock in UTC time' => 'Horloge interne en UTC',
@@ -151,6 +159,7 @@ public static $trans = array(
 'Removable Media' => 'Média amovible',
 'Remember Runtime Changes' => 'Enregistrer les changements pendant l\'éxécution',
 'Motherboard' => 'Carte mère',
+'Chipset' => 'Chipset',
 'Acceleration' => 'Accélération',
 'Extended Features' => 'Fonctions avancées',
 'CPUs' => 'CPUs',
@@ -177,6 +186,7 @@ public static $trans = array(
 'Authentication Method' => 'Méthode d\'authentification',
 'External' => 'Externe',
 'Guest' => 'Invité',
+'Allow Multiple Connections' => 'Autoriser les connexions multiples',
 
 'Storage' => 'Stockage',
 'Storage Tree' => 'Arboresence Stockage',
@@ -252,6 +262,7 @@ public static $trans = array(
 'Move Filter Down' => 'Déplacer le filtre vers le bas',
 'Device Filters' => 'Filtres',
 'active' => 'active',
+'no devices available' => 'pas de périphérique disponible',
 
 'USB Filter' => 'Filtre USB',
 'New Filter' => 'Nouveau filtre',
@@ -265,11 +276,15 @@ public static $trans = array(
 'Shared Folders' => 'Dossiers partagés',
 'Shared Folder' => 'Dossier partagé',
 'Folders List' => 'Liste des dossiers',
+'Machine Folders' => 'Dossiers permanents',
+'Transient Folders' => 'Dossiers temporaires',
 'Path' => 'Chemin',
 'Access' => 'Accès',
 // read only & read/write
 'ro' => 'Lecture seule',
 'rw' => 'Inscriptible',
+'Auto-Mount' => 'Montage automatique', // 3.2.8
+'Make Permanent' => 'Configuration permanente',
 'Full Access' => 'Plein',
 'Add Shared Folder' => 'Ajouter un dossier partagé',
 'Edit Shared Folder' => 'Modifier un dossier partagé',
@@ -291,6 +306,7 @@ public static $trans = array(
 'Pulse' => 'Pulse Audio',
 'SolAudio' => 'Solaris Audio',
 
+'HDA' => 'Intel HD Audio', // 3.2.8
 'AC97' => 'ICH AC97',
 'SB16' => 'SoundBlaster 16',
 
@@ -317,6 +333,21 @@ public static $trans = array(
 'Cable connected' => 'Câble branché',
 'netMediumType' => 'Type',
 'Guest Network Adapters' => 'Carte réseau invité',
+/* New */
+'Port Forwarding' => 'Redirection de ports',
+'Port Forwarding Rules' => 'Règles de redirection de ports',
+'Protocol' => 'Protocole',
+'Host IP' => 'IP hôte',
+'Host Port' => 'Port hôte',
+'Guest IP' => 'IP invité',
+'Guest Port' => 'Port invité',
+'TCP' => 'TCP',
+'UDP' => 'UDP',
+'Rule' => 'Règle',
+'Insert new rule' => 'Ajouter une règle',
+'Delete selected rule' => 'Supprimer la règle sélectionnée',
+'Invalid IP Address' => 'Adresse IP invalide',
+'The current port forwarding rules are not valid' => 'Les règles actuelles de transfert de port ne sont pas valides. Aucune des valeurs de port hôte ou invité peut être mis à zéro.',
 
 
 'Am79C970A' => 'AMD PCNet-PCI II network card',
@@ -346,10 +377,6 @@ public static $trans = array(
 'RestoringSnapshot' => 'Restauration de l\'instantané',
 'DeletingSnapshot' => 'Suppression de l\'instantané',
 'SettingUp' => 'Initialisation',
-'FirstOnline' => 'First Online',
-'LastOnline' => 'Last Online',
-'FirstTransient' => 'First Transient',
-'LastTransient' => 'Last Transient',
 
 // Mount dialog
 'Mount' => 'Insérer',
@@ -379,14 +406,12 @@ public static $trans = array(
 'Writethrough' => 'Hors instantanés',
 'Immutable' => 'Immuable',
 'Actions' => 'Actions',
-'Add' => 'Ajouter',
 'Clone' => 'Cloner',
 'Remove' => 'Enlever',
 'Release' => 'Libérer',
 'Hard Disks' => 'Disques durs',
 'CD/DVD Images' => 'Images CD/DVD',
 'Floppy Images' => 'Images de disquette',
-
 
 /* New hard disk wizard */
 'Create New Virtual Disk' => 'Créer un nouveau disque virtuel',
@@ -460,8 +485,8 @@ public static $trans = array(
 'Vendor' => 'Vendeur',
 'Vendor-URL' => 'URL du vendeur',
 'License' => 'Licence',
-'Hard Disk Controller' => 'Hard Disk Controller',
-'Virtual Disk Image' => 'Virtual Disk Image',
+'Hard Disk Controller' => 'Contrôleur disque',
+'Virtual Disk Image' => 'Image disque dur virtuel',
 'Warnings' => 'Avertissements',
 
 /* Operation in progress onUnLoad warning message */
@@ -478,7 +503,7 @@ public static $trans = array(
 /* Guest properties error */
 'Unable to retrieve guest properties' => 'Impossible de récupérer les propriétés de l\'invité. Assurez-vous que la machine virtuelle est en marche et que les additions invités soit installées.',
 
-/*RDP */
+/*Remote Console */
 'User name' => 'Utilisateur',
 'Password' => 'Mot de passe',
 'Connecting to' => 'Connexion à',
@@ -487,10 +512,20 @@ public static $trans = array(
 'Connect' => 'Connecter',
 'Detach' => 'Détacher',
 'Disconnect' => 'Déconnecter',
-"Ctrl-Alt-Del" => "Insérer Ctrl-Alt-Del",
+"Ctrl-Alt-Del" => "Send Ctrl-Alt-Del",
 'Disconnect reason' => 'Raison de la déconnexion',
-"Redirection by" => "Rediriger par",
+"Redirection by" => "Redirection by",
 'Virtual machine is not running or RDP configured.' => 'La machine virtuelle n\'est pas démarrée ou n\'est pas configurée pour accepter les connexions RDP.',
+
+/* Guest Additions */
+'Install Guest Additions' => 'Installer les Additions invité',
+'Guest Additions Mounted' => 'Le VirtualBox Guest Additions CD image a été monté sur un lecteur de CD / DVD dans la machine virtuelle. Pour compléter le processus d\'installation, vous devez vous connecter à la machine virtuelle et installer manuellement les Compléments VirtualBox client.',
+'Guest Additions No CDROM' => 'L\'image CD contenant les Additions Invité VirtualBox n\'a pas pu être insérée dans la machine virtuelle car elle n\'a pas de lecteur virtuel. Ajoutez-en un dans la section Stockage de la fenêtre Configuration de la machine.',
+
+/* USB devices */
+'USB Device' => 'Périphérique', // USB device name
+'USB Attached' => 'Connecté', // Is it attached to the VM
+'USB Available' => 'Disponible', // 	Is it available
 
 /* Operating Systems */
 'Other' => 'Autres/Inconnus',
@@ -563,6 +598,7 @@ public static $trans = array(
 function trans($item = '') {
 	return (@self::$trans[$item] ? @self::$trans[$item] : $item);
 }
+
 
 
 }

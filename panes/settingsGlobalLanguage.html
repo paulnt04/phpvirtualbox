@@ -1,0 +1,55 @@
+<!-- 
+
+	Language Settings
+	Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
+	
+	$Id$
+
+ -->
+<p><span class='translate'>Interface Language</span>:</p>
+<div style='width: 50%; height: 100%;'>
+	<ul id='vboxLanguageList' class='vboxBordered vboxList' style='height: 200px; overflow: auto;'>
+		<li class='vboxListItem'>Default</li>
+	</ul>
+	<div id='vboxLanguageName' style='text-align: center; padding: 4px;'></div>
+</div>
+<script type='text/javascript'>
+
+/* Fill Languages */
+var vboxLanguages = [
+	{'id':'en_us','name':'English'},
+	{'id':'ru_ru','name':'Russian','name_tr':'Русский'},
+	{'id':'it_it','name':'Italian','name_tr':'Italiano'},
+	{'id':'fr_fr','name':'French','name_tr':'Français'},
+	{'id':'de_de','name':'German','name_tr':'Deutsch'}
+];
+var lList = $('#vboxLanguageList'); 
+$(lList).children().remove();
+var defLang = __vboxLangName;
+for(var i = 0; i < vboxLanguages.length; i++) {
+	var li = document.createElement('li');
+	$(li).data('language', vboxLanguages[i]);
+	$(li).html(vboxLanguages[i].name);
+	$(li).attr('class','vboxListItem');
+	if(defLang == vboxLanguages[i].id) {
+		$(li).addClass('vboxListItemSelected');
+		$('#vboxLanguageName').html(vboxLanguages[i].name + (vboxLanguages[i].name_tr ? ' / ' + vboxLanguages[i].name_tr : ''));
+	}
+	$(li).click(function(){
+		$(this).addClass('vboxListItemSelected').siblings().removeClass('vboxListItemSelected');
+		$('#vboxLanguageName').html($(this).data('language').name + ($(this).data('language').name_tr ? ' / ' + $(this).data('language').name_tr : ''));
+	})
+	$(lList).append(li);
+}
+
+/* 
+ * 
+ * Update Data onSave() 
+ * 
+ */
+$('#vboxSettingsDialog').bind('save',function(){
+	var lang = $('#vboxLanguageList').children('li.vboxListItemSelected').first();
+	if(!lang) return;
+	$('#vboxSettingsDialog').data('language', $(lang).data('language').id);
+});
+</script>

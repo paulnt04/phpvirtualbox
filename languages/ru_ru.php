@@ -1,5 +1,4 @@
 <?php
-
 /*
  * Russian / RU language file
  * by Anatoly.Pashin@gmail.com
@@ -17,6 +16,8 @@ class language {
 public static $trans = array(
 
 // General actions
+'Language' => 'Язык',
+'Interface Language' => 'Язык интерфейса',
 'File' => 'Файл',
 'Edit' => 'Редактировать',
 'Save' => 'Сохранить',
@@ -114,8 +115,8 @@ public static $trans = array(
 
 'Delete VM Message3' => 'Если вы выберете <strong>Удалить все файлы</strong>, то будет удалено всё, что связано с виртуальной машиной (сама машина, подключенные к ней диски). Если хотите оставить жёсткие диски для использования позже, то выберите <strong>Сохранить жёсткие диски</strong>.',
 
-'Delete VM Message1' => 'Вы собираетесь убрать <strong>%s</strong> из списка виртуальных машин.',
-'Delete VM Message2' => 'Хотите ли вы так же удалить файлы виртуальных машин с жёсткого диска? Это приведёт к удалению конфигурации и жёстких дисков виртуальной машины, если они не используются другой виртуальной машиной.',
+'Delete VM Message1' => 'Вы собираетесь убрать виртуальную машину <strong>%s</strong> из списка.',
+'Delete VM Message2' => 'Не желаете ли удалить также и файлы конфигурации данной машины с Вашего жёсткого диска? Учтите, что это, в том числе, подразумевает удаление файлов, содержащих виртуальные жёсткие диски данной машины в случае, если они не используются другими машинами.',
 'Delete all files' => 'Удалить все файлы',
 'Remove only' => 'Только убрать',
 
@@ -233,9 +234,9 @@ public static $trans = array(
 'Add Floppy Device' => 'Добавить Floppy',
 'DVD Device' => 'CD/DVD устройство',
 'Empty' => 'Пусто',
-'Passthrough' => 'Passthrough',
+'Passthrough' => 'Разрешить прямой доступ',
 'Unknown Device' => 'Неизвестное устройство',
-'Host Drive' => 'Host Drive',
+'Host Drive' => 'Привод хоста',
 'Add IDE Controller' => 'Добавить контроллер IDE',
 'Add Floppy Controller' => 'Добавить контроллер Floppy',
 'Add SCSI Controller' => 'Добавить контроллер SCSI',
@@ -249,11 +250,11 @@ public static $trans = array(
 'ICH6' => 'ICH6',
 'I82078' => 'I82078',
 'LsiLogicSas' => 'LsiLogic SAS',
-'Differencing Disks' => 'Differencing Disks',
+'Differencing Disks' => 'Показывать разностные жесткие диски',
 'No unused media message 1' => 'Вы собираетесь добавить виртуальный носитель к контроллеру.',
 'No unused media message 2' => 'Желаете создать новый пустой файл для хранения содержимого диска или выбрать существующий?',
-'storage attached indirectly' => 'Attaching this disk will be performed indirectly using a newly created differencing hard disk.',
-'base disk indirectly attached' => 'This base hard disk is indirectly attached using the following differencing hard disk:',
+'storage attached indirectly' => 'Подключение данного жёсткого диска будет осуществлено косвенно, используя новый разностный диск.',
+'base disk indirectly attached' => 'Этот базовый жёсткий диск косвенно подсоединен с помощью следующего разностного диска:',
 'Attached to' => 'Подсоединён к',
 'Not Attached' => 'Не подключен',
 
@@ -270,6 +271,7 @@ public static $trans = array(
 'Move Filter Down' => 'Переместить ниже',
 'Device Filters' => 'Фильтры устройств',
 'active' => 'активно',
+'no devices available' => 'нет доступных устройств',
 
 'USB Filter' => 'Свойства USB-фильтра',
 'New Filter' => 'New Filter',
@@ -283,8 +285,8 @@ public static $trans = array(
 'Shared Folders' => 'Общие папки',
 'Shared Folder' => 'Общая папка',
 'Folders List' => 'Список общих папок',
-'Machine Folderes' => 'Папки машины',
-'Transient Folders' => 'Transient Folders',
+'Machine Folders' => 'Папки машины',
+'Transient Folders' => 'Временные папки',
 'Path' => 'Путь',
 'Access' => 'Доступ',
 // read only & read/write
@@ -324,11 +326,11 @@ public static $trans = array(
 'Adapter Type' => 'Тип адаптера',
 'adapter' => 'адаптер',
 'Bridged' => 'Bridged',
-'Bridged Adapter' => 'Bridged Adapter',
+'Bridged Adapter' => 'Сетевой мост',
 'HostOnly' => 'Host Only',
 'Internal' => 'Internal',
-'Internal Network' => 'Internal Network',
-'Host-only Adapter' => 'Host-only Adapter',
+'Internal Network' => 'Внутренняя сеть',
+'Host-only Adapter' => 'Виртуальный адаптер хоста',
 'NAT' => 'NAT',
 'network' => 'сеть',
 'Ethernet' => 'Ethernet',
@@ -339,7 +341,7 @@ public static $trans = array(
 'Mac Address' => 'MAC-адрес',
 'Cable connected' => 'Кабель подключен',
 'netMediumType' => 'Тип',
-'Guest Network Adapters' => 'Guest Network Adapters',
+'Guest Network Adapters' => 'Гостевые сетевые адаптеры',
 /* New */
 'Port Forwarding' => 'Проброс портов',
 'Port Forwarding Rules' => 'Правила проброса портов',
@@ -368,26 +370,22 @@ public static $trans = array(
 // Machine states
 'PoweredOff' => 'Выключена',
 'Saved' => 'Сохранена',
-'Teleported' => 'Teleported',
-'Aborted' => 'Aborted',
+'Teleported' => 'Портирована',
+'Aborted' => 'Прервана',
 'Running' => 'Работает',
-'Paused' => 'Paused',
-'Stuck' => 'Stuck',
-'Teleporting' => 'Teleporting',
-'LiveSnapshotting' => 'Live Snapshotting',
-'Starting' => 'Starting',
-'Stopping' => 'Stopping',
-'Saving' => 'Saving',
-'Restoring' => 'Restoring',
-'TeleportingPausedVM' => 'Teleporting Paused VM',
-'TeleportingIn' => 'Teleporting In',
-'RestoringSnapshot' => 'Restoring Snapshot',
-'DeletingSnapshot' => 'Deleting Snapshot',
-'SettingUp' => 'Setting Up',
-'FirstOnline' => 'First Online',
-'LastOnline' => 'Last Online',
-'FirstTransient' => 'First Transient',
-'LastTransient' => 'Last Transient',
+'Paused' => 'Работает',
+'Stuck' => 'Зависла',
+'Teleporting' => 'Портируется',
+'LiveSnapshotting' => 'Создание рабочего снимка',
+'Starting' => 'Запускается',
+'Stopping' => 'Останавливается',
+'Saving' => 'Сохраняется',
+'Restoring' => 'Восстанавливается',
+'TeleportingPausedVM' => 'Портируется приостановленная машина',
+'TeleportingIn' => 'Портируется',
+'RestoringSnapshot' => 'Восстанавливается снимок',
+'DeletingSnapshot' => 'Удаляется снимок',
+'SettingUp' => 'Настройка',
 
 // Mount dialog
 'Mount' => 'Монтировать',

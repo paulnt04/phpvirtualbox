@@ -106,7 +106,7 @@ function vboxMountMedium(bus,busName,port,device,onmount) {
 
 function vboxMountFillMediums(type,medium,selected) {
 
-	setLangContext('vboxMountMediums');
+	vboxSetLangContext('vboxMountMediums');
 	
 	var storage = new vboxStorage();
 	
@@ -138,7 +138,7 @@ function vboxMountFillMediums(type,medium,selected) {
 		sel.options[sel.options.length] = new Option(storage.getMediumName(mediums[i]),mediums[i].id,(selected == mediums[i].id));
 	}
 
-	unsetLangContext();
+	vboxUnsetLangContext();
 	
 }
 </script>

@@ -89,9 +89,9 @@ function vboxWizard(name, title, img) {
 			buttons[trans('Next')+' >'] = self.displayNext;
 			buttons[trans('Cancel')] = self.close;
 			
-			setLangContext('vbox'+self.name);
+			vboxSetLangContext('vbox'+self.name);
 			vboxInitDisplay(self.name+'Content');
-			unsetLangContext();
+			vboxUnsetLangContext();
 			
 			$(d).dialog({'closeOnEscape':false,'width':self.width,'height':self.height,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':self.title});
 

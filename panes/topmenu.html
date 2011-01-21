@@ -22,10 +22,17 @@ var menu = {
 	'title':'File',
 	'menu':[
         {
+			'name':'fileVMM',
+			'title':'Virtual Media Manager',
+			'icon':'diskimage',
+			'click':function(){vboxVMMDialogInit();}
+        },
+        {
 			'name':'fileImport',
 			'title':'Import Appliance',
 			'icon':'import',
-			'click':function(){vboxImportApplianceDialogInit();}
+			'click':function(){vboxImportApplianceDialogInit();},
+			'separator': true
         },
         {
 			'name':'fileExport',
@@ -34,17 +41,11 @@ var menu = {
 			'click':function(){vboxExportApplianceDialogInit();}
         },
         {
-			'name':'fileVMM',
-			'title':'Virtual Media Manager',
-			'icon':'diskimage',
-			'click':function(){vboxVMMDialogInit();},
-			'separator': true
-        },
-        {
 			'name':'filePrefs',
 			'title':'Preferences',
 			'icon':'global_settings',
-			'click':function(){vboxPrefsInit();}					        
+			'click':function(){vboxPrefsInit();},
+			'separator':true
         }
 	]
 };
@@ -165,7 +166,8 @@ var menu = {
 				vboxConfirm(q,buttons);
         	
         	},
-			'enabled':function(vm){ return vm && (vm.state == 'PoweredOff' || vm.state == 'Aborted' || vm.state == 'Inaccessible'); }
+			'enabled':function(vm){ return vm && (vm.state == 'PoweredOff' || vm.state == 'Aborted' || vm.state == 'Inaccessible'); },
+			'separator':true
         },
         {
 			'name':'machineDiscard',
@@ -193,7 +195,8 @@ var menu = {
 			'click':function(){
         		vboxShowLogsDialogInit($('#vboxIndex').data('selectedVM').id);
 			},
-			'enabled':function(vm){ return (vm && vm.id && vm.id != 'host'); }
+			'enabled':function(vm){ return (vm && vm.id && vm.id != 'host'); },
+			'separator':true
         }
         
 	]

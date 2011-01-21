@@ -78,7 +78,7 @@
 
 <script type='text/javascript'>
 
-setLangContext('vboxSnapshots');
+vboxSetLangContext('vboxSnapshots');
 vboxInitDisplay('vboxSnapshotNew');
 vboxInitDisplay('vboxSnapshotDetails');
 
@@ -144,7 +144,7 @@ var tButtons = [
   		'click' : function () {
   	  		var snapshot = $('#vboxSnapshotList').find('div.vboxListItemSelected').first().parent().data();
 			var buttons = {};
-			setLangContext('vboxSnapshots');
+			vboxSetLangContext('vboxSnapshots');
 			buttons[trans('Restore')] = function() {
 	  	  		var l = new vboxLoader();
 	  	  		l.mode = 'save';
@@ -160,7 +160,7 @@ var tButtons = [
 	  	  		$(this).remove();
 				l.run();				
 			};
-			unsetLangContext();
+			vboxUnsetLangContext();
 			vboxConfirm(trans('Restore Snapshot Message').replace('%s','<b>'+$('<div />').text(snapshot.name).html()+'</b>'),buttons);
   	  	},
   	},
@@ -175,7 +175,7 @@ var tButtons = [
   		'click' : function () {
   	  		var snapshot = $('#vboxSnapshotList').find('div.vboxListItemSelected').first().parent().data();
 			var buttons = {};
-			setLangContext('vboxSnapshots');
+			vboxSetLangContext('vboxSnapshots');
 			buttons[trans('Delete')] = function() {
 	  	  		var l = new vboxLoader();
 	  	  		l.mode = 'save';
@@ -191,7 +191,7 @@ var tButtons = [
 	  	  		$(this).remove();
 				l.run();				
 			};
-			unsetLangContext();
+			vboxUnsetLangContext();
 			vboxConfirm(trans('Delete Snapshot Message1')+'<p>'+trans('Delete Snapshot Message2').replace('%s','<b>'+$('<div />').text(snapshot.name).html()+'</b>')+'</p>',buttons);  	  		
   	  	},
   		'separator' : true
@@ -270,7 +270,7 @@ snapshotToolbar._timeSpans.sort(function(a,b){return (a > b ? -1 : 1);});
 
 vboxInitDisplay('vboxSnapshotToolbar');
 
-unsetLangContext();
+vboxUnsetLangContext();
 
 $('#vboxTabVMSnapshots').parent().bind('vmloading',snapshotToolbar.disable);
 $('#vboxSnapshotList').bind('select',snapshotToolbar.update);

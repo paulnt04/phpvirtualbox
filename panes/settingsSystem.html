@@ -181,8 +181,8 @@ for(var i in bootItems) {
 	delete bootItems[i];
 }
 
-/* Hide Chipset selection if we didn't get one. A safeguard */
-if(!$('#vboxSettingsDialog').data('vboxMachineData').chipsetType) {
+/* Hide Chipset selection if we didn't get one, or VirtualBox version is 4.0.0 A safeguard */
+if(!$('#vboxSettingsDialog').data('vboxMachineData').chipsetType || $('#vboxIndex').data('vboxConfig').version.string == '4.0.0') {
 	$('#vboxSettingsSystemChipsetRow').css('display','none');
 } else {
 	$(document.forms['frmVboxSettings'].vboxSettingsSystemChipset).val($('#vboxSettingsDialog').data('vboxMachineData').chipsetType);
@@ -258,7 +258,7 @@ $('#vboxSettingsDialog').bind('save',function(){
 	$('#vboxSettingsDialog').data('vboxMachineData').RTCUseUTC = (document.forms['frmVboxSettings'].vboxSettingsSystemRTCUseUTC.checked ? 1 : 0);
 
 	/* Only if we had a chipset */
-	if($('#vboxSettingsDialog').data('vboxMachineData').chipsetType)
+	if($('#vboxSettingsDialog').data('vboxMachineData').chipsetType && $('#vboxIndex').data('vboxConfig').version.string != '4.0.0')
 		$('#vboxSettingsDialog').data('vboxMachineData').chipsetType = $(document.forms['frmVboxSettings'].vboxSettingsSystemChipset).val();
 		
 	/* Only if acceleration config is enabled */

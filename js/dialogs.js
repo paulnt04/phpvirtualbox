@@ -192,7 +192,7 @@ function vboxShowLogsDialogInit(vm) {
 	l.addFile('panes/vmlogs.html',function(f){$('#vboxVMLogsDialog').append(f);});
 	l.onLoad = function(){
 		var buttons = {};
-		setLangContext('vboxVMLogs');
+		vboxSetLangContext('vboxVMLogs');
 		buttons[trans('Refresh')] = function() {
 			l = new vboxLoader();
 			l.add('VMLogFileNames',function(r){$('#vboxVMLogsDialog').data('logs',r);},{'vm':vm});
@@ -202,7 +202,7 @@ function vboxShowLogsDialogInit(vm) {
 			l.run();
 		};
 		buttons[trans('Close')] = function(){$(this).remove();};
-		unsetLangContext();
+		vboxUnsetLangContext();
 		$('#vboxVMLogsDialog').dialog({'closeOnEscape':false,'width':800,'height':500,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':trans('Logs')});
 		vboxShowLogsInit(vm);
 	};
@@ -244,9 +244,9 @@ function vboxVMMDialogInit(callback,type,hideDiff,attached) {
 						sel = $('#vboxVMMFDList').find('tr.vboxListItemSelected').first();
 				}
 				if(!$(sel).html()) {
-					setLangContext('vboxVMM');
+					vboxSetLangContext('vboxVMM');
 					vboxAlert(trans('Please select a medium.'));
-					unsetLangContext();
+					vboxUnsetLangContext();
 					return;
 				}
 				callback($(sel).data());
@@ -405,7 +405,8 @@ function vboxPrefsInit() {
 	// Prefs
 	var panes = new Array(
 		{'name':'GlobalGeneral','label':'General','icon':'machine'},
-		{'name':'GlobalNetwork','label':'Network','icon':'nw'}
+		{'name':'GlobalNetwork','label':'Network','icon':'nw'},
+		{'name':'GlobalLanguage','label':'Language','icon':'site'}
 	);
 	
 	var data = new Array(
@@ -416,6 +417,11 @@ function vboxPrefsInit() {
 	vboxSettingsInit(trans('Settings'),panes,data,function(){
 		var l = new vboxLoader();
 		l.mode = 'save';
+		if($('#vboxSettingsDialog').data('language') && $('#vboxSettingsDialog').data('language') != __vboxLangName) {
+			var exp = new Date(2020,12,24);
+			document.cookie = "vboxLanguage="+$('#vboxSettingsDialog').data('language')+"; expires="+exp.toGMTString()+"; path=/";
+			l.onLoad = function(){location.reload(true);}
+		}
 		l.add('saveHostOnlyInterfaces',function(){},{'networkInterfaces':$('#vboxSettingsDialog').data('vboxHostOnlyNetworking').networkInterfaces});
 		l.add('saveSystemProperties',function(){},{'SystemProperties':$('#vboxSettingsDialog').data('vboxSystemProperties')});
 		l.run();
@@ -634,9 +640,9 @@ function vboxSettingsInit(title,panes,data,onsave,pane) {
 	loader.onLoad = function(){
 		
 		/* Init UI Items */
-		setLangContext('vboxSettings');
+		vboxSetLangContext('vboxSettings');
 		vboxInitDisplay('vboxSettingsDialog');
-		unsetLangContext();
+		vboxUnsetLangContext();
 		
 		// Opera hidden select box bug
 		////////////////////////////////

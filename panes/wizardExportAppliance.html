@@ -167,7 +167,7 @@ $('#wizardExportApplianceStep2').bind('show',function(e,wiz){
 		$(tbl).append(trparent);
 		
 		// VM properties
-		setLangContext('vboxAppliance');
+		vboxSetLangContext('vboxAppliance');
 		for(var p in vboxApplianceProps) {
 			
 			var tr = document.createElement('tr');
@@ -185,7 +185,7 @@ $('#wizardExportApplianceStep2').bind('show',function(e,wiz){
 			$(tr).append(td);
 			$(tbl).append(tr);
 		}
-		unsetLangContext();
+		vboxUnsetLangContext();
 	}
 	vboxColorRows(tbl);
 
