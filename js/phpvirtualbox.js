@@ -10,7 +10,7 @@
 /*
  * Wizard (new HardDisk or VM)
  */
-function vboxWizard(name, title, img) {
+function vboxWizard(name, title, img, bg) {
 	
 	var self = this;
 	this.steps = 0;
@@ -19,7 +19,8 @@ function vboxWizard(name, title, img) {
 	this.img = img;
 	this.finish = null;
 	this.width = 700;
-	this.height = 450;
+	this.height = 400;
+	this.bg = bg;
 	
 	// Initialize / display dialog
 	this.run = function() {
@@ -48,14 +49,25 @@ function vboxWizard(name, title, img) {
 		var td = document.createElement('td');
 		td.setAttribute('id',self.name+'Content');
 		td.setAttribute('class','vboxWizardContent');
-		tr.appendChild(td);
-		tbl.appendChild(tr);
-		
+		if(self.bg) {
+			/*
+			 Disabled for now. Must run on Mac to see what Oracle was going for.
+			if($.browser.msie)
+				$(td).css({"filter":"progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled='true', src='"+this.bg+"', sizingMethod='scale')"});
+			else
+				$(td).css({'background':'url('+this.bg+') top left no-repeat','-moz-background-size':'auto 100%','background-size':'auto 100%','-webkit-background-size':'auto 100%'});
+			*/
+				
+		}
 		// Title
 		var t = document.createElement('h3');
 		t.setAttribute('id',self.name+'Title');
 		t.innerHTML = self.title;
-		d.appendChild(t);
+		td.appendChild(t);
+
+		tr.appendChild(td);
+		tbl.appendChild(tr);
+		
 		
 		f.appendChild(tbl);
 		d.appendChild(f);
@@ -93,7 +105,7 @@ function vboxWizard(name, title, img) {
 			vboxInitDisplay(self.name+'Content');
 			vboxUnsetLangContext();
 			
-			$(d).dialog({'closeOnEscape':false,'width':self.width,'height':self.height,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':self.title});
+			$(d).dialog({'closeOnEscape':false,'width':self.width,'height':'auto','buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent vboxWizard','title':self.title});
 
 			self.displayStep(1);
 		};
@@ -102,7 +114,7 @@ function vboxWizard(name, title, img) {
 	}
 	
 	self.close = function() {
-		$('#'+self.name+'Dialog').remove();
+		$('#'+self.name+'Dialog').empty().remove();
 	}
 	
 	self.displayStep = function(step) {
@@ -210,24 +222,31 @@ function vboxToolbar(buttons) {
 		// TD
 		var td = document.createElement('td');
 		td.setAttribute('id','vboxToolbarButton-' + self.id + '-' + b.name);
-		td.setAttribute('class','vboxToolbarButton buttonEnabled vboxToolbarButton'+self.size);
+		td.setAttribute('class','vboxToolbarButton ui-corner-all buttonEnabled vboxToolbarButton'+self.size);
 		td.setAttribute('style',self.buttonStyle+'; min-width: '+(self.size+12)+'px;');
 		td.innerHTML = '<img src="images/vbox/'+b.icon+'_'+self.size+'px.png" /><br />' + $('<div />').html(trans(b.label)).text();
 		
 		// bind click
-		td.onclick = function(){
+		$(td).bind('click',function(){
 			if($(this).hasClass('buttonDisabled')) return;
 			$(this).data('toolbar').click($(this).data('name'));
-		}
-		
+
 		// store data
-		$(td).data(b);
+		}).data(b);
 		
 		if(!self.noHover) {
 			$(td).hover(
 					function(){if($(this).hasClass('buttonEnabled')){$(this).addClass('vboxToolbarButtonHover');}},
 					function(){$(this).removeClass('vboxToolbarButtonHover');}		
-			);
+			).mousedown(function(e){
+				if($.browser.msie && e.button == 1) e.button = 0;
+				if(e.button != 0 || $(this).hasClass('buttonDisabled')) return true;
+				$(this).addClass('vboxToolbarButtonDown');
+				var btn = $(this)
+				$(document).one('mouseup',function(){
+					$(btn).removeClass('vboxToolbarButtonDown');
+				});
+			});
 		}
 		
 		return td;
@@ -349,7 +368,7 @@ function vboxToolbarSmall(buttons) {
 		btn.setAttribute('id','vboxToolbarButton-' + self.id + '-' + b.name);
 		btn.setAttribute('type','button');
 		btn.setAttribute('value','');
-		btn.setAttribute('class','vboxImgButton vboxToolbarSmallButton');
+		btn.setAttribute('class','vboxImgButton vboxToolbarSmallButton ui-corner-all');
 		btn.setAttribute('title', trans(b.label));
 		$(btn).click(b.click);
 		btn.setAttribute('style',self.buttonStyle+' background-image: url(images/vbox/' + b.icon + '_'+self.size+'px.png);');
@@ -373,7 +392,7 @@ function vboxToolbarSmall(buttons) {
 		self.id = id;
 		
 		if(!self.buttonStyle)
-			self.buttonStyle = 'height: ' + (self.size+4) + 'px; width: ' + (self.size+4) + 'px; ';
+			self.buttonStyle = 'height: ' + (self.size+8) + 'px; width: ' + (self.size+8) + 'px; ';
 		
 		for(var i = 0; i < self.buttons.length; i++) {
 			
@@ -769,7 +788,7 @@ function vboxLoader() {
 
 		if (self.onLoad) self.onLoad();
 
-		if(!self.noLoadingScreen) $('#vboxLoaderDialog').remove();
+		if(!self.noLoadingScreen) $('#vboxLoaderDialog').empty().remove();
 		
 		if(self.hideRoot) $('#vboxIndex').css('display', '');
 		

@@ -22,12 +22,12 @@
 					<thead>
 						<tr id='vboxSettingsSharedFoldersHeading'>
 							<th><span class='translate'>Name</span></th>
-							<th style='width: 100%'><span class='translate'>Path</span></th>
+							<th style='width: 100%; white-space: nowrap;'><span class='translate'>Path</span></th>
 							<th><span class='translate'>Auto-Mount</span></th>
 							<th><span class='translate'>Access</span></th>
 						</tr>
 					</thead>
-					<tbody id='vboxSettingsSharedFoldersList'>
+					<tbody id='vboxSettingsSharedFoldersList' class='vboxHover'>
 						<tr class='vboxListItem'>
 							<td style='white-space: nowrap'>space</td>
 							<td style='white-space: nowrap'>/SPACEHUB/space/some/other/path</td>
@@ -79,9 +79,9 @@ var sButtons = new Array(
 					var row = vboxSettingsAddSharedFolder(f);
 					$(row).children('td').last().trigger('click');
 				}
-				$(dialog).remove();
+				$(dialog).empty().remove();
 			};
-			buttons[trans('Cancel')] = function() { $(dialog).remove(); };
+			buttons[trans('Cancel')] = function() { $(dialog).empty().remove(); };
 			$(dialog).dialog({'buttons':buttons}).dialog('open');
 			
 		}
@@ -117,9 +117,9 @@ var sButtons = new Array(
 						$(item).data('type','machine');
 					$(item).trigger('refresh');
 				}
-				$(dialog).remove();
+				$(dialog).empty().remove();
 			};
-			buttons[trans('Cancel')] = function() { $(dialog).remove() };
+			buttons[trans('Cancel')] = function() { $(dialog).empty().remove() };
 			$(dialog).dialog({'buttons':buttons}).dialog('open');
 		
 		}		
@@ -161,11 +161,13 @@ function vboxSettingsAddSharedFolder(f) {
 		$(tr).addClass('vboxSFTransient');
 	}
 
+	$(tr).hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');});
+	
 	// Bind data
 	$(tr).data(f);
 	
 	var td = document.createElement('td');
-	td.setAttribute('class','vboxSettingsSFNameCell');
+	td.setAttribute('class','vboxSettingsSFNameCell vboxHoverFirst');
 	var img = document.createElement('img');
 	$(img).attr({'src':'images/vbox/blank.gif','style':'height: 10px; width: 30px;'});
 	td.appendChild(img);
@@ -174,15 +176,15 @@ function vboxSettingsAddSharedFolder(f) {
 	td.appendChild(sp);
 	tr.appendChild(td);
 	var td = document.createElement('td');
-	td.setAttribute('class','vboxSettingsSFPathCell');
+	td.setAttribute('class','vboxSettingsSFPathCell vboxHoverMid');
 	td.innerHTML = $('<div/>').text(f.hostPath).html();
 	tr.appendChild(td);
 	var td = document.createElement('td');
-	td.setAttribute('class','vboxSettingsSFAMCell');
+	td.setAttribute('class','vboxSettingsSFAMCell vboxHoverMid');
 	td.innerHTML = f.autoMount ? trans('Yes') : trans('No');
 	tr.appendChild(td);			
 	var td = document.createElement('td');
-	td.setAttribute('class','vboxSettingsSFROCell');
+	td.setAttribute('class','vboxSettingsSFROCell vboxHoverLast');
 	td.innerHTML = f.writable ? trans('Full Access') : trans('ro');
 	tr.appendChild(td);		
 
@@ -355,7 +357,9 @@ function vboxSettingsSFEditDialog() {
 	tbl.setAttribute('class','vboxSettingsTable');
 	
 	var tr = document.createElement('tr');
+	$(tr).attr('style','vertical-align: middle');
 	var th = document.createElement('th');
+	th.setAttribute('style','white-space: nowrap');
 	th.innerHTML = trans('Path') + ':';
 	tr.appendChild(th);
 	var td = document.createElement('td');

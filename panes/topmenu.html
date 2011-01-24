@@ -108,7 +108,7 @@ var menu = {
 					$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);
 				},{'vm':$('#vboxIndex').data('selectedVM').id,'force_refresh':1});
 				
-				// Host refresh refreshes system properties as well
+				// Host refresh also refreshes system properties
 				if($('#vboxIndex').data('selectedVM').id == 'host') {
 					l.add('SystemProperties',function(d){$('#vboxIndex').data('vboxSystemProperties',d);},{'force_refresh':1});
 				}
@@ -128,7 +128,7 @@ var menu = {
 				if($('#vboxIndex').data('selectedVM').state == 'Inaccessible') {
 					
 					buttons[trans('Unregister')] = function(){
-						$(this).remove();
+						$(this).empty().remove();
 						var l = new vboxLoader();
 						l.add('removeVM',function(){},{'vm':$('#vboxIndex').data('selectedVM').id,'unregister':1});
 						l.mode = 'save';
@@ -139,7 +139,7 @@ var menu = {
 					
 				} else {
 					buttons[trans('Delete all files')] = function(){
-						$(this).remove();
+						$(this).empty().remove();
 						vboxAjaxRequest('removeVM',{'vm':$('#vboxIndex').data('selectedVM').id,'delete':1},function(d){
 							// check for progress operation
 							if(d && d.progress) {
@@ -150,7 +150,7 @@ var menu = {
 						});
 					}
 					buttons[trans('Remove only')] = function(){
-						$(this).remove();
+						$(this).empty().remove();
 						vboxAjaxRequest('removeVM',{'vm':$('#vboxIndex').data('selectedVM').id,'keep':1},function(d){
 							// check for progress operation
 							if(d && d.progress) {
@@ -176,7 +176,7 @@ var menu = {
 			'click':function(){
 				var buttons = {};
 				buttons[trans('Discard')] = function(){
-					$(this).remove();
+					$(this).empty().remove();
 					var l = new vboxLoader();
 					l.add('setStateVMdiscardSavedState',function(){},{'vm':$('#vboxIndex').data('selectedVM').id});
 					l.mode = 'save';
@@ -234,7 +234,7 @@ var menu = {
 	        	l.addFile('panes/about.html',function(f){$('#vboxAbout').append(f);});
 	        	l.onLoad = function() {
 		        	var buttons = {};
-		        	buttons[trans('OK')] = function() { $(this).remove(); };
+		        	buttons[trans('OK')] = function() { $(this).empty().remove(); };
 		
 		            $('#vboxAbout').dialog({'closeOnEscape':false,'width':500,'height':'auto','buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'phpVirtualBox'});			        	
 	        	}

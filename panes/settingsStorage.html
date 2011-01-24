@@ -24,14 +24,14 @@
 
 		<!-- Storage Controllers -->
 		<div id='vboxSettingsStorageTree' class='vboxBordered'>
-		<ul>
-			<li>Storage Thingy</li>
-			<li>
-			<ul>
-				<li>Attachment Thingy</li>
+			<ul class='vboxHover'>
+				<li>Storage Thingy</li>
+				<li>
+				<ul>
+					<li>Attachment Thingy</li>
+				</ul>
+				</li>
 			</ul>
-			</li>
-		</ul>
 		</div>
 
 		<!-- Controller Toolbar -->
@@ -97,7 +97,7 @@
 							<option value='windward.vmdk'>Windward.vmdk</option>
 						</select></td>
 						<td><img id='vboxStorageSettingsImgMediaManager'
-							src='images/vbox/select_file_16px.png' style='cursor: pointer' />
+							src='images/vbox/select_file_16px.png' style='cursor: pointer; margin-left: 4px; ' />
 						</td>
 					</tr>
 				</table>
@@ -308,6 +308,7 @@ function vboxSettingsAddController(con,list) {
     var tbl = document.createElement('table');
     tbl.setAttribute('onclick','vboxSettingsSelectController(this);');
     tbl.setAttribute('class','vboxListItem vboxSettingsController');
+    $(tbl).hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');});
 
     // filter out any dummy medium attachments
     var mas = new Array();
@@ -434,6 +435,7 @@ function vboxSettingsAddAttachment(d,bus) {
 	tbl.setAttribute('onclick','vboxSettingsSelectAttachment(this);');
 	tbl.setAttribute('class','vboxListItem vboxSettingsStorageAttachment');
     tbl.setAttribute('id','vboxSettingsStorageAttachment-' + bus + '-' + d.port + '-' + d.device);
+    $(tbl).hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');});
     d.bus = bus;
     $(tbl).data(d);
             

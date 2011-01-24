@@ -57,6 +57,7 @@ public static $trans = array(
 'Select Folder' => 'Ordner auswählen',
 'Server List' => 'Server-Liste',
 'Interface Language' => 'Sprache der Nutzeroberfläche',
+'Language' => 'Sprache',
 
 // Power button
 'Stop' => 'Stoppen',
@@ -144,7 +145,7 @@ public static $trans = array(
 'DHCP enabled' => 'DHCP aktiviert',
 'Manually configured' => 'Manuell konfiguriert',
 'Delete Interface Message1' => 'Wenn Sie dieses Host-only Netzwerk entfernen, wird die Host-only Schnittstelle entfernt, zu der dieses Netzwerk gehört. Möchten Sie diese (Host-only Netzwerk) Schnittstelle %s entfernen?',
-'Delete Interface Message2' => 'Anmerkung: Diese Schnittstelle wird möglicherweise von einem oder mehreren virtuellen Netzwerkkarten genutzt, die zu einer Ihrer virtuellen Maschinen gehören. Sobald diese Schnittstelle entfernt wird, werden diese Netzwerkkarten nicht mehr funktionieren bis Sie die Einstellungen der virtuellen Maschinen korrigiert haben. Entweder wählen Sie einen anderen Schnittstellen Namen oder einen anderen Typ Netzwerkkarte.',
+'Delete Interface Message2' => 'Anmerkung: Diese Schnittstelle wird möglicherweise von einem oder mehreren virtuellen Netzwerkadapter genutzt, die zu einer Ihrer virtuellen Maschinen gehören. Sobald diese Schnittstelle entfernt wird, werden diese Netzwerkadapter nicht mehr funktionieren bis Sie die Einstellungen der virtuellen Maschinen korrigiert haben. Entweder wählen Sie einen anderen Schnittstellen Namen oder einen anderen Typ Netzwerkadapter.',
 
 'System' => 'System',
 'Base Memory' => 'Hauptspeicher',
@@ -310,17 +311,19 @@ public static $trans = array(
 'SB16' => 'SoundBlaster 16',
 
 'Network' => 'Netzwerk',
-'Adapter' => 'Karte',
-'Network Adapter' => 'Netzwerkkarte',
-'Enable Network Adapter' => 'Netzwerkkarte aktivieren',
-'Adapter Type' => 'Kartentyp',
-'adapter' => 'karte',
-'Bridged' => 'Bridged',
-'Bridged Adapter' => 'Gebridgte Karte',
-'HostOnly' => 'Host Only',
-'Internal' => 'Internal',
+'Adapter' => 'Adapter',
+'Network Adapter' => 'Netzwerkadapter',
+'Enable Network Adapter' => 'Netzwerkadapter aktivieren',
+'Adapter Type' => 'Adaptertyp',
+'Bridged Adapter' => 'Netzwerkbrücke',
 'Internal Network' => 'Internes Netzwerk',
-'Host-only Adapter' => 'Host-only Karte',
+'Host-only Adapter' => 'Host-only Adapter',
+'VDE Adapter' => 'VDE Adapter',
+'Not attached' => 'nicht angeschlossen',
+'Bridged adapter, %s' => 'Netzwerkbrücke, %s', // %s will be replaced by adapter name
+'Host-only adapter, \'%s\'' => 'Host-only Adapter, \'%s\'', // %s will be replaced by adapter name
+'Internal network, \'%s\'' => 'Internes Netzwerk, \'%s\'', // %s will be replaced by network name
+'VDE network, \'%s\'' => 'VDE-Netzwerk, \'%s\'', // %s will be replaced by network name
 'NAT' => 'NAT',
 'network' => 'netzwerk',
 'Ethernet' => 'Ethernet',
@@ -331,7 +334,7 @@ public static $trans = array(
 'Mac Address' => 'MAC Addresse',
 'Cable connected' => 'durch Kabel verbunden',
 'netMediumType' => 'Typ',
-'Guest Network Adapters' => 'Netzwerkkarte des Gastes',
+'Guest Network Adapters' => 'Netzwerkadapter des Gastes',
 /* New */
 'Port Forwarding' => 'Port-Weiterleitung',
 'Port Forwarding Rules' => 'Regel für Port-Weiterleitung',
@@ -349,11 +352,11 @@ public static $trans = array(
 'The current port forwarding rules are not valid' => 'Die Regeln für die Port-Weiterleitung enthalten momentan Fehler. Keiner der Host- oder Gast-Ports darf Null sein.',
 
 
-'Am79C970A' => 'AMD PCNet-PCI II Netzwerkkarte',
-'Am79C973' => 'AMD PCNet-FAST III Netzwerkkarte',
-'I82540EM' => 'Intel PRO/1000 MT Desktop Netzwerkkarte',
-'I82543GC' => 'Intel PRO/1000 T Server Netzwerkkarte',
-'I82545EM' => 'Intel PRO/1000 MT Server Netzwerkkarte',
+'Am79C970A' => 'AMD PCNet-PCI II Netzwerkadapter',
+'Am79C973' => 'AMD PCNet-FAST III Netzwerkadapter',
+'I82540EM' => 'Intel PRO/1000 MT Desktop Netzwerkadapter',
+'I82543GC' => 'Intel PRO/1000 T Server Netzwerkadapter',
+'I82545EM' => 'Intel PRO/1000 MT Server Netzwerkadapter',
 'Virtio' => 'Virtio Netzwerkgerät',
 
 

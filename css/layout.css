@@ -41,14 +41,24 @@ div.ui-dialog div.ui-dialog-buttonpane { padding: 4px; margin: 0px; text-align: 
 div.ui-dialog div.ui-dialog-titlebar { color: #fff; background: #369; }
 div.ui-dialog .ui-button { background: #e9e9e9; color: #000; }
 div.ui-dialog .disabled { color: #aaa; }
-div.ui-dialog div.ui-dialog-buttonpane button {text-align: center; display: inline; float: none; }
+div.ui-dialog div.ui-dialog-buttonpane button {
+	text-align: center; display: inline; float: none;
+	border: 1px solid #a9a9a9;
+	background-color: #f9f9f9;
+	border-radius: 4px;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#e9e9e9', endColorstr='#d9d9d9');
+	box-shadow: inset 0 1px 3px #fff, inset 0 -15px #e9e9e9, 0 0 3px #a9a9a9;
+	-o-box-shadow: inset 0 1px 3px #fff, inset 0 -15px #e9e9e9, 0 0 3px #a9a9a9;
+	-webkit-box-shadow: inset 0 1px 3px #fff, inset 0 -15px #e9e9e9, 0 0 3px #a9a9a9;
+	-moz-box-shadow: inset 0 1px 3px #fff, inset 0 -15px #e9e9e9, 0 0 3px #a9a9a9;
+}
 div.ui-dialog .ui-button .ui-button-text { display: block; line-height: 1;  }
 div.ui-dialog .ui-button-text-only .ui-button-text { padding: 4px; }
 div.ui-dialog .ui-button-text-icon .ui-button-text, .ui-button-text-icons .ui-button-text { padding: 0px; }
 div.ui-dialog div.vboxDialogContent th { width: auto; white-space: nowrap; text-align: right;}
 div.ui-dialog div.vboxDialogContent td { width: 100%; white-space: nowrap; text-align: left; }
 div.ui-progressbar div.ui-progressbar-value { background: #00CD00 }
-div.ui-widget-overlay { padding: 0px; margin: 0px; border: 0px; }
+div.ui-widget-overlay { padding: 0px; margin: 0px; border: 0px; width: 100%; height: 100%; position:fixed ;top:0px;left:0px;}
 div.ui-tabs ul.ui-tabs-nav { margin: 0px; padding: 0px; border: 0px;}
 
 /* sliders and slider Scales */
@@ -83,13 +93,53 @@ input.vboxImgButton {
 ul.vboxList li, ul.vboxList li table { line-height: 18px; }
 ul.vboxList li table { height: 18px; }
 ul.vboxList li table tr { vertical-align: middle; }
-ul.vboxList li table td { border: 1px solid #f00; }
 ul.vboxList li img { vertical-align: middle; }
 
 .vboxListItem, a.vboxListItem, .vboxListItem a { cursor: pointer; color: #000; background: #fff; }
 .vboxListItemSelected, .vboxListItemSelected a, a.vboxListItemSelected { background-color: #69F !important; cursor: default !important; color: #fff !important; }
 .vboxListItemTitle { font-weight: bold; }
 
+ul.vboxHover li {
+	border: 1px solid transparent;
+}
+ul.vboxHover li.vboxHover {
+	background-color: #f0f8ff;
+	border: 1px solid #aaaaaa;	
+}
+
+ul.vboxHover li table {
+	border: 1px solid transparent;
+}
+ul.vboxHover li table.vboxHover {
+	background-color: #f0f8ff;
+	border: 1px solid #aaaaaa;	
+}
+tbody.vboxHover td {
+	border: 1px solid transparent;
+}
+tbody.vboxHover td.vboxHoverFirst {
+	border-top: 1px solid transparent;
+	border-left: 1px solid transparent;
+	border-right: 0px solid transparent;
+	border-bottom: 1px solid transparent;
+}
+tbody.vboxHover td.vboxHoverLast {
+	border-top: 1px solid transparent;
+	border-left: 0px solid transparent;
+	border-right: 1px solid transparent;
+	border-bottom: 1px solid transparent;
+}
+tbody.vboxHover td.vboxHoverMid {
+	border-top: 1px solid transparent;
+	border-left: 0px solid transparent;
+	border-right: 0px solid transparent;
+	border-bottom: 1px solid transparent;
+}
+tbody.vboxHover tr.vboxHover td {
+	border-color: #aaaaaa;
+	background: #f0f8ff;
+	color: #000;
+}
 /* Tables */
 table.vboxVertical, table.vboxHorizontal { border: 0px; border-spacing: 0px; width: 100%; }
 table.vboxHorizontal th, table.vboxHorizontal td { white-space: nowrap; }
@@ -108,17 +158,28 @@ table tr td.vboxFileFolderInput input.vboxImgButton { width: 20px; margin-left: 
 
 /* Buttons and Toolbars */
 .vboxToolbarButton { 
-	border: 2px solid transparent;
+	border: 1px solid transparent;
 	text-align: center;
 	padding: 4px;
 }
 .vboxToolbarButtonHover {
-	border-bottom: 2px solid #777;
-	border-right: 2px solid #777;
-	border-left: 2px solid #aaa;
-	border-top: 2px solid #aaa;
+	border-bottom: 1px solid #777;
+	border-right: 1px solid #777;
+	border-left: 1px solid #aaa;
+	border-top: 1px solid #aaa;
 	cursor: pointer;
 }
+
+.vboxToolbarGrad .vboxToolbarButtonHover {
+	background: -webkit-gradient(linear, left top, left bottom, from(#e9e9e9), to(#d9d9d9)); /* for webkit browsers */
+	background: -moz-linear-gradient(top,  #e9e9e9, #d9d9d9); /* for firefox 3.6+ */
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled='true', src='images/monitor_glossy.png', sizingMethod='scale');
+}
+
+td.vboxToolbarButtonDown {
+	padding: 5px 3px 3px 5px;
+}
+
 /* Small Toolbar buttons */
 input.vboxToolbarSmallButton { border: 1px solid transparent; }
 input.vboxToolbarSmallButtonHover {
@@ -153,6 +214,15 @@ div.vboxVMLog form textarea, div.vboxAjaxErrorDetails form textarea {
 }
 
 
+/* main toolbar */
+.vboxToolbarGrad {
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#d9d9d9', endColorstr='#e9e9e9'); /* for IE */
+	background: -moz-linear-gradient(top, #d9d9d9, #e9e9e9); /* for firefox 3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, from(#d9d9d9), to(#e9e9e9)); /* for webkit browsers */
+}
+
+
+
 /* Snapshots */
 #vboxSnapshotList, #vboxSnapshotList table { height: 100%; }
 #vboxSnapshotList { background: #fff; width: 100%; }
@@ -182,10 +252,12 @@ div.vboxVMLog form textarea, div.vboxAjaxErrorDetails form textarea {
 #vboxVirtualMediaManager .vboxVMMMediumInfo td { padding-left: 10px; text-align: left; width: 100%; }
 
 /* Wizards */
+table.vboxWizard { margin: 0px; padding: 4px; border-spacing: 0px; }
 table.vboxWizard tr { vertical-align: top; }
-table td.vboxWizardImg img { border: 1px solid #000; margin: 0px; border: 0px; width: 145px; }
+table td.vboxWizardImg img { border: 1px solid #000; margin: 0px; border: 0px; width: 145px; height: 290px; padding: 0px; }
 td.vboxWizardContent { padding: 0px 8px 0px 8px; }
-div.vboxWizard h3 { border-bottom: 1px solid #aaa; }
+div.vboxWizard { border: 0px; padding: 0px; margin: 0px; }
+div.vboxWizard h3 { margin: 2px 0px 18px 0px; font-size: 16px; }
 
 /* Export Appliance */
 #vboxExportProps tr,#vboxExportProps td, #vboxExportProps td div { vertical-align: middle; height: 22px; line-height: 22px;} 
@@ -208,8 +280,22 @@ div.vboxWizard h3 { border-bottom: 1px solid #aaa; }
 #tablistMain li.hover { border: 2px solid #aaa; cursor: pointer; background: #e2e2f2; }
 #tablistMain li.selected { border: 2px solid #999; cursor: pointer; background: #d0d0e0; }
 
+
 /* Menu bars */
-#vboxIndex div.vboxMenuBar, div.vboxDialogContent div.vboxMenuBar { border-bottom: 1px solid #aaa; padding-top: 0px; margin-top: 0px; }
+div.vboxMenuBar { 
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#d9d9d9'); /* for IE */
+	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#d9d9d9)); /* for webkit browsers */
+	background: -moz-linear-gradient(top, #ffffff, #d9d9d9); /* for firefox 3.6+ */
+		
+}
+
+ul.vboxMenuBar li {
+	background: -webkit-gradient(linear, left top, right top, from(#ffffff), to(#d9d9d9)); /* for webkit browsers */
+	background: -moz-linear-gradient(left,  #ffffff, #d9d9d9); /* for firefox 3.6+ */
+	filter: progid:DXImageTransform.Microsoft.gradient(GradientType=1, startColorstr='#ffffff', endColorstr='#d9d9d9'); /* for IE */	
+}
+
+#vboxIndex div.vboxMenuBar, div.vboxDialogContent div.vboxMenuBar { border-bottom: 1px solid #aaa; padding-top: 0px; margin-top: 0px; height: 20px; }
 #vboxIndex div.vboxMenuBar span, div.vboxDialogContent div.vboxMenuBar span { padding: 1px 8px 1px 4px; font-size: 1.1em; border: 1px solid transparent; cursor: default; }
 #vboxIndex div.vboxMenuBar span.vboxBordered, div.vboxDialogContent div.vboxMenuBar span.vboxBordered { border: 1px solid #aaa; }
 #vboxIndex ul.vboxMenuBar, div.vboxDialogContent ul.vboxMenuBar { font-size: 1.2em; background: #e9e9e9; border: 2px solid #aaa; margin: 0px; padding: 0px; }
@@ -244,6 +330,11 @@ div.vboxWizard h3 { border-bottom: 1px solid #aaa; }
 #vboxPaneVMList span.vboxServerLink { text-decoration: underline; cursor: pointer; }
 #vboxVMList { width: 300px; overflow: scroll; } /* Initial Width */
 #vboxVMList table, #vboxVMList div { width: 100%; }
+#vboxVMList table.vboxVMListVM { border: 1px solid transparent; }
+#vboxVMList table.vboxHover {
+	background-color: #f0f8ff;
+	border: 1px solid #aaaaaa;
+}
 #vboxPaneVMList td.vboxVMTitle { width: 100% }
 table.vboxVMListVM { margin-bottom: 5px; vertical-align: top; }
 table.vboxVMListVM td { padding: 2px; white-space: nowrap; }
@@ -327,23 +418,31 @@ div.vboxPreviewSaved {
 }
 div.vboxPreviewSaved img {
 	opacity: .75;
-	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=75)";
+	filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=75)";
 }
 
 /* Description tab */
 #vboxTabVMDescription input { margin: 8px; }
 #vboxTabVMDescription textarea { width: 100%; display: block; }
 
-/* Settings Tables */
-#vboxSettingsDialog { background: #e9e9e9; }
+/* Settings Dialogs */
+#vboxSettingsDialog, div.vboxSettingsDialog div.ui-dialog-buttonpane { 
+	background: #e9e9e9;	
+}
+div.vboxSettingsDialog div.ui-dialog-buttonpane {
+	padding: 0px;
+	margin: 0px;
+	border-top: 2px solid #c1c1c1;
+}
 #vboxSettingsDialog tr { vertical-align: top; }
 #vboxSettingsPane { width: 100%; }
 
 /* Settings menu list (left hand list of sections) */
 #vboxSettingsMenu { text-align: left; background: #fff; width: auto; white-space: nowrap; border: 1px solid #000; }
-#vboxSettingsMenu img { vertical-align: bottom; margin-right: 4px; }
-#vboxSettingsMenu ul { list-style: none; padding: 0px; margin: 0px; }
-#vboxSettingsMenu li { padding: 6px; margin: 4px; cursor: pointer; }
+#vboxSettingsMenu img { margin: 0px; padding: 0px; }
+#vboxSettingsMenu ul { list-style: none; padding: 0px; margin: 0px; white-space: nowrap;}
+#vboxSettingsMenu li { white-space: nowrap; padding: 4px 10px 4px 2px; margin: 0px; cursor: pointer;}
+#vboxSettingsMenu div { white-space: nowrap; display: inline; padding: 0px; margin: 0px; }
 
 /* Settings section title */
 #vboxSettingsTitle { margin-top: 0px; border: 1px solid #000; background: #fff; display: block; text-align: left; padding: 6px; font-weight: bold; }
@@ -352,7 +451,7 @@ div.vboxPreviewSaved img {
 #vboxSettingsList { padding: 2px; margin-top: 8px; }
 
 /* Global Network Settings */
-#vboxSettingsGlobalNetList { background: #fff; height: 200px; padding: 0px; overflow: scroll; overflow-y: scroll; overflow-x: scroll; }
+#vboxSettingsGlobalNetList { background: #fff; height: 200px; padding: 0px; overflow: auto; }
 #vboxSettingsGlobalNetList li { padding-left: 4px; }
 #vboxSettingsGlobalNetEditAdapter th { text-align: right; width: auto; white-space: nowrap;}
 #vboxSettingsGlobalNetEditAdapter td, #vboxSettingsGlobalNetEditAdapter td input { text-align: left; width: 100%; white-space: nowrap;}
@@ -360,7 +459,8 @@ div.vboxPreviewSaved img {
 #vboxSettingsGlobalNetEditDialog .ui-tabs { background: #e9e9e9; margin: 0px 6px 0px 6px;}
 #vboxSettingsGlobalNetEditDialog .ui-tabs-panel { background: #fff; }
 
-
+/* Language Settings */
+#vboxLanguageList {  height: 200px; width: 400px; overflow: auto; }
 
 /* settings general tabs and panes */
 #vboxSettingsPane .vboxSettingsPaneSection { background: #999; }
@@ -430,6 +530,9 @@ div.vboxPreviewSaved img {
 #vboxSettingsUSBFilters li { width: 100%; margin: 0px; padding: 2px 0px 2px 0px; }
 #vboxSettingsUSBFilters ul { list-style: none; margin: 0px; padding: 0px;}
 #vboxSettingsUSBFilters ul input { vertical-align: bottom; }
+
+/* USB Devices */
+#vboxSettingsUSBDevicesList .vboxListItem { cursor: default;}
 
 /* Port Forwarding */
 #vboxSettingsPortForwarding {background: #e9e9e9; }

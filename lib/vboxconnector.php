@@ -54,7 +54,6 @@ class vboxconnector {
 		require_once(dirname(__FILE__).'/cache.php');
 		require_once(dirname(__FILE__).'/language.php');
 		require_once(dirname(__FILE__).'/vboxServiceWrappers.php');
-		#require_once(dirname(__FILE__).'/phplibs.php');
 
 		/* Set.. .. settings */
 		$settings = new phpVBoxConfig();
@@ -702,14 +701,18 @@ class vboxconnector {
 
 		// Network Adapters
 		$netchanged = false;
-		$netprops = array('adapterType','enabled','MACAddress','hostInterface','internalNetwork','NATNetwork','cableConnected','attachmentType');
+		$netprops = array('adapterType','enabled','MACAddress','hostInterface','internalNetwork','NATNetwork','cableConnected','attachmentType','VDENetwork');
 		$adapters = $this->__getCachedMachineData('__getNetworkAdapters',$args['id'],$this->session->machine);
 		for($i = 0; $i < count($args['networkAdapters']); $i++) {
 
 			// Is there a property diff?
 			$ndiff = false;
 			foreach($netprops as $p) {
-				if($args['networkAdapters'][$i][$p] == $adapters[$i][$p]) continue;
+				try {
+					if($args['networkAdapters'][$i][$p] == $adapters[$i][$p]) continue;
+				} catch (Exception $e) {
+					// ignore
+				}
 				$ndiff = true;
 				break;
 			}
@@ -723,7 +726,7 @@ class vboxconnector {
 
 			$n = $m->getNetworkAdapter($i);
 			for($p = 0; $p < (count($netprops) - 1); $p++) {
-				if($netprops[$p] == 'internalNetwork') continue;
+				if($netprops[$p] == 'attachmentType' || $netprops[$p] == 'internalNetwork' || $netprops[$p] == 'VDENetwork') continue;
 				$n->{$netprops[$p]} = $args['networkAdapters'][$i][$netprops[$p]];
 			}
 			$n->enabled = (bool)$args['networkAdapters'][$i]['enabled'];
@@ -732,6 +735,10 @@ class vboxconnector {
 			switch($args['networkAdapters'][$i]['attachmentType']) {
 				case 'Bridged':
 					$n->attachToBridgedInterface();
+					break;
+				case 'VDE':
+					$n->attachToVDE();
+					$n->VDENetwork = (string)$args['networkAdapters'][$i]['VDENetwork'];
 					break;
 				case 'Internal':
 					$n->attachToInternalNetwork();
@@ -1333,6 +1340,7 @@ class vboxconnector {
 		 * Existing Networks
 		 */
 		$networks = array();
+		$vdenetworks = array();
 		foreach($this->vbox->machines as $machine) {
 
 			for($i = 0; $i < $this->settings['nicMax']; $i++) {
@@ -1343,13 +1351,20 @@ class vboxconnector {
 					break;
 				}
 
-				if($h->internalNetwork) {
-					$networks[$h->internalNetwork] = 1;
+				try {
+					if($h->internalNetwork) {
+						$networks[$h->internalNetwork] = 1;
+					} else if($h->VDENetwork) {
+						$vdenetworks[$h->VDENetwork] = 1;
+					}
+				} catch (Exception $e) {
+					// Ignore
 				}
 
 			}
 		}
 		$response['data']['networks'] = array_keys($networks);
+		$response['data']['vdenetworks'] = array_keys($vdenetworks);
 
 		return true;
 	}
@@ -1469,7 +1484,7 @@ class vboxconnector {
 		} catch (Exception $null) {}
 
 		// Save progress
-		$this->__storeProgress($progress);
+		$this->__storeProgress($progress,array('getHostDetails'));
 
 		$response['data']['progress'] = $progress->handle;
 
@@ -1499,7 +1514,7 @@ class vboxconnector {
 		} catch (Exception $null) {}
 
 		// Save progress
-		$this->__storeProgress($progress);
+		$this->__storeProgress($progress,array('getHostDetails'));
 
 		$response['data']['result'] = 1;
 		$response['data']['progress'] = $progress->handle;
@@ -2226,6 +2241,7 @@ class vboxconnector {
 			'attachmentType' => $n->attachmentType->__toString(),
 			'hostInterface' => $n->hostInterface,
 			'internalNetwork' => $n->internalNetwork,
+			'VDENetwork' => $n->VDENetwork,
 			'NATNetwork' => $n->NATNetwork,
 			'cableConnected' => $n->cableConnected,
 			'lineSpeed' => $n->lineSpeed,

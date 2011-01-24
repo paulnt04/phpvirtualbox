@@ -13,7 +13,6 @@ var $location = 'http://127.0.0.1:18083/';
 /* See languages folder for more language options */
 var $language = 'en_us';
 
-
 /*
  *
  * Not-so-common options / tweeking
@@ -25,20 +24,21 @@ var $language = 'en_us';
 // above. The default server will be the first one in the list.
 /*
 var $servers = array(
-	array(
-		'name' => 'London',
-		'username' => 'user',
-		'password' => 'pass',
-		'location' => 'http://192.168.1.1:18083/'
-	),
-	array(
-		'name' => 'New York',
-		'username' => 'user2',
-		'password' => 'pass2',
-		'location' => 'http://192.168.1.2:18083/'
-	),
+        array(
+                'name' => 'London',
+                'username' => 'user',
+                'password' => 'pass',
+                'location' => 'http://192.168.1.1:18083/'
+        ),
+        array(
+                'name' => 'New York',
+                'username' => 'user2',
+                'password' => 'pass2',
+                'location' => 'http://192.168.1.2:18083/'
+        ),
 );
 */
+
 
 
 
@@ -105,6 +105,9 @@ var $vmListSort = 'function(a,b) {
 }';
 */
 
+// Allow VDE network configuration. This must be supported by the underlying VirtualBox installation!
+#var $enableVDE = true; 
+
 
 /*
  * Cache tweeking.
@@ -148,8 +151,9 @@ function __construct() {
 	// Set to selected server based on browser cookie
 	if(@$_COOKIE['vboxServer'] && is_array($this->servers) && count($this->servers)) {
 		foreach($this->servers as $s) {
-			if($s['name'] == $_COOKIE['vboxServer'])
+			if($s['name'] == $_COOKIE['vboxServer']) {				
 				foreach($s as $k=>$v) $this->$k = $v;
+			}
 		}
 	// If servers is not an array, set to empty array
 	} elseif(!is_array($this->servers)) {
@@ -165,6 +169,7 @@ function __construct() {
 		$this->name = parse_url($this->location);
 		$this->name = $this->name['host'];
 	}
+	
 	$this->key = md5($this->location.$this->username);
 }
 

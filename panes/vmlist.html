@@ -53,9 +53,9 @@ function vboxVMList(anchorid) {
 
 		var servers = $('#vboxIndex').data('vboxConfig').servers;
 		var ul = document.createElement('ul');
-		ul.setAttribute('class','contextMenu');
-		ul.setAttribute('style','display: none');
 		ul.setAttribute('id','vboxServerMenu');
+		ul.setAttribute('style','display: none');
+		ul.setAttribute('class','contextMenu');
 		for(var i = 0; i < servers.length; i++) {
 			var li = document.createElement('li');
 			li.innerHTML = "<a href='#" + $('<div />').html(servers[i].name).text() + "' style='background-image: url(images/vbox/OSE/VirtualBox_16px.png);'>"+$('<div />').html(servers[i].name).text()+"</a>";
@@ -195,7 +195,7 @@ function vboxVMList(anchorid) {
 			if($(this).data('id') == 'host' && $('#vboxIndex').data('selectedVM') && $('#vboxIndex').data('selectedVM')['id'] == $(this).data('id')) return;
 			$('#vboxIndex').data('selectedVM',$(this).data());
 			$('#vboxIndex').trigger('vmselect',[$(this).data()]);
-		});
+		}).hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');});
 
 		var tr = document.createElement('tr');
 		

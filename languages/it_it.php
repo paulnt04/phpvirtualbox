@@ -12,6 +12,7 @@ public static $trans = array(
 
 // General actions
 'Interface Language' => 'Lingua dell\'interfaccia',
+'Language' => 'Lingua',
 'File' => 'File',
 'Edit' => 'Modifica',
 'Save' => 'Salva',
@@ -314,13 +315,15 @@ public static $trans = array(
 'Network Adapter' => 'Adattatore di Rete',
 'Enable Network Adapter' => 'Abilita Adattatore di Rete',
 'Adapter Type' => 'Tipo Adattatore',
-'adapter' => 'adapter',
-'Bridged' => 'Bridged',
 'Bridged Adapter' => 'Adattatore Bridged',
-'HostOnly' => 'Host Only',
-'Internal' => 'Interna',
 'Internal Network' => 'Rete Interna',
 'Host-only Adapter' => 'Adattatore Host-only',
+'VDE Adapter' => 'Scheda VDE',
+'Not attached' => 'Non connesso',
+'Bridged adapter, %s' => 'Scheda con bridge, %s', // %s will be replaced by adapter name
+'Host-only adapter, \'%s\'' => 'Scheda solo host, \'%s\'', // %s will be replaced by adapter name
+'Internal network, \'%s\'' => 'Rete interna, \'%s\'', // %s will be replaced by network name
+'VDE network, \'%s\'' => 'Rete VDE, \'%s\'', // %s will be replaced by network name
 'NAT' => 'NAT',
 'network' => 'rete',
 'Ethernet' => 'Ethernet',

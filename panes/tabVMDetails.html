@@ -857,26 +857,33 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		nic = data['networkAdapters'][i];
 		
 		// compose extra info
-		var xtra = '';
+		var adp = '';
 
 		if(nic.enabled) {
 			vboxDetailsTableNics++;
 			switch(nic.attachmentType) {
+				case 'Null':
+					adp = trans('Not attached');
+					break;
 				case 'Bridged':
+					adp = trans('Bridged adapter, %s').replace('%s', nic.hostInterface);
+					break;
 				case 'HostOnly':
-						xtra = ' ' + trans('adapter') + trans('LIST_SEP') + nic.hostInterface;
+					adp = trans('Host-only adapter, \'%s\'').replace('%s', nic.hostInterface);
 					break;
 				case 'NAT':
-						// 'NATNetwork' ?
+					// 'NATNetwork' ?
+					adp = trans('NAT');
 					break;
 				case 'Internal':
-						xtra = ' ' + trans('network') + trans('LIST_SEP') + nic.internalNetwork;
+					adp = trans('Internal network, \'%s\'').replace('%s', nic.internalNetwork);
 					break;
-				
+				case 'VDE':
+					adp = trans('VDE network, \'%s\'').replace('%s', nic.VDENetwork);
+					break;
 			}
-			if(!nic.attachmentType || nic.attachmentType == 'Null') nic.attachmentType = 'Not Attached';
 
-			$(vboxDetailsTable).append(__vboxDetailRow(trans("Adapter") + " " + (i + 1), trans(nic.adapterType) + ' (' + trans(nic.attachmentType) + xtra + ')'));
+			$(vboxDetailsTable).append(__vboxDetailRow(trans("Adapter") + " " + (i + 1), trans(nic.adapterType) + ' (' + adp + ')'));
 		}
 				
 	}

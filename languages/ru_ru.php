@@ -3,10 +3,6 @@
  * Russian / RU language file
  * by Anatoly.Pashin@gmail.com
  *
- * The decision to use PHP for language files instead of JS
- * was made in case the PHP back-end needs to inject translated
- * messages into the interface.
- *
  * $Id$
  *
  */
@@ -324,13 +320,15 @@ public static $trans = array(
 'Network Adapter' => 'Сетевой адаптер',
 'Enable Network Adapter' => 'Включить сетевой адаптер',
 'Adapter Type' => 'Тип адаптера',
-'adapter' => 'адаптер',
-'Bridged' => 'Bridged',
 'Bridged Adapter' => 'Сетевой мост',
-'HostOnly' => 'Host Only',
-'Internal' => 'Internal',
 'Internal Network' => 'Внутренняя сеть',
 'Host-only Adapter' => 'Виртуальный адаптер хоста',
+'VDE Adapter' => 'VDE-Адаптер',
+'Not attached' => 'Не подключен',
+'Bridged adapter, %s' => 'Сетевой мост, %s', // %s will be replaced by adapter name
+'Host-only adapter, \'%s\'' => 'Виртуальный адаптер хоста, \'%s\'', // %s will be replaced by adapter name
+'Internal network, \'%s\'' => 'Внутренняя сеть, \'%s\'', // %s will be replaced by network name
+'VDE network, \'%s\'' => 'VDE-сеть, \'%s\'', // %s will be replaced by network name
 'NAT' => 'NAT',
 'network' => 'сеть',
 'Ethernet' => 'Ethernet',
@@ -373,7 +371,7 @@ public static $trans = array(
 'Teleported' => 'Портирована',
 'Aborted' => 'Прервана',
 'Running' => 'Работает',
-'Paused' => 'Работает',
+'Paused' => 'Приостановлена',
 'Stuck' => 'Зависла',
 'Teleporting' => 'Портируется',
 'LiveSnapshotting' => 'Создание рабочего снимка',

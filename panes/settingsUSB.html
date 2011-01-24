@@ -23,7 +23,7 @@
 		<table style='width: 100%'>
 			<tr>
 				<td id='vboxSettingsUSBFilters' style='width: 100%;' class='vboxBordered vboxEnablerListen'>
-					<ul id='vboxSettingsUSBFilterList' class='vboxList' style='width: 100%'>
+					<ul id='vboxSettingsUSBFilterList' class='vboxList vboxHover' style='width: 100%'>
 						<li class='vboxListItem'><input type='checkbox' class='vboxCheckbox' />a</li>
 					</ul>
 				</td>
@@ -278,7 +278,7 @@ function vboxSettingsAddUSBFilter(f) {
 	$(li).dblclick(function(e){
 		e.preventDefault();
 		usbToolbar.click('usbedit');
-	}).attr('unselectable','on').css('MozUserSelect','none');
+	}).attr('unselectable','on').css('MozUserSelect','none').hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');});
 	
 	$('#vboxSettingsUSBFilterList').append(li);
 }

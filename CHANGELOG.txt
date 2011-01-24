@@ -5,7 +5,9 @@ UI fixes for some browsers when dragging the resize bar.
 
 SATA controllers can now have CD/DVD media attachments.
 
-Support for Chipset option on Motherboard tab in VM settings.
+Support for Chipset option on Motherboard tab in VM settings when
+VirtualBox >= 4.0.2 is detected.
+http://www.virtualbox.org/ticket/7885
 
 Snapshots with no children can be deleted while VM is running.
 
@@ -14,7 +16,7 @@ Improved snapshot name generation.
 Snapshot ages are now periodically updated when viewing the
 Snapshots tab.
 
-Snapshot dates are now displayed instead of age if for snapshots
+Snapshot dates are now displayed instead of age for snapshots
 taken more than 30 days ago.
 
 File / folder browser now scrolls to selected file / folder.
@@ -30,6 +32,14 @@ Improved multi-language support for PHP installations that do not
 have JSON enabled / installed.
 
 Language can now be changed in File -> Preferences -> Language.
+
+UI changes in an attempt to make things look and feel less "flat."
+
+JavaScript changes to speed things up in IE.
+
+Added VDE Network adapter support. Your underlying VirtualBox
+installation must support this, and it must be enabled in
+config.php.
 
 -------------------------------------
 	4-2 - 2011-1-14

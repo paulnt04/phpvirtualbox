@@ -157,7 +157,7 @@ var tButtons = [
 						vboxAlert(d.error);
 					}
 	 	  		},{'vm':$('#vboxTabVMSnapshots').data('machine').id,'snapshot':snapshot.id});
-	  	  		$(this).remove();
+	  	  		$(this).empty().remove();
 				l.run();				
 			};
 			vboxUnsetLangContext();
@@ -188,7 +188,7 @@ var tButtons = [
 						vboxAlert(d.error);
 					}
 	 	  		},{'vm':$('#vboxTabVMSnapshots').data('machine').id,'snapshot':snapshot.id});
-	  	  		$(this).remove();
+	  	  		$(this).empty().remove();
 				l.run();				
 			};
 			vboxUnsetLangContext();

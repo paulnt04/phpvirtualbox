@@ -12,7 +12,7 @@
 	<div id='vboxMMMenu'></div>
 	
 	<!--  Toolbar Created by JavaScript below -->
-	<div id='vboxMMToolbar' style='padding: 4px'></div>
+	<div id='vboxMMToolbar' style='padding: 4px' class='vboxToolbarGrad'></div>
 
 	<!-- Tabs for Media -->
 	<div id='vboxVMMTabs'>
@@ -38,7 +38,7 @@
 						<th style='width: auto'><span class='translate'>Actual Size</span></th>
 					</tr>
 				</thead>
-				<tbody id='vboxVMMHDList'>
+				<tbody id='vboxVMMHDList' class='vboxHover'>
 					<tr>
 						<td>Item 1</td>
 						<td>Item 2</td>
@@ -83,7 +83,7 @@
 						</tr>
 					</thead>
 					
-					<tbody id='vboxVMMCDList'>
+					<tbody id='vboxVMMCDList' class='vboxHover'>
 						<tr>
 							<td>Item 1</td>
 							<td>Item 3</td>
@@ -127,7 +127,7 @@
 							<th style='width: auto'><span class='translate'>Size</span></th>
 						</tr>
 					</thead>
-					<tbody id='vboxVMMFDList'>
+					<tbody id='vboxVMMFDList' class='vboxHover'>
 						<tr>
 							<td>Item 1</td>
 							<td>Item 2</td>
@@ -253,10 +253,10 @@ var vmmButtons = new Array(
 						l.run();
 					});
 				}
-				$('#vboxVMMAddMediumImageDialog').remove();
+				$('#vboxVMMAddMediumImageDialog').empty().remove();
 				
 			};
-			buttons[trans('Cancel')] = function() { $('#vboxVMMAddMediumImageDialog').remove(); };
+			buttons[trans('Cancel')] = function() { $('#vboxVMMAddMediumImageDialog').empty().remove(); };
 
 			$('#vboxIndex').append(d);
 			
@@ -304,7 +304,7 @@ var vmmButtons = new Array(
 							l.run();
 						},{},'progress_media_delete_90px.png');
 					});
-					$(this).remove();
+					$(this).empty().remove();
 				};
 				
 				buttons[trans('Keep')] = function(){
@@ -314,7 +314,7 @@ var vmmButtons = new Array(
 						l.onLoad = vboxVMMFillMediums;
 						l.run();
 					});
-					$(this).remove();
+					$(this).empty().remove();
 				};
 				vboxUnsetLangContext();
 				
@@ -330,7 +330,7 @@ var vmmButtons = new Array(
 						var l = new vboxLoader();
 						l.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
 						l.onLoad = vboxVMMFillMediums;
-						$(b).remove();
+						$(b).empty().remove();
 						l.run();
 					});
 				};
@@ -376,7 +376,7 @@ var vmmButtons = new Array(
 					var l = new vboxLoader();
 					l.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
 					l.onLoad = vboxVMMFillMediums;
-					$(b).remove();
+					$(b).empty().remove();
 					l.run();
 				});
 			};
@@ -475,10 +475,10 @@ var menu = {
 							}							
 						});
 					}
-					$('#vboxVMMCloneMediumDialog').remove();
+					$('#vboxVMMCloneMediumDialog').empty().remove();
 					
 				};
-				buttons[trans('Cancel')] = function() { $('#vboxVMMCloneMediumDialog').remove(); };
+				buttons[trans('Cancel')] = function() { $('#vboxVMMCloneMediumDialog').empty().remove(); };
 	
 				$('#vboxIndex').append(d);
 				
@@ -563,6 +563,7 @@ function vboxVMMAddMedium(d,depth,hideDiff,attached) {
 	$(tr).data(d);
 	$(tr).attr('class','vboxListItem collapsed');
 	$(tr).attr('title',d.id);
+	$(tr).hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');});
 
 	$(tr).addClass('vboxVMMChild vboxVMMChildOf'+(d.parent ? d.parent : '0') +' vboxVMMChildDepth'+depth);
 	if(d.children && d.children.length && !hideDiff) $(tr).addClass('vboxVMMParent');
@@ -570,6 +571,7 @@ function vboxVMMAddMedium(d,depth,hideDiff,attached) {
 
 	/* Expand / collapse button and/or spacers */
 	var td = document.createElement('td');
+	$(td).addClass('vboxHoverFirst');
 	if(depth) {
 		for(var i = 0; i < depth; i++) {
 			var spc = document.createElement('img');
@@ -613,6 +615,7 @@ function vboxVMMAddMedium(d,depth,hideDiff,attached) {
 	switch(d.deviceType) {
 		case 'HardDisk': 
 			var td = document.createElement('td');
+			$(td).addClass('vboxHoverMid')
 			td.innerHTML = $('<div />').html(vboxMbytesConvert(d.logicalSize)).text();
 			tr.appendChild(td);
 			var target = '#vboxVMMHDList';
@@ -625,6 +628,7 @@ function vboxVMMAddMedium(d,depth,hideDiff,attached) {
 			break;
 	}
 	var td = document.createElement('td');
+	$(td).addClass('vboxHoverLast');
 	td.innerHTML = $('<div />').html(vboxBytesConvert(d.size)).text();
 	tr.appendChild(td);
 

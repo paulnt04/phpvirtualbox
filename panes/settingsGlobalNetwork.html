@@ -13,13 +13,13 @@
 	</tr>
 	<tr style='vertical-align:top'>
 		<td style='width: 400px'>
-			<ul id='vboxSettingsGlobalNetList' class='vboxBordered' style='width: 400px; margin-top: 0px;'>
+			<ul id='vboxSettingsGlobalNetList' class='vboxBordered vboxHover' style='width: 400px; margin-top: 0px;'>
 				<li>interface</li>
 			</ul>
 		</td>
 		<td style='width: 10px' id='vboxSettingsGlobalNetToolbar'></td>
 	</tr>
-	<tr id='vboxSettingsGlobalNetLabels' style='display: none'>
+	<tr id='vboxSettingsGlobalNetLabels'>
 		<td colspan='2'>
 			<table style='width: 100%'>
 				<tr>
@@ -165,7 +165,7 @@ var sButtons = new Array(
 					
 				},{'id':$(item).data('id')});
 
-				l.onLoad = function(){$(dialog).remove();}
+				l.onLoad = function(){$(dialog).empty().remove();}
 				l.run();
 			}
 			vboxConfirm(trans('Delete Interface Message1').replace('%s','<b>'+$(item).data('name')+'</b>')+'<p>'+trans('Delete Interface Message2')+'</p>',buttons);	
@@ -187,10 +187,13 @@ netToolbar.addButtons('vboxSettingsGlobalNetToolbar');
 $('#vboxSettingsGlobalNetList').bind('select',netToolbar.update);
 
 $('#vboxSettingsGlobalNetList').bind('select',function(e,i){
-	$('#vboxSettingsGlobalNetLabels').css({'display':(i ? '' : 'none')});
-	if(!i) return;
-	$('#vboxSettingsGlobalNetAdapterLabel').html($(i).data('dhcpEnabled') ? trans('DHCP enabled') : trans('Manually configured'));
-	$('#vboxSettingsGlobalNetDHCPLabel').html($(i).data('dhcpServer').enabled ? trans('Enabled') : trans('Disabled'));
+	if(i) {
+		$('#vboxSettingsGlobalNetAdapterLabel').html($(i).data('dhcpEnabled') ? trans('DHCP enabled') : trans('Manually configured'));
+		$('#vboxSettingsGlobalNetDHCPLabel').html($(i).data('dhcpServer').enabled ? trans('Enabled') : trans('Disabled'));
+	} else {
+		$('#vboxSettingsGlobalNetAdapterLabel').html('');
+		$('#vboxSettingsGlobalNetDHCPLabel').html('');		
+	}
 });
 
 
@@ -214,10 +217,7 @@ function vboxSettingsGlobalNetworkAddAdpater(n) {
 	
 	var li = document.createElement('li');
 	li.setAttribute('class','vboxListItem');
-	$(li).html($('<div />').text(n.name).html());
-	$(li).data(n);
-
-	$(li).click(function(){
+	$(li).html($('<div />').text(n.name).html()).hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');}).data(n).click(function(){
 		$(this).parent().children('li.vboxListItemSelected').removeClass('vboxListItemSelected').addClass('vboxListItem');
 		$(this).addClass('vboxListItemSelected').removeClass('vboxListItem');
 		$('#vboxSettingsGlobalNetList').trigger('select',this);

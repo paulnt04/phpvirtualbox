@@ -3,11 +3,18 @@
 	position: absolute;
 	z-index: 9999999;
 	border: solid 1px #CCC;
-	background: #EEE;
 	padding: 0px;
 	margin: 0px;
 	display: none;
+	background: #e9e9e9;
 	background-repeat: no-repeat;
+}
+
+ul.contextMenu {
+	background: #e9e9e9;
+	background: -webkit-gradient(linear, left top, right top, from(#ffffff), to(#d9d9d9)); /* for webkit browsers */
+	background: -moz-linear-gradient(left,  #ffffff, #d9d9d9); /* for firefox 3.6+ */
+	filter: progid:DXImageTransform.Microsoft.gradient(GradientType=1, startColorstr='#ffffff', endColorstr='#d9d9d9'); /* for IE */	
 }
 
 .contextMenu LI {
@@ -27,11 +34,15 @@
 	outline: none;
 	padding: 1px 5px;
 	padding-left: 28px;
+	border: 1px solid transparent;
 }
 
-.contextMenu LI.hover, .contextMenu LI.hover A {
-	color: #FFF;
-	background-color: #3399FF;
+.contextMenu LI.hover A {
+	background-color: #f0f8ff;
+	border: 1px solid #aaaaaa;
+}
+.contextMenu LI.disabled A {
+	border: 1px solid transparent;
 }
 
 .contextMenu LI.hover.disabled, .contextMenu LI.disabled A {

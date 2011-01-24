@@ -6,13 +6,21 @@
 	$Id$
 
  -->
-<p><span class='translate'>Interface Language</span>:</p>
-<div style='width: 50%; height: 100%;'>
-	<ul id='vboxLanguageList' class='vboxBordered vboxList' style='height: 200px; overflow: auto;'>
-		<li class='vboxListItem'>Default</li>
-	</ul>
-	<div id='vboxLanguageName' style='text-align: center; padding: 4px;'></div>
-</div>
+<table style='width: auto; margin-left:auto; margin-right:auto;'>
+<tr>
+<td style='text-align: left'><span class='translate'>Interface Language</span>:</td>
+</tr>
+<tr>
+<td>
+	<div style='width: 100%; height: 100%;'>
+		<ul id='vboxLanguageList' class='vboxBordered vboxList vboxHover'>
+			<li class='vboxListItem'>Default</li>
+		</ul>
+		<div id='vboxLanguageName' style='text-align: center; padding: 4px;'></div>
+	</div>
+</td>
+</tr>
+</table>
 <script type='text/javascript'>
 
 /* Fill Languages */
@@ -30,7 +38,7 @@ for(var i = 0; i < vboxLanguages.length; i++) {
 	var li = document.createElement('li');
 	$(li).data('language', vboxLanguages[i]);
 	$(li).html(vboxLanguages[i].name);
-	$(li).attr('class','vboxListItem');
+	$(li).attr('class','vboxListItem').hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');});
 	if(defLang == vboxLanguages[i].id) {
 		$(li).addClass('vboxListItemSelected');
 		$('#vboxLanguageName').html(vboxLanguages[i].name + (vboxLanguages[i].name_tr ? ' / ' + vboxLanguages[i].name_tr : ''));

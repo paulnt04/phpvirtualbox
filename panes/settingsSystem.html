@@ -46,7 +46,7 @@
 			<table id='vboxVMBootOrder'>
 				<tr style='vertical-align: top'>
 					<td style='width: auto'>
-						<ul class='vboxList vboxBordered' id='vboxVMBootOrderList' style='margin: 0px; padding: 2px; width: auto; white-space: nowrap; width: 200px'>
+						<ul class='vboxList vboxHover vboxBordered' id='vboxVMBootOrderList' style='margin: 0px; padding: 2px; width: auto; white-space: nowrap; width: 200px'>
 							<li id='HardDisk'><input type='checkbox' class='vboxCheckbox' name='vboxSettingsBootHardDisk' /><span class='translate'>HardDisk</span></li>
 							<li id='DVD'><input type='checkbox' class='vboxCheckbox' name='vboxSettingsBootDVD' /> <span class='translate'>DVD</span></li>
 							<li id='Floppy'><input type='checkbox' class='vboxCheckbox' name='vboxSettingsBootFloppy' /> <span class='translate'>Floppy</span></li>
@@ -180,6 +180,7 @@ for(var i in bootItems) {
 	$(bootList).append(bootItems[i]);
 	delete bootItems[i];
 }
+$(bootList).children().hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');});
 
 /* Hide Chipset selection if we didn't get one, or VirtualBox version is 4.0.0 A safeguard */
 if(!$('#vboxSettingsDialog').data('vboxMachineData').chipsetType || $('#vboxIndex').data('vboxConfig').version.string == '4.0.0') {

@@ -230,10 +230,10 @@ function vboxFileBrowser(root,fn,foldersonly) {
 		if(typeof f != 'string') {
 			f = $('#vboxBrowseFolderList').find('.vboxListItemSelected').first().attr('name');
 		}
-		$('#vboxBrowseFolder').remove();
+		$('#vboxBrowseFolder').empty().remove();
 		fn(f);
 	};
-	buttons[trans('Cancel')] = function() { fn(null); $('#vboxBrowseFolder').remove(); };
+	buttons[trans('Cancel')] = function() { fn(null); $('#vboxBrowseFolder').empty().remove(); };
 
 	var d1 = document.createElement('div');
 	d1.setAttribute('id','vboxBrowseFolder');
@@ -327,7 +327,7 @@ function vboxAjaxError(e) {
 		$(this).parent().parent().dialog('option',{'height':400,'position':'center'});
 		$(this).parent().siblings(".vboxAjaxErrorDetails").css({"display":""});
 		$(this).parent().css({'padding':'0px','margin':'0px'});
-		$(this).parent().siblings(".vboxAjaxErrorDetails").siblings().remove();
+		$(this).parent().siblings(".vboxAjaxErrorDetails").siblings().empty().remove();
 		return false;
 	});
 	
@@ -351,7 +351,7 @@ function vboxAjaxError(e) {
 	$('#vboxIndex').append(div);
 
 	var buttons = { };
-	buttons[trans('OK')] = function(f) {$(this).remove();};
+	buttons[trans('OK')] = function(f) {$(this).empty().remove();};
 
     $(div).dialog({'closeOnEscape':false,'width':400,'height':'auto','buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'phpVirtualBox'});			
 	
@@ -369,7 +369,7 @@ function vboxAlert(msg,xtraOpts) {
 	$('#vboxIndex').append(div);
 
 	var buttons = { };
-	buttons[trans('OK')] = function(f) {$(this).remove();};
+	buttons[trans('OK')] = function(f) {$(this).empty().remove();};
 	
 	var dialogOpts = {'closeOnEscape':false,'width':'50%','height':'auto','buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'phpVirtualBox'};
 
@@ -397,7 +397,7 @@ function vboxConfirm(q,buttons) {
 	div.innerHTML = '<img src="images/50px-Question_icon.svg.png" style="float: left; padding: 10px;" />'+q;
 	$('#vboxIndex').append(div);
 
-	buttons[trans('Cancel')] = function() { $(this).remove(); };
+	buttons[trans('Cancel')] = function() { $(this).empty().remove(); };
 
     $(div).dialog({'closeOnEscape':false,'width':500,'height':'auto','buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'phpVirtualBox'});			
 	
@@ -659,7 +659,7 @@ function vboxProgressUpdate(d,e) {
 		var args = $("#vboxProgressDialog").data('args');
 		if(d['info']['canceled']) vboxAlert(trans('Operation Canceled'));
 		$("#vboxProgressDialog").data('callback')(d,args);
-		$("#vboxProgressDialog").remove();
+		$("#vboxProgressDialog").empty().remove();
 		window.onbeforeunload = null;
 		return;
 	}

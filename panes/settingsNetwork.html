@@ -15,11 +15,12 @@
 		<th style='min-width: 120px'><span class='translate'>Attached to</span>:</th>
 		<td style='width: 100%' class='vboxEnablerTrigger'>
 			<select name='vboxSettingsNetAttachedTo' onchange='vboxSettingsUpdateNetworkOptions(this);' style='width: 100%'>
-				<option value='Null' class='translate'>Not Attached</option>
+				<option value='Null' class='translate'>Not attached</option>
 				<option value='NAT' class='translate'>NAT</option>
 				<option value='Bridged' class='translate'>Bridged Adapter</option>
 				<option value='Internal' class='translate'>Internal Network</option>
 				<option value='HostOnly' class='translate'>Host-only Adapter</option>			
+				<option value='VDE' class='translate'>VDE Adapter</option>
 			</select>
         </td>
 	</tr>
@@ -164,9 +165,10 @@ for(var i = 0; i < parseInt($('#vboxIndex').data('vboxConfig').nicMax); i++) {
 
 
 /* Remove Template */
-$("#vboxSettingsTabNetAdapter").remove();
+$("#vboxSettingsTabNetAdapter").empty().remove();
 
 /* Net values */
+var vboxVDEFound = false; // check for VDE attachments
 for(var i = 0; i < parseInt($('#vboxIndex').data('vboxConfig').nicMax); i++) {
 
 	var a = (i + 1); 
@@ -174,8 +176,8 @@ for(var i = 0; i < parseInt($('#vboxIndex').data('vboxConfig').nicMax); i++) {
 	// attached to
 	$(document.forms['frmVboxSettings'].elements['vboxSettingsNetAttachedTo'+a]).val($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].attachmentType);
 	$(document.forms['frmVboxSettings'].elements['vboxSettingsNetAttachedTo'+a].options[document.forms['frmVboxSettings'].elements['vboxSettingsNetAttachedTo'+a].selectedIndex]).attr('selected','selected');
-	
 	$(document.forms['frmVboxSettings'].elements['vboxSettingsNetAttachedTo'+a]).change();
+	
 	// Device or network name, depending on what 'attached to' is
 	var netName = '';
 	switch($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].attachmentType) {
@@ -186,6 +188,10 @@ for(var i = 0; i < parseInt($('#vboxIndex').data('vboxConfig').nicMax); i++) {
 		case 'Internal':
 			netName = $('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].internalNetwork;
 			break;
+		case 'VDE':
+			netName = $('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].VDENetwork;
+			vboxVDEFound = true;
+			break;			
 	}
 
 	// hold default value
@@ -214,6 +220,13 @@ for(var i = 0; i < parseInt($('#vboxIndex').data('vboxConfig').nicMax); i++) {
 
 
 }
+/* Disable VDE selection? */
+if(!vboxVDEFound && !$('#vboxIndex').data('vboxConfig').enableVDE) {
+	for(var i = 0; i < parseInt($('#vboxIndex').data('vboxConfig').nicMax); i++) {
+		$(document.forms['frmVboxSettings'].elements['vboxSettingsNetAttachedTo'+(i+1)]).children().last().remove();
+	}
+}	
+
 /* preload network 'advanced' down arrow image */
 var netDnAdvImg = new Image();
 netDnAdvImg.src = 'images/downArrow.png';
@@ -245,8 +258,8 @@ function vboxSettingsUpdateNetworkOptions(sel) {
 		$(nsel).children().remove();
 		$(nsel).attr('disabled','');
 
-		// Special case for Internal network select
-		if(sel.value == 'Internal') {
+		// Special case for Internal and VDE network select
+		if(sel.value == 'Internal' || sel.value == 'VDE') {
 			var isel = $(nsel).clone(false);
 			$(nsel).replaceWith(isel);
 			nsel = isel;
@@ -264,6 +277,9 @@ function vboxSettingsUpdateNetworkOptions(sel) {
 			case 'Internal':
 				src = $('#vboxSettingsDialog').data('vboxHostNetworking').networks;
 				break;
+			case 'VDE':
+				src = $('#vboxSettingsDialog').data('vboxHostNetworking').vdenetworks;
+				break;				
 			default:
 				vboxAlert('Unknown network binding type: ' + sel.value);
 		}
@@ -274,8 +290,8 @@ function vboxSettingsUpdateNetworkOptions(sel) {
 		}
 	}
 
-	// Special case for Internal network select
-	if(sel.value == 'Internal') {
+	// Special case for Internal and VDE network selects
+	if(sel.value == 'Internal' || sel.value == 'VDE') {
 		$(nsel).jec();
 	}
 	
@@ -332,6 +348,9 @@ $('#vboxSettingsDialog').bind('save',function(){
 			case 'Internal':
 				$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].internalNetwork = document.forms['frmVboxSettings'].elements['vboxSettingsNetName'+a].value;
 				break;
+			case 'VDE':
+				$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].VDENetwork = document.forms['frmVboxSettings'].elements['vboxSettingsNetName'+a].value;
+				break;				
 		}
 		
 

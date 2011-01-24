@@ -251,9 +251,9 @@ function vboxExportAppliancePropEditDialog(btn) {
 		$(d).html($('<div />').text($('#vboxExportAppliancePropTextarea').val()).html());
 		$(p).html('');
 		$(p).append(d);
-		$(this).remove();
+		$(this).empty().remove();
 	}
-	buttons[trans('Cancel')] = function(){$(this).remove();}
+	buttons[trans('Cancel')] = function(){$(this).empty().remove();}
 	$(d).dialog({'height':300,'width':300,'closeOnEscape':false,'modal':true,'resizable':true,'draggable':true,'buttons':buttons,'title':$(p).parent().children().first().html()});
 
 }

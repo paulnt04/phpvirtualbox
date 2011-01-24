@@ -305,7 +305,7 @@ function wizardImportApplianceParsed(d) {
 		}
 		$(div).append(ul);
 		var buttons = {};
-		buttons[trans('OK')] = function(){$(this).remove();}
+		buttons[trans('OK')] = function(){$(this).empty().remove();}
 		$(div).dialog({'height':300,'width':300,'closeOnEscape':false,'modal':true,'resizable':true,'draggable':true,'buttons':buttons,'title':trans('Warnings')});
 		
 	}
@@ -396,9 +396,9 @@ function vboxImportAppliancePropEditDialog(td) {
 	buttons[trans('OK')] = function(){
 		$(td).data('descValue',$('#vboxImportAppliancePropTextarea').val());
 		$(td).children('div.vboxImportAppProp').html($('<div />').text($('#vboxImportAppliancePropTextarea').val()).html());
-		$(this).remove();
+		$(this).empty().remove();
 	}
-	buttons[trans('Cancel')] = function(){$(this).remove();}
+	buttons[trans('Cancel')] = function(){$(this).empty().remove();}
 	$(d).dialog({'height':300,'width':300,'closeOnEscape':false,'modal':true,'resizable':true,'draggable':true,'buttons':buttons,'title':$(td).prev().html()});
 
 }

@@ -61,7 +61,7 @@
 				$(d).tipped({'source':'title'});
 			}
 			
-			$(d).hover(function(){$(this).addClass('vboxMediumSelectHover')},function(){$(this).removeClass('vboxMediumSelectHover')});			
+			$(d).addClass('vboxMediumSelectDiv').hover(function(){$(this).addClass('vboxMediumSelectHover')},function(){$(this).removeClass('vboxMediumSelectHover')});			
 			$(d).html(m.label);
 			$(d).data('label',m.label);
 			$(d).data('id',m.attachedId);
@@ -150,6 +150,7 @@
 				$(list).attr('id',$(this).attr('id')+'-mediumselect-list');
 				$(list).attr('class', 'vboxMediumSelect');
 				$(list).css({'display':'none'});
+				
 				$('#vboxIndex').append(list);
 			}
 

@@ -21,9 +21,10 @@ div.vboxMediumSelectReadOnly {
 	background-position: 2px 2px;
 }
 
+div.vboxMediumSelectDiv { border: 1px solid transparent; }
 div.vboxMediumSelectHover {
-	color: #FFF;
-	background-color: #3399FF;
+	background-color: #f0f8ff;
+	border: 1px solid #aaaaaa;	
 }
 
 div.vboxMediumSelectImg {
