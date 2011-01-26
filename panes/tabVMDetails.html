@@ -337,8 +337,7 @@ function __vboxDetailHeader(icon,name,linkto,vm,boxes) {
 	var tr = document.createElement('tr');
 	tr.setAttribute('class','vboxDetailsHead');
 	var th = document.createElement('th');
-	th.setAttribute('class','vboxDetailsSection');
-	th.setAttribute('colspan', '2');
+	$(th).attr({'class':'vboxDetailsSection','colspan':'2'});
 
 	if(boxes) {
 		var div = document.createElement('div');
@@ -348,8 +347,7 @@ function __vboxDetailHeader(icon,name,linkto,vm,boxes) {
 	}
 	
 	var sp = document.createElement('span');
-	$(sp).css({'float':'left'});
-	$(sp).append(document.createTextNode(trans(name)+' '));
+	$(sp).css({'float':'left'}).append(document.createTextNode(trans(name)+' '));
 
 	if(boxes) {
 		$(div).append(sp);
@@ -368,7 +366,10 @@ function __vboxDetailRowReal(name,value,cssClass,html) {
 	var tr = document.createElement('tr');
 	tr.setAttribute('class','vboxDetailRow');
 	var th = document.createElement('th');
-	$(th).append(document.createTextNode(name + (value.length && name.length ? ':' : '')));
+	if(html)
+		$(th).html(name + (value && value.length && name.length ? ':' : ''));
+	else
+		$(th).append(document.createTextNode(name + (value && value.length && name.length ? ':' : '')));
 	th.setAttribute('class','vboxDetailContent ' + cssClass);
 	
 	var td = document.createElement('td');
@@ -410,8 +411,7 @@ function __vboxDrawPreview(fromSelf) {
 		// Error or machine not running
 		if(this.height <= 1) {
 
-			$('#vboxDetailsPreviewImg').css('display','none');
-			$('#vboxDetailsPreviewImg').attr('src','about:blank');
+			$('#vboxDetailsPreviewImg').css({'display':'none'}).attr('src','about:blank');
 			$('#vboxDetailsPreviewVMName').css('display','');
 			
 			var width = $('#vboxIndex').data('vboxConfig')['previewWidth'];
@@ -449,7 +449,6 @@ function __vboxDrawPreview(fromSelf) {
 			
 		}
 		$('#vboxDetailsPreviewWrap').css({'height':height+'px','width':width+'px'});
-		//$('#vboxDetailsPreviewMonitor').css({'height':height+'px','width':width+'px'});
 		$('#vboxDetailsTableBoxPreview').find('img.vboxPreviewMonitor').css('width',width+'px');
 		$('#vboxDetailsTableBoxPreview').find('img.vboxPreviewMonitorSide').css('height',height+'px');
 	};
@@ -502,30 +501,23 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		
 		// Details Table
 		var vboxDetailsTable = document.createElement('table');
-		vboxDetailsTable.setAttribute('style','width: 50%');
-		vboxDetailsTable.setAttribute('class','vboxDetailsTable vboxDetailsTableError');
-		$(vboxDetailsTable).append(__vboxDetailRow(trans("Error"), data.accessError['text']));
-		$(vboxDetailsTable).append(__vboxDetailRow(trans("Result Code"), data.accessError['resultCode']));
-		$(vboxDetailsTable).append(__vboxDetailRow(trans("Component"), data.accessError['component']));
-		$(targetdiv).append(vboxDetailsTable);
+		$(vboxDetailsTable).attr({'style':'width: 50%','class':'vboxDetailsTable vboxDetailsTableError'}).append(__vboxDetailRow(trans("Error"), data.accessError['text'])).append(__vboxDetailRow(trans("Result Code"), data.accessError['resultCode'])).append(__vboxDetailRow(trans("Component"), data.accessError['component'])).appendTo(targetdiv);
 
 		var d = document.createElement('div');
 		d.setAttribute('style','width: 50%; padding: 4px;');
 		
 		var btn = document.createElement('input');
-		btn.setAttribute('type','button');
-		btn.setAttribute('value',trans('Refresh'));
-		btn.setAttribute('style','background: url(images/vbox/refresh_16px.png) 2px 2px no-repeat; padding: 2px 2px 2px 18px; border: 1px solid #000; background-color: #eee; ');
-		$(btn).click(function(){
+		$(btn).attr({'type':'button',
+			'value':trans('Refresh'),
+			'style':'background: url(images/vbox/refresh_16px.png) 2px 2px no-repeat; padding: 2px 2px 2px 18px; border: 1px solid #000; background-color: #eee;'
+		}).click(function(){
 			var l = new vboxLoader();
 			l.add('VMDetails',function(){
 				$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);
 			},{'vm':$('#vboxIndex').data('selectedVM').id,'force_refresh':1});
 			l.run();
-		});
+		}).appendTo(d);
 
-		$(d).append(btn);
-		
 		$(targetdiv).append(d);
 				
 		return;
@@ -549,12 +541,10 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	} else {
 		// Enclosing details Table
 		var vboxDetailsTable = document.createElement('table');
-		vboxDetailsTable.setAttribute('class','vboxDetailsTable');
-		$(vboxDetailsTable).append(__vboxDetailHeader("machine_16px.png","General"));
+		$(vboxDetailsTable).attr({'class':'vboxDetailsTable'}).append(__vboxDetailHeader("machine_16px.png","General"));
 	}
 
-	$(vboxDetailsTable).append(__vboxDetailRow(trans("Name"), data['name']));
-	$(vboxDetailsTable).append(__vboxDetailRow(trans("OS Type"), trans(data['OSTypeId'])));
+	$(vboxDetailsTable).append(__vboxDetailRow(trans("Name"), data['name'])).append(__vboxDetailRow(trans("OS Type"), trans(data['OSTypeId'])));
 	
 	// Guest additions link?
 	if(links && data.state == 'Running') {
@@ -584,8 +574,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		$(vboxDetailsTable).append(__vboxDetailHeader('chipset_16px.png',"System"));
 	}
 	
-	$(vboxDetailsTable).append(__vboxDetailRow(trans("Base Memory"), data['memorySize'] + " " + trans('MB')));
-	$(vboxDetailsTable).append(__vboxDetailRow(trans("Processors"), data['CPUCount']));
+	$(vboxDetailsTable).append(__vboxDetailRow(trans("Base Memory"), data['memorySize'] + " " + trans('MB'))).append(__vboxDetailRow(trans("Processors"), data['CPUCount']));
 	
 	// Boot Order
 	var bo = new Array();
@@ -596,8 +585,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 
 	// HW acceleration config enabled?
 	if($('#vboxIndex').data('vboxConfig').enableAccelerationConfig) {
-		$(vboxDetailsTable).append(__vboxDetailRow(trans("VCPU"), (data['HWVirtExProperties'].Enabled ? trans('Enabled') : trans('Disabled'))));
-		$(vboxDetailsTable).append(__vboxDetailRow(trans("Nested Paging"), (data['HWVirtExProperties'].NestedPaging ? trans('Enabled') : trans('Disabled'))));
+		$(vboxDetailsTable).append(__vboxDetailRow(trans("VCPU"), (data['HWVirtExProperties'].Enabled ? trans('Enabled') : trans('Disabled')))).append(__vboxDetailRow(trans("Nested Paging"), (data['HWVirtExProperties'].NestedPaging ? trans('Enabled') : trans('Disabled'))));
 	}
 
 	// Preview box
@@ -619,9 +607,10 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	
 
 		var divWrapImg = document.createElement('img');
-		$(divWrapImg).attr({'id':'vboxDetailsPreviewImg','src':'images/monitor_glossy.png'});
-		$(divWrapImg).css({'display':'none','top':'0px','margin':'0px','border':'0px','padding':'0px','position':'relative','height':height+'px','width':width+'px','float':'left'});
-		$(divWrap).append(divWrapImg);
+		$(divWrapImg).attr({'id':'vboxDetailsPreviewImg','src':'images/monitor_glossy.png'}).css({'display':'none',
+			'top':'0px','margin':'0px','border':'0px','padding':'0px',
+			'position':'relative','height':height+'px','width':width+'px','float':'left'
+		}).appendTo(divWrap);
 
 		// Preview disabled
 		if($('#vboxIndex').data('vboxConfig').noPreview) {
@@ -647,16 +636,14 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 			}
 			
 			var divOut1 = document.createElement('div');
-			$(divOut1).attr('id','vboxDetailsPreviewVMName');
-			$(divOut1).attr('style','overflow:hidden;position:relative;height:'+height+'px;width:'+width+'px');
+			$(divOut1).attr({'id':'vboxDetailsPreviewVMName','style':'overflow:hidden;position:relative;height:'+height+'px;width:'+width+'px'});
 			var divOut2 = document.createElement('div');
 			$(divOut2).attr('style','position:relative;left:0px;display:table-cell;vertical-align:middle;padding:4px;color:#fff;font-weight:bold;text-align:center;height:'+height+'px;width:'+width+'px');
 			if($.browser.msie)
 				$(divOut2).css({"filter":"progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled='true', src='images/monitor_glossy.png', sizingMethod='scale')"});
 			else
 				$(divOut2).css({'background':'url(images/monitor_glossy.png) top left no-repeat','-moz-background-size':'100% 100%','background-size':'100% 100%','-webkit-background-size':'100% 100%'});
-			$(divOut2).html($('<div />').html(data.name).text());
-			$(divOut1).append(divOut2);
+			$(divOut2).html($('<div />').html(data.name).text()).appendTo(divOut1);
 			$(divWrap).append(divOut1);
 
 			// Set class for div so we get opacity
@@ -823,10 +810,9 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	}
 	
 	if(!data['audioAdapter']['enabled']) {
-		$(vboxDetailsTable).append(__vboxDetailRow(trans("Disabled"), ""));
+		$(vboxDetailsTable).append(__vboxDetailRow('<i>'+trans("Disabled")+'</i>', "", true));
 	} else {
-		$(vboxDetailsTable).append(__vboxDetailRow(trans("Host Audio Driver"), trans((data['audioAdapter']['audioDriver'] == 'Null' ? 'Null Audio Driver' : data['audioAdapter']['audioDriver']))));
-		$(vboxDetailsTable).append(__vboxDetailRow(trans("Audio Controller"), trans(data['audioAdapter']['audioController'])));
+		$(vboxDetailsTable).append(__vboxDetailRow(trans("Host Audio Driver"), trans((data['audioAdapter']['audioDriver'] == 'Null' ? 'Null Audio Driver' : data['audioAdapter']['audioDriver'])))).append(__vboxDetailRow(trans("Audio Controller"), trans(data['audioAdapter']['audioController'])));
 	}
 
 
@@ -889,7 +875,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	}
 	
 	if(vboxDetailsTableNics == 0) {
-		$(vboxDetailsTable).append(__vboxDetailRow(trans('None'),''));
+		$(vboxDetailsTable).append(__vboxDetailRow('<i>'+trans('Disabled')+'</i>','',true));
 		
 	// Link nic to guest networking info?
 	} else if(links && data['state'] == 'Running') {
@@ -931,7 +917,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		}
 		$(vboxDetailsTable).append(__vboxDetailRow(trans("Device Filters"), tot + ' (' + act + ' ' + trans('active') + ')'));
 	} else if(data['USBController']) {
-		$(vboxDetailsTable).append(__vboxDetailRow(trans("Disabled"),""));
+		$(vboxDetailsTable).append(__vboxDetailRow('<i>'+trans("Disabled")+'</i>',"", true));
 	}
 
 
@@ -956,7 +942,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	}
 	
 	if(!data['sharedFolders'] || data['sharedFolders'].length < 1) {
-		$(vboxDetailsTable).append(__vboxDetailRow(trans("None"), ''));
+		$(vboxDetailsTable).append(__vboxDetailRow('<i>'+trans('None')+'</i>', '', true));
 	} else {
 		for(var i = 0; i < data['sharedFolders'].length; i++) {
 			$(vboxDetailsTable).append(__vboxDetailRow(data['sharedFolders'][i].name + ' (' + trans(data['sharedFolders'][i].writable ? 'rw' : 'ro') + ')', data['sharedFolders'][i].hostPath));
@@ -988,10 +974,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	var dtr = document.createElement('tr');
 	$(dtr).addClass('vboxDetailRow');
 	var dtd = document.createElement('td');
-	$(dtd).attr('class','vboxDetailDescriptionCell');
-	$(dtd).attr('colspan','2');
-	$(dtd).html(data.description.length ? $('<div />').html(data.description).text() : trans("None"));
-	$(dtr).append(dtd); 
+	$(dtd).attr({'class':'vboxDetailDescriptionCell','colspan':'2'}).html(data.description.length ? $('<div />').html(data.description).text() : '<i>'+trans("None")+'</i>').appendTo(dtr);
 	$(vboxDetailsTable).append(dtr);
 	
 	// Append Table or show div
@@ -1038,25 +1021,19 @@ function __vboxDisplayHostDetailsData(data) {
 	// General
 	$(vboxDetailsTable).append(__vboxDetailHeader("machine_16px.png",trans("General"),null,null,true));
 	if($('#vboxIndex').data('vboxConfig').servers.length) $(vboxDetailsTable).append(__vboxDetailRow(trans("Name"), $('#vboxIndex').data('vboxConfig').name));	
-	$(vboxDetailsTable).append(__vboxDetailRow(trans("OS Type"), data['operatingSystem'] + ' (' + data['OSVersion'] +')'));
-	$(vboxDetailsTable).append(__vboxDetailRow("VirtualBox", $('#vboxIndex').data('vboxConfig').version.string+' ('+$('#vboxIndex').data('vboxConfig').version.revision+')'));
-	$(vboxDetailsTable).append(__vboxDetailRow(trans("Base Memory"), data['memorySize'] + ' ' + trans('MB')));
-	$(vboxDetailsTable).append(__vboxDetailRow(trans("Processors"), data['cpus'][0] + ' (' + data['cpus'].length +')'));
+	$(vboxDetailsTable).append(__vboxDetailRow(trans("OS Type"), data['operatingSystem'] + ' (' + data['OSVersion'] +')')).append(__vboxDetailRow("VirtualBox", $('#vboxIndex').data('vboxConfig').version.string+' ('+$('#vboxIndex').data('vboxConfig').version.revision+')')).append(__vboxDetailRow(trans("Base Memory"), data['memorySize'] + ' ' + trans('MB'))).append(__vboxDetailRow(trans("Processors"), data['cpus'][0] + ' (' + data['cpus'].length +')'));
 
 	$(vboxDetailsTable).append(__vboxDetailRow('',''));
 	$('#vboxHostDetails').append(vboxDetailsTable);
 	
-	var vboxDetailsTable = document.createElement('table');
-	vboxDetailsTable.setAttribute('class','vboxDetailsTable');
-	vboxDetailsTable.setAttribute('class','vboxDetailsTable vboxDetailsTableBox ui-corner-all');
-	
 	// Network
-	$(vboxDetailsTable).append(__vboxDetailHeader("nw_16px.png",trans("Network"),null,null,true));
+	var vboxDetailsTable = document.createElement('table');
+	$(vboxDetailsTable).attr({'class':'vboxDetailsTable vboxDetailsTableBox ui-corner-all'}).append(__vboxDetailHeader("nw_16px.png",trans("Network"),null,null,true));
 
 	for(var i = 0; i < data['networkInterfaces'].length; i++) {		
 		
-		$(vboxDetailsTable).append(__vboxDetailRow(data['networkInterfaces'][i].name + ' (' + trans(data['networkInterfaces'][i].status) + ')',''));
-		$(vboxDetailsTable).append(__vboxDetailRowIndented(trans('IPv4Addr'), data['networkInterfaces'][i].IPAddress + ' / ' + data['networkInterfaces'][i].networkMask));
+		$(vboxDetailsTable).append(__vboxDetailRow(data['networkInterfaces'][i].name + ' (' + trans(data['networkInterfaces'][i].status) + ')','')).append(__vboxDetailRowIndented(trans('IPv4Addr'), data['networkInterfaces'][i].IPAddress + ' / ' + data['networkInterfaces'][i].networkMask));
+		
 		if(data['networkInterfaces'][i].IPV6Supported) {
 			$(vboxDetailsTable).append(__vboxDetailRowIndented(trans('IPv6Addr'), data['networkInterfaces'][i].IPV6Address + ' / ' + data['networkInterfaces'][i].IPV6NetworkMaskPrefixLength));
 		}
@@ -1076,9 +1053,7 @@ function __vboxDisplayHostDetailsData(data) {
  *
  */
 var ul = document.createElement('ul');
-ul.setAttribute('class','contextMenu');
-ul.setAttribute('style','display: none');
-ul.setAttribute('id','vboxDetailsShowMenu');
+$(ul).attr({'class':'contextMenu contextMenuNoBG','style':'display: none','id':'vboxDetailsShowMenu'});
 var sections = new Array('General','System','Preview','Display','Storage','Audio','Network','USB','Shared Folders','Description');
 for(var i = 0; i < sections.length; i++) {
 
@@ -1094,9 +1069,7 @@ for(var i = 0; i < sections.length; i++) {
 	
 	var li = document.createElement('li');
 	var cb = document.createElement('input');
-	$(cb).attr({'type':'checkbox','class':'vboxCheckbox','name':sections[i].replace(' ','')})
-	if(checked) $(cb).attr('checked',checked);
-	$(cb).click(function(){
+	$(cb).attr({'type':'checkbox','class':'vboxCheckbox','name':sections[i].replace(' ',''),'checked':checked}).click(function(){
 
 		var exp = new Date(2020,12,24);
 		document.cookie = "vboxSectionShow"+$(this).attr('name')+"="+(this.checked ? 1 : 0)+"; expires="+exp.toGMTString()+"; path=/";
@@ -1142,13 +1115,9 @@ if($('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] === undefined) {
 		$('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] = 3;
 }
 var ul = document.createElement('ul');
-ul.setAttribute('class','contextMenu');
-ul.setAttribute('style','display: none');
-ul.setAttribute('id','vboxDetailsPreviewMenu');
-$(ul).click(function(){$(this).hide();});
+$(ul).attr({'class':'contextMenu contextMenuNoBG','style':'display: none','id':'vboxDetailsPreviewMenu'}).click(function(){$(this).hide();});
 var radio = document.createElement('input');
-$(radio).attr({'class':'vboxRadio','type':'radio','name':'vboxPreviewRadio','value':0});
-$(radio).click(function(){
+$(radio).attr({'class':'vboxRadio','type':'radio','name':'vboxPreviewRadio','value':0}).click(function(){
 	$('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] = 0;
 	var exp = new Date(2020,12,24);
 	document.cookie = "vboxPreviewUpdate=0; expires="+exp.toGMTString()+"; path=/";
@@ -1161,8 +1130,8 @@ $(li).hover(function(){
 	$(this).addClass('hover');
 },function(){
 	$(this).removeClass('hover');
-});
-$(li).append(radio);
+}).append(radio);
+
 var sp = document.createElement('span');
 $(sp).html(trans('Update Disabled')).click(function(){$(this).siblings('input').click();});
 $(li).append(sp);
@@ -1172,7 +1141,7 @@ var ints = [1,3,5,10,20];
 if($('#vboxIndex').data('vboxConfig').previewUpdateInterval && jQuery.inArray($('#vboxIndex').data('vboxConfig').previewUpdateInterval, ints) < 0) {
 	ints[ints.length] = $('#vboxIndex').data('vboxConfig').previewUpdateInterval;
 }
-if($('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] && jQuery.inArray(parseInt($('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"]), ints) < 0) {
+if($('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] && $('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] > 0 && jQuery.inArray(parseInt($('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"]), ints) < 0) {
 	ints[ints.length] = $('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"];
 }
 ints.sort(function(a,b){
@@ -1182,8 +1151,7 @@ ints.sort(function(a,b){
 
 for(var i = 0; i < ints.length; i++) {
 	var radio = document.createElement('input');
-	$(radio).attr({'class':'vboxRadio','type':'radio','name':'vboxPreviewRadio','value':ints[i]});
-	$(radio).click(function(){
+	$(radio).attr({'class':'vboxRadio','type':'radio','name':'vboxPreviewRadio','value':ints[i]}).click(function(){
 		var exp = new Date(2020,12,24);
 		document.cookie = "vboxPreviewUpdate="+$(this).val()+"; expires="+exp.toGMTString()+"; path=/";		
 		$('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] = $(this).val();
@@ -1195,33 +1163,28 @@ for(var i = 0; i < ints.length; i++) {
 	
 	var li = document.createElement('li');
 	if(i==0) $(li).attr('class','separator');
-	$(li).append(radio);
-	var sp = document.createElement('span');
-	$(sp).html(trans('Every X seconds').replace('%s',ints[i]));
-	$(sp).click(function(){
-		$(this).siblings('input').click();
-	});
-	$(li).append(sp);
-	$(li).hover(function(){
+	$(li).append(radio).hover(function(){
 		$(this).addClass('hover');
 	},function(){
 		$(this).removeClass('hover');
 	});
+	var sp = document.createElement('span');
+	$(sp).html(trans('Every X seconds').replace('%s',ints[i])).click(function(){
+		$(this).siblings('input').click();
+	}).appendTo(li);
 	$(ul).append(li);
 	if(i == (ints.length - 1)) {
 		var li = document.createElement('li');
-		$(li).attr({'id':'vboxDetailsViewSavedSS','class':'separator','style':'display:none'});
-		$(li).hover(function(){
+		$(li).attr({'id':'vboxDetailsViewSavedSS','class':'separator','style':'display:none'}).hover(function(){
 			$(this).addClass('hover');
 		},function(){
 			$(this).removeClass('hover');
-		});		
+		}).click(function(){
+			var newwin = window.open('screen.php?vm='+$('#vboxIndex').data('selectedVM').id+'&full=1','vboxSC','toolbar=1,menubar=0,location=0,directories=0,status=true,resize=true');
+		});
 		var sp = document.createElement('sp');
 		$(sp).html(trans('Open in new window'));
 		$(li).append(sp);
-		$(li).click(function(){
-			var newwin = window.open('screen.php?vm='+$('#vboxIndex').data('selectedVM').id+'&full=1','vboxSC','toolbar=1,menubar=0,location=0,directories=0,status=true,resize=true');
-		});
 		$(ul).append(li);
 	}
 }

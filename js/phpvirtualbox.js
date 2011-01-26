@@ -26,29 +26,23 @@ function vboxWizard(name, title, img, bg) {
 	this.run = function() {
 
 		var d = document.createElement('div');
-		d.setAttribute('id',this.name+'Dialog');
-		d.setAttribute('style','display: none');
-		d.setAttribute('class','vboxWizard');
+		$(d).attr({'id':this.name+'Dialog','style':'display: none','class':'vboxWizard'});
 		
 		var f = document.createElement('form');
-		f.setAttribute('name','frm'+this.name);
-		f.setAttribute('onSubmit','return false;');
+		$(f).attr({'name':('frm'+this.name),'onSubmit':'return false;'});
 
 		// main table
 		var tbl = document.createElement('table');
-		tbl.setAttribute('class','vboxWizard');
+		$(tbl).attr('class','vboxWizard');
 		var tr = document.createElement('tr');
 		
 		if(this.img) {
 			var td = document.createElement('td');
-			td.setAttribute('class','vboxWizardImg');
-			td.innerHTML = '<img src="' + self.img + '" />';
-			tr.appendChild(td);
+			$(td).attr('class','vboxWizardImg').html('<img src="' + self.img + '" />').appendTo(tr);
 		}
 		
 		var td = document.createElement('td');
-		td.setAttribute('id',self.name+'Content');
-		td.setAttribute('class','vboxWizardContent');
+		$(td).attr({'id':self.name+'Content','class':'vboxWizardContent'});
 		if(self.bg) {
 			/*
 			 Disabled for now. Must run on Mac to see what Oracle was going for.
@@ -61,13 +55,9 @@ function vboxWizard(name, title, img, bg) {
 		}
 		// Title
 		var t = document.createElement('h3');
-		t.setAttribute('id',self.name+'Title');
-		t.innerHTML = self.title;
-		td.appendChild(t);
+		$(t).attr('id',self.name+'Title').html(self.title).appendTo(td);
 
-		tr.appendChild(td);
-		tbl.appendChild(tr);
-		
+		$(tr).append(td).appendTo(tbl);		
 		
 		f.appendChild(tbl);
 		d.appendChild(f);
@@ -114,7 +104,7 @@ function vboxWizard(name, title, img, bg) {
 	}
 	
 	self.close = function() {
-		$('#'+self.name+'Dialog').empty().remove();
+		$('#'+self.name+'Dialog').trigger('close').empty().remove();
 	}
 	
 	self.displayStep = function(step) {
@@ -201,13 +191,11 @@ function vboxToolbar(buttons) {
 	}
 	
 	self.enableButton = function(b) {
-		$('#vboxToolbarButton-'+self.id+'-'+b.name).children('img').attr('src','images/vbox/'+b.icon+'_'+self.size+'px.png');
-		$('#vboxToolbarButton-'+self.id+'-'+b.name).addClass('buttonEnabled').removeClass('buttonDisabled');
+		$('#vboxToolbarButton-'+self.id+'-'+b.name).addClass('buttonEnabled').removeClass('buttonDisabled').children('img').attr('src','images/vbox/'+b.icon+'_'+self.size+'px.png');
 	}
 
 	self.disableButton = function(b) {
-		$('#vboxToolbarButton-'+self.id+'-'+b.name).children('img').attr('src','images/vbox/'+b.icon+'_disabled_'+self.size+'px.png');
-		$('#vboxToolbarButton-'+self.id+'-'+b.name).addClass('buttonDisabled').removeClass('buttonEnabled');
+		$('#vboxToolbarButton-'+self.id+'-'+b.name).addClass('buttonDisabled').removeClass('buttonEnabled').children('img').attr('src','images/vbox/'+b.icon+'_disabled_'+self.size+'px.png');
 	}
 
 	// Generate HTML element for button
@@ -221,16 +209,12 @@ function vboxToolbar(buttons) {
 		
 		// TD
 		var td = document.createElement('td');
-		td.setAttribute('id','vboxToolbarButton-' + self.id + '-' + b.name);
-		td.setAttribute('class','vboxToolbarButton ui-corner-all buttonEnabled vboxToolbarButton'+self.size);
-		td.setAttribute('style',self.buttonStyle+'; min-width: '+(self.size+12)+'px;');
-		td.innerHTML = '<img src="images/vbox/'+b.icon+'_'+self.size+'px.png" /><br />' + $('<div />').html(trans(b.label)).text();
-		
-		// bind click
-		$(td).bind('click',function(){
+		$(td).attr({'id':'vboxToolbarButton-' + self.id + '-' + b.name,
+			'class':'vboxToolbarButton ui-corner-all buttonEnabled vboxToolbarButton'+self.size,
+			'style':self.buttonStyle+'; min-width: '+(self.size+12)+'px;'
+		}).html('<img src="images/vbox/'+b.icon+'_'+self.size+'px.png" /><br />' + $('<div />').html(trans(b.label)).text()).bind('click',function(){
 			if($(this).hasClass('buttonDisabled')) return;
 			$(this).data('toolbar').click($(this).data('name'));
-
 		// store data
 		}).data(b);
 		
@@ -273,21 +257,13 @@ function vboxToolbar(buttons) {
 			}
 			if(self.buttons[i].separator) {
 				var td = document.createElement('td');
-				td.setAttribute('class','vboxToolbarSeparator');
-				td.innerHTML = '<br />';
-				tr.appendChild(td);
+				$(td).attr('class','vboxToolbarSeparator').html('<br />').appendTo(tr);
 			}
 
 		}
 
-		tbl.appendChild(tr);
-		$('#'+id).append(tbl);
-		
-		$('#'+id).addClass('vboxToolbar vboxToolbar'+this.size);
-		
-		$('#'+id).bind('disable',self.disable);
-		$('#'+id).bind('enable',self.enable);
-		
+		$(tbl).append(tr);
+		$('#'+id).append(tbl).addClass('vboxToolbar vboxToolbar'+this.size).bind('disable',self.disable).bind('enable',self.enable);
 		
 	}
 
@@ -365,14 +341,11 @@ function vboxToolbarSmall(buttons) {
 		}
 		
 		var btn = document.createElement('input');
-		btn.setAttribute('id','vboxToolbarButton-' + self.id + '-' + b.name);
-		btn.setAttribute('type','button');
-		btn.setAttribute('value','');
-		btn.setAttribute('class','vboxImgButton vboxToolbarSmallButton ui-corner-all');
-		btn.setAttribute('title', trans(b.label));
-		$(btn).click(b.click);
-		btn.setAttribute('style',self.buttonStyle+' background-image: url(images/vbox/' + b.icon + '_'+self.size+'px.png);');
-		
+		$(btn).attr({'id':'vboxToolbarButton-' + self.id + '-' + b.name,'type':'button','value':'',
+			'class':'vboxImgButton vboxToolbarSmallButton ui-corner-all',
+			'title':trans(b.label),
+			'style':self.buttonStyle+' background-image: url(images/vbox/' + b.icon + '_'+self.size+'px.png);'
+		}).click(b.click);		
 		
 		if(!self.noHover) {
 			$(btn).hover(
@@ -391,27 +364,24 @@ function vboxToolbarSmall(buttons) {
 		
 		self.id = id;
 		
+		var targetElm = $('#'+id);
+		
 		if(!self.buttonStyle)
 			self.buttonStyle = 'height: ' + (self.size+8) + 'px; width: ' + (self.size+8) + 'px; ';
 		
 		for(var i = 0; i < self.buttons.length; i++) {
 			
-			$('#'+id).append(self.buttonElement(self.buttons[i]));
+			$(targetElm).append(self.buttonElement(self.buttons[i]));
 			
 			if(self.buttons[i].separator) {
 				var hr = document.createElement('hr');
-				hr.setAttribute('style','display: inline');
-				hr.setAttribute('class','vboxToolbarSmall vboxSeperatorLine');
-				$('#'+id).append(hr);
+				$(hr).attr({'style':'display: inline','class':'vboxToolbarSmall vboxSeperatorLine'});
+				$(targetElm).append(hr);
 			}
 				
 		}
-		
-		$('#'+id).attr('name',self.name);
-		$('#'+id).addClass('vboxToolbarSmall vboxEnablerTrigger');
-		
-		$('#'+id).bind('disable',self.disable);
-		$('#'+id).bind('enable',self.enable);
+
+		$(targetElm).attr({'name':self.name}).addClass('vboxToolbarSmall vboxEnablerTrigger').bind('disable',self.disable).bind('enable',self.enable);
 		
 	}
 	
@@ -529,19 +499,15 @@ function vboxMenuBar(name) {
 		self.menus[self.menus.length] = m;
 		
 		var ul = document.createElement('ul');
-		ul.setAttribute('id',m.name+'Menu');
-		ul.setAttribute('class','vboxMenuBar');
-		ul.setAttribute('style','display: none;');
+		$(ul).attr({'id':m.name+'Menu','class':'vboxMenuBar','style':'display: none;'});
 		
 		for(var i in m.menu) {
 			if(typeof i == 'function') continue;
 			var li = document.createElement('li');
 			var a = document.createElement('a');
-			a.setAttribute('id',m.menu[i].name);
-			a.setAttribute('href','#'+m.menu[i].name);
+			$(a).attr({'id':m.menu[i].name,'href':'#'+m.menu[i].name}).html(trans(m.menu[i].title));
 			if(m.menu[i].icon_absolute) a.setAttribute('style','background-image: url('+m.menu[i].icon+')');
 			else a.setAttribute('style','background-image: url(images/vbox/'+m.menu[i].icon+'_16px.png)');
-			a.innerHTML = trans(m.menu[i].title);
 			if(m.menu[i].separator) $(li).addClass('separator');
 			li.appendChild(a)
 			ul.appendChild(li);
@@ -557,8 +523,7 @@ function vboxMenuBar(name) {
 	self.addMenuBar = function(id) {
 		
 		var d = document.createElement('div');
-		d.setAttribute('class','vboxMenuBar');
-		d.setAttribute('id',self.name+'MenuBar');
+		$(d).attr({'class':'vboxMenuBar','id':self.name+'MenuBar'});
 		$('#'+id).prepend(d);
 		
 		for(var i = 0; i < self.menus.length; i++) {
@@ -662,21 +627,16 @@ function vboxLoader() {
 		if(!self.noLoadingScreen) {
 
 			var div = document.createElement('div');
-			div.setAttribute('id', 'vboxLoaderDialog');
-			div.setAttribute('title', '');
-			div.setAttribute('style','display: none;');
-			div.setAttribute('class','vboxDialogContent');
+			$(div).attr({'id':'vboxLoaderDialog','title':'','style':'display: none;','class':'vboxDialogContent'});
 	
 			var tbl = document.createElement('table');
 			var tr = document.createElement('tr');
 			var td = document.createElement('td');
-			td.setAttribute('class', 'vboxLoaderSpinner');
-			td.innerHTML = '<img src="images/spinner.gif" />';
-			tr.appendChild(td);
+			$(td).attr('class', 'vboxLoaderSpinner').html('<img src="images/spinner.gif" />').appendTo(tr);
+			
 			var td = document.createElement('td');
-			td.setAttribute('class','vboxLoaderText');
-			td.innerHTML = trans('Loading ...');
-			tr.appendChild(td);
+			$(td).attr('class','vboxLoaderText').html(trans('Loading ...')).appendTo(tr);
+
 			tbl.appendChild(tr);
 			div.appendChild(tbl);
 	

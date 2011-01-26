@@ -24,7 +24,7 @@
 
 		<!-- Storage Controllers -->
 		<div id='vboxSettingsStorageTree' class='vboxBordered'>
-			<ul class='vboxHover'>
+			<ul class='vboxHover vboxHoverBorderless'>
 				<li>Storage Thingy</li>
 				<li>
 				<ul>
@@ -993,7 +993,8 @@ function vboxSettingsStorageElectDisk(bus) {
 
 			// Enable / Disable CD/DVD menu
 			var c = $('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first();
-			if($(c).data('bus') == 'IDE') {
+			if($(c).data('bus') == 'IDE' || $(c).data('bus') == 'SATA') {
+				$("#vboxToolbarButton-vboxSettingsControllersButtons-addattach").data('busType', $(c).data('bus'));
 				$("#vboxToolbarButton-vboxSettingsControllersButtons-addattach").enableContextMenu();
 			} else {
 				$("#vboxToolbarButton-vboxSettingsControllersButtons-addattach").disableContextMenu();
@@ -1004,7 +1005,7 @@ function vboxSettingsStorageElectDisk(bus) {
 		'click' : function (item) {
 			// Let context menu handle IDE
 			var c = $('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first();
-			if($(c).data('bus') == 'IDE') { return; }
+			if($(c).data('bus') == 'IDE' || $(c).data('bus') == 'SATA') { return; }
 			vboxSettingsStorageAddMedium($(c).data('bus'),($(c).data('bus') == 'Floppy' ? 'Floppy' : 'HardDisk'));
 		}
 	},
@@ -1122,11 +1123,11 @@ $("#vboxToolbarButton-vboxSettingsControllersButtons-addcontroller").contextMenu
  );
 
 /* Menu for adding IDE attachment */
-if(!$('#vboxSettingsAddIDEAttachmentMenu').html()) {
+if(!$('#vboxSettingsAddAttachmentsMenu').html()) {
 	var ul = document.createElement('ul');
 	ul.setAttribute('class','contextMenu');
 	ul.setAttribute('style','display: none');
-	ul.setAttribute('id','vboxSettingsAddIDEAttachmentMenu');
+	ul.setAttribute('id','vboxSettingsAddAttachmentsMenu');
 
 	var li = document.createElement('li');
 	li.innerHTML = "<a href='#addCD' style='background-image: url(images/vbox/cd_add_16px.png);' >"+trans('Add CD/DVD Device')+"</a>";
@@ -1142,11 +1143,11 @@ if(!$('#vboxSettingsAddIDEAttachmentMenu').html()) {
 
  /* Add IDE attachment button menu initialization  */
 $("#vboxToolbarButton-vboxSettingsControllersButtons-addattach").contextMenu({
- 		menu: 'vboxSettingsAddIDEAttachmentMenu',
+ 		menu: 'vboxSettingsAddAttachmentsMenu',
  		button: 0
  	},
  	function(action, el, pos) {
-		vboxSettingsStorageAddMedium('IDE',(action == 'addCD' ? 'DVD' : 'HardDisk'));
+		vboxSettingsStorageAddMedium($("#vboxToolbarButton-vboxSettingsControllersButtons-addattach").data('busType'),(action == 'addCD' ? 'DVD' : 'HardDisk'));
  	}
  );
 

@@ -63,8 +63,7 @@ function vboxVMNetAdaptersDisplay(d) {
 
 	// Append tab list
 	var adl = document.createElement('div');
-	$(adl).attr('id','vboxGuestNetAdapterList');
-	$(adl).attr('class','vboxTabbed');
+	$(adl).attr({'id':'vboxGuestNetAdapterList','class':'vboxTabbed'});
 
 	// Check for data
 	if(!data['Count'] || data['Count'] < 1) {
@@ -86,12 +85,10 @@ function vboxVMNetAdaptersDisplay(d) {
 
 		// Tab content
 		var tmpl = $("#vboxGuestNetAdapterTemplate").clone(true);
-		$(tmpl).attr('id','vboxGuestNetAdapter'+(i+1));
 		tmpl.find('span[title]').each(function(){
 			$(this).html(data[i+$(this).attr('title')]);
 		});
-		$(tmpl).css({'display':''});
-		$(tmpl).appendTo(adl);
+		$(tmpl).attr('id','vboxGuestNetAdapter'+(i+1)).css({'display':''}).appendTo(adl);
 		
 	}
 

@@ -1213,13 +1213,17 @@ class vboxconnector {
 
 		foreach ($machines as $machine) {
 
-			$response['data'][] = array(
-				'name' => $machine->name,
-				'state' => $machine->state->__toString(),
-				'OSTypeId' => $machine->getOSTypeId(),
-				'id' => $machine->id,
-				'description' => $machine->description
-			);
+			try {
+				$response['data'][] = array(
+					'name' => $machine->name,
+					'state' => $machine->state->__toString(),
+					'OSTypeId' => $machine->getOSTypeId(),
+					'id' => $machine->id,
+					'description' => $machine->description
+				);
+			} catch (Exception $e) {
+				// Ignore. Probably inaccessible machine.
+			}
 		}
 		return true;
 	}

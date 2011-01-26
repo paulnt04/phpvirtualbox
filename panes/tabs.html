@@ -33,10 +33,7 @@ for(var i = 0; i < tabs.length; i++) {
 
 	// Tab link
 	var li = document.createElement('li');
-	$(li).attr('class','ui-corner-all');
-	li.innerHTML = '<a href="#'+tabs[i].name+'"><span><img style="vertical-align: middle" src="images/vbox/'+tabs[i].icon+'_16px.png" border="0" /> <span id="'+tabs[i].name+'Title">'+trans(tabs[i].label)+'</span></span></a>';					
-	$('#tablistMain').append(li);
-	
+	$(li).attr({'class':'ui-corner-all'}).html('<a href="#'+tabs[i].name+'"><span><img style="vertical-align: middle" src="images/vbox/'+tabs[i].icon+'_16px.png" border="0" /> <span id="'+tabs[i].name+'Title">'+trans(tabs[i].label)+'</span></span></a>').appendTo('#tablistMain');				
 	
 	tabLoader.addFile('panes/'+tabs[i].content+'.html',function(f,tname){$('#tabMainContent').append(f);},tabs[i].name);
 	

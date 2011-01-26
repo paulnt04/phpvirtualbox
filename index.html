@@ -104,6 +104,7 @@
 				vboxVersionCheck($('#vboxIndex').data('vboxConfig').version);
 
 				// Resizable
+				///////////////////////
 				$('#vboxResizeBar').draggable({cursor:(jQuery.browser.opera ? 'e-resize' : 'col-resize'),axis:'x',zIndex:99,helper:function(){
 					var r = $('#vboxResizeBar').clone();
 					$(r).unbind('mouseleave');

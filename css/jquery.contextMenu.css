@@ -23,7 +23,10 @@ ul.contextMenu {
 	margin: 0px;
 }
 
-.contextMenu a {
+.contextMenu LI input {
+	padding-left: 2px;
+}
+.contextMenu a, .contextMenu SPAN {
 	color: #333;
 	text-decoration: none;
 	display: block;
@@ -35,9 +38,21 @@ ul.contextMenu {
 	padding: 1px 5px;
 	padding-left: 28px;
 	border: 1px solid transparent;
+	cursor: pointer;
 }
 
-.contextMenu LI.hover A {
+ul.contextMenuNoBG li {
+	cursor: pointer;
+	border: 1px solid transparent;
+}
+ul.contextMenuNoBG li.disabled {
+	cursor: default;
+}
+ul.contextMenuNoBG SPAN {
+	display: inline;
+	padding-left: 2px;
+}
+.contextMenu LI.hover A, ul.contextMenuNoBG LI.hover {
 	background-color: #f0f8ff;
 	border: 1px solid #aaaaaa;
 }

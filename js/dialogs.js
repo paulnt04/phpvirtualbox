@@ -44,7 +44,7 @@ function vboxImportApplianceDialogInit() {
 					},{},'progress_import_90px.png',trans('Import Appliance'));
 				}
 			},{'descriptions':descriptions,'file':file});
-			$(dialog).empty().remove();
+			$(dialog).trigger('close').empty().remove();
 			l.run();
 	
 	
@@ -94,7 +94,7 @@ function vboxExportApplianceDialogInit() {
 			if(d && d.progress)
 				vboxProgress(d.progress,function(){return;},{},'progress_export_90px.png',trans('Export Appliance'));
 		},{'format':format,'file':file,'vms':vms});
-		$(dialog).empty().remove();
+		$(dialog).trigger('close').empty().remove();
 		l.run();
 
 
@@ -125,9 +125,9 @@ function vboxPortForwardConfigInit(rules,callback) {
 				rules[i] = $(rules[i]).data('vboxRule');
 			}
 			callback(rules);
-			$(this).empty().remove();
+			$(this).trigger('close').empty().remove();
 		};
-		buttons[trans('Cancel')] = function(){$(this).empty().remove();};
+		buttons[trans('Cancel')] = function(){$(this).trigger('close').empty().remove();};
 		$('#vboxSettingsPortForwarding').dialog({'closeOnEscape':false,'width':600,'height':400,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':trans('Port Forwarding Rules')});
 	}
 	l.run();
@@ -165,7 +165,7 @@ function vboxWizardNewVMInit(callback) {
 				lm.run();
 			});
 			
-			$(dialog).empty().remove();
+			$(dialog).trigger('close').empty().remove();
 
 		};
 		vbw.run();
@@ -201,7 +201,7 @@ function vboxShowLogsDialogInit(vm) {
 			}
 			l.run();
 		};
-		buttons[trans('Close')] = function(){$(this).empty().remove();};
+		buttons[trans('Close')] = function(){$(this).trigger('close').empty().remove();};
 		vboxUnsetLangContext();
 		$('#vboxVMLogsDialog').dialog({'closeOnEscape':false,'width':800,'height':500,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':trans('Logs')});
 		vboxShowLogsInit(vm);
@@ -250,11 +250,11 @@ function vboxVMMDialogInit(callback,type,hideDiff,attached) {
 					return;
 				}
 				callback($(sel).data());
-				$('#vboxVMMDialog').empty().remove();
+				$('#vboxVMMDialog').trigger('close').empty().remove();
 			}
 		}
 		buttons[trans('Close')] = function() {
-			$('#vboxVMMDialog').empty().remove();
+			$('#vboxVMMDialog').trigger('close').empty().remove();
 			if(callback) callback(null);
 		};
 		$("#vboxVMMDialog").dialog({'closeOnEscape':false,'width':800,'height':500,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':trans('Virtual Media Manager')});
@@ -308,7 +308,7 @@ function vboxWizardNewHDInit(callback,suggested) {
 			var size = vboxConvertMbytes(document.forms['frmwizardNewHD'].elements.wizardNewHDSizeValue.value);
 			var type = (document.forms['frmwizardNewHD'].elements.newHardDiskType[1].checked ? 'fixed' : 'dynamic');
 
-			$(dialog).empty().remove();
+			$(dialog).trigger('close').empty().remove();
 
 			var l = new vboxLoader();
 			l.mode = 'save';
@@ -351,7 +351,7 @@ function vboxGuestNetworkAdaptersDialogInit(vm,nic) {
 	l.onLoad = function(){
 		
 		var buttons = {};
-		buttons[trans('Close')] = function() {$('#vboxGuestNetworkDialog').empty().remove();};
+		buttons[trans('Close')] = function() {$('#vboxGuestNetworkDialog').trigger('close').empty().remove();};
 		$(d).dialog({'closeOnEscape':false,'width':500,'height':250,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':trans('Guest Network Adapters')});
 		
 		// defined in pane
@@ -387,7 +387,7 @@ function vboxMountInit(vm,bus,port,device,onmount) {
 		// defined in panes/mount.html
 		vboxMountPostInit(bus,port,device,onmount);
 		var buttons = {};
-		buttons[trans('Close')] = function() {$('#vboxMountDialog').empty().remove();};
+		buttons[trans('Close')] = function() {$('#vboxMountDialog').trigger('close').empty().remove();};
 		$(d).dialog({'closeOnEscape':false,'width':'auto','height':170,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':trans('Mount')});
 	}
 	l.run();
@@ -680,11 +680,11 @@ function vboxSettingsInit(title,panes,data,onsave,pane) {
 			
 			$(this).trigger('save');
 			onsave($(this));
-			$(this).empty().remove();
+			$(this).trigger('close').empty().remove();
 			$(document).trigger('click');
 		};
 		buttons[trans('Cancel')] = function() {
-			$('#vboxSettingsDialog').trigger('close').dialog('close').dialog('destroy').empty().remove();
+			$('#vboxSettingsDialog').trigger('close').empty().remove();
 			$(document).trigger('click');
 		};
 

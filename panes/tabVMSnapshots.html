@@ -280,11 +280,7 @@ $('#vboxSnapshotList').bind('select',snapshotToolbar.update);
 // Called when snapshot operation completes
 $('#vboxTabVMSnapshots').bind('refresh',function(){
 
-	var l = new vboxLoader();
-	l.add('VMDetails',function(d){
-		$('#vboxIndex').trigger('vmselect',d);
-	},{'vm':$('#vboxTabVMSnapshots').data('machine').id});
-	l.run();	
+	$('#vboxIndex').trigger('vmselect',$('#vboxTabVMSnapshots').data('machine'));
 	
 });
 

@@ -57,8 +57,7 @@ function vboxMountPostInit(bus,port,device,onmount) {
 	vboxMountFillMediums(type,medium);
 	
 	// Set button
-	$('#vboxMountButton').val(trans('Mount'));
-	$('#vboxMountButton').click(function(){ vboxMountMedium(bus,busName,port,device,onmount); });
+	$('#vboxMountButton').val(trans('Mount')).click(function(){ vboxMountMedium(bus,busName,port,device,onmount); });
 
 	// VMM button
 	$('#vboxMountVMM').click(function(){
