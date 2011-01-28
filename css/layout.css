@@ -187,8 +187,13 @@ table tr td.vboxFileFolderInput input.vboxImgButton { width: 20px; margin-left: 
 	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled='true', src='images/monitor_glossy.png', sizingMethod='scale');
 }
 
-td.vboxToolbarButtonDown {
+.vboxToolbarGrad .vboxToolbarButtonDown {
 	padding: 5px 3px 3px 5px;
+	border-color: #777;
+	background: -webkit-gradient(linear, left top, left bottom, from(#a9a9a9), to(#e9e9e9)); /* for webkit browsers */
+	background: -moz-linear-gradient(top,  #a9a9a9, #e9e9e9); /* for firefox 3.6+ */
+	
+	
 }
 
 /* Small Toolbar buttons */
@@ -275,6 +280,9 @@ div.vboxWizard h3 { margin: 2px 0px 18px 0px; font-size: 16px; }
 #vboxExportProps tr,#vboxExportProps td, #vboxExportProps td div { vertical-align: middle; height: 22px; line-height: 22px;} 
 #vboxExportProps td.vboxHideOverflow, #vboxExportProps td.vboxHideOverflow div { text-wrap: unrestricted !important; word-wrap: break-word !important; overflow: hidden !important; white-space: wrap !important;}
 /* Import Appliance */
+#vboxImportProps tr td.vboxHeader { font-weight: bold; }
+#vboxImportProps td img.vboxSpacer { width: 16px; }
+#vboxImportProps td.vboxHardDiskImage img.vboxSpacer { width: 32px; }
 #vboxImportProps tr,#vboxImportProps td, #vboxImportProps td div { vertical-align: middle; height: 22px; line-height: 22px;} 
 #vboxImportProps td.vboxHideOverflow, #vboxImportProps td.vboxHideOverflow div { text-wrap: unrestricted !important; word-wrap: break-word !important; overflow: hidden !important; white-space: wrap !important;}
 
@@ -360,6 +368,7 @@ table.vboxVMListVM td.vboxVMSessionOpen { font-style: italic; }
 
 /* Details Tab and Table */
 #vboxTabVMDetails { font-size: 0.9em; }
+#vboxTabVMDetails .vboxDetailsNone { font-style: italic; }
 #vboxDetailsWelcome { background: #fff; }
 table.vboxDetailsTable { width: auto; }
 table.vboxDetailsTableBox tr.vboxDetailsHead th { white-space: nowrap; }
@@ -530,6 +539,7 @@ div.vboxSettingsDialog div.ui-dialog-buttonpane {
 #vboxSettingsSharedFoldersTable { background: #eee; }
 #vboxSettingsSharedFolders { background: #fff; }
 #vboxSettingsSharedFolders td, #vboxSettingsSharedFolders th { padding-left: 8px; padding-right: 8px; }
+#vboxSettingsSharedFoldersList tbody tr:first-child { font-weight: bold; }
 #vboxSettingsSharedFoldersList td { white-space: nowrap; }
 #vboxSettingsSharedFoldersList td.vboxSettingsSFPathCell { width: 100%; }
 #vboxSettingsSharedFoldersList td.vboxSettingsSFNameCell { width: auto; }
@@ -543,6 +553,7 @@ div.vboxSettingsDialog div.ui-dialog-buttonpane {
 
 /* USB Devices */
 #vboxSettingsUSBDevicesList .vboxListItem { cursor: default;}
+#vboxSettingsUSBDevicesList .vboxListItemDisabled { background: #aaa; }
 
 /* Port Forwarding */
 #vboxSettingsPortForwarding {background: #e9e9e9; }

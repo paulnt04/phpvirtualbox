@@ -249,6 +249,22 @@ public static $trans = array(
 'Attached to' => 'Collegato a ',
 'Not Attached' => 'Non collegato',
 
+'Serial Ports' => 'Porte seriali',
+'Port X' => 'Porta %s', // %s will be replaced with port number
+'Enable Serial Port' => 'Abilita porta seriale',
+'Port Number' => 'Numero di porta',
+'IRQ' => 'IRQ',
+'I/O Port' => 'Porta I/O',
+'User-defined' => 'Definita dall\'utente',
+'Port Mode' => 'Modalità porta:',
+'Disconnected' => 'Non connessa',
+'HostPipe' => 'Pipe host',
+'HostDevice' => 'Dispositivo host',
+'RawFile' => 'File raw',
+'Create Pipe' => 'Crea pipe',
+'Port/File Path' => 'Porta/Percorso file',
+
+
 'USB' => 'USB',
 'USB Controller' => 'Controller USB',
 'Enable USB Controller' => 'Abilita Controller USB',
@@ -455,7 +471,7 @@ public static $trans = array(
 'Use existing hard disk' => 'Utilizza hard disk esistente',
 'newVM Step4 Message1' => 'Seleziona l\'immagine dell\'hard disk da usare per effettuare il boot della macchina virtuale. Oppure puoi creare un nuovo disco usando il pulsante Nuovo, o selezionare un hard disk esistente dalla lista o premendo sul tasto Esistente (per aprire il Virtual Media Manager).',
 'newVM Step4 Message2' => 'Se necessiti di una configurazione avanzata degli hard disk, puoi saltare questo passo e collegare i dischi in un momento successivo usando il menu Impostazioni della macchina virtuale.',
-'newVM Step4 Message3' => 'La dimensione raccomandata del disco di boot è %s MB.', /* %s will be replaced with the recommended memory size at run time */
+'newVM Step4 Message3' => 'La dimensione raccomandata del disco di boot è %s.', /* %s will be replaced with the recommended memory size at run time */
 'newVM Step5 Message1' => 'Stai per creare una nuova macchina virtuale con le seguenti caratteristiche:',
 'newVM Step5 Message2' => 'Se le impostazioni sono corrette, premi il tasto Fine.  Dopo la pressione del pulsante, sarà creata la macchina virtuale.',
 'newVM Step5 Message3' => 'Si noti che puoi modificare tutte le impostazioni della macchina virtuale in ogni momento uasndo il menu Impostazioni, accedibile dalla pagina principale.',

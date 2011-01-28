@@ -1,42 +1,5 @@
 <?php
-
 /*
- * Sample client for the VirtualBox webservice, written in PHP.
- *
- * Run the VirtualBox web service server first; see the VirtualBOx
- * SDK reference for details.
- *
- * Copyright (C) 2009 Sun Microsystems, Inc.
- * Contributed by James Lucas (mjlucas at eng.uts.edu.au).
- *
- * The following license applies to this file only:
- *
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use,
- * copy, modify, merge, publish, distribute, sublicense, and/or
- * sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
-
-/*
- * </Sun license>
- *
- * SLIGHTLY modified by Ian Moore
  * $Id$
  */
 
@@ -102,6 +65,7 @@ try {
 
 		$vbox->session = $vbox->websessionManager->getSessionObject($vbox->vbox->handle);
 		$machine->lockMachine($vbox->session->handle,'Shared');
+		$machine->releaseRemote();
 
 		$res = $vbox->session->console->display->getScreenResolution(0);
 
@@ -134,6 +98,7 @@ try {
 		$imageraw = array($vbox->session->console->display->takeScreenShotPNGToArray(0,$screenWidth, $screenHeight));
 
 		$vbox->session->unlockMachine();
+		$vbox->session->releaseRemote();
 
 	} else {
 
@@ -148,10 +113,10 @@ try {
     	}
 
 
-    	if($_REQUEST['full'])
-    		$imageraw = $machine->readSavedScreenshotPNGToArray(0);
-    	else
-			$imageraw = $machine->readSavedThumbnailPNGToArray(0);
+    	if($_REQUEST['full']) $imageraw = $machine->readSavedScreenshotPNGToArray(0);
+    	else $imageraw = $machine->readSavedThumbnailPNGToArray(0);
+			
+		$machine->releaseRemote();
 
 	}
 	$vbox->session = null;
@@ -171,6 +136,7 @@ try {
 	if($vbox && $vbox->session && $vbox->session->handle) {
 		try {
 			$vbox->session->unlockMachine();
+			unset($vbox->session);
 		} catch (Exception $e) {
 		}
 	}

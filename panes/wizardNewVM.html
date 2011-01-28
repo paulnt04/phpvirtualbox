@@ -158,7 +158,7 @@ $('#newVMDiskVMMImg').click(function(){
 			newVMToggleNewDisk(false);
 		};
 		l.run();		
-	},'HardDisk',true)
+	},'HardDisk',true,{'name':jQuery.trim(document.forms['frmwizardNewVM'].newVMName.value)});
 });
 
 /* Toggle new / existing */
@@ -234,7 +234,7 @@ function newVMUpdateOS(ostype) {
 
 	$('#wizardNewVMSize').slider('value',ostype.recommendedRAM);	
 	$('#newVMSizeLabel').html(trans('newVM Step3 Message2').replace('%s','<b>'+ostype.recommendedRAM+'</b>'));
-	$('#newVMHDSizeLabel').html(trans('newVM Step4 Message3').replace('%s','<b>'+ostype.recommendedHDD+'</b>'));
+	$('#newVMHDSizeLabel').html(trans('newVM Step4 Message3').replace('%s','<b>'+vboxMbytesConvert(ostype.recommendedHDD)+'</b>'));
 	
 }
 

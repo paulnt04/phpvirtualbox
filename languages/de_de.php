@@ -249,6 +249,22 @@ public static $trans = array(
 'Attached to' => 'Verbunden mit',
 'Not Attached' => 'Nicht verbunden',
 
+'Serial Ports' => 'Serielle Schnittstellen',
+'Port X' => 'Port %s', // %s will be replaced with port number
+'Enable Serial Port' => 'Serielle Schnittstelle aktivieren',
+'Port Number' => 'Portnummer',
+'IRQ' => 'IRQ',
+'I/O Port' => 'I/O-Port',
+'User-defined' => 'benutzerdefiniert',
+'Port Mode' => 'Portmodus',
+'Disconnected' => 'nicht verbunden',
+'HostPipe' => 'Host-Pipe',
+'HostDevice' => 'Host-Schnittstelle',
+'RawFile' => 'Datei',
+'Create Pipe' => 'Erzeuge Pipe',
+'Port/File Path' => 'Port/Datei-Pfad',
+
+
 'USB' => 'USB',
 'USB Controller' => 'USB Controller',
 'Enable USB Controller' => 'USB Controller aktivieren',
@@ -451,7 +467,7 @@ public static $trans = array(
 'Use existing hard disk' => 'Vorhandene Festplatte nutzen',
 'newVM Step4 Message1' => 'Wählen Sie eine Festplatte als Startplatte für Ihre virtuelle Maschine aus. Mit der Schaltfläche Neu legen Sie eine neue Festplatte an. Über die Schaltfläche Vorhanden erhalten Sie eine Auswahl bereits existierender Festplatten (Der Manager für virtuelle Medien wird geöffnet).',
 'newVM Step4 Message2' => 'Sie können diesen Schritt auch überspringen und komplexere Einstellungen später über den Manager für virtuelle Maschinen vornehmen.',
-'newVM Step4 Message3' => 'Vorgeschlagene Größe %s MB.', /* %s will be replaced with the recommended memory size at run time */
+'newVM Step4 Message3' => 'Vorgeschlagene Größe %s.', /* %s will be replaced with the recommended memory size at run time */
 'newVM Step5 Message1' => 'Sie legen eine neue virtuelle Maschine mit folgenden Eigenschaften an:',
 'newVM Step5 Message2' => 'Drücken Sie die Schaltfläche Beenden, Wenn diese Angaben korrekt sind. Damit wird die virtuelle Maschine angelegt.',
 'newVM Step5 Message3' => 'Sie können die Eigenschaften der virtuellen Maschine jederzeit über das Hauptmenü, Bearbeiten - Einstellungen ändern.',

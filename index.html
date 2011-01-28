@@ -99,7 +99,10 @@
 			l.addFile('panes/vmlist.html',function(f){$('#vboxPaneVMList').append(f);},{});
 
 			l.onLoad = function() {
-				
+
+				// Fatal error previously occurred
+				if($('#vboxIndex').data('vboxFatalError')) return;
+
 				// Check supported version
 				vboxVersionCheck($('#vboxIndex').data('vboxConfig').version);
 

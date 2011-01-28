@@ -27,6 +27,7 @@ Added Italian translation.
 
 Updated French and German translations to the best of my ability
 using nls files from VirtualBox source and Google translate.
+Corrections are welcome.
 
 Improved multi-language support for PHP installations that do not
 have JSON enabled / installed.
@@ -40,6 +41,26 @@ JavaScript changes to speed things up in IE.
 Added VDE Network adapter support. Your underlying VirtualBox
 installation must support this, and it must be enabled in
 config.php.
+
+Fixed improper display of Remote Display Server port when
+accessing phpVirtualBox through http://ip:port/..
+
+To ensure proper configuration when accessing the remote display
+of a VM through NAT, remote display IP is now determined in the
+following order:
+	- consoleHost setting if set in config.php
+	- IP address if set in VM's vrdeaddress setting
+	- phpVirtualBox's IP address / hostname in its URL as
+		determined by the web browser
+
+Added Serial Port configuration.
+
+Added $disableSataPortCount config option to disable setting SATA
+controllers' port count to the max port number found when saving
+VM settings.
+
+New Hard Disk Wizard hard disk location defaults to VM's folder
+where appropriate.
 
 -------------------------------------
 	4-2 - 2011-1-14

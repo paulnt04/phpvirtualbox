@@ -105,7 +105,7 @@ switch($vboxRequest['fn']) {
 			print_r($e);
 			$d = ob_get_contents();
 			ob_end_clean();
-			$response['errors'][] = array('error'=>$e->getMessage(),'details'=>$d,'errno'=>$e->getCode());
+			$response['errors'][] = array('error'=>$e->getMessage(),'details'=>$d,'errno'=>$e->getCode(),'fatal'=>($e->getCode()==vboxconnector::PHPVB_ERRNO_FATAL));
 		}
 
 		// Add other error info
@@ -115,7 +115,7 @@ switch($vboxRequest['fn']) {
 				print_r($e);
 				$d = ob_get_contents();
 				ob_end_clean();
-				$response['errors'][] = array('error'=>$e->getMessage(),'details'=>$d,'errno'=>$e->getCode());
+				$response['errors'][] = array('error'=>$e->getMessage(),'details'=>$d,'errno'=>$e->getCode(),'fatal'=>($e->getCode()==vboxconnector::PHPVB_ERRNO_FATAL));
 			}
 		}
 

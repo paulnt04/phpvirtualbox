@@ -18,7 +18,7 @@
 			<tr>
 				<td style='width: 100%'>
 				<div style='overflow: auto;' class='vboxBordered' id='vboxSettingsSharedFolders'>
-				<table class='vboxHorizontal'>
+				<table class='vboxHorizontal' id='vboxSettingsSharedFoldersList'>
 					<thead>
 						<tr id='vboxSettingsSharedFoldersHeading'>
 							<th><span class='translate'>Name</span></th>
@@ -27,14 +27,6 @@
 							<th><span class='translate'>Access</span></th>
 						</tr>
 					</thead>
-					<tbody id='vboxSettingsSharedFoldersList' class='vboxHover'>
-						<tr class='vboxListItem'>
-							<td style='white-space: nowrap'>space</td>
-							<td style='white-space: nowrap'>/SPACEHUB/space/some/other/path</td>
-							<td style='white-space: nowrap'>No</td>
-							<td style='white-space: nowrap'>Full</td>
-						</tr>
-					</tbody>
 				</table>
 				</div>
 				</td>
@@ -96,7 +88,8 @@ var sButtons = new Array(
 
 			var dialog = vboxSettingsSFEditDialog();
 			
-			var def = $('#vboxSettingsSharedFoldersList').children('tr.vboxListItemSelected').first();
+			// TODO
+			var def = $('#vboxSettingsSharedFoldersList').find('tr.vboxListItemSelected').first();
 			$('#vboxSettingsSFPath').val(($(def).data('hostPath')||''));
 			$('#vboxSettingsSFName').val(($(def).data('name')||''));
 			$('#vboxSettingsSFAM').attr('checked',($(def).data('autoMount') ? 'checked' : ''));
@@ -106,7 +99,8 @@ var sButtons = new Array(
 			var buttons = { };
 			buttons[trans('OK')] = function() {
 				if($('#vboxSettingsSFName').val() && $('#vboxSettingsSFPath').val()) {
-					var item = $('#vboxSettingsSharedFoldersList').children('tr.vboxListItemSelected').first();
+					// TODO
+					var item = $('#vboxSettingsSharedFoldersList').find('tr.vboxListItemSelected').first();
 					$(item).data('hostPath',$('#vboxSettingsSFPath').val());
 					$(item).data('name',$('#vboxSettingsSFName').val());
 					$(item).data('autoMount',($('#vboxSettingsSFAM').attr('checked')));
@@ -131,11 +125,12 @@ var sButtons = new Array(
 		'icon' : 'remove_shared_folder',
 		'enabled' : function (item) { return $(item).hasClass('vboxListItemSelected'); },
 		'click' : function () {
-			var item = $('#vboxSettingsSharedFoldersList').children('.vboxListItemSelected').first();
+			// TODO
+			var item = $('#vboxSettingsSharedFoldersList').find('.vboxListItemSelected').first();
 			var target = $(item).next();
 			if(!$(target).hasClass('vboxListItemSelected')) target = $(item).prev();
-			if(!$(target).hasClass('vboxListItemSelected')) target = $('#vboxSettingsSharedFoldersList').children('.vboxListItem').first();
-			$('#vboxSettingsSharedFoldersList').children('tr.vboxListItemSelected').first().remove();
+			if(!$(target).hasClass('vboxListItemSelected')) target = $('#vboxSettingsSharedFoldersList').find('.vboxListItem').first();
+			$('#vboxSettingsSharedFoldersList').find('tr.vboxListItemSelected').first().remove();
 			if(!$(target).children().first().trigger('click').hasClass('vboxListItemSelected')) {
 				$('#vboxSettingsSharedFoldersList').trigger('select',null);
 			}
@@ -150,7 +145,7 @@ $('#vboxSettingsSharedFoldersList').bind('select',sfToolbar.update);
 
 /* Add Shared Folder to list */
 
-function vboxSettingsAddSharedFolder(f) {
+function vboxSettingsAddSharedFolder(f, noColor) {
 	
 	var tr = document.createElement('tr');
 	tr.setAttribute('class','vboxListItem');
@@ -160,8 +155,6 @@ function vboxSettingsAddSharedFolder(f) {
 	} else {
 		$(tr).addClass('vboxSFTransient');
 	}
-
-	$(tr).hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');});
 	
 	// Bind data
 	$(tr).data(f);
@@ -188,7 +181,25 @@ function vboxSettingsAddSharedFolder(f) {
 	td.innerHTML = f.writable ? trans('Full Access') : trans('ro');
 	tr.appendChild(td);		
 
-	$(tr).children().click(function(){
+	// bind refresh
+	$(tr).bind('refresh',function(){
+		
+		$(this).children('td.vboxSettingsSFNameCell').children('span').first().html($('<div/>').text($(this).data('name')).html());
+		$(this).children('td.vboxSettingsSFPathCell').html($('<div/>').text($(this).data('hostPath')).html());
+		$(this).children('td.vboxSettingsSFAMCell').html($(this).data('autoMount') ? trans('Yes') : trans('No'));
+		$(this).children('td.vboxSettingsSFROCell').html($(this).data('writable') ? trans('Full Access') : trans('ro'));
+		
+		// Move from one type to another
+		if($(this).data('type') == 'machine' && $(this).hasClass('vboxSFTransient')) {
+			$(this).removeClass('vboxSFTransient').addClass('vboxSFMachine').detach().appendTo('#vboxSFMachineBody');
+			vboxColorRows($('#vboxSFMachineBody'));
+			vboxColorRows($('#vboxSFTransientBody'));
+		} else if($(this).data('type') != 'machine' && $(this).hasClass('vboxSFMachine')) {
+			$(this).removeClass('vboxSFMachine').addClass('vboxSFTransient').detach().appendTo('#vboxSFTransientBody');
+			vboxColorRows($('#vboxSFMachineBody'));
+			vboxColorRows($('#vboxSFTransientBody'));			
+		}
+	}).hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');}).children().click(function(){
 		$('#vboxSettingsSharedFoldersList').find('tr.vboxListItemSelected').removeClass('vboxListItemSelected').addClass('vboxListItem');
 		$(this).parent().removeClass('vboxListItem').addClass('vboxListItemSelected');
 		$('#vboxSettingsSharedFoldersList').trigger('select',$(this).parent());
@@ -197,60 +208,44 @@ function vboxSettingsAddSharedFolder(f) {
 		sfToolbar.click('editshared');
 		e.preventDefault();
 	}).attr('unselectable','on').css('MozUserSelect','none');
-
-	// bind refresh
-	$(tr).bind('refresh',function(){
-		
-		$(this).children('.vboxSettingsSFNameCell span').html($('<div/>').text($(this).data('name')).html());
-		$(this).children('.vboxSettingsSFPathCell').html($('<div/>').text($(this).data('hostPath')).html());
-		$(this).children('.vboxSettingsSFAMCell').html($(this).data('autoMount') ? trans('Yes') : trans('No'));
-		$(this).children('.vboxSettingsSFROCell').html($(this).data('writable') ? trans('Full Access') : trans('ro'));
-		
-		// Move from one type to another
-		if($(this).data('type') == 'machine' && $(this).hasClass('vboxSFTransient')) {
-			$(this).removeClass('vboxSFTransient').addClass('vboxSFMachine').detach().insertAfter('#vboxSFMachineHeader');
-		} else if($(this).data('type') != 'machine' && $(this).hasClass('vboxSFMachine')) {
-			$(this).removeClass('vboxSFMachine').addClass('vboxSFTransient').detach().insertAfter('#vboxSFTransientHeader');
-		}
-	});
 	
 	if(f.type == 'machine') {
-		$('#vboxSFMachineHeader').after(tr);
+		$('#vboxSFMachineBody').append(tr);
+		if(!noColor) vboxColorRows($('#vboxSFMachineBody'));
 	} else {
-		$('#vboxSFTransientHeader').after(tr);
+		$('#vboxSFTransientBody').append(tr);
+		if(!noColor) vboxColorRows($('#vboxSFTransientBody'));
 	}
 
+	
 	return tr;
 }
 
 /* Shared Folders */
 var sfh = $('#vboxSettingsSharedFoldersList');
-$(sfh).children().remove(); // clear list
 
 /* 
  * 
   Add 'Machine Folder's
  *
  */ 
+var tb = document.createElement('tbody');
+tb.setAttribute('id','vboxSFMachineBody');
+$(tb).addClass('vboxHover');
 var tr = document.createElement('tr');
 tr.setAttribute('class','vboxListItemDisabled');
-tr.setAttribute('id','vboxSFMachineHeader');
 var td = document.createElement('td');
 td.setAttribute('class','vboxSettingsSFNameCell');
 var btn = document.createElement('input');
-btn.setAttribute('type','button');
-btn.setAttribute('class','vboxImgButton');
-btn.setAttribute('style','background-image: url(images/vbox/arrow_down_10px.png); width: 12px; height: 12px; margin-right: 4px;');
-$(btn).toggle(function(){
+$(btn).attr({'type':'button','class':'vboxImgButton','style':'background-image: url(images/vbox/arrow_down_10px.png); width: 12px; height: 12px; margin-right: 4px;'}).toggle(function(){
 		$(this).css({'background-image':'url(images/vbox/arrow_right_10px.png)'});
-		$('#vboxSettingsSharedFoldersList').trigger('select',null).find('tr.vboxSFMachine').css('display','none');
-		$('#vboxSettingsSharedFoldersList').children('tr').removeClass('vboxListItemSelected');
+		$('#vboxSettingsSharedFoldersList').trigger('select',null);
+		$('#vboxSFMachineBody').children('tr.vboxSFMachine').css({'display':'none'}).removeClass('vboxListItemSelected').addClass('vboxListItem');
 	},function(){
 		$(this).css({'background-image':'url(images/vbox/arrow_down_10px.png)'});
-		$('#vboxSettingsSharedFoldersList').trigger('select',null).find('tr.vboxSFMachine').css('display','');
-		$('#vboxSettingsSharedFoldersList').children('tr').removeClass('vboxListItemSelected');
-});
-$(td).append(btn);
+		$('#vboxSettingsSharedFoldersList').trigger('select',null);
+		$('#vboxSFMachineBody').children('tr.vboxSFMachine').css({'display':''});
+}).appendTo(td);
 var sp = document.createElement('span');
 sp.innerHTML  = $('<div/>').text(trans('Machine Folders')).html();
 td.appendChild(sp);
@@ -265,7 +260,7 @@ var td = document.createElement('td');
 td.setAttribute('class','vboxSettingsSFROCell');
 tr.appendChild(td);		
 $(tr).attr('unselectable','on').css('MozUserSelect','none');
-$('#vboxSettingsSharedFoldersList').append(tr);
+$(tb).append(tr).appendTo(sfh);
 
 
 /*
@@ -275,9 +270,11 @@ $('#vboxSettingsSharedFoldersList').append(tr);
  */
  if($('#vboxSettingsDialog').data('vboxMachineData').state == 'Running') {
 
+	 var tb = document.createElement('tbody');
+	 tb.setAttribute('id','vboxSFTransientBody');
+	 $(tb).addClass('vboxHover');
 	 var tr = document.createElement('tr');
 	 tr.setAttribute('class','vboxListItemDisabled');
-	 tr.setAttribute('id','vboxSFTransientHeader');
 
 	 var td = document.createElement('td');
 	 td.setAttribute('class','vboxSettingsSFNameCell');
@@ -287,12 +284,12 @@ $('#vboxSettingsSharedFoldersList').append(tr);
 	 btn.setAttribute('style','background-image: url(images/vbox/arrow_down_10px.png); width: 12px; height: 12px; margin-right: 4px;');
 	 $(btn).toggle(function(){
 	 		$(this).css({'background-image':'url(images/vbox/arrow_right_10px.png)'});
-	 		$('#vboxSettingsSharedFoldersList').trigger('select',null).find('tr.vboxSFTransient').css('display','none');
-	 		$('#vboxSettingsSharedFoldersList').children('tr').removeClass('vboxListItemSelected');
+			$('#vboxSettingsSharedFoldersList').trigger('select',null);
+			$('#vboxSFTransientBody').children('tr.vboxSFTransient').css({'display':'none'}).removeClass('vboxListItemSelected').addClass('vboxListItem');	 		
 	 	},function(){
 	 		$(this).css({'background-image':'url(images/vbox/arrow_down_10px.png)'});
-	 		$('#vboxSettingsSharedFoldersList').trigger('select',null).find('tr.vboxSFTransient').css('display','');
-	 		$('#vboxSettingsSharedFoldersList').children('tr').removeClass('vboxListItemSelected');
+	 		$('#vboxSettingsSharedFoldersList').trigger('select',null);
+	 		$('#vboxSFTransientBody').children('tr.vboxSFTransient').css('display','');
 	 });
 	 $(td).append(btn);
 	 var sp = document.createElement('span');
@@ -309,7 +306,7 @@ $('#vboxSettingsSharedFoldersList').append(tr);
 	 td.setAttribute('class','vboxSettingsSFROCell');
 	 tr.appendChild(td);		
 	 $(tr).attr('unselectable','on').css('MozUserSelect','none');
-	 $('#vboxSettingsSharedFoldersList').append(tr);
+	 $(tb).append(tr).appendTo(sfh);
 
 	// add each transient folder
 	 for(var i = 0; i < $('#vboxSettingsDialog').data('vboxTransientSharedFolders').length; i++) {
@@ -324,10 +321,6 @@ for(var i = 0; i < $('#vboxSettingsDialog').data('vboxMachineData').sharedFolder
 	vboxSettingsAddSharedFolder($('#vboxSettingsDialog').data('vboxMachineData').sharedFolders[i]);
 }
 
-/* trigger select */
-if(!$('#vboxSettingsSharedFoldersList').children('tr.vboxListItem').first().children('td').first().trigger('click').html()) {
-	$('#vboxSettingsSharedFoldersList').trigger('select',null);	
-}
 
 /* Update Shared Folder path and name. Callback for folder browser */
 function vboxSettingsSFUpdatePath(f) {
@@ -421,9 +414,9 @@ $('#vboxSettingsDialog').bind('save',function(){
 	$('#vboxSettingsDialog').data('vboxMachineData').sharedFolders = new Array();
 
 	var folders = new Array();	
-	$('#vboxSettingsSharedFoldersList').children('tr').each(function(){
-		// Skip headers
-		if(!$(this).hasClass('vboxListItemDisabled')) {
+	$('#vboxSettingsSharedFoldersList').find('tr').each(function(){
+		// Skip headers and such
+		if($(this).data('name')) {
 			folders[folders.length] = {'name':$(this).data('name'),'hostPath':$(this).data('hostPath'),'autoMount':($(this).data('autoMount') ? 1 : 0),'writable':($(this).data('writable') ? 1 : 0),'type':$(this).data('type')};
 		}
 	});

@@ -110,9 +110,11 @@ function vboxTabs(id) {
 		
 		// Null Selection
 		if(!vm) {
+			this.showTab('#'+this.tabs[0].name);
 			$('#'+this.id).data('machine',null);
 			$('#'+this.id).trigger('vmloaded');
 			this.selected = null;
+			this.updateTabs(null);
 			return;
 		}
 

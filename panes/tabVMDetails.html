@@ -144,6 +144,21 @@
 			</tr>
 		</table>
 
+		<!-- SerialPorts -->
+		<table id='vboxDetailsTableBoxSerialPorts' class='vboxDetailsTable vboxDetailsTableBox ui-corner-all'>
+			<tr class='vboxDetailsHead'>
+				<th class='vboxDetailsSection' colspan='2'>
+					<div>
+						<img style='float:left;  margin-right: 3px;' src='images/vbox/nw_16px.png' />
+						<span style='float:left'><a href="javascript:vboxDetailSettingsLink('SerialPorts');" class='translate'>Serial Ports</a></span>
+						<span class='vboxDetailsUpDnImgSpan' style='float:right'>
+							<img src='images/arrow_grad_up.png' />
+						</span>
+					</div>
+				</th>
+			</tr>
+		</table>
+
 		<!-- USB -->
 		<table id='vboxDetailsTableBoxUSB' class='vboxDetailsTable vboxDetailsTableBox ui-corner-all'>
 			<tr class='vboxDetailsHead'>
@@ -705,9 +720,8 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		if(data['VRDEServer']['netAddress']) {
 			$(vboxDetailsTable).append(__vboxDetailRow(trans("Remote Console")+ ': ' +trans("Net Address"), data['VRDEServer']['netAddress']));
 		}
-		var chost = data['VRDEServer']['netAddress'];
-		if(!chost) chost = $('#vboxIndex').data('vboxConfig').consoleHost;
-		if(!chost || chost == 'localhost' || chost == '127.0.0.1') {chost = location.host;}
+		var chost = ($('#vboxIndex').data('vboxConfig').consoleHost ? $('#vboxIndex').data('vboxConfig').consoleHost : data['VRDEServer']['netAddress']);
+		if(!chost) { chost = location.hostname;}
 		
 		if(links) {
 			tr = __vboxDetailRow(trans("Server Port"), data['VRDEServer']['ports']);
@@ -810,7 +824,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	}
 	
 	if(!data['audioAdapter']['enabled']) {
-		$(vboxDetailsTable).append(__vboxDetailRow('<i>'+trans("Disabled")+'</i>', "", true));
+		$(vboxDetailsTable).append(__vboxDetailRow('<span class="vboxDetailsNone">'+trans("Disabled")+'</span>', "", true));
 	} else {
 		$(vboxDetailsTable).append(__vboxDetailRow(trans("Host Audio Driver"), trans((data['audioAdapter']['audioDriver'] == 'Null' ? 'Null Audio Driver' : data['audioAdapter']['audioDriver'])))).append(__vboxDetailRow(trans("Audio Controller"), trans(data['audioAdapter']['audioController'])));
 	}
@@ -875,7 +889,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	}
 	
 	if(vboxDetailsTableNics == 0) {
-		$(vboxDetailsTable).append(__vboxDetailRow('<i>'+trans('Disabled')+'</i>','',true));
+		$(vboxDetailsTable).append(__vboxDetailRow('<span class="vboxDetailsNone">'+trans('Disabled')+'</span>','',true));
 		
 	// Link nic to guest networking info?
 	} else if(links && data['state'] == 'Running') {
@@ -883,6 +897,52 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		$(vboxDetailsTable).append(__vboxDetailRow('',n,true));
 	}
 
+	// Serial Ports
+	///////////////////
+	if(boxes) {
+
+		// append blank footer row
+		$(vboxDetailsTable).append(__vboxDetailRow('',''));
+		
+		var vboxDetailsTable = $('#vboxDetailsTableBoxSerialPorts');
+		$(vboxDetailsTable).find('tr.vboxDetailRow').remove();
+
+		if($('#vboxIndex').data('vboxCookies')["vboxSectionShowSerialPorts"] == 0) {
+			$(vboxDetailsTable).hide();
+		} else {
+			$(vboxDetailsTable).show();
+		}
+
+	} else {
+		$(vboxDetailsTable).append(__vboxDetailHeader('serial_port_16px.png',"Serial Ports"));
+	}
+	
+
+	var vboxDetailsTableSPorts = 0;
+	var vboxSP = new vboxSerialPorts();
+	for(var i = 0; i < data['serialPorts'].length; i++) {
+		
+		p = data['serialPorts'][i];
+		
+		if(!p.enabled) continue;
+		
+		// compose extra info
+		var xtra = trans(vboxSP.getPortName(p.IRQ,p.IOBase));
+		
+		var mode = p.hostMode
+		xtra += ', ' + trans(mode)
+		if(mode != 'Disconnected') {
+			xtra += ' (' + p.path + ')'
+		}
+		
+		$(vboxDetailsTable).append(__vboxDetailRow(trans("Port X").replace('%s',(i + 1)), xtra));
+		vboxDetailsTableSPorts++;
+				
+	}
+	
+	if(vboxDetailsTableSPorts == 0) {
+		$(vboxDetailsTable).append(__vboxDetailRow('<span class="vboxDetailsNone">'+trans('Disabled')+'</span>','',true));		
+	}
 
 
 	// USB
@@ -917,7 +977,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		}
 		$(vboxDetailsTable).append(__vboxDetailRow(trans("Device Filters"), tot + ' (' + act + ' ' + trans('active') + ')'));
 	} else if(data['USBController']) {
-		$(vboxDetailsTable).append(__vboxDetailRow('<i>'+trans("Disabled")+'</i>',"", true));
+		$(vboxDetailsTable).append(__vboxDetailRow('<span class="vboxDetailsNone">'+trans("Disabled")+'</span>',"", true));
 	}
 
 
@@ -942,7 +1002,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	}
 	
 	if(!data['sharedFolders'] || data['sharedFolders'].length < 1) {
-		$(vboxDetailsTable).append(__vboxDetailRow('<i>'+trans('None')+'</i>', '', true));
+		$(vboxDetailsTable).append(__vboxDetailRow('<span class="vboxDetailsNone">'+trans('None')+'</span>', '', true));
 	} else {
 		for(var i = 0; i < data['sharedFolders'].length; i++) {
 			$(vboxDetailsTable).append(__vboxDetailRow(data['sharedFolders'][i].name + ' (' + trans(data['sharedFolders'][i].writable ? 'rw' : 'ro') + ')', data['sharedFolders'][i].hostPath));
@@ -974,7 +1034,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	var dtr = document.createElement('tr');
 	$(dtr).addClass('vboxDetailRow');
 	var dtd = document.createElement('td');
-	$(dtd).attr({'class':'vboxDetailDescriptionCell','colspan':'2'}).html(data.description.length ? $('<div />').html(data.description).text() : '<i>'+trans("None")+'</i>').appendTo(dtr);
+	$(dtd).attr({'class':'vboxDetailDescriptionCell','colspan':'2'}).html(data.description.length ? $('<div />').html(data.description).text() : '<span class="vboxDetailsNone">'+trans("None")+'</span>').appendTo(dtr);
 	$(vboxDetailsTable).append(dtr);
 	
 	// Append Table or show div
@@ -1054,7 +1114,7 @@ function __vboxDisplayHostDetailsData(data) {
  */
 var ul = document.createElement('ul');
 $(ul).attr({'class':'contextMenu contextMenuNoBG','style':'display: none','id':'vboxDetailsShowMenu'});
-var sections = new Array('General','System','Preview','Display','Storage','Audio','Network','USB','Shared Folders','Description');
+var sections = new Array('General','System','Preview','Display','Storage','Audio','Network','Serial Ports','USB','Shared Folders','Description');
 for(var i = 0; i < sections.length; i++) {
 
 	
@@ -1175,7 +1235,7 @@ for(var i = 0; i < ints.length; i++) {
 	$(ul).append(li);
 	if(i == (ints.length - 1)) {
 		var li = document.createElement('li');
-		$(li).attr({'id':'vboxDetailsViewSavedSS','class':'separator','style':'display:none'}).hover(function(){
+		$(li).attr({'id':'vboxDetailsViewSavedSS','class':'separator','style':'display:none;text-align: center;'}).hover(function(){
 			$(this).addClass('hover');
 		},function(){
 			$(this).removeClass('hover');

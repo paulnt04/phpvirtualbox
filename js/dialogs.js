@@ -217,7 +217,7 @@ function vboxShowLogsDialogInit(vm) {
  * 
  */
 
-function vboxVMMDialogInit(callback,type,hideDiff,attached) {
+function vboxVMMDialogInit(callback,type,hideDiff,attached,vmPath) {
 
 	var d = document.createElement('div');
 	d.setAttribute('id','vboxVMMDialog');
@@ -258,7 +258,7 @@ function vboxVMMDialogInit(callback,type,hideDiff,attached) {
 			if(callback) callback(null);
 		};
 		$("#vboxVMMDialog").dialog({'closeOnEscape':false,'width':800,'height':500,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':trans('Virtual Media Manager')});
-		vboxVMMInit(hideDiff,attached);
+		vboxVMMInit(hideDiff,attached,vmPath);
 		if(type) {
 			switch(type) {
 				case 'HardDisk':
@@ -454,6 +454,7 @@ function vboxVMsettingsInit(vm,callback,pane) {
 		{'name':'Storage','label':'Storage','icon':'attachment'},
 		{'name':'Audio','label':'Audio','icon':'sound'},
 		{'name':'Network','label':'Network','icon':'nw','tabbed':true},
+		{'name':'SerialPorts','label':'Serial Ports','icon':'serial_port','tabbed':true},
 		{'name':'USB','label':'USB','icon':'usb'},
 		{'name':'SharedFolders','label':'Shared Folders','icon':'shared_folder'}
 			
@@ -463,7 +464,7 @@ function vboxVMsettingsInit(vm,callback,pane) {
 		{'fn':'Mediums','callback':function(d){$('#vboxIndex').data('vboxMediums',d);}},
 		{'fn':'HostNetworking','callback':function(d){$('#vboxSettingsDialog').data('vboxHostNetworking',d);}},
 		{'fn':'HostDetails','callback':function(d){$('#vboxSettingsDialog').data('vboxHostDetails',d);}},
-		{'fn':'VMDetails','callback':function(d){$('#vboxSettingsDialog').data('vboxMachineData',d);},'args':{'vm':vm}},
+		{'fn':'VMDetails','callback':function(d){$('#vboxSettingsDialog').data('vboxMachineData',d);},'args':{'vm':vm,'force_refresh':$('#vboxIndex').data('vboxConfig').vmConfigRefresh}},
 		{'fn':'HostUSBDevices','callback':function(d){$('#vboxSettingsDialog').data('vboxHostUSBDevices',d);}},
 		{'fn':'EnumNetworkAdapterType','callback':function(d){$('#vboxSettingsDialog').data('vboxNetworkAdapterTypes',d);}},
 		{'fn':'EnumAudioControllerType','callback':function(d){$('#vboxSettingsDialog').data('vboxAudioControllerTypes',d);}}
@@ -711,10 +712,11 @@ function vboxSettingsInit(title,panes,data,onsave,pane) {
 	    	
 	    });
 	    
-	    /* Only 1 pane? Hide menu */
+	    /* Only 1 pane? Hide menu and reduce size of dialog*/
 	    if(panes.length == 1) {
 	    	$('#vboxSettingsMenu').css('display','none');
 	    	$('#vboxSettingsDialog table.vboxSettingsTable').css('width','100%');
+	    	$('#vboxSettingsDialog').dialog({'width':600, 'height': 450});
 	    }
 	    
 	    $('#vboxSettingsDialog').trigger('show');

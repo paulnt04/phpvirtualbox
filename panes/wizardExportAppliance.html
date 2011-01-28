@@ -66,12 +66,17 @@ l.onLoad = function() {
 	var vmlist = $('#vboxExportAppVMList');
 	$(vmlist).children().remove();
 	vms.sort(function(a,b){return strnatcasecmp(a.name,b.name);});
+	var vmid = null;
+	if($('#vboxIndex').data('selectedVM') && $('#vboxIndex').data('selectedVM')['id'])
+		vmid = $('#vboxIndex').data('selectedVM')['id'];
 	for(var i in vms) {
 		var li = document.createElement('li');
 		$(li).data('vm',vms[i]);
 		$(li).addClass('vboxListItem');
 		$(li).click(function(){$(this).toggleClass('vboxListItemSelected');});
 		li.innerHTML = "<img style='width: 16px; height: 16px;' src='images/vbox/" + vboxGuestOSTypeIcon(vms[i].OSTypeId) + "' /> " + vms[i].name;
+		if(vms[i].id == vmid)
+			$(li).click();
 		$(vmlist).append(li);
 	}
 	vboxColorRows(vmlist);

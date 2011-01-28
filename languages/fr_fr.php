@@ -250,6 +250,22 @@ public static $trans = array(
 'Attached to' => 'Attaché à',
 'Not Attached' => 'Aucune connexion',
 
+'Serial Ports' => 'Ports séries',
+'Port X' => 'Port %s', // %s will be replaced with port number
+'Enable Serial Port' => 'Activer le port série',
+'Port Number' => 'Numéro de port',
+'IRQ' => 'IRQ',
+'I/O Port' => 'Port E/S',
+'User-defined' => 'Défini par l\'utilisateur',
+'Port Mode' => 'Mode du port',
+'Disconnected' => 'Déconnecté',
+'HostPipe' => 'Tube hôte',
+'HostDevice' => 'Périphérique hôte',
+'RawFile' => 'Redirection fichier',
+'Create Pipe' => 'Créer le tube',
+'Port/File Path' => 'Port/Chemin',
+
+
 'USB' => 'USB',
 'USB Controller' => 'USB Contrôleur',
 'Enable USB Controller' => 'Activer le contrôleur USB',
@@ -452,7 +468,7 @@ public static $trans = array(
 'Use existing hard disk' => 'Utiliser un disque dur existant',
 'newVM Step4 Message1' => 'Choisissez une image de disque dur à utiliser pour l\'amorçage de la machine virtuelle. Vous pouvez soit créer une nouvelle image en cliquant sur Nouveau soit choisir une image existante dans le Gestionnaire de médias virtuels avec le bouton Existant.',
 'newVM Step4 Message2' => 'Si vous avez besoin d\'une configuration de disques plus complexe, vous pouvez sauter cette étape et allouer des disques plus tard dans la Configuration de la machine.',
-'newVM Step4 Message3' => 'La taille recommandée pour le disque dur d\'amorçage est de %s Mo.', /* %s will be replaced with the recommended memory size at run time */
+'newVM Step4 Message3' => 'La taille recommandée pour le disque dur d\'amorçage est de %s.', /* %s will be replaced with the recommended memory size at run time */
 'newVM Step5 Message1' => 'Vous êtes sur le point de créer une nouvelle machine virtuelle avec les paramètres suivants :',
 'newVM Step5 Message2' => 'Si cette configuration vous convient cliquez sur Terminer pour créer la nouvelle machine virtuelle.',
 'newVM Step5 Message3' => 'Vous pourrez modifier ces paramètres ainsi que d\'autres à tout moment avec la fenêtre Configuration du menu de la fenêtre principale.',

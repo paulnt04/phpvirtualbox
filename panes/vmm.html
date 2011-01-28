@@ -165,15 +165,9 @@ vboxUnsetLangContext();
  * Setup Tabs
  */
 $("#vboxVMMTabs").tabs().bind("tabsshow",function(ev,el){
-
-	/*
 	if(!$('#'+el.panel.id).find('tbody').children('tr.vboxListItemSelected').first().children().first().click().html()) {
 		$('#vboxVirtualMediaManager').trigger('mediumselect',[null]);
-	}
-	*/
-
-	
-	
+	}	
 });
 
 /*
@@ -197,7 +191,7 @@ var vmmButtons = new Array(
 					vboxVMMFillMediums(id);
 				};
 				l.run();
-			}); 
+			},{'path':$('#vboxVirtualMediaManager').data('vmPath')}); 
 		}
 	},
 
@@ -728,13 +722,12 @@ function vboxVMMFillMediums(sel) {
 }
 
 /* Init virtual media manager */
-function vboxVMMInit(hideDiff,attached) {
+function vboxVMMInit(hideDiff,attached,vmPath) {
 
-	$('#vboxVirtualMediaManager').bind('mediumselect',vmmToolbar.update);
-	$('#vboxVirtualMediaManager').bind('mediumselect',vboxVMMMediaInfo);
-	$('#vboxVirtualMediaManager').bind('mediumselect',vmmMenu.update);
+	$('#vboxVirtualMediaManager').bind('mediumselect',vmmToolbar.update).bind('mediumselect',vboxVMMMediaInfo).bind('mediumselect',vmmMenu.update);
 	$('#vboxVirtualMediaManager').data('hideDiff', hideDiff);
 	$('#vboxVirtualMediaManager').data('attached', attached);
+	$('#vboxVirtualMediaManager').data('vmPath', vmPath);
 
 	vboxVMMFillMediums();
 	

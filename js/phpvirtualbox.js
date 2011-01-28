@@ -29,11 +29,11 @@ function vboxWizard(name, title, img, bg) {
 		$(d).attr({'id':this.name+'Dialog','style':'display: none','class':'vboxWizard'});
 		
 		var f = document.createElement('form');
-		$(f).attr({'name':('frm'+this.name),'onSubmit':'return false;'});
+		$(f).attr({'name':('frm'+this.name),'onSubmit':'return false;','style':'height:100%;margin:0px;padding:0px;border:0px;'});
 
 		// main table
 		var tbl = document.createElement('table');
-		$(tbl).attr('class','vboxWizard');
+		$(tbl).attr({'class':'vboxWizard','style':'height: 100%; margin:0px; padding:0px;border:0px;'});
 		var tr = document.createElement('tr');
 		
 		if(this.img) {
@@ -53,7 +53,7 @@ function vboxWizard(name, title, img, bg) {
 			*/
 				
 		}
-		// Title
+		// Title and content table
 		var t = document.createElement('h3');
 		$(t).attr('id',self.name+'Title').html(self.title).appendTo(td);
 
@@ -757,7 +757,27 @@ function vboxLoader() {
 
 }
 
-
+/*
+ * Common serial port options
+ */
+function vboxSerialPorts() {
+	
+	this.ports = [
+      { 'name':"COM1", 'irq':4, 'port':'0x3F8' },
+      { 'name':"COM2", 'irq':3, 'port':'0x2F8' },
+      { 'name':"COM3", 'irq':4, 'port':'0x3E8' },
+      { 'name':"COM4", 'irq':3, 'port':'0x2E8' },
+	];
+	
+	this.getPortName = function(irq,port) {
+		for(var i = 0; i < this.ports.length; i++) {
+			if(this.ports[i].irq == irq && this.ports[i].port.toUpperCase() == port.toUpperCase())
+				return this.ports[i].name;
+		}
+		return 'User-defined';
+	}
+	
+}
 /*
  * 	Common storage / controller functions
  */

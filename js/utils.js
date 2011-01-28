@@ -57,15 +57,14 @@ function vboxAjaxRequest(fn,params,callback,xtra) {
 				if(d.errors.length > 0) {
 					for(var i = 0; i < d.errors.length; i++) {
 						
-						vboxAjaxError(d.errors[i]);
 						
 						// Handle fatal error
-						if($('#vboxIndex').data('vboxConfig') &&
-								$('#vboxIndex').data('vboxConfig').PHPVB_ERRNO_FATAL &&
-								d.errors[i].errno == $('#vboxIndex').data('vboxConfig').PHPVB_ERRNO_FATAL) {
+						if(d.errors[i].fatal && $('#vboxIndex').data('vboxConfig')) {
 							
 							$('#vboxIndex').data('vboxFatalError',1);
 							$('#vboxIndex').css({'display':'none'});
+							
+							vboxAjaxError(d.errors[i]);
 							
 							var s = '';
 							
@@ -78,7 +77,10 @@ function vboxAjaxRequest(fn,params,callback,xtra) {
 								s = '<div style="display: block">'+trans('Server List')+': '+servers.join(', ')+'</div>';
 							}
 							vboxAlert('<p>'+trans('Fatal error')+'</p>'+s,{'width':'50%'});
+						} else if(!d.errors[i].fatal) {
+							vboxAjaxError(d.errors[i]);
 						}
+						
 					}
 				}
 				$('#vboxIndex').data('vboxAjaxPersist',d.persist);
@@ -521,10 +523,11 @@ function vboxInitDisplay(root) {
 }
 
 /* Color VISIBLE children of parent elm */
-function vboxColorRows(elm) {
+function vboxColorRows(elm,startOdd) {
 	var odd = 0;
+	if(startOdd) odd = 1;
 	$(elm).children().each(function(i){
-		if($(this).css('display') == 'none') return;
+		if($(this).css('display') == 'none' || $(this).hasClass('vboxListItemDisabled')) return;
 		(odd++ % 2 ? $(this).addClass('vboxOddRow') : $(this).removeClass('vboxOddRow'));
 	});
 }
@@ -764,6 +767,11 @@ function vboxVersionCheck(ver) {
 		vboxAlert(d);
 		
 	}
+}
+
+/* Strip file name from path */
+function vboxDirname(p) {
+	return p.replace(/([\/|/])[^\/|/]*$/,'$1');
 }
 
 function strnatcasecmp(str1, str2) {

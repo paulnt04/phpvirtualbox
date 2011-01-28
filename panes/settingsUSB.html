@@ -202,6 +202,7 @@
 			if(!$(target).trigger('click').html()) {
 				$('#vboxSettingsUSBFilterList').trigger('select',null);
 			}
+			vboxColorRows($('#vboxSettingsUSBFilterList'));
 		}		
 	},
 	
@@ -221,6 +222,7 @@
 			var mv = $(item).detach();
 			$(prev).before(mv);
 
+			vboxColorRows($('#vboxSettingsUSBFilterList'));
 			$('#vboxSettingsUSBFilterList').find('.vboxListItemSelected').first().trigger('click');
 			 
 		}		
@@ -241,7 +243,8 @@
 			if(!$(next).html()) return;
 			var mv = $(item).detach();
 			$(next).after(mv);
-
+			
+			vboxColorRows($('#vboxSettingsUSBFilterList'));
 			$('#vboxSettingsUSBFilterList').find('.vboxListItemSelected').first().trigger('click');
 		}
 	}
@@ -256,7 +259,7 @@ $('#vboxSettingsUSBFilterList').bind('select',usbToolbar.update);
 
 
 /* Adds a USB filter to list */
-function vboxSettingsAddUSBFilter(f) {
+function vboxSettingsAddUSBFilter(f,noColor) {
 	
 	var li = document.createElement('li');
 	$(li).data('filter',f);
@@ -281,6 +284,8 @@ function vboxSettingsAddUSBFilter(f) {
 	}).attr('unselectable','on').css('MozUserSelect','none').hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');});
 	
 	$('#vboxSettingsUSBFilterList').append(li);
+	
+	if(!noColor) vboxColorRows($('#vboxSettingsUSBFilterList'));
 }
 
 // clear list
@@ -289,7 +294,8 @@ $(list).children().remove();
 
 // add filters
 for(var i = 0; i < $('#vboxSettingsDialog').data('vboxMachineData').USBController.deviceFilters.length; i++) {
-	vboxSettingsAddUSBFilter($('#vboxSettingsDialog').data('vboxMachineData').USBController.deviceFilters[i]);
+	vboxSettingsAddUSBFilter($('#vboxSettingsDialog').data('vboxMachineData').USBController.deviceFilters[i],true);
+	vboxColorRows($('#vboxSettingsUSBFilterList'));
 }
 
 // set checkboxes for USB and EHCI

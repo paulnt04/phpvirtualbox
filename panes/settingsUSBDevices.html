@@ -60,6 +60,8 @@ for(var i = 0; i < hostdev.length; i++) {
 	var tr = document.createElement('tr');
 	if(avail)
 		$(tr).attr('class','vboxListItem');
+	else
+		$(tr).attr('class','vboxListItemDisabled');
 	$(tr).attr('style','vertical-align: middle').data('usbdev', hostdev[i]);	
 	var td = document.createElement('td');
 	$(td).attr('style','text-align: center');
@@ -78,6 +80,7 @@ for(var i = 0; i < hostdev.length; i++) {
 	$('#vboxSettingsUSBDevicesList').append(tr);
 	
 }
+vboxColorRows($('#vboxSettingsUSBDevicesList'));
 
 /* Change settings onSave() */
 $('#vboxSettingsDialog').bind('save',function(){

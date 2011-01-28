@@ -223,7 +223,7 @@ function vboxVMList(anchorid) {
 						$('#vboxIndex').trigger('hostChange',[a]);
 						self.anchor.html("<div id='vboxVMListSpinner' style='text-align: center'><img src='images/spinner.gif' /></div>");
 						self.vms = self.selected = null;
-
+						self.refresh();
 					}
 				);
 				$(td).html('VirtualBox ').append(span);
@@ -255,7 +255,6 @@ function vboxVMList(anchorid) {
 	}
 
 	self.removeVM = function(id) {
-		//return;
 		if(self.vms[id].selected) { $('#vboxIndex').trigger('vmselect',null); }
 		$('#vboxVMListItem-'+self.anchorid+'-'+id).remove();
 		delete self.vms[id];
@@ -289,8 +288,14 @@ function vboxVMList(anchorid) {
 		
 		if(self._running) return;
 
-		// Subscribe to selected VM changes
-		$('#vboxIndex').bind('vmselect',self.selectVM).bind('vmlistrefresh',self.refresh);
+		// Subscribe to selected VM changes and refreshes
+		$('#vboxIndex').bind('vmselect',self.selectVM).bind('vmlistrefresh',function(){
+			$('#vboxIndex').trigger('vmselect',null);
+			$('#vboxIndex').data('selectedVM',null);
+			self.anchor.html("<div id='vboxVMListSpinner' style='text-align: center'><img src='images/spinner.gif' /></div>");
+			self.vms = self.selected = null;
+			self.refresh();
+		});
 		
 		// Custom sort function?
 		if($('#vboxIndex').data('vboxConfig').vmListSort) {

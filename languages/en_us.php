@@ -253,6 +253,22 @@ public static $trans = array(
 'Attached to' => 'Attached to',
 'Not Attached' => 'Not Attached',
 
+'Serial Ports' => 'Serial Ports',
+'Port X' => 'Port %s', // %s will be replaced with port number
+'Enable Serial Port' => 'Enable Serial Port',
+'Port Number' => 'Port Number',
+'IRQ' => 'IRQ',
+'I/O Port' => 'I/O Port',
+'User-defined' => 'User-defined',
+'Port Mode' => 'Port Mode',
+'Disconnected' => 'Disconnected',
+'HostPipe' => 'Host Pipe',
+'HostDevice' => 'Host Device',
+'RawFile' => 'Raw File',
+'Create Pipe' => 'Create Pipe',
+'Port/File Path' => 'Port/File Path',
+
+
 'USB' => 'USB',
 'USB Controller' => 'USB Controller',
 'Enable USB Controller' => 'Enable USB Controller',
@@ -455,7 +471,7 @@ public static $trans = array(
 'Use existing hard disk' => 'Use existing hard disk',
 'newVM Step4 Message1' => 'Select the hard disk image to be used as the boot disk of the virtual machine. You can either create a new hard disk using the New button or select an existing hard disk image from the drop-down list or by pressing the Existing button (to invoke the Virtual Media Manager dialog).',
 'newVM Step4 Message2' => 'If you need a more complicated hard disk setup, you can skip this step and attach hard disks later using the VM Settings dialog.',
-'newVM Step4 Message3' => 'The recommended size of the boot hard disk is %s MB.', /* %s will be replaced with the recommended memory size at run time */
+'newVM Step4 Message3' => 'The recommended size of the boot hard disk is %s.', /* %s will be replaced with the recommended memory size at run time */
 'newVM Step5 Message1' => 'You are going to create a new virtual machine with the following parameters:',
 'newVM Step5 Message2' => 'If the above is correct press the Finish button. Once you press it, a new virtual machine will be created.',
 'newVM Step5 Message3' => 'Note that you can alter these and all other setting of the created virtual machine at any time using the Settings dialog accessible through the menu of the main window.',

@@ -69,7 +69,7 @@ if(strpos($vboxRequest['dir'],DSEP)===false) $vboxRequest['dir'] = DSEP;
 
 $dir = $vboxRequest['dir'];
 /* Check that folder restriction validates if it exists */
-if($vboxRequest['dir'] != '/' && count($folders)) {
+if($vboxRequest['dir'] != '/' && count($folders) && $vboxRequest['dir'] != '\\') {
 	$valid = false;
 	foreach($folders as $f) {
 		if(strpos(strtoupper($dir),strtoupper($f)) === 0) {

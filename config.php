@@ -10,7 +10,10 @@ var $username = 'vbox';
 var $password = 'pass';
 var $location = 'http://127.0.0.1:18083/';
 
-/* See languages folder for more language options */
+/* Default language. See languages folder for more language options.
+ * Can also be changed in File -> Preferences -> Language in
+ * phpVirtualBox.
+ */
 var $language = 'en_us';
 
 /*
@@ -40,9 +43,7 @@ var $servers = array(
 */
 
 
-
-
-// Default host/ip to use for console
+// Host / ip to use for console connections
 //var $consoleHost = '192.168.1.40';
 
 // Disable "preview" box
@@ -108,17 +109,25 @@ var $vmListSort = 'function(a,b) {
 // Allow VDE network configuration. This must be supported by the underlying VirtualBox installation!
 #var $enableVDE = true; 
 
+// Disable setting SATA controllers port count to the max port number found when saving VMs.
+#var $disableSataPortCount = true;
 
 /*
  * Cache tweeking.
  *
- * NOT a good idea to set any of these unless asked to do so.
  */
+// Refresh VM cache when VM Settings window is loaded
+#var $vmConfigRefresh = true;
+
+// Path
 #var $cachePath = '/tmp';
 
 /*
- * Cache timings
+ * Timings.
+ * NOT a good idea to set any of these unless asked to do so.
+ */
 
+/*
 var $cacheExpireMultiplier = 1;
 var $cacheSettings = array(
 		'getHostDetails' => 86400, // "never" changes

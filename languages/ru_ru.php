@@ -254,6 +254,22 @@ public static $trans = array(
 'Attached to' => 'Подсоединён к',
 'Not Attached' => 'Не подключен',
 
+'Serial Ports' => 'COM-порты',
+'Port X' => 'Порт %s', // %s will be replaced with port number
+'Enable Serial Port' => 'Включить последовательный порт',
+'Port Number' => 'Номер порта',
+'IRQ' => 'Прерывание',
+'I/O Port' => 'Порт В/В',
+'User-defined' => 'Пользовательский',
+'Port Mode' => 'Режим порта',
+'Disconnected' => 'Отключен',
+'HostPipe' => 'Хост-канал',
+'HostDevice' => 'Хост-устройство',
+'RawFile' => 'Перенаправлен в файл',
+'Create Pipe' => 'Создать канал',
+'Port/File Path' => 'Путь к порту/файлу',
+
+
 'USB' => 'USB',
 'USB Controller' => 'USB контроллер',
 'Enable USB Controller' => 'Включить USB контроллер',
@@ -454,7 +470,7 @@ public static $trans = array(
 'Virtual Hard Disk' => 'Виртуальный жёсткий диск',
 'newVM Step4 Message1' => 'Выберите виртуальный жёсткий диск, который будет загрузочным диском виртуальной машины. Вы можете создать новый жёсткий диск либо выбрать существующий, нажав соответсвующую кнопку для вызова диалога открытия файла.',
 'newVM Step4 Message2' => 'Если вам требуется более сложная конфигурация жёстких дисков, то можно пропустить этот шаг и подсоединить жёсткие диски позднее с помощью диалога Свойств машины.',
-'newVM Step4 Message3' => 'Рекомендуемый размер загрузочного жёсткого диска: %s МБ.', /* %s will be replaced with the recommended memory size at run time */
+'newVM Step4 Message3' => 'Рекомендуемый размер загрузочного жёсткого диска: %s.', /* %s will be replaced with the recommended memory size at run time */
 'Boot Hard Disk' => 'Загрузочный жёсткий диск',
 'Create new hard disk' => 'Создать новый жёсткий диск',
 'Use existing hard disk' => 'Использовать существующий жёсткий диск',

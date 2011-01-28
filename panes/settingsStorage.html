@@ -287,7 +287,7 @@ $('#vboxStorageSettingsImgMediaManager').tipped({'source':trans('Open Virtual Me
 			$('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().click();
 		};
 		l.run();
-	},$('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().data().type,(!document.forms['frmVboxSettings'].vboxSettingsControllerDeviceOption.checked),attached);
+	},$('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().data().type,(!document.forms['frmVboxSettings'].vboxSettingsControllerDeviceOption.checked),attached,vboxDirname($('#vboxSettingsDialog').data('vboxMachineData').settingsFilePath));
 
 	
 });
@@ -894,7 +894,7 @@ function vboxSettingsStorageAddMedium(bus, type) {
 					$('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().click();
 				};
 				l.run();
-			}); 
+			},{'path':vboxDirname($('#vboxSettingsDialog').data('vboxMachineData').settingsFilePath)}); 
 			$('#vboxSettingsStorageUnavailable').remove();
 			
 		};
@@ -908,7 +908,7 @@ function vboxSettingsStorageAddMedium(bus, type) {
 					$('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().click();
 				};
 				l.run();
-			},'HardDisk');
+			},'HardDisk',false,null,vboxDirname($('#vboxSettingsDialog').data('vboxMachineData').settingsFilePath));
 			
 			$('#vboxSettingsStorageUnavailable').remove();
 		};
