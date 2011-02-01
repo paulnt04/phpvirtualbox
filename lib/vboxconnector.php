@@ -1468,6 +1468,7 @@ class vboxconnector {
 		/*
 		 * NICs
 		 */
+		$response['data']['networkInterfaces'] = array();
 		foreach($this->vbox->host->networkInterfaces as $d) {
 
 			if($d->interfaceType->__toString() != 'HostOnly') {
