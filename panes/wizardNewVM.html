@@ -97,10 +97,10 @@
 		</tr>		
 		<tr>
 			<td colspan="2" style='padding-left: 34px; white-space: nowrap'>
-			<table class='vboxInvisible'>
+			<table class='vboxInvisible' style='width: 100%;'>
 				<tr>
 					<td><select id="newVMDiskSelectId" name="newVMDiskSelect" disabled='disabled'></select></td>
-					<td><input type='button' class='vboxImgButton' disabled='disabled' id='newVMDiskVMMImg' name='newVMDiskVMM' style='background-image: url(images/vbox/select_file_dis_16px.png)'/></td>
+					<td style='width:1%' id='newVMDiskVMM'></td>
 				</tr>
 			</table>
 			</td>
@@ -145,29 +145,58 @@
 
 <script type='text/javascript'>
 
-/* VMM Button click */
-$('#newVMDiskVMMImg').click(function(){
+var sButtons = new Array(
+		{
+			/* Add Attachment Button */
+			'name' : 'mselecthdbtn',
+			'label' : 'Choose a virtual hard disk file...',
+			'icon' : 'select_file',
+			'click' : function () {
+				vboxFileBrowser($('#vboxIndex').data('vboxSystemProperties').defaultMachineFolder,function(f){
+					if(!f) return;
+					var storage = new vboxStorage();
+					var med = storage.getMediumByLocation(f);
+					if(med && med.base) {
+						vmNewFillExistingDisks(med.base);
+						return;
+					}
+					var ml = new vboxLoader();
+					ml.mode='save';
+					ml.add('mediumAdd',function(ret){
+						var l = new vboxLoader();
+						if(ret && ret.id) {
+							var med = storage.getMediumById(ret.id);
+							// Not registered yet. Refresh mediums.
+							if(!med)
+								l.add('Mediums',function(data){$('#vboxIndex').data('vboxMediums',data);});
+						}
+						l.onLoad = function() {
+							if(ret && ret.id) {
+								var med = storage.getMediumById(ret.id);
+								if(med) {
+									vmNewFillExistingDisks(med.base);
+								}
+							}
+						}
+						l.run();
+					},{'path':f,'type':'HardDisk'});
+					ml.run();
+				});				
+			}
+		}		
+);
 
-	if(!(document.forms['frmwizardNewVM'].newVMBootDisk.checked && document.forms['frmwizardNewVM'].newVMDisk[1].checked)) return;
-	
-	vboxVMMDialogInit(function(disk){
-		var l = new vboxLoader();
-		l.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
-		l.onLoad = function() {
-			vmNewFillExistingDisks((disk && disk.id ? disk.id : null));
-			newVMToggleNewDisk(false);
-		};
-		l.run();		
-	},'HardDisk',true,{'name':jQuery.trim(document.forms['frmwizardNewVM'].newVMName.value)});
-});
+var wizardNewVMToolbar = new vboxToolbarSmall(sButtons);
+wizardNewVMToolbar.disabledString = 'dis';
+wizardNewVMToolbar.addButtons('newVMDiskVMM');		
 
 /* Toggle new / existing */
 function newVMToggleNewDisk(dis) {
 	
-	document.forms['frmwizardNewVM'].newVMDiskVMM.disabled = (dis ? true : false);
+	if(dis) wizardNewVMToolbar.disable();
+	else wizardNewVMToolbar.enable();
+	
 	document.forms['frmwizardNewVM'].newVMDiskSelect.disabled = (dis || !document.forms['frmwizardNewVM'].newVMDiskSelect.options.length) ? true : false;
-
-	$('#newVMDiskVMMImg').css({'background-image':'url(images/vbox/select_file_' + (dis ? 'dis_' : '') + '16px.png)'});
 
 	// enable / disable mediumselect
 	$('#wizardNewVMStep4').find('.vboxMediumSelect').trigger((document.forms['frmwizardNewVM'].newVMDiskSelect.disabled ? 'disable' : 'enable'));

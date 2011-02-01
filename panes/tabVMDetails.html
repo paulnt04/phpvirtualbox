@@ -598,9 +598,10 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	}
 	$(vboxDetailsTable).append(__vboxDetailRow(trans("Boot Order"), bo.join(trans('LIST_SEP'))));
 
-	// HW acceleration config enabled?
-	if($('#vboxIndex').data('vboxConfig').enableAccelerationConfig) {
-		$(vboxDetailsTable).append(__vboxDetailRow(trans("VCPU"), (data['HWVirtExProperties'].Enabled ? trans('Enabled') : trans('Disabled')))).append(__vboxDetailRow(trans("Nested Paging"), (data['HWVirtExProperties'].NestedPaging ? trans('Enabled') : trans('Disabled'))));
+	// HW advanced config enabled?
+	if($('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
+		// Removed. Do we really need this to be displayed?
+		// $(vboxDetailsTable).append(__vboxDetailRow(trans("VCPU"), (data['HWVirtExProperties'].Enabled ? trans('Enabled') : trans('Disabled')))).append(__vboxDetailRow(trans("Nested Paging"), (data['HWVirtExProperties'].NestedPaging ? trans('Enabled') : trans('Disabled')))).append(__vboxDetailRow(trans("Large Pages"), (data['HWVirtExProperties'].LargePages? trans('Enabled') : trans('Disabled'))));
 	}
 
 	// Preview box
@@ -718,7 +719,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	// VRDE
 	if(data['VRDEServer'] && data['VRDEServer']['VRDEExtPack'] && data['VRDEServer']['enabled'] && data['VRDEServer']['ports']) {
 		if(data['VRDEServer']['netAddress']) {
-			$(vboxDetailsTable).append(__vboxDetailRow(trans("Remote Console")+ ': ' +trans("Net Address"), data['VRDEServer']['netAddress']));
+			$(vboxDetailsTable).append(__vboxDetailRow(trans("Net Address"), data['VRDEServer']['netAddress']));
 		}
 		var chost = ($('#vboxIndex').data('vboxConfig').consoleHost ? $('#vboxIndex').data('vboxConfig').consoleHost : data['VRDEServer']['netAddress']);
 		if(!chost) { chost = location.hostname;}
@@ -794,7 +795,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 			// Link medium to mount?
 			if(links && data['storageControllers'][a]['mediumAttachments'][b].type != 'HardDisk' && (data.state == 'Running' || (data.state == 'PoweredOff' && data.sessionState == 'Unlocked'))) {
 				portDesc = $('<div />').text(portDesc).html();
-				portDesc = '<a href="javascript:vboxMountInit(\''+data['id']+'\',\''+data['storageControllers'][a].bus+'\','+data['storageControllers'][a]['mediumAttachments'][b].port+','+data['storageControllers'][a]['mediumAttachments'][b].device+',function(vm){__vboxDisplayDetailsData(vm,null,true,true);})">'+portDesc+'</a>';
+				portDesc = '<a href="javascript:vboxMountInit(\''+data['id']+'\',\''+data['storageControllers'][a].bus+'\','+data['storageControllers'][a]['mediumAttachments'][b].port+','+data['storageControllers'][a]['mediumAttachments'][b].device+')">'+portDesc+'</a>';
 			}
 			$(vboxDetailsTable).append(__vboxDetailRowIndented(portName + (data['storageControllers'][a]['mediumAttachments'][b].type == 'DVD' ? ' (' + trans(data['storageControllers'][a]['mediumAttachments'][b].type) + ') ' : ''), portDesc,(data['storageControllers'][a]['mediumAttachments'][b].type != 'HardDisk' ? true : false)));
 			

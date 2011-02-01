@@ -771,9 +771,33 @@ function vboxVersionCheck(ver) {
 
 /* Strip file name from path */
 function vboxDirname(p) {
-	return p.replace(/([\/|/])[^\/|/]*$/,'$1');
+	var pos = p.lastIndexOf($('#vboxIndex').data('vboxConfig').DSEP);
+	if(pos > -1) {
+		return p.substring(0,pos);
+	}
+	return p;
 }
-
+/* Strip dir name from path */
+function vboxBasename(p) {
+	var pos = p.lastIndexOf($('#vboxIndex').data('vboxConfig').DSEP);
+	if(pos > -1) {
+		return p.substring((pos+1));
+	}
+	return p;
+}
+/* Add a recent medium to list */
+function vboxAddRecentMedium(m,list) {
+	pos = jQuery.inArray(m,list);
+	if(pos == 0) return false; // no change
+	if(pos > 0) {
+		list.splice(pos,1);
+	}
+	list.splice(0,0,m);
+	while(list.length > 5) {
+		list.pop();
+	}
+	return true; // changed
+}
 function strnatcasecmp(str1, str2) {
     // Returns the result of case-insensitive string comparison using 'natural' algorithm  
     // 

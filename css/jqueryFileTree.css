@@ -29,3 +29,4 @@ UL.jqueryFileTree A {
 .jqueryFileTree LI.file_vmdk,.jqueryFileTree LI.file_vdi, .jqueryFileTree LI.file_vhd, .jqueryFileTree LI.file_hdd { background: url(../images/vbox/hd_16px.png) 0px 1px no-repeat; }
 .jqueryFileTree LI.file_ovf, .jqueryFileTree LI.file_ova { background: url(../images/vbox/os_type_16px.png) 0px 1px no-repeat; }
 .jqueryFileTree LI.file_iso { background: url(../images/vbox/cd_16px.png) 0px 1px no-repeat; }
+.jqueryFileTree LI.file_vbox { background: url(../images/vbox/machine_16px.png) 0px 1px no-repeat; }

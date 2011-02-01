@@ -82,6 +82,10 @@
 		<th></th>
 		<td><input type='checkbox' class='vboxCheckbox' name='vboxSettingsSystemRTCUseUTC' /> <span class='translate'>Hardware clock in UTC time</span></td>
 	</tr>
+	<tr id='vboxSettingsSystemHPETRow'>
+		<th></th>
+		<td><input type='checkbox' class='vboxCheckbox' name='vboxSettingsSystemHPET' /> <span class='translate'>HPET (high precision event timer)</span></td>
+	</tr>
 
 </table>
 </div>
@@ -132,6 +136,10 @@
 		<th></th>
 		<td><input type='checkbox' name='settingsSystemPaging' /> <span class='translate'>Enable Nested Paging</span></td>
 	</tr>
+	<tr>
+		<th></th>
+		<td><input type='checkbox' name='settingsSystemLargePages' /> <span class='translate'>Enable Large Pages</span></td>
+	</tr>	
 </table>
 </div>
 
@@ -152,13 +160,16 @@ $('#vboxSettingsSystemProcessor').slider('value',parseInt($('#vboxSettingsDialog
 document.forms['frmVboxSettings'].vboxSettingsSystemPAE.checked = ($('#vboxSettingsDialog').data('vboxMachineData').CpuProperties.PAE);
 
 /* Only if acceleration config is enabled */
-if($('#vboxIndex').data('vboxConfig').enableAccelerationConfig) {
+if($('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
 	
+	document.forms['frmVboxSettings'].vboxSettingsSystemHPET.checked = ($('#vboxSettingsDialog').data('vboxMachineData').hpetEnabled);
 	document.forms['frmVboxSettings'].settingsSystemVT.checked = ($('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.Enabled);
 	document.forms['frmVboxSettings'].settingsSystemPaging.checked = ($('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.NestedPaging);
+	document.forms['frmVboxSettings'].settingsSystemLargePages.checked = ($('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.LargePages);
 	
-/* Else, remove tab and tab link */
+/* Else, remove advanced settings */
 } else {
+	$('#vboxSettingsSystemHPETRow').css('display','none');
 	$('#settingsTabSystemAccelerationLink').remove();
 	$('#settingsTabSystemAcceleration').remove();
 }
@@ -262,10 +273,12 @@ $('#vboxSettingsDialog').bind('save',function(){
 	if($('#vboxSettingsDialog').data('vboxMachineData').chipsetType && $('#vboxIndex').data('vboxConfig').version.string != '4.0.0')
 		$('#vboxSettingsDialog').data('vboxMachineData').chipsetType = $(document.forms['frmVboxSettings'].vboxSettingsSystemChipset).val();
 		
-	/* Only if acceleration config is enabled */
-	if($('#vboxIndex').data('vboxConfig').enableAccelerationConfig) {
+	/* Only if advanced config is enabled */
+	if($('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
+		$('#vboxSettingsDialog').data('vboxMachineData').hpetEnabled = (document.forms['frmVboxSettings'].vboxSettingsSystemHPET.checked ? 1 : 0);
 		$('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.Enabled = (document.forms['frmVboxSettings'].settingsSystemVT.checked ? 1 : 0);
 		$('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.NestedPaging = (document.forms['frmVboxSettings'].settingsSystemPaging.checked ? 1 : 0);
+		$('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.LargePages = (document.forms['frmVboxSettings'].settingsSystemLargePages.checked ? 1 : 0);
 	}
 	
 	// Boot order

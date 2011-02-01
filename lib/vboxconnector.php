@@ -599,6 +599,7 @@ class vboxconnector {
 		$m->firmwareType = $args['firmwareType'];
 		if($args['chipsetType']) $m->chipsetType = $args['chipsetType']; 
 		if($m->snapshotFolder != $args['snapshotFolder']) $m->snapshotFolder = $args['snapshotFolder'];
+		if($this->settings['enableAdvancedConfig']) $m->hpetEnabled = $args['hpetEnabled'];
 
 		$m->VRAMSize = $args['VRAMSize'];
 
@@ -609,9 +610,10 @@ class vboxconnector {
 		*/
 
 		/* Only if acceleration configuration is enabled */
-		if($this->settings['enableAccelerationConfig']) {
+		if($this->settings['enableAdvancedConfig']) {
 			$m->setHWVirtExProperty('Enabled',($args['HWVirtExProperties']['Enabled'] ? 1 : 0));
 			$m->setHWVirtExProperty('NestedPaging', ($args['HWVirtExProperties']['NestedPaging'] ? 1 : 0));
+			$m->setHWVirtExProperty('LargePages', ($args['HWVirtExProperties']['LargePages'] ? 1 : 0));
 		}
 
 		$m->RTCUseUTC = ($args['RTCUseUTC'] ? 1 : 0);
@@ -629,6 +631,8 @@ class vboxconnector {
 			if($m->VRDEServer && $this->vbox->systemProperties->defaultVRDEExtPack) {
 				$m->VRDEServer->enabled = $args['VRDEServer']['enabled'] ? 1 : 0;
 				$m->VRDEServer->setVRDEProperty('TCP/Ports',$args['VRDEServer']['ports']);
+				if($this->settings['enableAdvancedConfig'])
+					$m->VRDEServer->setVRDEProperty('TCP/Address',$args['VRDEServer']['netAddress']);
 				$m->VRDEServer->authType = ($args['VRDEServer']['authType'] ? $args['VRDEServer']['authType'] : null);
 				$m->VRDEServer->authTimeout = intval($args['VRDEServer']['authTimeout']);
 				$m->VRDEServer->allowMultiConnection = intval($args['VRDEServer']['allowMultiConnection']);
@@ -693,9 +697,30 @@ class vboxconnector {
 			
 			// Medium attachments
 			foreach($sc['mediumAttachments'] as $ma) {
+				
 				$attachedNew[$name.$ma['port'].$ma['device']] = $ma['medium']['id'];
+				
 				if(is_array($ma['medium']) && $ma['medium']['id'] && $ma['type']) {
-					$med = $this->vbox->findMedium($ma['medium']['id'],$ma['type']);
+
+					// Host drive
+					if(strtolower($ma['medium']['hostDrive']) == 'true' || $ma['medium']['hostDrive'] === true) {
+						// CD / DVD Drive
+						if($ma['type'] == 'DVD') {
+							$drives = $this->vbox->host->DVDDrives;
+						// floppy drives
+						} else {
+							$drives = $this->vbox->host->floppyDrives;
+						}
+						foreach($drives as $md) {
+							if($md->id == $ma['medium']['id']) {
+								$med = &$md;
+								break;
+							}
+							$md->releaseRemote();
+						}
+					} else {						
+						$med = $this->vbox->findMedium($ma['medium']['id'],$ma['type']);
+					}
 				} else {
 					$med = null;
 				}
@@ -1925,7 +1950,7 @@ class vboxconnector {
 			if(!$machine->accessible) {
 
 				$response['data'] = array(
-					'name' => $machine->id,
+					'name' => $machine->name,
 					'state' => 'Inaccessible',
 					'OSTypeId' => 'Other',
 					'id' => $machine->id,
@@ -2156,7 +2181,7 @@ class vboxconnector {
 			}
 			
 			/* Only if acceleration configuration is enabled */
-			if($this->settings['enableAccelerationConfig']) {	
+			if($this->settings['enableAdvancedConfig']) {	
 				$this->session->machine->setHWVirtExProperty('Enabled',$defaults->recommendedVirtEx);
 			}
 			
@@ -2269,6 +2294,7 @@ class vboxconnector {
 					'sessionState' => $machine->sessionState->__toString(),
 					'currentSnapshot' => ($machine->currentSnapshot->handle ? $machine->currentSnapshot->name : '')
 				);
+				if($machine->currentSnapshot->handle) $machine->currentSnapshot->releaseRemote();
 
 			} catch (Exception $e) {
 
@@ -2289,7 +2315,9 @@ class vboxconnector {
 				}
 			}
 			
-			$machine->releaseRemote();
+			try {
+				$machine->releaseRemote();
+			} catch (Exception $e) { }
 		}
 		if(!is_array($response['data']) || !count($response['data'])) $response['data']['empty'] = 1;
 		return true;
@@ -2404,6 +2432,7 @@ class vboxconnector {
 			'settingsFilePath' => $m->settingsFilePath,
 			'OSTypeId' => $m->OSTypeId,
 			'CPUCount' => $m->CPUCount,
+			'hpetEnabled' => $m->hpetEnabled,
 			'memorySize' => $m->memorySize,
 			'VRAMSize' => $m->VRAMSize,
 			'accelerate3DEnabled' => $m->accelerate3DEnabled,
@@ -2433,7 +2462,8 @@ class vboxconnector {
 			'RTCUseUTC' => $m->RTCUseUTC,
 			'HWVirtExProperties' => array(
 				'Enabled' => $m->getHWVirtExProperty('Enabled'),
-				'NestedPaging' => $m->getHWVirtExProperty('NestedPaging')
+				'NestedPaging' => $m->getHWVirtExProperty('NestedPaging'),
+				'LargePages' => $m->getHWVirtExProperty('LargePages'),
 				),
 			'CpuProperties' => array(
 				'PAE' => $m->getCpuProperty('PAE')
@@ -2441,6 +2471,7 @@ class vboxconnector {
 			'bootOrder' => $this->__getBootOrder($m),
 			'chipsetType' => $m->chipsetType->__toString(),
 			'GUI' => array('SaveMountedAtRuntime' => $m->getExtraData('GUI/SaveMountedAtRuntime')),
+				
 
 		);
 
@@ -2470,17 +2501,21 @@ class vboxconnector {
 		$ports = array();
 		$max = intval($this->vbox->systemProperties->serialPortCount);
 		for($i = 0; $i < $max; $i++) {
-			$p = $m->getSerialPort($i);
-			$ports[] = array(
-				'slot' => $p->slot,
-				'enabled' => intval($p->enabled),
-				'IOBase' => '0x'.strtoupper(sprintf('%3s',dechex($p->IOBase))),
-				'IRQ' => $p->IRQ,
-				'hostMode' => $p->hostMode->__toString(),
-				'server' => intval($p->server),
-				'path' => $p->path
-			);
-			$p->releaseRemote();
+			try {
+				$p = $m->getSerialPort($i);
+				$ports[] = array(
+					'slot' => $p->slot,
+					'enabled' => intval($p->enabled),
+					'IOBase' => '0x'.strtoupper(sprintf('%3s',dechex($p->IOBase))),
+					'IRQ' => $p->IRQ,
+					'hostMode' => $p->hostMode->__toString(),
+					'server' => intval($p->server),
+					'path' => $p->path
+				);
+				$p->releaseRemote();
+			} catch (Exception $e) {
+				// Ignore
+			}
 		}
 		return $ports;
 	}
@@ -2917,10 +2952,11 @@ class vboxconnector {
 		$this->__vboxwebsrvConnect();
 
 		$m = $this->vbox->openMedium($args['path'],$args['type'],'ReadWrite');
+		$mid = $m->id;
 		$m->releaseRemote();
 
 		$this->cache->expire('getMediums');
-		return ($response['data']['result'] = 1);
+		$response['data'] = array('result' => 1, 'id' => $mid);
 	}
 
 	/*
@@ -2950,7 +2986,8 @@ class vboxconnector {
 		if($format != 'VDI' && $format != 'VMDK') $format = 'VDI';
 		$hd = $this->vbox->createHardDisk($format,$args['file']);
 		$type = ($args['type'] == 'fixed' ? 'Fixed' : 'Standard');
-		$progress = $hd->createBaseStorage(intval($args['size'])*1024*1024,$type);
+		$mv = new MediumVariant();
+		$progress = $hd->createBaseStorage(intval($args['size'])*1024*1024,$mv->ValueMap[$type]);
 		$hdid = $hd->id;
 		$hd->releaseRemote();
 
@@ -3084,6 +3121,42 @@ class vboxconnector {
 	}
 
 	/*
+	 * get Recent Mediums
+	 */
+	public function getRecentMediums($args,&$response) {
+
+		// Connect to vboxwebsrv
+		$this->__vboxwebsrvConnect();
+
+		foreach(array(
+			array('type'=>'HardDisk','key'=>'GUI/RecentListHD'),
+			array('type'=>'DVD','key'=>'GUI/RecentListCD'),
+			array('type'=>'Floppy','key'=>'GUI/RecentListFD')) as $r) {
+			$list = $this->vbox->getExtraData($r['key']);
+			$response['data'][$r['type']] = array_filter(explode(';', trim($list,';')));
+		}
+		return $response;
+	}
+	
+	/* Update recent mediums */
+	public function mediumRecentUpdate($args,&$response) {
+		
+		// Connect to vboxwebsrv
+		$this->__vboxwebsrvConnect();
+		
+		$types = array(
+			'HardDisk'=>'GUI/RecentListHD',
+			'DVD'=>'GUI/RecentListCD',
+			'Floppy'=>'GUI/RecentListFD'
+		);
+		
+		$this->vbox->setExtraData($types[$args['type']], implode(';',array_unique($args['list'])).';');
+		
+		return ($response['data']['result'] = 1);
+	
+	}
+	
+	/*
 	 * Mount a medium on a given medium attachment (port/device)
 	 */
 	public function mediumMount($args,&$response,$save=false) {
@@ -3112,7 +3185,7 @@ class vboxconnector {
 			$med = null;
 		} else {
 			// Host drive
-			if(strtolower($args['medium']['hostDrive']) == 'true') {
+			if(strtolower($args['medium']['hostDrive']) == 'true' || $args['medium']['hostDrive'] === true) {
 				// CD / DVD Drive
 				if($args['medium']['deviceType'] == 'DVD') {
 					$drives = $this->vbox->host->DVDDrives;

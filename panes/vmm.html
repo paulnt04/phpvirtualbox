@@ -18,9 +18,9 @@
 	<div id='vboxVMMTabs'>
 
 		<ul>
-			<li><a href="#vmmDisks"><span><img style="vertical-align: middle" src="images/vbox/hd_16px.png" border="0" /> <span class='translate'>Hard Disks</span></span></a></li>
-			<li><a href="#vmmCDs"><span><img style="vertical-align: middle" src="images/vbox/cd_16px.png" border="0" /> <span class='translate'>CD/DVD Images</span></span></a></li>
-			<li><a href="#vmmFloppys"><span><img style="vertical-align: middle" src="images/vbox/fd_16px.png" border="0" /> <span class='translate'>Floppy Images</span></span></a></li>		
+			<li><a href="#vmmDisks"><span><img id='vmmDisksIcon' style="vertical-align: middle" src="images/vbox/hd_16px.png" border="0" /> <span class='translate'>Hard Disks</span></span></a></li>
+			<li><a href="#vmmCDs"><span><img id='vmmCDsIcon' style="vertical-align: middle" src="images/vbox/cd_16px.png" border="0" /> <span class='translate'>CD/DVD Images</span></span></a></li>
+			<li><a href="#vmmFloppys"><span><img id='vmmFloppysIcon' style="vertical-align: middle" src="images/vbox/fd_16px.png" border="0" /> <span class='translate'>Floppy Images</span></span></a></li>		
 		</ul>
 		
 		<!-- 
@@ -61,7 +61,9 @@
 						<th><span class='translate'>Attached to</span>:</th>
 						<td><span class='vmmMediumAttachedTo'></span></td>
 					</tr>
-					
+					<tr class='vmmAccessErr'>
+						<td colspan='2'></td>
+					</tr>
 				</table>
 			</div>
 		</div>
@@ -105,7 +107,9 @@
 						<th><span class='translate'>Attached to</span>:</th>
 						<td><span class='vmmMediumAttachedTo'></span></td>
 					</tr>
-					
+					<tr class='vmmAccessErr'>
+						<td colspan='2'></td>
+					</tr>					
 				</table>
 			</div>		
 		</div>
@@ -145,7 +149,9 @@
 						<th><span class='translate'>Attached to</span>:</th>
 						<td><span class='vmmMediumAttachedTo'></span></td>
 					</tr>
-					
+					<tr class='vmmAccessErr'>
+						<td colspan='2'></td>
+					</tr>					
 				</table>
 			</div>
 		</div>
@@ -406,6 +412,12 @@ var vmmButtons = new Array(
 		
 );
 
+// CHeck for advanced config
+if(!$('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
+	vmmButtons.shift();
+	vmmButtons.shift();
+}
+
 var vmmToolbar = new vboxToolbar(vmmButtons);
 vmmToolbar.addButtons('vboxMMToolbar');
 
@@ -528,10 +540,55 @@ var menu = {
 				var m = $(item).data();
 				return(m.deviceType == 'HardDisk' && m.attachedTo.length == 0 && m.type != 'Normal' && !m.parent);
 			}					        
-        }        
+        },
+		{
+			/*
+			 *	Remove a medium
+			 */
+			'name' : 'vmmremove',
+			'title' : 'Remove',
+			'icon' : 'hd_remove',
+			'separator':$('#vboxIndex').data('vboxConfig').enableAdvancedConfig,
+			'enabled' : function (item) {return item && !item.target && ($(item).data('attachedTo').length == 0 && $(item).data('children').length == 0); },
+			'click' : function () {
+				var btn = vmmToolbar.getButtonByName('vmmremove');
+				btn.click(btn);
+			}
+		},
+		{
+			/*
+			 *	Release a medium from all attachments
+			 */
+			'name' : 'vmmrelease',
+			'title' : 'Release',
+			'icon' : 'hd_release',
+			'enabled' : function (item) {
+				return item && !item.target && ($(item).data('attachedTo').length > 0) && $(item).data('children').length == 0 && $(item).data('hasSnapshots') == 0;
+			},
+			'click' : function () {
+				var btn = vmmToolbar.getButtonByName('vmmrelease');
+				btn.click(btn);				
+			}
+		},
+		{
+			'name' : 'vmmrefresh',
+			'title' : 'Refresh',
+			'icon' : 'refresh',
+			'click' : function () {
+				var btn = vmmToolbar.getButtonByName('vmmrefresh');
+				btn.click(btn);
+			}
+		}		
         
 	]
 };
+
+// Check for advanced config
+if(!$('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
+	menu.menu.shift();
+	menu.menu.shift();
+	menu.menu.shift();
+}
 vboxSetLangContext('vboxVMM');
 var vmmMenu = new vboxMenuBar('vboxMMMenu');
 vmmMenu.addMenu(menu);
@@ -545,6 +602,11 @@ function vboxVMMMediaInfo(e,m) {
 	$('#vboxVirtualMediaManager').find('.vmmMediumLocation').html((m && m.location ? m.location : '--'));
 	$('#vboxVirtualMediaManager').find('.vmmMediumType').html((m && m.deviceType == 'HardDisk' ? vboxMediumType(m) + ' (' + m.format + ')' : '--'));
 	$('#vboxVirtualMediaManager').find('.vmmMediumAttachedTo').html(m ? vboxMediumAttachedTo(m) : '--');
+	if(m && m.state == 'Inaccessible' && m.lastAccessError) {
+		$('#vboxVirtualMediaManager').find('tr.vmmAccessErr').css({'display':''}).children().html(m.lastAccessError);
+	} else {
+		$('#vboxVirtualMediaManager').find('tr.vmmAccessErr').css({'display':'none'}).children().html('');
+	}
 }
 
 
@@ -598,8 +660,10 @@ function vboxVMMAddMedium(d,depth,hideDiff,attached) {
 	var span = document.createElement('span');
 	$(span).html($('<div />').html(d.name).text() + (hideDiff === undefined && d.readOnly && d.deviceType == 'HardDisk' ? ' ('+trans('ro')+')' : ''));
 
-	// Add read-only class?
-	if(hideDiff !== undefined && d.readOnly && (!attached || (attached && !attached[d.id]))) {
+	// Add read-only or inaccessible class?
+	if(d.state == 'Inaccessible') {
+		$(span).addClass('vboxMediumInaccessible');
+	} else if(hideDiff !== undefined && d.readOnly && (!attached || (attached && !attached[d.id]))) {
 		$(span).addClass('vboxMediumReadOnly');
 	}
 	
@@ -675,6 +739,11 @@ function vboxVMMFillMediums(sel) {
 	$('#vboxVMMCDList').children().remove();
 	$('#vboxVMMFDList').children().remove();
 	
+	// Set icons
+	$('#vmmDisksIcon').attr('src','images/vbox/hd_16px.png');
+	$('#vmmCDsIcon').attr('src','images/vbox/cd_16px.png');
+	$('#vmmFloppysIcon').attr('src','images/vbox/fd_16px.png');
+		
 	var mediums = $('#vboxIndex').data('vboxMediums').sort(function(a,b) {
 		return strnatcasecmp(a.name,b.name);
 	});
@@ -685,6 +754,20 @@ function vboxVMMFillMediums(sel) {
 	vboxSetLangContext('vboxVMM');
 	for(var i in mediums) {
 		vboxVMMAddMedium(mediums[i],0,hideDiff,attached);
+		if(mediums[i].state == 'Inaccessible') {
+			switch(mediums[i].deviceType) {
+				case 'HardDisk':
+					var elm = $('#vmmDisksIcon');
+					break;
+				case 'DVD':
+					var elm = $('#vmmCDsIcon');
+					break;
+				default:
+					var elm = $('#vmmFloppysIcon');
+			}
+			elm.attr('src','images/vbox/state_aborted_16px.png');
+		}
+			
 	}
 	vboxUnsetLangContext();
 

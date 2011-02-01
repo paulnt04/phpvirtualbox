@@ -62,6 +62,8 @@ VM settings.
 New Hard Disk Wizard hard disk location defaults to VM's folder
 where appropriate.
 
+Fixed bug that would not allow the creation of Fixed size storage.
+
 -------------------------------------
 	4-2 - 2011-1-14
 -------------------------------------

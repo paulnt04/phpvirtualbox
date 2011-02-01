@@ -42,7 +42,6 @@ var $servers = array(
 );
 */
 
-
 // Host / ip to use for console connections
 //var $consoleHost = '192.168.1.40';
 
@@ -94,8 +93,10 @@ var $consoleResolutions = '640x480,800x600,1024x768';
 /* Max number of network cards per VM. Do not set above VirtualBox's limit (typically 8) or below 1 */
 var $nicMax = 4;
 
-/* Enable Acceleration configuration (normally hidden in the VirtualBox GUI) */
-var $enableAccelerationConfig = true;
+/* Enable advanced configuration items (normally hidden in the VirtualBox GUI)
+ * Note that some of these items may not be translated to languages other than english. 
+ */
+//var $enableAdvancedConfig = true;
 
 /* Custom VMList sort function in JavaScript */
 /* This places running VMs at the top of the list

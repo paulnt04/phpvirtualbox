@@ -294,6 +294,7 @@ function vboxToolbarSmall(buttons) {
 	this.enabled = true;
 	this.size = 16;
 	this.disabledString = 'disabled';
+	this.mode = 'toolbar';
 
 	// Called on list item selection change
 	self.update = function(target,item) {
@@ -328,7 +329,6 @@ function vboxToolbarSmall(buttons) {
 	}
 	self.disableButton = function(b) {
 		$('#vboxToolbarButton-' + self.id + '-' + b.name).css('background-image','url(images/vbox/' + b.icon + '_'+self.disabledString+'_'+self.size+'px.png)').attr('disabled','disabled').removeClass('vboxToolbarSmallButtonHover').addClass('vboxToolbarSmallButton');
-		$.fn.tipped.hideTip($('#vboxToolbarButton-' + self.id + '-' + b.name));
 	}
 
 	// Generate HTML element for button
@@ -845,6 +845,10 @@ function vboxStorage() {
 	}
 	
 
+	/* Return a medium by location */
+	this.getMediumByLocation = function(p) {		
+		return this.__getLeaf($('#vboxIndex').data('vboxMediums'),'location',p,false,true);
+	}
 
 	/* Return a medium by ID */
 	this.getMediumById = function(id) {		

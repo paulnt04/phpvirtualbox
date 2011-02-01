@@ -87,6 +87,10 @@
 		<th><span class='translate'>Server Port</span>:</th>
 		<td><input type='text' class='vboxText' style='width: 100%' name='vboxSettingsDisplayRDPPort' /></td>
 	</tr>
+	<tr id='vboxSettingsDisplayRDPAddrRow'>
+		<th><span class='translate'>Net Address</span>:</th>
+		<td><input type='text' class='vboxText' style='width: 100%' name='vboxSettingsDisplayRDPAddr' /></td>
+	</tr>	
 	<tr>
 		<th><span class='translate'>Authentication Method</span>:</th>
 		<td>
@@ -142,6 +146,7 @@ if(!($('#vboxSettingsDialog').data('vboxMachineData').VRDEServer && $('#vboxSett
 		document.forms['frmVboxSettings'].vboxSettingsDisplayRDPPort.value = '3389-4000';
 	document.forms['frmVboxSettings'].vboxSettingsDisplayRDPAuth.value = $('#vboxSettingsDialog').data('vboxMachineData').VRDEServer.authType;
 	document.forms['frmVboxSettings'].vboxSettingsDisplayRDPAuthTimeout.value = $('#vboxSettingsDialog').data('vboxMachineData').VRDEServer.authTimeout;
+	document.forms['frmVboxSettings'].vboxSettingsDisplayRDPAddr.value = $('#vboxSettingsDialog').data('vboxMachineData').VRDEServer.netAddress;
 	
 	if(($('#vboxSettingsDialog').data('vboxMachineData').VRDEServer.enabled)) {
 		document.forms['frmVboxSettings'].vboxSettingsDisplayRDPEnabled.checked = true;
@@ -151,6 +156,8 @@ if(!($('#vboxSettingsDialog').data('vboxMachineData').VRDEServer && $('#vboxSett
 		document.forms['frmVboxSettings'].vboxSettingsDisplayRDPMulti.checked = true;
 	}
 	
+	if(!$('#vboxIndex').data('vboxConfig').enableAdvancedConfig)
+		$('#vboxSettingsDisplayRDPAddrRow').css('display','none');
 }
 
 /* Change settings onSave() */
@@ -166,6 +173,7 @@ $('#vboxSettingsDialog').bind('save',function(){
 	
 	if($('#vboxSettingsDialog').data('vboxMachineData').VRDEServer && $('#vboxSettingsDialog').data('vboxMachineData').VRDEServer.VRDEExtPack) {
 		$('#vboxSettingsDialog').data('vboxMachineData').VRDEServer.ports = document.forms['frmVboxSettings'].vboxSettingsDisplayRDPPort.value;
+		$('#vboxSettingsDialog').data('vboxMachineData').VRDEServer.netAddress = document.forms['frmVboxSettings'].vboxSettingsDisplayRDPAddr.value;
 		$('#vboxSettingsDialog').data('vboxMachineData').VRDEServer.authType = document.forms['frmVboxSettings'].vboxSettingsDisplayRDPAuth.value;
 		$('#vboxSettingsDialog').data('vboxMachineData').VRDEServer.authTimeout = document.forms['frmVboxSettings'].vboxSettingsDisplayRDPAuthTimeout.value;
 		$('#vboxSettingsDialog').data('vboxMachineData').VRDEServer.enabled = (document.forms['frmVboxSettings'].vboxSettingsDisplayRDPEnabled.checked ? 1 : 0);

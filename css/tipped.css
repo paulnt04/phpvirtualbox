@@ -19,17 +19,18 @@
 }
 
 /* The tip content gets inserted into this element */
-#tipped-content p, #tipped p { padding: 2px; margin: 0px; } 
+#tipped-content p, #tipped p { padding: 2px; margin: 0px; padding-bottom:0px; } 
 
 /* This is the <div> that holds the close button/link.  No styling is required, but you'll likely want some. */
 #tipped-closer-wrapper {
+	display:none;
 	text-align:center;
-	margin:10px 0 5px;
+	margin: 0px;
 }
 
 /* The <span> that is the close button/link.  No styling is required, but you'll likely want some. */
 #tipped-closer {
-	padding:3px;
+	display:none;
 	border:2px outset #999;
 	background-color:#CCC;
 }

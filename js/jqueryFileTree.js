@@ -62,7 +62,7 @@ if(jQuery) (function($){
 						$(c).removeClass('wait').append(data);
 						if( o.root == t ) $(c).find('UL:hidden').show(); else $(c).find('UL:hidden').slideDown({ duration: o.expandSpeed, easing: o.expandEasing });
 						if(o.scrollTo) {
-							var sto = $('a[name='+t+']');
+							var sto = $(o.scrollTo).find('a[name='+t+']');
 							if(sto[0])
 								$(o.scrollTo).scrollTo(sto,{'axis':'y','offset':{'top':-15}});
 						}
