@@ -64,7 +64,6 @@ class vboxconnector {
 		// Check for SoapClient class
 		if(!class_exists('SoapClient')) {
 			define('VBOX_ERR_FATAL','PHP does not have the SOAP extension enabled.');
-			return;
 		}
 
 		// Cache handler object.
@@ -79,7 +78,7 @@ class vboxconnector {
 		}
 
 		if($this->settings['cachePath']) $this->cache->path = $this->settings['cachePath'];
-
+		
 		$this->cache->prefix = 'pvbx-'.md5($this->settings['key'].'$Revision$').'-';
 
 	}
@@ -94,6 +93,13 @@ class vboxconnector {
 		// Already connected?
 		if($this->connected) return true;
 
+		/*
+		 *  Check for fatal initialization error
+		 */
+		if(@constant('VBOX_ERR_FATAL')) {
+			throw new Exception(constant('VBOX_ERR_FATAL'),vboxconnector::PHPVB_ERRNO_FATAL);
+		}
+		
 
 		//Connect to webservice
 		$this->client = new SoapClient(dirname(__FILE__)."/vboxwebService.wsdl",
@@ -180,12 +186,6 @@ class vboxconnector {
 		$req = &$args[0];
 		$response = &$args[1][0]; # fix for allow_call_time_pass_reference = Off setting
 
-		/*
-		 *  Check for fatal initialization error
-		 */
-		if(@constant('VBOX_ERR_FATAL')) {
-			throw new Exception(constant('VBOX_ERR_FATAL'),vboxconnector::PHPVB_ERRNO_FATAL);
-		}
 
 		/*
 		 * Special Cases First
@@ -220,7 +220,7 @@ class vboxconnector {
 				if($lock === null) {
 					$response['data'] = $this->cache->get($fn,$this->cacheSettings[$fn]);
 
-				// lock obtained
+				// lock obtained (hopefully)
 				} else {
 					$this->{$fn.'Cached'}($req,$response);
 					if($this->cache->store($fn,$response['data']) === false && $response['data'] !== false) {

@@ -15,9 +15,13 @@ ul.setAttribute('id','tablistMain');
 $('#vboxTabsList').append(ul);
 
 var tabs = [
-    {'name':'vboxTabVMDetails','content':'tabVMDetails','label':'Details','icon':'settings'},
-    {'name':'vboxTabVMConsole','content':'tabVMConsole','label':'Console','icon':'vrdp'},
-    {'name':'vboxTabVMSnapshots','content':'tabVMSnapshots','label':'Snapshots','icon':'take_snapshot'}
+    {'name':'vboxTabVMDetails','content':'tabVMDetails','label':'Details','icon':'settings','enabled':function(){return true;}},
+    {'name':'vboxTabVMConsole','content':'tabVMConsole','label':'Console','icon':'vrdp','enabled':function(vm){
+    	return (vm && vm.id != 'host' && vm.state == 'Running' && vm.VRDEServer && vm.VRDEServer.VRDEExtPack);
+    }},
+    {'name':'vboxTabVMSnapshots','content':'tabVMSnapshots','label':'Snapshots','icon':'take_snapshot','enabled':function(vm){
+    	return (vm && vm.id && vm.id != 'host');
+    },'disabled_icon':'take_snapshot_dis'}
 ];
 
 
@@ -33,7 +37,7 @@ for(var i = 0; i < tabs.length; i++) {
 
 	// Tab link
 	var li = document.createElement('li');
-	$(li).attr({'class':'ui-corner-all'}).html('<a href="#'+tabs[i].name+'"><span><img style="vertical-align: middle" src="images/vbox/'+tabs[i].icon+'_16px.png" border="0" /> <span id="'+tabs[i].name+'Title">'+trans(tabs[i].label)+'</span></span></a>').appendTo('#tablistMain');				
+	$(li).attr({'class':'ui-corner-all','id':'tabsMain-'+tabs[i].name}).html('<a href="#'+tabs[i].name+'"><span><img style="vertical-align: middle" src="images/vbox/'+tabs[i].icon+'_16px.png" border="0" /> <span id="'+tabs[i].name+'Title">'+trans(tabs[i].label)+'</span></span></a>').appendTo('#tablistMain');
 	
 	tabLoader.addFile('panes/'+tabs[i].content+'.html',function(f,tname){$('#tabMainContent').append(f);},tabs[i].name);
 	
@@ -70,8 +74,7 @@ tabLoader.onLoad = function(){
 tabLoader.run();
 
 /*
- * Tabs pane JavaScript code for main tabs. Actual "tabbed"
- * functionality code comes from jquery and jqueryui. This
+ * Tabs pane JavaScript code for main tabs. This
  * class listens for a vmlist selection change and tells
  * the tabs to update themselves with new data
  * 
@@ -88,12 +91,16 @@ function vboxTabs(id) {
 	
 	// Add a tab to list
 	this.addTab = function (tab) {
-		if(!this.tabSelected) this.tabSelected = '#'+tab.name;
+		if(!this.tabSelected) {
+			this.tabSelected = '#'+tab.name;
+			$('#tablistMain').find('a[href=#'+tab.name+']').parent().addClass('selected');
+		}
 		this.tabs[this.tabs.length] = tab;
 	}
 	
 	// Show a tab
 	this.showTab = function (tab) {
+		if(self.tabSelected == tab) return;
 		for(var i = 0; i < self.tabs.length; i++) {
 			$('#'+self.tabs[i].name).css('display','none');
 		}
@@ -138,31 +145,17 @@ function vboxTabs(id) {
 
 		// No longer selected?
 		if(vm && vm.id && (self.selected != vm.id)) return;
-				
-		// Check for valid data
-		if(!vm || !vm.id || vm.id == 'host' || !vm.accessible) {
-
-			self.showTab('#'+self.tabs[0].name);
-
-			$('#tablistMain').children().addClass('vboxDisabled');
-			$('#tablistMain').children().first().removeClass('vboxDisabled');
-			
 		
-		// Non-console - normal VM
-		} else if(vm.state != 'Running' || !vm.VRDEServer || !vm.VRDEServer.VRDEExtPack){
-	
-			$('#tablistMain').children().addClass('vboxDisabled');
-			$('#tablistMain').children().first().removeClass('vboxDisabled');
-			$('#tablistMain').children().last().removeClass('vboxDisabled');
-			
-			if(self.tabSelected == '#vboxTabVMConsole')
-				self.showTab('#'+self.tabs[0].name);
-
-		// VM with console
-		} else {
-			$('#tablistMain').children().removeClass('vboxDisabled');
+		for(var i = 0; i < self.tabs.length; i++) {
+			if(self.tabs[i].enabled(vm)) {
+				self.enableTab(self.tabs[i]);
+			} else {
+				self.disableTab(self.tabs[i]);
+				// Was this tab selected?
+				if(self.tabSelected == '#'+self.tabs[i].name)
+					self.showTab('#'+self.tabs[0].name);
+			}
 		}
-
 		
 		// Trigger loaded
 		$('#'+self.id).data('machine',vm);
@@ -172,7 +165,13 @@ function vboxTabs(id) {
 		$(''+self.tabSelected).trigger('show',[vm]);
 
 	}
-
+	
+	this.disableTab = function(tab) {
+		$('#tabsMain-'+tab.name).addClass('vboxDisabled').find('img').attr('src','images/vbox/'+(tab.disabled_icon ? tab.disabled_icon : tab.icon+'_disabled')+'_16px.png');
+	}
+	this.enableTab = function(tab) {
+		$('#tabsMain-'+tab.name).removeClass('vboxDisabled').find('img').attr('src','images/vbox/'+tab.icon+'_16px.png');
+	}
 
 }
 

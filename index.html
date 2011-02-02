@@ -53,8 +53,9 @@
 		$(document).ready(function(){
 
 			// If everything loaded correctly, trans() should be defined in
-			// js/language.php. If not, there is a PHP error somewhere.
-			if(typeof trans != "function") {
+			// js/language.php and language data should be present.
+			// If not, there is a PHP error somewhere.
+			if(typeof trans != "function" || typeof __vboxLangData == "undefined") {
 				trans = function(s){return s;}
 				vboxAlert("An unknown PHP error occurred. This is most likely a syntax error in\
 					config.php in phpVirtualBox's folder. The most common errors are an unclosed\

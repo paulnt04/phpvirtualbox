@@ -7,6 +7,7 @@ html,body,#vboxIndex {
       border:0px solid transparent;
    	  margin:0px;
    	  padding: 0px;
+   	  color: #000;
 }
 #vboxIndex { padding-left: 4px;  padding-right: 4px;}
 
@@ -197,10 +198,10 @@ table tr td.vboxFileFolderInput input.vboxImgButton { width: 20px; margin-left: 
 }
 
 /* Small Toolbar buttons */
-input.vboxToolbarSmallButton { border: 1px solid transparent; }
-input.vboxToolbarSmallButtonHover {
-	border-bottom: 1px solid #777;
-	border-right: 1px solid #777;
+input.vboxToolbarSmallButton, .vboxButtonMenu td.vboxToolbarSmallButton { border: 1px solid transparent; }
+input.vboxToolbarSmallButtonHover, .vboxButtonMenu td.vboxToolbarSmallButtonHover {
+	border-bottom: 1px solid #aaa;
+	border-right: 1px solid #aaa;
 	border-left: 1px solid #999;
 	border-top: 1px solid #999;
 	cursor: pointer;
@@ -208,6 +209,18 @@ input.vboxToolbarSmallButtonHover {
 table.vboxToolbar tr { vertical-align: bottom; }
 table.vboxToolbar .vboxToolbarSeparator { background: #aaa; margin: 0px; padding: 0px; border: 0px; width: 1px; }
 
+/* Menu buttons */
+td.vboxButtonMenuButton { background-repeat: no-repeat; background-position: 2px 3px; }
+.vboxButtonMenu td.vboxButtonMenuButtonDown {
+	border-color: #aaa; background-position: 3px 4px;
+	border-top-color: #000;
+	border-left-color: #000;
+	opacity: .40;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";
+	filter:alpha(opacity=40);
+	background-color: #555;
+	
+} 
 
 /* Loading screen */
 #vboxLoaderDialog { text-align: center; width: auto; }
@@ -363,8 +376,8 @@ table.vboxVMListVM td.vboxVMSessionOpen { font-style: italic; }
 /* Toolbar above vm list */
 #vboxPaneToolbar { float: left; }
 #vboxPaneToolbar table td { margin-right: 10px; }
-#vboxPaneToolbar table td.buttonEnabled { cursor: pointer; }
-#vboxPaneToolbar table td.buttonDisabled { cursor: default; }
+table.vboxToolbar td.vboxEnabled { cursor: pointer; }
+table.vboxToolbar td.vboxDisabled { color: #999; }
 
 /* Details Tab and Table */
 #vboxTabVMDetails { font-size: 0.9em; }
@@ -437,7 +450,9 @@ div.vboxPreviewSaved {
 }
 div.vboxPreviewSaved img {
 	opacity: .75;
-	filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=75)";
+	filter:alpha(opacity=75);
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=75)";
+	
 }
 
 /* Description tab */
@@ -570,9 +585,21 @@ div.vboxSettingsDialog div.ui-dialog-buttonpane {
 	width: 100%;
 	background: #d9d9d9;
 }
-#vboxMountTblMain {
+#vboxMountDivMain {
+	margin: 0px;
+	padding: 0px;
+	width: 100%;
 	border-top: 2px solid #aaa;
 	border-left: 2px solid #aaa;
 	border-bottom: 2px solid #999;
 	border-right: 2px solid #999;
-	background: #e9e9e9; text-align: center; } 
+	background: #e9e9e9; text-align: center;
+	border-radius: 20px;
+	-moz-border-radius: 20px;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#e9e9e9', endColorstr='#d9d9d9');
+	box-shadow: inset 0 1px 3px #fff, inset 0px 0px #e9e9e9, 0 0 3px #a9a9a9;
+	-o-box-shadow: inset 0 1px 3px #fff, inset 0 30px #e9e9e9, 0 0 3px #a9a9a9;
+	-webkit-box-shadow: inset 0 1px 3px #fff, inset 0 30px #e9e9e9, 0 0 3px #a9a9a9;
+	-moz-box-shadow: inset 0 1px 3px #fff, inset 0 -15px #e9e9e9, 0 0 3px #a9a9a9;
+	
+} 

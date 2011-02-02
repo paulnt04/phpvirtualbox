@@ -64,7 +64,14 @@ class cache {
 
 		$prelock = intval(@filemtime($fname));
 
-		if(($fp=fopen($fname, "a")) === false) return false;
+		if(($fp=fopen($fname, "a")) === false) {
+			if(function_exists('error_get_last')) {
+				$e = error_get_last();
+				throw new Exception($e['message'],vboxconnector::PHPVB_ERRNO_FATAL);
+			}
+			return false;
+		}
+			
 		$this->open[$key] = &$fp;
 
 		chmod($fname, 0600);
@@ -76,7 +83,7 @@ class cache {
 
 		/* Written while blocking ? */
 		clearstatcache();
-		if($prelock > 0 && filemtime($fname) > $prelock) {
+		if($prelock > 0 && @filemtime($fname) > $prelock) {
 			if($this->logfile) $this->_log("{$key} prelock: {$prelock} postlock: ". filemtime($fname) ." NOT writing.");
 			flock($fp,LOCK_UN);
 			fclose($fp);
@@ -121,7 +128,7 @@ class cache {
 	 * Determine if file is cached and has not expired
 	 */
 	function cached($key,$expire=60) {
-		return (!$this->force_refresh && file_exists($this->_fname($key)) && ($expire === false || (@filemtime($this->_fname($key)) > (time() - ($this->expire_multiplier * $expire)))));
+		return (!$this->force_refresh && @file_exists($this->_fname($key)) && ($expire === false || (@filemtime($this->_fname($key)) > (time() - ($this->expire_multiplier * $expire)))));
 	}
 
 

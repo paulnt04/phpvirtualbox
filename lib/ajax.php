@@ -9,8 +9,8 @@
  * Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
 */
 
-# Turn off PHP notices
-error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT);
+# Turn off PHP errors
+error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_WARNING);
 
 
 //Set no caching
@@ -29,17 +29,8 @@ require_once(dirname(__FILE__).'/vboxconnector.php');
 $vboxRequest = clean_request();
 
 
+global $response;
 $response = array('data'=>array(),'errors'=>array(),'persist'=>array());
-
-/*
- * Error handling
- */
-error_reporting(E_ALL);
-function record_errors($errno, $errmsg) {
-	if($errno == E_NOTICE) return;
-	$response['errors'][] = new Exception($errmsg);
-}
-set_error_handler('record_errors');
 
 
 /*

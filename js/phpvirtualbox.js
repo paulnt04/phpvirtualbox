@@ -191,11 +191,11 @@ function vboxToolbar(buttons) {
 	}
 	
 	self.enableButton = function(b) {
-		$('#vboxToolbarButton-'+self.id+'-'+b.name).addClass('buttonEnabled').removeClass('buttonDisabled').children('img').attr('src','images/vbox/'+b.icon+'_'+self.size+'px.png');
+		$('#vboxToolbarButton-'+self.id+'-'+b.name).addClass('vboxEnabled').removeClass('vboxDisabled').children('img.vboxToolbarImg').attr('src','images/vbox/'+b.icon+'_'+self.size+'px.png');
 	}
 
 	self.disableButton = function(b) {
-		$('#vboxToolbarButton-'+self.id+'-'+b.name).addClass('buttonDisabled').removeClass('buttonEnabled').children('img').attr('src','images/vbox/'+b.icon+'_disabled_'+self.size+'px.png');
+		$('#vboxToolbarButton-'+self.id+'-'+b.name).addClass('vboxDisabled').removeClass('vboxEnabled').children('img.vboxToolbarImg').attr('src','images/vbox/'+b.icon+'_disabled_'+self.size+'px.png');
 	}
 
 	// Generate HTML element for button
@@ -210,21 +210,21 @@ function vboxToolbar(buttons) {
 		// TD
 		var td = document.createElement('td');
 		$(td).attr({'id':'vboxToolbarButton-' + self.id + '-' + b.name,
-			'class':'vboxToolbarButton ui-corner-all buttonEnabled vboxToolbarButton'+self.size,
+			'class':'vboxToolbarButton ui-corner-all vboxEnabled vboxToolbarButton'+self.size,
 			'style':self.buttonStyle+'; min-width: '+(self.size+12)+'px;'
-		}).html('<img src="images/vbox/'+b.icon+'_'+self.size+'px.png" /><br />' + $('<div />').html(trans(b.label)).text()).bind('click',function(){
-			if($(this).hasClass('buttonDisabled')) return;
+		}).html('<img src="images/vbox/'+b.icon+'_'+self.size+'px.png" class="vboxToolbarImg" /><br />' + $('<div />').html(trans(b.label)).text()).bind('click',function(){
+			if($(this).hasClass('vboxDisabled')) return;
 			$(this).data('toolbar').click($(this).data('name'));
 		// store data
 		}).data(b);
 		
 		if(!self.noHover) {
 			$(td).hover(
-					function(){if($(this).hasClass('buttonEnabled')){$(this).addClass('vboxToolbarButtonHover');}},
+					function(){if($(this).hasClass('vboxEnabled')){$(this).addClass('vboxToolbarButtonHover');}},
 					function(){$(this).removeClass('vboxToolbarButtonHover');}		
 			).mousedown(function(e){
 				if($.browser.msie && e.button == 1) e.button = 0;
-				if(e.button != 0 || $(this).hasClass('buttonDisabled')) return true;
+				if(e.button != 0 || $(this).hasClass('vboxDisabled')) return true;
 				$(this).addClass('vboxToolbarButtonDown');
 				var btn = $(this)
 				$(document).one('mouseup',function(){
@@ -395,6 +395,120 @@ function vboxToolbarSmall(buttons) {
 	}
 		
 }
+
+/*
+ * Button menu object
+ */
+function vboxButtonMenu(button) {
+
+	var self = this;
+	this.selected = null;
+	this.button = button;
+	this.lastItem = null;
+	this.buttonStyle = '';
+	this.enabled = true;
+	this.size = 16;
+	this.disabledString = 'disabled';
+
+	// Called on list item selection change
+	self.update = function(target,item) {
+		
+		if(!self.enabled) return;
+		
+		self.lastItem = (item||target);
+		
+		if(self.button.enabled && !self.button.enabled(self.lastItem)) {
+			self.disableButton();
+		} else {
+			self.enableButton();
+		}
+	}
+
+	self.enable = function() {
+		self.enabled = true;
+		self.update(self.lastItem);
+	}
+
+	self.disable = function() {
+		self.enabled = false;
+		self.disableButton();
+	}
+	
+	self.enableButton = function() {
+		var b = self.button;
+		$('#vboxButtonMenuButton-' + self.id + '-' + b.name).css('background-image','url(images/vbox/' + b.icon + '_'+self.size+'px.png)').removeClass('vboxDisabled');
+	}
+	self.disableButton = function() {
+		var b = self.button;
+		$('#vboxButtonMenuButton-' + self.id + '-' + b.name).css('background-image','url(images/vbox/' + b.icon + '_'+self.disabledString+'_'+self.size+'px.png)').removeClass('vboxToolbarSmallButtonHover').addClass('vboxDisabled');
+	}
+
+	// Generate HTML element for button
+	self.buttonElement = function() {
+
+		var b = self.button;
+		
+		// Pre-load disabled version of icon if enabled function exists
+		if(b.enabled) {
+			var a = new Image();
+			a.src = "images/vbox/" + b.icon + "_" + self.disabledString + "_" + self.size + "px.png";
+		}
+		
+		var btn = document.createElement('td');
+		$(btn).attr({'id':'vboxButtonMenuButton-' + self.id + '-' + b.name,'type':'button','value':'',
+			'class':'vboxImgButton vboxToolbarSmallButton vboxButtonMenuButton ui-corner-all',
+			'title':trans(b.label),
+			'style':self.buttonStyle+' background-image: url(images/vbox/' + b.icon + '_'+self.size+'px.png);text-align:right;vertical-align:bottom;'
+		}).click(function(e){
+			$(this).addClass('vboxButtonMenuButtonDown');
+			var tbtn = $(this);
+			e.stopPropagation();
+			e.preventDefault();
+			$(document).one('mouseup',function(){
+				$(tbtn).removeClass('vboxButtonMenuButtonDown');
+			});
+		}).html('<img src="images/downArrow.png" style="margin:0px;padding:0px;float:right;width:7px;height:6px;" />');
+		
+		if(!self.noHover) {
+			$(btn).hover(
+					function(){if(!$(this).hasClass('vboxDisabled')){$(this).addClass('vboxToolbarSmallButtonHover');}},
+					function(){$(this).removeClass('vboxToolbarSmallButtonHover');}		
+			);
+		
+		}
+		
+		return btn;
+		
+	}
+	
+	// Return a jquery object containing button element.
+	self.getButtonElm = function () {
+		return $('#vboxButtonMenuButton-' + self.id + '-' + self.button.name);
+	}
+
+	// Add button to element with id
+	self.addButton = function(id) {
+		
+		self.id = id;
+		
+		var targetElm = $('#'+id);
+		
+		if(!self.buttonStyle)
+			self.buttonStyle = 'height: ' + (self.size + ($.browser.msie || $.browser.webkit ? 3 : 7)) + 'px; width: ' + (self.size+10) + 'px; ';
+		
+		var tbl = document.createElement('table');
+		$(tbl).attr({'style':'border:0px;margin:0px;padding:0px;'+self.buttonStyle});
+		var tr = document.createElement('tr');
+		$(tr).css({'vertical-align':'bottom'}).append(self.buttonElement()).appendTo(tbl);
+		
+
+		$(targetElm).attr({'name':self.name}).addClass('vboxToolbarSmall vboxButtonMenu vboxEnablerTrigger').bind('disable',self.disable).bind('enable',self.enable).append(tbl);
+		
+	}
+	
+		
+}
+
 
 
 /*

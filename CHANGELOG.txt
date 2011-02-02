@@ -23,6 +23,8 @@ File / folder browser now scrolls to selected file / folder.
 
 Added Russian translation.
 
+Added Portuguese (Brazil) translation.
+
 Added Italian translation.
 
 Updated French and German translations to the best of my ability

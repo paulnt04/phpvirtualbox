@@ -60,6 +60,7 @@ var tButtons = [
 		'name' : 'vmstop',
 		'label' : 'Stop',
 		'icon' : 'vm_poweroff',
+		'menu' : true,
 		'click' : function () { return true; /* handled by stop menu */ },
 		'enabled' : function (vm) { return (vm && (jQuery.inArray(vm.state,['Running','Paused','Stuck']) > -1));}
 	}
@@ -173,17 +174,25 @@ $("#vboxToolbarButton-vboxPaneToolbar-vmstop").contextMenu({
  */
 function vboxUpdateStopMenu(e,vm) {
 
+	var enabledOne = false;
 	for(var i in vboxVMListStopMenu) {
 		
 		// enable or disable
 		if(vm && jQuery.inArray(vm.state,vboxVMListStopMenu[i].states) > -1) {
 			$('#vboxStopMenu').enableContextMenuItems('#'+i);
 			$('#vboxStopMenu').find('a[href=#'+i+']').css('background-image','url(images/vbox/'+vboxVMListStopMenu[i].icon+'_16px.png)');
+			enabledOne = true;
 			continue;
 		}
 
 		$('#vboxStopMenu').disableContextMenuItems('#'+i);
 		$('#vboxStopMenu').find('a[href=#'+i+']').css('background-image','url(images/vbox/'+vboxVMListStopMenu[i].icon+'_disabled_16px.png)');
+	}
+	
+	if(!enabledOne) {
+		$("#vboxToolbarButton-vboxPaneToolbar-vmstop").disableContextMenu();
+	} else {
+		$("#vboxToolbarButton-vboxPaneToolbar-vmstop").enableContextMenu();
 	}
 	
 }

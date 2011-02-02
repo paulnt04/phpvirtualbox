@@ -1,53 +1,49 @@
 <!-- $Id$
 Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
 -->
-<div id='vboxMount'>
-<form name='frmVboxMount'>
-<div id='vboxMountController'></div>
-<table style='margin: auto; width: 100%;' id='vboxMountTblMain'>
-	<tr style='vertical-align: middle'>
-		<td style='width: 100%;'>
-			<div id='vboxMountDriveSlot'></div>
-		</td>
-		<td id='vboxMountToolbar'>
-			
-		</td>
-	</tr>
-	<tr style='vertical-align: middle;'>
-		<td style='text-align: center;' id='vboxMountMediumLabel'>
-		</td>
-		<td style='text-align: right; padding: 0px; margin: 0px;'>
-			<div style='background: #f99; display: inline-block; height: 4px; width: 4px;'></div>
-			<div style='background: #9f9; display: inline-block; height: 4px; width: 4px;'></div>
-		</td>
-	</tr>
-</table>
-</form>
+<div id='vboxMount' style='margin:0px;'>
+	<div id='vboxMountController'></div>
+	<div id='vboxMountDivMain'>
+		<table style='margin: 0px; width: 100%;' id='vboxMountTblMain'>
+			<tr style='vertical-align: middle'>
+				<td style='width: 90%;'>
+					<div id='vboxMountDriveSlot'></div>
+				</td>
+				<td id='vboxMountToolbar'>
+					
+				</td>
+			</tr>
+			<tr style='vertical-align: middle;'>
+				<td style='text-align: center;' id='vboxMountMediumLabel'>
+				</td>
+				<td style='text-align: left; padding: 0px; margin: 0px;'>
+					<div style='background: #f55; display: inline-block; height: 4px; width: 4px;border:1px solid #000;'></div>
+					<div style='background: #9f9; display: inline-block; height: 4px; width: 4px;border:1px solid #0f0;'></div>
+				</td>
+			</tr>
+		</table>
+	</div>
 <script type='text/javascript'>
 
-var sButtonsCD = new Array(
-		{
-			/* Add Attachment Button */
-			'name' : 'mselectcdbtn',
-			'label' : 'Set up the virtual CD/DVD drive',
-			'icon' : 'cd',
-			'click' : function () {
-				return;				
-			}
-		}		
-);
+var sButtonCD = {
+	/* Add Attachment Button */
+	'name' : 'mselectcdbtn',
+	'label' : 'Set up the virtual CD/DVD drive',
+	'icon' : 'cd',
+	'click' : function () {
+		return;				
+	}
+};
 
-var sButtonsFD = new Array(
-		{
-			/* Add Attachment Button */
-			'name' : 'mselectfdbtn',
-			'label' : 'Set up the virtual floppy drive',
-			'icon' : 'fd',
-			'click' : function () {
-				return;				
-			}
-		}		
-);
+var sButtonFD = {
+	/* Add Attachment Button */
+	'name' : 'mselectfdbtn',
+	'label' : 'Set up the virtual floppy drive',
+	'icon' : 'fd',
+	'click' : function () {
+		return;				
+	}
+};
 
 var storage = new vboxStorage();
 
@@ -84,8 +80,8 @@ function vboxMountPostInit(bus,port,device) {
 	/* Drive Image */
 	if(type == 'DVD') {
 
-		var mAttachToolbar = new vboxToolbarSmall(sButtonsCD);
-		mAttachToolbar.addButtons('vboxMountToolbar');
+		var mAttachToolbar = new vboxButtonMenu(sButtonCD);
+		mAttachToolbar.addButton('vboxMountToolbar');
 		/*
 		 * 
 		 Menu for adding CD/DVD attachment
@@ -120,7 +116,7 @@ function vboxMountPostInit(bus,port,device) {
 		$(ul).append(li);
 
 
-		$("#vboxMountToolbar").contextMenu({
+		mAttachToolbar.getButtonElm().contextMenu({
 				menu: 'vboxSettingsAddAttachmentsMenuCD',
 				mode:'menu',
 				button: 0
@@ -152,8 +148,8 @@ function vboxMountPostInit(bus,port,device) {
 		
 	} else {
 		
-		var mAttachToolbar = new vboxToolbarSmall(sButtonsFD);
-		mAttachToolbar.addButtons('vboxMountToolbar');
+		var mAttachToolbar = new vboxButtonMenu(sButtonFD);
+		mAttachToolbar.addButton('vboxMountToolbar');
 
 
 		/*
@@ -189,7 +185,7 @@ function vboxMountPostInit(bus,port,device) {
 		$(li).addClass('vboxMediumRecentBefore').addClass('separator');
 		$(ul).append(li);
 			
-		$("#vboxMountToolbar").contextMenu({
+		mAttachToolbar.getButtonElm().contextMenu({
 				menu: 'vboxSettingsAddAttachmentsMenuFD',
 				mode:'menu',
 				button: 0

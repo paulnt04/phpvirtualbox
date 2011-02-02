@@ -321,6 +321,7 @@ for(var i = 0; i < $('#vboxSettingsDialog').data('vboxMachineData').sharedFolder
 	vboxSettingsAddSharedFolder($('#vboxSettingsDialog').data('vboxMachineData').sharedFolders[i]);
 }
 
+$('#vboxSettingsSharedFoldersList').trigger('select',null);
 
 /* Update Shared Folder path and name. Callback for folder browser */
 function vboxSettingsSFUpdatePath(f) {

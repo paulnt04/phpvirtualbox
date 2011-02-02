@@ -25,8 +25,6 @@ if(jQuery)( function() {
 			if( o.inSpeed == 0 ) o.inSpeed = -1;
 			if( o.outSpeed == 0 ) o.outSpeed = -1;
 			if( o.button == undefined) o.button = 2;
-			// Fix mouse button for MSIE
-			if(jQuery.browser.msie && o.button == 0) o.button = 1;
 			// Loop each context menu
 			$(this).each( function() {
 				var el = $(this);
@@ -43,7 +41,7 @@ if(jQuery)( function() {
 						e.stopPropagation();
 						var srcElement = $(this);
 						$(this).unbind('mouseup');
-						if( evt.button == o.button ) {
+						if( evt.button == o.button || (o.button == 0 && evt.button == 1 && $.browser.msie)) {
 							// Hide context menus that may be showing
 							$(".contextMenu").hide();
 							// Get this context menu
@@ -79,17 +77,17 @@ if(jQuery)( function() {
 								(e.pageX) ? x = e.pageX : x = e.clientX + d.scrollLeft;
 								(e.pageY) ? y = e.pageY : y = e.clientY + d.scrollTop;
 								
-								//adjust to ensure menu is inside viewable screen
-								var right = x + $(menu).outerWidth();
-								var bottom = y + $(menu).outerHeight();
-								
-								var windowWidth = $(window).width() + $(window).scrollLeft()-5;
-								var windowHeight = $(window).height() + $(window).scrollTop()-5;
-								
-								x = (right > windowWidth) ? x - (right - windowWidth) : x;
-								y = (bottom > windowHeight) ? y - (bottom - windowHeight) : y;
 							
 							}
+							//adjust to ensure menu is inside viewable screen
+							var right = x + $(menu).outerWidth();
+							var bottom = y + $(menu).outerHeight();
+							
+							var windowWidth = $(window).width() + $(window).scrollLeft()-5;
+							var windowHeight = $(window).height() + $(window).scrollTop()-5;
+							
+							x = (right > windowWidth) ? x - (right - windowWidth) : x;
+							y = (bottom > windowHeight) ? y - (bottom - windowHeight) : y;
 														
 							// Show the menu
 							$(document).unbind('click');
