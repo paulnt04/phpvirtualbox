@@ -382,14 +382,14 @@ function vboxMountInit(vm,bus,port,device,onmount) {
 	var l = new vboxLoader();
 	l.add('VMDetails',function(d){$('#vboxMountDialog').data('vboxMachineData',d);},{'vm':vm});
 	l.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
-	l.add('RecentMediums',function(d){$('#vboxMountDialog').data('vboxRecentMediums',d);});
+	l.add('RecentMediums',function(d){$('#vboxIndex').data('vboxRecentMediums',d);});
 	l.addFile('panes/mount.html',function(f){$('#vboxMountDialog').append(f);})
 	l.onLoad = function(){
 		// defined in panes/mount.html
-		vboxMountPostInit(bus,port,device,onmount);
+		var title = vboxMountPostInit(bus,port,device,onmount);
 		var buttons = {};
 		buttons[trans('Close')] = function() {$('#vboxMountDialog').trigger('close').empty().remove();};
-		$(d).dialog({'closeOnEscape':false,'width':400,'height':190,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':trans('Mount')});
+		$(d).dialog({'closeOnEscape':false,'width':400,'height':160,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':title});
 	}
 	l.run();
 
@@ -469,7 +469,7 @@ function vboxVMsettingsInit(vm,callback,pane) {
 		{'fn':'HostUSBDevices','callback':function(d){$('#vboxSettingsDialog').data('vboxHostUSBDevices',d);}},
 		{'fn':'EnumNetworkAdapterType','callback':function(d){$('#vboxSettingsDialog').data('vboxNetworkAdapterTypes',d);}},
 		{'fn':'EnumAudioControllerType','callback':function(d){$('#vboxSettingsDialog').data('vboxAudioControllerTypes',d);}},
-		{'fn':'RecentMediums','callback':function(d){$('#vboxSettingsDialog').data('vboxRecentMediums',d);}}
+		{'fn':'RecentMediums','callback':function(d){$('#vboxIndex').data('vboxRecentMediums',d);}}
 
 	);
 

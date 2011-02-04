@@ -411,9 +411,6 @@ public static $trans = array(
 'DeletingSnapshot' => 'Удаляется снимок',
 'SettingUp' => 'Настройка',
 
-// Mount dialog
-'Mount' => 'Монтировать',
-
 // list separator
 'LIST_SEP' => ', ',
 

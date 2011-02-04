@@ -609,8 +609,10 @@ class vboxconnector {
 		$m->accelerate2DVideoEnabled = $args['accelerate2DVideoEnabled'];
 		*/
 
-		/* Only if acceleration configuration is enabled */
+		/* Only if advanced configuration is enabled */
 		if($this->settings['enableAdvancedConfig']) {
+			$m->keyboardHidType = $args['keyboardHidType'];
+			$m->pointingHidType = $args['pointingHidType'];
 			$m->setHWVirtExProperty('Enabled',($args['HWVirtExProperties']['Enabled'] ? 1 : 0));
 			$m->setHWVirtExProperty('NestedPaging', ($args['HWVirtExProperties']['NestedPaging'] ? 1 : 0));
 			$m->setHWVirtExProperty('LargePages', ($args['HWVirtExProperties']['LargePages'] ? 1 : 0));
@@ -664,7 +666,7 @@ class vboxconnector {
 		foreach($scs as $sc) {
 			$mas = $m->getMediumAttachmentsOfController($sc->name);
 			foreach($mas as $ma) {
-				$attachedEx[$sc->name.$ma->port.$ma.device] = (($ma->medium->handle && $ma->medium->id) ? $ma->medium->id : null);
+				$attachedEx[$sc->name.$ma->port.$ma->device] = (($ma->medium->handle && $ma->medium->id) ? $ma->medium->id : null);
 				if($ma->controller) {
 					$m->detachDevice($ma->controller,$ma->port,$ma->device);
 				}
@@ -686,12 +688,12 @@ class vboxconnector {
 			$c->useHostIOCache = ($sc['useHostIOCache'] ? 1 : 0);
 
 			// Set sata port count
-			if($sc['bus'] == 'SATA' && !@$this->settings['disableSataPortCount']) {
-				$max = 1;
+			if($sc['bus'] == 'SATA' && ($this->settings['enableAdvancedConfig'] || !@$this->settings['disableSataPortCount'])) {
+				$max = max(1,intval(@$sc['portCount']));
 				foreach($sc['mediumAttachments'] as $ma) {
 					$max = max($max,(intval($ma['port'])+1));
 				}
-				$c->portCount = max(count($sc['mediumAttachments']),$max);
+				$c->portCount = min(intval($c->maxPortCount),max(count($sc['mediumAttachments']),$max));
 			}
 			$c->releaseRemote();
 			
@@ -2436,6 +2438,8 @@ class vboxconnector {
 			'hpetEnabled' => $m->hpetEnabled,
 			'memorySize' => $m->memorySize,
 			'VRAMSize' => $m->VRAMSize,
+			'pointingHidType' => $m->pointingHidType->__toString(),
+			'keyboardHidType' => $m->keyboardHidType->__toString(),
 			'accelerate3DEnabled' => $m->accelerate3DEnabled,
 			'accelerate2DVideoEnabled' => $m->accelerate2DVideoEnabled,
 			'BIOSSettings' => array(

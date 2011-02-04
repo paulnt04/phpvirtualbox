@@ -579,7 +579,6 @@ div.vboxSettingsDialog div.ui-dialog-buttonpane {
 #vboxSettingsPortForwardingList td.vboxPort { text-align: center; }
 
 /* Mount dialog */
-#vboxMountController { font-weight: bold; margin-bottom: 12px; width: 100%; text-align: center; }
 #vboxMountDriveSlot { height: 2px;
 	border: 1px solid #000;
 	width: 100%;

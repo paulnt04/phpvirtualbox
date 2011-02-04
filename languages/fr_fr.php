@@ -407,9 +407,6 @@ public static $trans = array(
 'DeletingSnapshot' => 'Suppression de l\'instantané',
 'SettingUp' => 'Initialisation',
 
-// Mount dialog
-'Mount' => 'Insérer',
-
 // list separator
 'LIST_SEP' => ', ',
 

@@ -25,24 +25,19 @@ function vboxWizard(name, title, img, bg) {
 	// Initialize / display dialog
 	this.run = function() {
 
-		var d = document.createElement('div');
-		$(d).attr({'id':this.name+'Dialog','style':'display: none','class':'vboxWizard'});
+		var d = $('<div />').attr({'id':this.name+'Dialog','style':'display: none','class':'vboxWizard'});
 		
-		var f = document.createElement('form');
-		$(f).attr({'name':('frm'+this.name),'onSubmit':'return false;','style':'height:100%;margin:0px;padding:0px;border:0px;'});
+		var f = $('<form />').attr({'name':('frm'+this.name),'onSubmit':'return false;','style':'height:100%;margin:0px;padding:0px;border:0px;'});
 
 		// main table
-		var tbl = document.createElement('table');
-		$(tbl).attr({'class':'vboxWizard','style':'height: 100%; margin:0px; padding:0px;border:0px;'});
-		var tr = document.createElement('tr');
+		var tbl = $('<table />').attr({'class':'vboxWizard','style':'height: 100%; margin:0px; padding:0px;border:0px;'});
+		var tr = $('<tr />');
 		
 		if(this.img) {
-			var td = document.createElement('td');
-			$(td).attr('class','vboxWizardImg').html('<img src="' + self.img + '" />').appendTo(tr);
+			$('<td />').attr('class','vboxWizardImg').html('<img src="' + self.img + '" />').appendTo(tr);
 		}
 		
-		var td = document.createElement('td');
-		$(td).attr({'id':self.name+'Content','class':'vboxWizardContent'});
+		var td = $('<td />').attr({'id':self.name+'Content','class':'vboxWizardContent'});
 		if(self.bg) {
 			/*
 			 Disabled for now. Must run on Mac to see what Oracle was going for.
@@ -54,13 +49,12 @@ function vboxWizard(name, title, img, bg) {
 				
 		}
 		// Title and content table
-		var t = document.createElement('h3');
-		$(t).attr('id',self.name+'Title').html(self.title).appendTo(td);
+		var t = $('<h3 />').attr('id',self.name+'Title').html(self.title).appendTo(td);
 
 		$(tr).append(td).appendTo(tbl);		
 		
-		f.appendChild(tbl);
-		d.appendChild(f);
+		f.append(tbl);
+		d.append(f);
 		
 		$('#vboxIndex').append(d);
 		
@@ -397,19 +391,168 @@ function vboxToolbarSmall(buttons) {
 }
 
 /*
- * Button menu object
+ * Button media menu object
  */
-function vboxButtonMenu(button) {
+function vboxButtonMediaMenu(type,callback,mediumPath) {
 
 	var self = this;
 	this.selected = null;
-	this.button = button;
 	this.lastItem = null;
 	this.buttonStyle = '';
 	this.enabled = true;
 	this.size = 16;
 	this.disabledString = 'disabled';
+	this.type = type;
+	this.callback = callback;
+	this.mediumPath = mediumPath;
+	this.storage = new vboxStorage();
 
+	// Buttons
+	self.buttons = {};
+	self.buttons['HardDisk'] = {
+			'name' : 'mselecthdbtn',
+			'label' : 'Set up the virtual hard disk',
+			'icon' : 'hd',
+			'click' : function () {
+				return;				
+			}
+	};
+
+	self.buttons['DVD'] = {
+			'name' : 'mselectcdbtn',
+			'label' : 'Set up the virtual CD/DVD drive',
+			'icon' : 'cd',
+			'click' : function () {
+				return;				
+			}
+	};
+	
+	self.buttons['Floppy'] = {
+			'name' : 'mselectfdbtn',
+			'label' : 'Set up the virtual floppy drive',
+			'icon' : 'fd',
+			'click' : function () {
+				return;				
+			}
+	};
+	
+	// Set button
+	self.button = self.buttons[self.type];
+	
+	// Generate menu element ID
+	self.menu_id = function(){
+		return 'vboxMediaMenuButton'+this.type;
+	}
+		
+	// Generate menu element
+	self.menuElement = function() {
+		
+		// Pointer already held
+		if(self._menu) return self._menu;
+		
+		var id = self.menu_id();
+		var elm = $('#'+id);
+		if(!elm.attr('id')) {
+			var ul = document.createElement('ul');
+			ul.setAttribute('class','contextMenu');
+			ul.setAttribute('style','display: none');
+			ul.setAttribute('id',id);
+			$('#vboxIndex').append(ul);
+			elm = $('#'+id);
+		} else {
+			elm.children().remove();
+		}
+		
+		// Hold pointer
+		self.menuAddDefaults(elm);
+		self.menuUpdateRecent();
+		self._menu = elm;
+		return elm;
+	}
+	
+	// Add host drives to menu
+	self.menuAddDrives = function(ul) {
+		
+		// Add host drives
+		var meds = self.storage.mediumsForAttachmentType(self.type);
+		for(var i =0; i < meds.length; i++) {
+			if(!meds[i].hostDrive) continue;
+			var li = document.createElement('li');
+			$(li).html("<a href='#"+meds[i].id+"'>"+self.storage.getMediumName(meds[i])+"</a>").appendTo(ul);
+		}
+		
+	}
+	
+	
+	// Add defaults to menu
+	self.menuAddDefaults = function (ul) {
+		
+		switch(this.type) {
+			
+			// HardDisk defaults
+			case 'HardDisk':
+				
+				var li = document.createElement('li');
+				li.innerHTML = "<a href='#createD' style='background-image: url(images/vbox/hd_new_16px.png);' >"+trans('Create a new hard disk...')+"</a>";
+				$(ul).append(li);
+
+				var li = document.createElement('li');
+				$(li).html("<a href='#chooseD' style='background-image: url(images/vbox/select_file_16px.png);' >"+trans('Choose a virtual hard disk file...')+"</a>").appendTo(ul);
+
+				// Hidden elm
+				var li = document.createElement('li');
+				$(li).addClass('vboxMediumRecentBefore').css('display','none').appendTo(ul);
+				
+				break;
+				
+			// CD/DVD Defaults
+			case 'DVD':
+				
+				var li = document.createElement('li');
+				$(li).html("<a href='#chooseD' style='background-image: url(images/vbox/select_file_16px.png);' >"+trans('Choose a virtual CD/DVD disk file...')+"</a>").appendTo(ul);
+				
+				// Add host drives
+				self.menuAddDrives(ul);
+				
+				// Add remove drive
+				var li = document.createElement('li');
+				$(li).html("<a href='#removeD' style='background-image: url(images/vbox/cd_unmount_16px.png);' >"+trans('Remove disk from virtual drive')+"</a>").addClass('separator').addClass('vboxMediumRecentBefore').appendTo(ul);
+
+				break;
+			
+			// Floppy defaults
+			default:
+				
+				var li = document.createElement('li');
+				$(li).html("<a href='#chooseD' style='background-image: url(images/vbox/select_file_16px.png);' >"+trans('Choose a virtual floppy disk file...')+"</a>").appendTo(ul);
+
+				// Add host drives
+				self.menuAddDrives(ul);
+
+				// Add remove drive
+				var li = document.createElement('li');
+				$(li).html("<a href='#removeD' style='background-image: url(images/vbox/fd_unmount_16px.png);' >"+trans('Remove disk from virtual drive')+"</a>").addClass('separator').addClass('vboxMediumRecentBefore').appendTo(ul);
+				
+				break;
+				
+		}
+				
+	}
+
+	// Update "recent" media list
+	this.menuUpdateRecent = function() {
+		
+		var elm = $('#'+self.menu_id());
+		var list = $('#vboxIndex').data('vboxRecentMediums')[self.type];
+		elm.children('li.vboxMediumRecent').remove();
+		var ins = elm.children('li.vboxMediumRecentBefore').last();
+		for(var i = 0; i < list.length; i++) {
+			if(!list[i]) continue;
+			var li = document.createElement('li');
+			$(li).attr({'class':'vboxMediumRecent'}).html("<a href='#path:"+list[i]+"'>"+vboxBasename(list[i])+"</a>").insertBefore(ins);
+		}
+	}
+	
 	// Called on list item selection change
 	self.update = function(target,item) {
 		
@@ -423,12 +566,120 @@ function vboxButtonMenu(button) {
 			self.enableButton();
 		}
 	}
+	
+	// Update "remove image from disk" menu item
+	self.menuUpdateRemoveMedia = function(enabled) {
+		var menu = $('#'+self.menu_id());
+		if(enabled) {
+			menu.enableContextMenuItems('#removeD');
+			menu.find('a[href=#removeD]').css('background-image','url(images/vbox/'+(self.type == 'DVD' ? 'cd' : 'fd')+'_unmount_16px.png)');			
+		} else {
+			menu.disableContextMenuItems('#removeD');
+			menu.find('a[href=#removeD]').css('background-image','url(images/vbox/'+(self.type == 'DVD' ? 'cd' : 'fd')+'_unmount_dis_16px.png)');			
+		}
+	}
+	
+	// Update recent media menu and global recent media list
+	this.updateRecent = function(m) {
+		
+		// Only valid media that is not a host drive
+		if(!m || !m.location || m.hostDrive) return;
+		
+		var changed = vboxAddRecentMedium(m.location, $('#vboxIndex').data('vboxRecentMediums')[self.type]);
+		
+		if(changed) {
+			// Update menu
+			self.menuUpdateRecent();
+			// Update Recent Mediums in background
+			vboxAjaxRequest('mediumRecentUpdate',{'type':m.deviceType,'list':$('#vboxIndex').data('vboxRecentMediums')[m.deviceType]},function(){});
+		}
+	}
+	
+	// Called when menu item is selected
+	self.menuCallback = function(action,el,pos) {
+		
+		switch(action) {
+		
+			// Create hard disk
+			case 'createD':
+				vboxWizardNewHDInit(function(res,id){
+					if(!id) return;
+					var l = new vboxLoader();
+					l.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
+					l.onLoad = function() {
+						var med = self.storage.getMediumById(id);
+						self.callback(med);
+						self.updateRecent(med);
+					};
+					l.run();
+				},{'path':self.mediumPath+$('#vboxIndex').data('vboxConfig').DSEP}); 				
+				break;
+			
+			// Choose medium file
+			case 'chooseD':
+				
+				vboxFileBrowser(self.mediumPath,function(f){
+					if(!f) return;
+					var med = self.storage.getMediumByLocation(f);
+					if(med && med.deviceType == self.type) {
+						self.callback(med);
+						self.updateRecent(med);
+						return;
+					} else if(med) {
+						return;
+					}
+					var ml = new vboxLoader();
+					ml.mode='save';
+					ml.add('mediumAdd',function(ret){
+						var l = new vboxLoader();
+						if(ret && ret.id) {
+							var med = self.storage.getMediumById(ret.id);
+							// Not registered yet. Refresh mediums.
+							if(!med)
+								l.add('Mediums',function(data){$('#vboxIndex').data('vboxMediums',data);});
+						}
+						l.onLoad = function() {
+							if(ret && ret.id) {
+								var med = self.storage.getMediumById(ret.id);
+								if(med && med.deviceType == self.type) {
+									self.callback(med);
+									self.updateRecent(med);
+									return;
+								}
+							}
+						}
+						l.run();
+					},{'path':f,'type':self.type});
+					ml.run();
+				});
+				
+				break;
+				
+			// Existing medium was selected
+			default:
+				if(action.indexOf('path:') == 0) {
+					var path = action.substring(5);
+					var med = self.storage.getMediumByLocation(path);
+					if(med && med.deviceType == self.type) {
+						self.callback(med);
+						self.updateRecent(med);
+					}
+					return;
+				}
+				var med = self.storage.getMediumById(action);
+				self.callback(med);
+				self.updateRecent(med);
+		}
+	}
+	
 
+	// Enable menu
 	self.enable = function() {
 		self.enabled = true;
 		self.update(self.lastItem);
 	}
 
+	// Disable menu
 	self.disable = function() {
 		self.enabled = false;
 		self.disableButton();
@@ -454,8 +705,7 @@ function vboxButtonMenu(button) {
 			a.src = "images/vbox/" + b.icon + "_" + self.disabledString + "_" + self.size + "px.png";
 		}
 		
-		var btn = document.createElement('td');
-		$(btn).attr({'id':'vboxButtonMenuButton-' + self.id + '-' + b.name,'type':'button','value':'',
+		return $('<td />').attr({'id':'vboxButtonMenuButton-' + self.id + '-' + b.name,'type':'button','value':'',
 			'class':'vboxImgButton vboxToolbarSmallButton vboxButtonMenuButton ui-corner-all',
 			'title':trans(b.label),
 			'style':self.buttonStyle+' background-image: url(images/vbox/' + b.icon + '_'+self.size+'px.png);text-align:right;vertical-align:bottom;'
@@ -467,17 +717,11 @@ function vboxButtonMenu(button) {
 			$(document).one('mouseup',function(){
 				$(tbtn).removeClass('vboxButtonMenuButtonDown');
 			});
-		}).html('<img src="images/downArrow.png" style="margin:0px;padding:0px;float:right;width:7px;height:6px;" />');
-		
-		if(!self.noHover) {
-			$(btn).hover(
+		}).html('<img src="images/downArrow.png" style="margin:0px;padding:0px;float:right;width:6px;height:6px;" />').hover(
 					function(){if(!$(this).hasClass('vboxDisabled')){$(this).addClass('vboxToolbarSmallButtonHover');}},
 					function(){$(this).removeClass('vboxToolbarSmallButtonHover');}		
-			);
+		);
 		
-		}
-		
-		return btn;
 		
 	}
 	
@@ -501,8 +745,17 @@ function vboxButtonMenu(button) {
 		var tr = document.createElement('tr');
 		$(tr).css({'vertical-align':'bottom'}).append(self.buttonElement()).appendTo(tbl);
 		
-
 		$(targetElm).attr({'name':self.name}).addClass('vboxToolbarSmall vboxButtonMenu vboxEnablerTrigger').bind('disable',self.disable).bind('enable',self.enable).append(tbl);
+		
+		// Generate and attach menu
+		var m = self.menuElement();
+		
+		self.getButtonElm().contextMenu({
+	 		menu: self.menu_id(),
+	 		mode:'menu',
+	 		button: 0
+	 	},self.menuCallback);
+		
 		
 	}
 	
@@ -906,7 +1159,7 @@ function vboxStorage() {
 	
 	this.getMediumName = function(m) {
 		if(!m) return trans('Empty');
-		if(m.hostDrive) return trans('Host Drive')+" '"+m.location+"'";
+		if(m.hostDrive) return trans('Host Drive')+(m.description ? " " + m.description + " ("+vboxBasename(m.location)+")" : " '"+m.location+"'");
 		return m.name;
 	}
 

@@ -405,9 +405,6 @@ public static $trans = array(
 'DeletingSnapshot' => 'Apagando Snapshot',
 'SettingUp' => 'Configurando',
 
-// Mount dialog
-'Mount' => 'Montar',
-
 // list separator
 'LIST_SEP' => ', ',
 

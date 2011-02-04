@@ -66,6 +66,28 @@ where appropriate.
 
 Fixed bug that would not allow the creation of Fixed size storage.
 
+Added $enableAdvancedConfig to configuration options in config.php.
+This allows you to change the following VM configuration options:
+	- HPET (System section -> Motherboard tab)
+	- Nested Paging (System section -> Acceleration tab)
+	- Large Pages (System section -> Acceleration tab)
+	- VT-x / AMD-V (System section -> Acceleration tab)
+	- Net Address (Display section -> Remote Display tab)
+	- SATA Port Count (Storage section -> select a SATA controller)
+	- Mouse type (General section -> Input tab)
+	- Keyboard type (General section -> Input tab)
+	- Create new hard disk from Virtual Media Manager (New button)
+	- Add new media from Virtual Media Manager (Add button)
+	- Clone hard disk from Virtual Media Manager
+		(Actions menu -> Clone)
+	- Make hard disk immutable from Virtual Media Manager
+		(Actions menu -> Immutable)
+	- Make hard disk "normal" from Virtual Media Manager
+		(Actions menu -> Normal)
+Note that these items will not be translated. See the VirtualBox
+documentation for more information on what these settings will
+change / actions these will perform.
+
 -------------------------------------
 	4-2 - 2011-1-14
 -------------------------------------

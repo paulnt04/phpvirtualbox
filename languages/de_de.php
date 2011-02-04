@@ -405,9 +405,6 @@ public static $trans = array(
 'DeletingSnapshot' => 'Momentaufnahme löschen',
 'SettingUp' => 'Vorbereitung',
 
-// Mount dialog
-'Mount' => 'Einbinden',
-
 // list separator
 'LIST_SEP' => ', ',
 

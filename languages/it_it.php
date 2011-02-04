@@ -409,9 +409,6 @@ public static $trans = array(
 'FirstTransient' => 'Prima Transient',
 'LastTransient' => 'Ultimo Transient',
 
-// Mount dialog
-'Mount' => 'Monta',
-
 // list separator
 'LIST_SEP' => ', ',
 

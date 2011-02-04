@@ -792,14 +792,19 @@ function vboxVMMFillMediums(sel) {
 			}
 		});
 
+		// Yes. Being lazy.
+		vboxColorRows($('#vboxVMMHDList'));
+		vboxColorRows($('#vboxVMMFDList'));
+		vboxColorRows($('#vboxVMMCDList'));
+
 		return;
 	}
+	$('#vboxVirtualMediaManager').trigger('mediumselect',null);
 
 	vboxColorRows($('#vboxVMMHDList'));
 	vboxColorRows($('#vboxVMMFDList'));
 	vboxColorRows($('#vboxVMMCDList'));
 	
-	$('#vboxVirtualMediaManager').trigger('mediumselect',null);
 
 	
 }
