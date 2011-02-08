@@ -57,7 +57,6 @@ function vboxAjaxRequest(fn,params,callback,xtra) {
 				if(d.errors.length > 0) {
 					for(var i = 0; i < d.errors.length; i++) {
 						
-						
 						// Handle fatal error
 						if(d.errors[i].fatal && $('#vboxIndex').data('vboxConfig')) {
 							
@@ -77,7 +76,11 @@ function vboxAjaxRequest(fn,params,callback,xtra) {
 								s = '<div style="display: block">'+trans('Server List')+': '+servers.join(', ')+'</div>';
 							}
 							vboxAlert('<p>'+trans('Fatal error')+'</p>'+s,{'width':'50%'});
-						} else if(!d.errors[i].fatal) {
+						} else {
+							if(d.errors[i].fatal) {
+								$('#vboxIndex').data('vboxFatalError',1);
+								$('#vboxIndex').css({'display':'none'});
+							}
 							vboxAjaxError(d.errors[i]);
 						}
 						
@@ -316,14 +319,16 @@ function vboxAjaxError(e) {
 	var p = document.createElement('p');
 	p.setAttribute('style','text-align: center');
 	
-	var showlink = document.createElement('a');
-	$(showlink).attr({'href':'#'}).html(trans('Details')).click(function(){
-		$(this).parent().parent().dialog('option',{'height':400,'position':'center'});
-		$(this).parent().siblings(".vboxAjaxErrorDetails").css({"display":""});
-		$(this).parent().css({'padding':'0px','margin':'0px'});
-		$(this).parent().siblings(".vboxAjaxErrorDetails").siblings().empty().remove();
-		return false;
-	}).appendTo(p);
+	if(e.details) {
+		var showlink = document.createElement('a');
+		$(showlink).attr({'href':'#'}).html(trans('Details')).click(function(){
+			$(this).parent().parent().dialog('option',{'height':400,'position':'center'});
+			$(this).parent().siblings(".vboxAjaxErrorDetails").css({"display":""});
+			$(this).parent().css({'padding':'0px','margin':'0px'});
+			$(this).parent().siblings(".vboxAjaxErrorDetails").siblings().empty().remove();
+			return false;
+		}).appendTo(p);
+	}
 	
 	$(div).append(p);
 	

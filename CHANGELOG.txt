@@ -100,6 +100,10 @@ mimic the one in the VirtualBox GUI.
 
 Changed versioning schema.
 
+New configuration model where config.php-example is distributed
+instead of config.php. This should allow for persistent user
+configuration. All config logic is now in lib/config.php.
+
 -------------------------------------
 	4-2 - 2011-1-14
 -------------------------------------

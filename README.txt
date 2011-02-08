@@ -13,8 +13,10 @@ possession.
 
 INSTALLATION:
 
+Rename config.php-example to config.php and edit as needed.
+
 Please see the wiki located at http://code.google.com/p/phpvirtualbox/ for
-installation and configuration instructions.
+detailed installation and configuration instructions.
 
 WARNING:
 

@@ -73,7 +73,14 @@ function __construct() {
 
 	if(class_exists('phpVBoxConfig')) {
 		$c = new phpVBoxConfig();
-		foreach(get_object_vars($c) as $k => $v) $this->$k = $v;
+		foreach(get_object_vars($c) as $k => $v) {
+			// Safety checks
+			if($k == 'browserRestrictFiles' && !is_array($v)) continue;
+			if($k == 'consoleResolutions' && !is_array($v)) continue;
+			if($k == 'browserRestrictFolders' && !is_array($v)) continue;
+			$this->$k = $v;
+		}
+			
 	} else {
 		$this->warnDefault = true;
 	}
@@ -108,6 +115,10 @@ function __construct() {
 	}
 	
 	$this->key = md5($this->location.$this->username);
+	
+	// legacy rdpHost setting
+	if(@$this->rdpHost && !@$this->consoleHost)
+		$this->consoleHost = $this->rdpHost;
 
 	
 }

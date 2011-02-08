@@ -53,16 +53,24 @@ switch($vboxRequest['fn']) {
 		// console host?
 		if(!$response['data']['consoleHost']) $response['data']['consoleHost'] = $response['data']['host'];
 
-		// Vbox version
-		try {
-		echo("asdf");
-			$vbox = new vboxconnector();
-			$response['data']['version'] = $vbox->getVersion();
-			$response['data']['hostOS'] = $vbox->vbox->host->operatingSystem;
-		} catch (Exception $null) {
-			// error logging in or connecting
+		// Are default settings being used?
+		if($settings->warnDefault) {
+			$response['errors'][] = array(
+				'error'=>"No configuration found. Rename the file <b>config.php-example</b> in phpVirtualBox's folder to <b>config.php</b> and edit as needed.<p>For more detailed instructions, please see the installation wiki on phpVirtualBox's web site. <p><a href='http://code.google.com/p/phpvirtualbox/w/list' target=_blank>http://code.google.com/p/phpvirtualbox/w/list</a>.</p>",
+				'errno'=>0,
+				'fatal'=>1);
+		} else {
+			
+			// Vbox version
+			try {
+				$vbox = new vboxconnector();
+				$response['data']['version'] = $vbox->getVersion();
+				$response['data']['hostOS'] = $vbox->vbox->host->operatingSystem;
+			} catch (Exception $null) {
+				// error logging in or connecting
+			}
 		}
-
+		
 		// Host OS and directory seperator
 		if(stripos($response['data']['hostOS'],'windows') === false) {
         		 $response['data']['DSEP'] = '/';
@@ -70,12 +78,9 @@ switch($vboxRequest['fn']) {
         		 $response['data']['DSEP'] = '\\';
 		}
 
-		// What vboxconnector considers to be a fatal error
-		$response['data']['PHPVB_ERRNO_FATAL'] = vboxconnector::PHPVB_ERRNO_FATAL;
-
 		// Update interval
 		$response['data']['previewUpdateInterval'] = max(3,intval($response['data']['previewUpdateInterval']));
-
+		
 		break;
 
 	/* VirtualBox Requests */

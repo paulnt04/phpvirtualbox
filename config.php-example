@@ -1,6 +1,8 @@
 <?php
 /*
- * phpVirtualBox configuration
+ * phpVirtualBox example configuration.
+ *
+ * rename to config.php and edit as needed.
  *
  */
 class phpVBoxConfig {
