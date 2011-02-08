@@ -60,7 +60,7 @@ var menu = {
 			'name':'machineNew',
 			'title':'New',
 			'icon':'new',
-			'click':function(){vboxWizardNewVMInit(function(){$('#vboxIndex').trigger('vmlistrefresh');})}
+			'click':function(){vboxWizardNewVMInit(function(){$('#vboxIndex').trigger('vmlistreload');})}
         },
         {
 			'name':'machineAdd',
@@ -132,7 +132,7 @@ var menu = {
 						var l = new vboxLoader();
 						l.add('removeVM',function(){},{'vm':$('#vboxIndex').data('selectedVM').id,'unregister':1});
 						l.mode = 'save';
-						l.onLoad = function(){$('#vboxIndex').trigger('vmlistrefresh');};
+						l.onLoad = function(){$('#vboxIndex').trigger('vmlistreload');};
 						l.run();
 					}
 					var q = trans('Unregister VM Message1').replace('%s','<b>'+$('#vboxIndex').data('selectedVM').name+'</b>') + '<p>'+trans('Unregister VM Message2')+'</p>';
@@ -143,10 +143,10 @@ var menu = {
 						vboxAjaxRequest('removeVM',{'vm':$('#vboxIndex').data('selectedVM').id,'delete':1},function(d){
 							// check for progress operation
 							if(d && d.progress) {
-								vboxProgress(d.progress,function(){$('#vboxIndex').trigger('vmlistrefresh');},{},'progress_delete_90px.png');
+								vboxProgress(d.progress,function(){$('#vboxIndex').trigger('vmlistreload');},{},'progress_delete_90px.png');
 								return;
 							}
-							$('#vboxIndex').trigger('vmlistrefresh');
+							$('#vboxIndex').trigger('vmlistreload');
 						});
 					}
 					buttons[trans('Remove only')] = function(){
@@ -154,10 +154,10 @@ var menu = {
 						vboxAjaxRequest('removeVM',{'vm':$('#vboxIndex').data('selectedVM').id,'keep':1},function(d){
 							// check for progress operation
 							if(d && d.progress) {
-								vboxProgress(d.progress,function(){$('#vboxIndex').trigger('vmlistrefresh');});
+								vboxProgress(d.progress,function(){$('#vboxIndex').trigger('vmlistreload');});
 								return;
 							}
-							$('#vboxIndex').trigger('vmlistrefresh');
+							$('#vboxIndex').trigger('vmlistreload');
 						});
 					}
 					

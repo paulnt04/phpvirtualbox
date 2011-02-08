@@ -223,7 +223,7 @@ function vboxVMList(anchorid) {
 						$('#vboxIndex').trigger('hostChange',[a]);
 						self.anchor.html("<div id='vboxVMListSpinner' style='text-align: center'><img src='images/spinner.gif' /></div>");
 						self.vms = self.selected = null;
-						self.refresh();
+						$('#vboxIndex').trigger('vmlistreload');
 					}
 				);
 				$(td).html('VirtualBox ').append(span);
@@ -289,16 +289,13 @@ function vboxVMList(anchorid) {
 		if(self._running) return;
 
 		// Subscribe to selected VM changes and refreshes
-		$('#vboxIndex').bind('vmselect',self.selectVM).bind('vmlistrefresh',function(){
-			/*
-			TODO:
-			Should bind to something like 'reset' and perform these functions when appropriate.
-			
+		$('#vboxIndex').bind('vmselect',self.selectVM).bind('vmlistreload',function() {
 			$('#vboxIndex').trigger('vmselect',null);
 			$('#vboxIndex').data('selectedVM',null);
 			self.anchor.html("<div id='vboxVMListSpinner' style='text-align: center'><img src='images/spinner.gif' /></div>");
 			self.vms = self.selected = null;
-			*/
+			self.refresh();
+		}).bind('vmlistrefresh',function(){
 			self.refresh();
 		});
 		

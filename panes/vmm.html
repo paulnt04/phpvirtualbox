@@ -208,7 +208,6 @@ var vmmButtons = new Array(
 		'name' : 'vmmadd',
 		'label' : 'Add',
 		'icon' : 'hd_add',
-		'separator' : true,
 		'click' : function () {
 			
 			var d = document.createElement('div');
@@ -258,9 +257,67 @@ var vmmButtons = new Array(
 			};
 			buttons[trans('Cancel')] = function() { $('#vboxVMMAddMediumImageDialog').empty().remove(); };
 
-			$('#vboxIndex').append(d);
-			
 		    $(d).dialog({'width':600,'height':130,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':trans('Select File')});			
+					
+			
+		}
+	},
+	{
+		/*
+		 * Add existing medium to virtualbox
+		 */
+		'name' : 'vmmaddiscsi',
+		'label' : 'Add iSCSI',
+		'icon' : 'hd_add',
+		'enabled' : function (item) { return(!$("#vboxVMMTabs").tabs('option','selected')); },		
+		'separator' : true,
+		'click' : function () {
+
+			
+			var d = document.createElement('div');
+			$(d).attr({'id':'vboxVMMAddMediumImageDialog'});
+
+			var buttons = {};
+			buttons[trans('OK')] = function() {
+
+				var frm = document.forms.vboxISCSIForm;
+				var server = $(frm.vboxISCSIServer).val();
+				var port = $(frm.vboxISCSIPort).val();
+				var intnet = (frm.vboxISCSIIntnet.checked ? 1 : 0);
+				var target = $(frm.vboxISCSITarget).val();
+				var lun = $(frm.vboxISCSILun).val();
+				var enclun = (frm.vboxISCSILunEnc.checked ? 1 : 0);
+				var user = $(frm.vboxISCSIUser).val();
+				var pass = $(frm.vboxISCSIPass).val();
+				
+				if(server && target) {
+					if(!lun) lun = '0';
+					var l = new vboxLoader();
+					l.mode='save';
+					l.add('mediumAddISCSI',function(ret){
+						if(ret && ret.id) {
+							var nl = new vboxLoader();
+							nl.add('Mediums',function(data){$('#vboxIndex').data('vboxMediums',data);});
+							nl.onLoad = function() {
+								vboxVMMFillMediums((ret && ret.id ? ret.id : null));
+							}
+							nl.run();
+						}
+					},{'server':server,'port':port,'intnet':intnet,'target':target,'lun':lun,'enclun':enclun,'targetUser':user,'targetPass':pass});
+					l.run();
+				}
+				
+				$(this).empty().remove();
+				
+			};
+			buttons[trans('Cancel')] = function() { $(this).empty().remove(); };
+			
+			var l = new vboxLoader();
+			l.addFile("panes/vmmISCSI.html",function(f){$(d).append(f);});
+			l.onLoad = function() {
+		    	$(d).dialog({'width':400,'height':350,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':trans('Add iSCSI')});
+			}
+			l.run();
 					
 			
 		}
@@ -289,7 +346,7 @@ var vmmButtons = new Array(
 			var m = $(elm).find('tr.vboxListItemSelected').first().data();
 
 			// If we are removing a hard disk and configured to allow deletions
-			if(m.deviceType == 'HardDisk' && $('#vboxIndex').data('vboxConfig').deleteOnRemove) {
+			if(m.deviceType == 'HardDisk' && $('#vboxIndex').data('vboxConfig').deleteOnRemove && m.format != 'iSCSI') {
 
 				var q = '<p>'+trans('VMM Remove Media Message1').replace('%s','<b>'+m.location+'</b>') + '</p><p>'+trans('VMM Remove Media Message2') + '</p><p>'+trans('VMM Remove Media Message3')+'</p>';
 
@@ -414,6 +471,7 @@ var vmmButtons = new Array(
 
 // CHeck for advanced config
 if(!$('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
+	vmmButtons.shift();
 	vmmButtons.shift();
 	vmmButtons.shift();
 }

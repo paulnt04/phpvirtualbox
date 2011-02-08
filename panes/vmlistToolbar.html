@@ -20,7 +20,7 @@ var tButtons = [
 		'icon' : 'vm_new',
 		'click' : function(){
 			vboxWizardNewVMInit(function(){
-				$('#vboxIndex').trigger('vmlistrefresh');
+				$('#vboxIndex').trigger('vmlistreload');
 			});
 		}
 	},
@@ -50,7 +50,7 @@ var tButtons = [
 					vboxProgress(d.progress,function(){$('#vboxIndex').trigger('vmlistrefresh');},{},icon);
 					return;
 				}
-				$('#vboxIndex').trigger('vmlistrefresh');
+				$('#vboxIndex').trigger('vmlistreload');
 			});
 			
 		},
@@ -159,7 +159,7 @@ $("#vboxToolbarButton-vboxPaneToolbar-vmstop").contextMenu({
 				vboxProgress(d.progress,function(){$('#vboxIndex').trigger('vmlistrefresh');},{},icon);
 				return;
 			}
-			$('#vboxIndex').trigger('vmlistrefresh');
+			$('#vboxIndex').trigger('vmlistreload');
 		});
 		if(a != 'reset') toolbarTop.disableButton(toolbarTop.getButtonByName('vmstop'));
 	}

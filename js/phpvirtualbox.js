@@ -498,6 +498,12 @@ function vboxButtonMediaMenu(type,callback,mediumPath) {
 
 				var li = document.createElement('li');
 				$(li).html("<a href='#chooseD' style='background-image: url(images/vbox/select_file_16px.png);' >"+trans('Choose a virtual hard disk file...')+"</a>").appendTo(ul);
+				
+				// Add VMM?
+				if($('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
+					var li = document.createElement('li');
+					$(li).html("<a href='#vmm' style='background-image: url(images/vbox/diskimage_16px.png);' >"+trans('Virtual Media Manager')+"</a>").appendTo(ul);					
+				}
 
 				// Hidden elm
 				var li = document.createElement('li');
@@ -510,6 +516,12 @@ function vboxButtonMediaMenu(type,callback,mediumPath) {
 				
 				var li = document.createElement('li');
 				$(li).html("<a href='#chooseD' style='background-image: url(images/vbox/select_file_16px.png);' >"+trans('Choose a virtual CD/DVD disk file...')+"</a>").appendTo(ul);
+
+				// Add VMM?
+				if($('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
+					var li = document.createElement('li');
+					$(li).html("<a href='#vmm' style='background-image: url(images/vbox/diskimage_16px.png);' >"+trans('Virtual Media Manager')+"</a>").appendTo(ul);					
+				}
 				
 				// Add host drives
 				self.menuAddDrives(ul);
@@ -526,6 +538,12 @@ function vboxButtonMediaMenu(type,callback,mediumPath) {
 				var li = document.createElement('li');
 				$(li).html("<a href='#chooseD' style='background-image: url(images/vbox/select_file_16px.png);' >"+trans('Choose a virtual floppy disk file...')+"</a>").appendTo(ul);
 
+				// Add VMM?
+				if($('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
+					var li = document.createElement('li');
+					$(li).html("<a href='#vmm' style='background-image: url(images/vbox/diskimage_16px.png);' >"+trans('Virtual Media Manager')+"</a>").appendTo(ul);					
+				}
+				
 				// Add host drives
 				self.menuAddDrives(ul);
 
@@ -582,8 +600,8 @@ function vboxButtonMediaMenu(type,callback,mediumPath) {
 	// Update recent media menu and global recent media list
 	this.updateRecent = function(m) {
 		
-		// Only valid media that is not a host drive
-		if(!m || !m.location || m.hostDrive) return;
+		// Only valid media that is not a host drive or iSCSI
+		if(!m || !m.location || m.hostDrive || m.format == 'iSCSI') return;
 		
 		var changed = vboxAddRecentMedium(m.location, $('#vboxIndex').data('vboxRecentMediums')[self.type]);
 		
@@ -615,6 +633,18 @@ function vboxButtonMediaMenu(type,callback,mediumPath) {
 				},{'path':self.mediumPath+$('#vboxIndex').data('vboxConfig').DSEP}); 				
 				break;
 			
+			// VMM
+			case 'vmm':
+				// vboxVMMDialogInit(callback,type,hideDiff,attached,vmPath)
+				vboxVMMDialogInit(function(m){
+					if(m && m.id) {
+						var med = self.storage.getMediumById(m.id);
+						self.callback(med);
+						self.updateRecent(med);						
+					}
+				},self.type,false,{},self.mediumPath);
+				break;
+				
 			// Choose medium file
 			case 'chooseD':
 				

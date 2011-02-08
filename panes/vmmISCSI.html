@@ -1,0 +1,53 @@
+<!-- 
+	Add iSCSI disk
+	Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
+	
+	$Id$
+	
+ -->
+<div id='vboxISCSI'>
+	<form name='vboxISCSIForm' style='width:100%;'>
+		<table class='vboxVertical' style='width: 100%;'>
+			<tr>
+				<th><span class='translate'>Server</span>:</th>
+				<td><input type='text' name='vboxISCSIServer' class='vboxText' /></td>
+			</tr>
+			<tr>
+				<th><span class='translate'>Port</span>:</th>
+				<td><input type='text' name='vboxISCSIPort' class='vboxText' /></td>
+			</tr>			
+			<tr>
+				<th></th>
+				<td><input type='checkbox' name='vboxISCSIIntnet' class='vboxCheckbox' /> <span class='translate'>Internal Networking</span></td>
+			</tr>		
+			<tr>
+				<th><span class='translate'>Target</span>:</th>
+				<td><input type='text' name='vboxISCSITarget' class='vboxText' /></td>
+			</tr>
+			<tr>
+				<th><span class='translate'>LUN</span>:</th>
+				<td><input type='text' name='vboxISCSILun' class='vboxText' value="0" /></td>
+			</tr>
+			<tr>
+				<th></th>
+				<td><input type='checkbox' name='vboxISCSILunEnc' class='vboxCheckbox' /> <span class='translate'>Encoded</span></td>
+			</tr>
+			<tr>
+				<th><span class='translate'>Username</span>:</th>
+				<td><input type='text' name='vboxISCSIUser' class='vboxText' /></td>
+			</tr>
+			<tr>
+				<th><span class='translate'>Password</span>:</th>
+				<td><input type='password' name='vboxISCSIPass' class='vboxText' /></td>
+			</tr>
+		</table>
+	</form>
+</div>
+<script type='text/javascript'>
+
+// Translations
+vboxSetLangContext('vboxISCSI');
+$('#vboxISCSI').find(".translate").html(function(i,h){return trans(h);}).removeClass('translate');
+vboxUnsetLangContext();
+
+</script>

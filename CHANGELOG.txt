@@ -1,5 +1,5 @@
 -------------------------------------
-	4-3
+	4.0-3
 -------------------------------------
 UI fixes for some browsers when dragging the resize bar.
 
@@ -72,7 +72,7 @@ This allows you to change the following VM configuration options:
 	- Nested Paging (System section -> Acceleration tab)
 	- Large Pages (System section -> Acceleration tab)
 	- VT-x / AMD-V (System section -> Acceleration tab)
-	- Net Address (Display section -> Remote Display tab)
+	- VRDE Net Address (Display section -> Remote Display tab)
 	- SATA Port Count (Storage section -> select a SATA controller)
 	- Mouse type (General section -> Input tab)
 	- Keyboard type (General section -> Input tab)
@@ -84,9 +84,21 @@ This allows you to change the following VM configuration options:
 		(Actions menu -> Immutable)
 	- Make hard disk "normal" from Virtual Media Manager
 		(Actions menu -> Normal)
+	- Add iSCSI disk from Virtual Media Manager (Add iSCSI button)
+	- All media selection menus have a Virtual Media Manager
+		button
+			
 Note that these items will not be translated. See the VirtualBox
 documentation for more information on what these settings will
 change / actions these will perform.
+
+Media selection now behaves the same as it does in the VirtualBox
+GUI.
+
+Some features of the Virtual Media Manager have been removed to
+mimic the one in the VirtualBox GUI.
+
+Changed versioning schema.
 
 -------------------------------------
 	4-2 - 2011-1-14

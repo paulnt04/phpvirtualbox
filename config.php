@@ -42,7 +42,6 @@ var $servers = array(
 );
 */
 
-
 // Host / ip to use for console connections
 //var $consoleHost = '192.168.1.40';
 

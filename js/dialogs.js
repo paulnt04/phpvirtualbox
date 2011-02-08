@@ -245,7 +245,7 @@ function vboxVMMDialogInit(callback,type,hideDiff,attached,vmPath) {
 				}
 				if(!$(sel).html()) {
 					vboxSetLangContext('vboxVMM');
-					vboxAlert(trans('Please select a medium.'));
+					vboxAlert(trans('Please select a medium.'),{'width':'auto','height':'auto'});
 					vboxUnsetLangContext();
 					return;
 				}

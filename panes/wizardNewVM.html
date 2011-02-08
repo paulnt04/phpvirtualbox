@@ -390,8 +390,11 @@ $('#wizardNewVMStep5').bind('show',function(e,wiz){
 	}
 
 	/* Display Details */
+	if(!document.forms['frmwizardNewVM'].newVMDiskSelect.options.length)
+		$(document.forms['frmwizardNewVM'].newVMBootDisk).attr('checked','');
+	
 	var st = new vboxStorage();
-	var disk = st.mediumPrint(st.getMediumById(document.forms['frmwizardNewVM'].newVMDiskSelect.options[document.forms['frmwizardNewVM'].newVMDiskSelect.selectedIndex].value));
+	var disk = st.mediumPrint(st.getMediumById($(document.forms['frmwizardNewVM'].newVMDiskSelect).val()));
 	$('#vmNewNameLabel').html($('<div />').text(jQuery.trim(document.forms['frmwizardNewVM'].newVMName.value)).html());
 	$('#vmNewOSTypeLabel').html(newVMOSTypesObj[document.forms['frmwizardNewVM'].newVMOSType.options[document.forms['frmwizardNewVM'].newVMOSType.selectedIndex].value].description);
 	$('#vmNewMemoryLabel').html(parseInt(document.forms['frmwizardNewVM'].wizardNewVMSizeValue.value) + ' ' + trans('MB'));

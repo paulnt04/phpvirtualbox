@@ -399,7 +399,7 @@ class vboxconnector {
 		
 		// No guest additions found
 		if(!$gem) {
-			throw new Exception("Could not find VirtualBox guest additions image in the media registry.");
+			throw new Exception("Could not find VirtualBox guest additions ISO image.");
 		}
 		
 		// create session and lock machine
@@ -414,6 +414,7 @@ class vboxconnector {
 			try {
 				if($progress->errorInfo->handle) {
 					$response['data']['result'] = $this->resultcodes['0x'.strtoupper(dechex($progress->resultCode))];
+					$response['data']['reason'] = $progress->errorInfo->text;
 					$progress->releaseRemote();
 				}				
 			} catch (Exception $null) {
@@ -448,8 +449,11 @@ class vboxconnector {
 			if($mounted) break;
 		}
 
+		/* Probably should not save Guest Additions cd mount */
+		/*
 		if($mounted && strtolower($this->session->machine->getExtraData('GUI/SaveMountedAtRuntime')) == 'yes')
 			$this->session->machine->saveSettings();
+		*/
 			
 		$this->session->unlockMachine();
 		$this->session->releaseRemote();
@@ -2949,6 +2953,48 @@ class vboxconnector {
 	}
 
 	/*
+	 * Add iSCSI medium
+	 */
+	public function mediumAddISCSI($args,&$response) {
+
+		// Connect to vboxwebsrv
+		$this->__vboxwebsrvConnect();
+		
+		// {'server':server,'port':port,'intnet':intnet,'target':target,'lun':lun,'enclun':enclun,'targetUser':user,'targetPass':pass}
+		
+		// Fix LUN
+		$args['lun'] = intval($args['lun']);
+		if($args['enclun']) $args['lun'] = 'enc'.$args['lun'];
+		
+		// Compose name
+		$name = $args['server'].'|'.$args['target'];
+		if($args['lun'] != 0 && $args['lun'] != 'enc0')
+			$name .= '|'.$args['lun'];
+			
+		// Create disk
+		$hd = $this->vbox->createHardDisk('iSCSI',$name);
+		
+		if($args['port']) $args['server'] .= ':'.intval($args['port']);
+			
+		$arrProps = array();
+		
+		$arrProps["TargetAddress"] = $args['server'];
+		$arrProps["TargetName"] = $args['target'];
+		$arrProps["LUN"] = $args['lun'];
+		if($args['targetUser']) $arrProps["InitiatorUsername"] = $args['targetUser'];
+		if($args['targetPass']) $arrProps["InitiatorSecret"] = $args['targetPass'];
+		if($args['intnet']) $arrProps["HostIPStack"] = '0';
+		
+		$hd->setProperties(array_keys($arrProps),array_values($arrProps));
+		
+		$mid = $hd->id;
+		$hd->releaseRemote();
+
+		$this->cache->expire('getMediums');
+		$response['data'] = array('result' => 1, 'id' => $mid);
+	}
+
+	/*
 	 * Add existing medium
 	 */
 	public function mediumAdd($args,&$response) {
@@ -2963,7 +3009,7 @@ class vboxconnector {
 		$this->cache->expire('getMediums');
 		$response['data'] = array('result' => 1, 'id' => $mid);
 	}
-
+	
 	/*
 	 * Compose a filename for VM
 	 */
