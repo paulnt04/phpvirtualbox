@@ -9,11 +9,11 @@ error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT);
 // Clean request
 $_REQUEST = array_merge($_GET,$_POST);
 
-require_once(dirname(__FILE__).'/config.php');
+require_once(dirname(__FILE__).'/lib/config.php');
 require_once(dirname(__FILE__).'/lib/vboxconnector.php');
 
 
-$settings = new phpVBoxConfig();
+$settings = new phpVBoxConfigClass();
 
 $vbox = new vboxconnector();
 $vbox->connect();

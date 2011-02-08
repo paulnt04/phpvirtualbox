@@ -44,7 +44,7 @@ var vboxConsoleDetached = false;
 
 // Custom resolutions
 if($("#vboxIndex").data('vboxConfig').consoleResolutions) {
-	var res = $("#vboxIndex").data('vboxConfig').consoleResolutions.split(',');
+	var res = $("#vboxIndex").data('vboxConfig').consoleResolutions;
 	// first one must be valid
 	if(res[0].split('x').length == 2) {
 		document.vboxRDPForm.vboxRDPSizeSelect.options.length = 0;

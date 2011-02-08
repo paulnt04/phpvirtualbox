@@ -26,24 +26,6 @@ class vboxconnector {
 	);
 
 
-	/*
-	 * Caching settings. Function => time in seconds. 0 == do not cache
-	 */
-	var $cacheSettings = array(
-			'getHostDetails' => 86400, // "never" changes. 1 day
-			'getGuestOSTypes' => 86400,
-			'getSystemProperties' => 86400,
-			'getHostNetworking' => 86400,
-			'getMediums' => 600, // 10 minutes
-			'getVMs' => 2,
-			'__getMachine' => 7200, // 2 hours
-			'__getNetworkAdapters' => 7200,
-			'__getStorageControllers' => 7200,
-			'__getSerialPorts' => 7200,
-			'__getSharedFolders' => 7200,
-			'__getUSBController' => 7200,
-	);
-
 	// Any exceptions generated
 	var $errors = array();
 
@@ -57,7 +39,7 @@ class vboxconnector {
 		require_once(dirname(__FILE__).'/vboxServiceWrappers.php');
 
 		/* Set.. .. settings */
-		$settings = new phpVBoxConfig();
+		$settings = new phpVBoxConfigClass();
 		$this->settings = get_object_vars($settings);
 		if(!$this->settings['nicMax']) $this->settings['nicMax'] = 4;
 
@@ -68,14 +50,6 @@ class vboxconnector {
 
 		// Cache handler object.
 		$this->cache = new cache();
-		$this->cache->expire_multiplier = 1; // default
-
-		if($this->settings['disableCache']) { $this->cacheSettings = array(); }
-		else if(intval($this->settings['cacheExpireMultiplier'])) {
-			$this->cache->expire_multiplier = intval($this->settings['cacheExpireMultiplier']);
-			if(@is_array($this->settings['cacheSettings']))
-				$this->cacheSettings = array_merge($this->cacheSettings,$this->settings['cacheSettings']);
-		}
 
 		if($this->settings['cachePath']) $this->cache->path = $this->settings['cachePath'];
 		
@@ -166,7 +140,7 @@ class vboxconnector {
 		// with this vboxweb session
 		if($this->connected && !$this->progressCreated && $this->vbox->handle) {
 
-			if($this->session->handle) {
+			if($this->session && $this->session->handle) {
 				try {$this->session->unlockMachine();}
 				catch (Exception $e) { }
 			}
@@ -206,19 +180,19 @@ class vboxconnector {
 		} elseif(method_exists($this,$fn.'Cached')) {
 
 			// do not cache
-			if(!$this->cacheSettings[$fn]) {
+			if(!@$this->settings['cacheSettings'][$fn]) {
 
 				$this->{$fn.'Cached'}($req,$response);
 
 			// cached data exists ? return it : get data, cache data, return data
-			} else if(@$req['force_refresh'] || (($response['data'] = $this->cache->get($fn,$this->cacheSettings[$fn])) === false)) {
+			} else if(@$req['force_refresh'] || (($response['data'] = $this->cache->get($fn,@$this->settings['cacheSettings'][$fn])) === false)) {
 
 				$lock = $this->cache->lock($fn);
 
 				// file was modified while attempting to lock.
 				// file data is returned
 				if($lock === null) {
-					$response['data'] = $this->cache->get($fn,$this->cacheSettings[$fn]);
+					$response['data'] = $this->cache->get($fn,@$this->settings['cacheSettings'][$fn]);
 
 				// lock obtained (hopefully)
 				} else {
@@ -981,12 +955,12 @@ class vboxconnector {
 	private function __getCachedMachineData($fn,$key,&$item,$force_refresh=false) {
 
 		// do not cache
-		if(!$this->cacheSettings[$fn] || !$key) {
+		if(!@$this->settings['cacheSettings'][$fn] || !$key) {
 
 			return $this->$fn($item);
 
 		// Cached data exists?
-		} else if(!$force_refresh && ($result = $this->cache->get($fn.$key,$this->cacheSettings[$fn])) !== false) {
+		} else if(!$force_refresh && ($result = $this->cache->get($fn.$key,@$this->settings['cacheSettings'][$fn])) !== false) {
 
 			return $result;
 
@@ -998,7 +972,7 @@ class vboxconnector {
 			// file data is returned
 			if($lock === null) {
 
-				return $this->cache->get($fn.$key,$this->cacheSettings[$fn]);
+				return $this->cache->get($fn.$key,@$this->settings['cacheSettings'][$fn]);
 
 			// lock obtained
 			} else {

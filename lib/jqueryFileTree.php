@@ -26,7 +26,7 @@ error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT);
 
 global $vbox, $localbrowser, $allowed;
 
-require_once(dirname(dirname(__FILE__)).'/config.php');
+require_once(dirname(__FILE__).'/config.php');
 require_once(dirname(__FILE__).'/utils.php');
 require_once(dirname(__FILE__).'/vboxconnector.php');
 
@@ -34,15 +34,15 @@ $vbox = new vboxconnector();
 $vbox->connect();
 
 
-$settings = new phpVBoxConfig();
+$settings = new phpVBoxConfigClass();
 
 
-$allowed = explode(',',strtolower($settings->browserRestrictFiles));
-if($allowed[0]) $allowed = array_combine($allowed,$allowed);
+$allowed = $settings->browserRestrictFiles;
+if(is_array($allowed) && $allowed[0]) $allowed = array_combine($allowed,$allowed);
 else $allowed = array();
 
-$folders = explode(',',$settings->browserRestrictFolders);
-if($folders[0]) $folders = array_combine($folders,$folders);
+$folders = $settings->browserRestrictFolders;
+if(is_array($folders) && $folders[0]) $folders = array_combine($folders,$folders);
 else $folders = array();
 
 error_reporting(E_ALL ^ E_NOTICE);

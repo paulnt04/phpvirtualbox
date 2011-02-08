@@ -18,10 +18,10 @@ error_reporting(0);
  */
 
 // Settings contains language
-require_once(dirname(dirname(__FILE__)) .'/config.php');
+require_once(dirname(__FILE__) .'/config.php');
 require_once(dirname(__FILE__).'/utils.php');
 
-$settings = new phpVBoxConfig();
+$settings = new phpVBoxConfigClass();
 $lang = strtolower($settings->language);
 if(@$_COOKIE['vboxLanguage']) {
 	$lang = str_replace(array('/','\\','.'),'',$_COOKIE['vboxLanguage']);

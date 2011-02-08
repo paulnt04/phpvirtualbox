@@ -42,6 +42,8 @@ var $servers = array(
 );
 */
 
+
+
 // Host / ip to use for console connections
 //var $consoleHost = '192.168.1.40';
 
@@ -52,7 +54,7 @@ var $servers = array(
 //var $previewUpdateInterval = 30;
 
 // Preview box pixel width
-var $previewWidth = 180;
+//var $previewWidth = 180;
 
 /*
 Allow to prompt deletion harddisk files on removal from Virtual Media Manager.
@@ -61,17 +63,17 @@ to decide whether or not you would like to delete the harddisk file(s) when you
 remove a harddisk from virtual media manager. You may still choose not to delete
 the file when prompted.
 */
-var $deleteOnRemove = true;
+#var $deleteOnRemove = true;
 
 /*
  * File / Folder browser settings
  */
 
 // Restrict file types
-var $browserRestrictFiles = '.iso,.vdi,.vmdk,.img,.bin,.vhd,.hdd,.ovf,.ova,.xml,.vbox';
+#var $browserRestrictFiles = array('.iso','.vdi','.vmdk','.img','.bin','.vhd','.hdd','.ovf','.ova','.xml','.vbox');
 
 // Restrict locations / folders
-#var $browserRestrictFolders = 'D:\\,C:\\Users\\Ian'; // Or something like '/home/vbox,/var/ISOs'
+#var $browserRestrictFolders = array('D:\\','C:\\Users\\Ian'); // Or something like '/home/vbox','/var/ISOs'
 
 // Force use of local, webserver based file browser instead of going through vboxwebsrv
 #var $browserLocal = true;
@@ -88,15 +90,15 @@ var $browserRestrictFiles = '.iso,.vdi,.vmdk,.img,.bin,.vhd,.hdd,.ovf,.ova,.xml,
 #var $disableTabVMConsole = true; // Console tab
 
 /* Screen resolutions for console tab */
-var $consoleResolutions = '640x480,800x600,1024x768';
+//var $consoleResolutions = array('640x480','800x600','1024x768');
 
 /* Max number of network cards per VM. Do not set above VirtualBox's limit (typically 8) or below 1 */
-var $nicMax = 4;
+#var $nicMax = 4;
 
 /* Enable advanced configuration items (normally hidden in the VirtualBox GUI)
  * Note that some of these items may not be translated to languages other than english. 
  */
-//var $enableAdvancedConfig = true;
+#var $enableAdvancedConfig = true;
 
 /* Custom VMList sort function in JavaScript */
 /* This places running VMs at the top of the list
@@ -123,65 +125,8 @@ var $vmListSort = 'function(a,b) {
 // Path
 #var $cachePath = '/tmp';
 
-/*
- * Timings.
- * NOT a good idea to set any of these unless asked to do so.
- */
+/* END SETTINGS  */
 
-/*
-var $cacheExpireMultiplier = 1;
-var $cacheSettings = array(
-		'getHostDetails' => 86400, // "never" changes
-		'getGuestOSTypes' => 86400,
-		'getSystemProperties' => 86400,
-		'getInternalNetworks' => 86400,
-		'getMediums' => 600,
-		'getVMs' => 2,
-		'__getMachine' => 7200,
-		'__getNetworkAdapters' => 7200,
-		'__getStorageControllers' => 7200,
-		'__getSharedFolders' => 7200,
-		'__getUSBController' => 7200,
-);
-*/
-
-/* END SETTINGS - BEGIN CLASS CODE */
-
-/*
- * Multiple server functionality
- */
-function __construct() {
-	// Ignore any server settings if we have servers
-	// in the servers array
-	if(is_array($this->servers) && is_array($this->servers[0])) {
-		unset($this->location);
-		unset($this->user);
-		unset($this->pass);
-	}
-	// Set to selected server based on browser cookie
-	if(@$_COOKIE['vboxServer'] && is_array($this->servers) && count($this->servers)) {
-		foreach($this->servers as $s) {
-			if($s['name'] == $_COOKIE['vboxServer']) {				
-				foreach($s as $k=>$v) $this->$k = $v;
-			}
-		}
-	// If servers is not an array, set to empty array
-	} elseif(!is_array($this->servers)) {
-		$this->servers = array();
-	}
-	// We still have no server set, use the first one from
-	// the servers array
-	if(!$this->location && @is_array($this->servers[0])) {
-		foreach($this->servers[0] as $k=>$v) $this->$k = $v;
-	}
-	// Make sure name is set
-	if(!$this->name) {
-		$this->name = parse_url($this->location);
-		$this->name = $this->name['host'];
-	}
-	
-	$this->key = md5($this->location.$this->username);
-}
 
 }
 

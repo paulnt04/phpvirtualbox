@@ -14,7 +14,7 @@ class cache {
 	var $prefix = 'pvbx';
 	var $locked = array();
 	var $force_refresh = false;
-	var $expire_multiplier = 60; # 1 minute
+	var $expire_multiplier = 1; # 1 second
 	var $open = array();
 	var $logfile = null;
 

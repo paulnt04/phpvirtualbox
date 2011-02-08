@@ -19,7 +19,7 @@ header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0");
 header("Pragma: no-cache");
 
-require_once(dirname(dirname(__FILE__)).'/config.php');
+require_once(dirname(__FILE__).'/config.php');
 require_once(dirname(__FILE__).'/utils.php');
 require_once(dirname(__FILE__).'/vboxconnector.php');
 
@@ -41,7 +41,7 @@ switch($vboxRequest['fn']) {
 	/* Return config vars */
 	case 'getConfig':
 
-		$settings = new phpVBoxConfig();
+		$settings = new phpVBoxConfigClass();
 		$response['data'] = get_object_vars($settings);
 		$response['data']['host'] = parse_url($response['data']['location']);
 		$response['data']['host'] = $response['data']['host']['host'];
@@ -55,6 +55,7 @@ switch($vboxRequest['fn']) {
 
 		// Vbox version
 		try {
+		echo("asdf");
 			$vbox = new vboxconnector();
 			$response['data']['version'] = $vbox->getVersion();
 			$response['data']['hostOS'] = $vbox->vbox->host->operatingSystem;
