@@ -943,8 +943,9 @@ class vboxconnector {
 		$this->__vboxwebsrvConnect();
 
 		$m = $this->vbox->openMachine($args['file']);
-		$this->vbox->registerMachine(m);
+		$this->vbox->registerMachine($m);
 		
+		$m->releaseRemote();
 		return ($response['data']['result'] = 1);
 
 	}
@@ -2961,11 +2962,9 @@ class vboxconnector {
 		
 		$hd->setProperties(array_keys($arrProps),array_values($arrProps));
 		
-		$mid = $hd->id;
-		$hd->releaseRemote();
-
 		$this->cache->expire('getMediums');
-		$response['data'] = array('result' => 1, 'id' => $mid);
+		$response['data'] = array('result' => 1, 'id' => $hd->id);
+		$hd->releaseRemote();
 	}
 
 	/*
@@ -2977,11 +2976,10 @@ class vboxconnector {
 		$this->__vboxwebsrvConnect();
 
 		$m = $this->vbox->openMedium($args['path'],$args['type'],'ReadWrite');
-		$mid = $m->id;
-		$m->releaseRemote();
 
 		$this->cache->expire('getMediums');
-		$response['data'] = array('result' => 1, 'id' => $mid);
+		$response['data'] = array('result' => 1, 'id' => $m->id);
+		$m->releaseRemote();
 	}
 	
 	/*
@@ -2993,7 +2991,6 @@ class vboxconnector {
 		$this->__vboxwebsrvConnect();
 		
 		$response['data']['file'] = $this->vbox->composeMachineFilename($args['name'],$this->vbox->systemProperties->defaultMachineFolder);
-		$response['data']['folder'] = preg_replace('#(.+[/|\/]).+#','\1',$response['data']['file']); 
 		
 		return true;
 
@@ -3013,8 +3010,6 @@ class vboxconnector {
 		$type = ($args['type'] == 'fixed' ? 'Fixed' : 'Standard');
 		$mv = new MediumVariant();
 		$progress = $hd->createBaseStorage(intval($args['size'])*1024*1024,$mv->ValueMap[$type]);
-		$hdid = $hd->id;
-		$hd->releaseRemote();
 
 		// Does an exception exist?
 		try {
@@ -3027,7 +3022,8 @@ class vboxconnector {
 
 		$this->__storeProgress($progress,'getMediums');
 
-		$response['data'] = array('progress' => $progress->handle,'id' => $hdid);
+		$response['data'] = array('progress' => $progress->handle,'id' => $hd->id);
+		$hd->releaseRemote();
 
 		return true;
 	}

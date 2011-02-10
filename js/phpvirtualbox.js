@@ -566,6 +566,7 @@ function vboxButtonMediaMenu(type,callback,mediumPath) {
 		var ins = elm.children('li.vboxMediumRecentBefore').last();
 		for(var i = 0; i < list.length; i++) {
 			if(!list[i]) continue;
+			if(!self.storage.getMediumByLocation(list[i])) continue;
 			var li = document.createElement('li');
 			$(li).attr({'class':'vboxMediumRecent'}).html("<a href='#path:"+list[i]+"'>"+vboxBasename(list[i])+"</a>").insertBefore(ins);
 		}

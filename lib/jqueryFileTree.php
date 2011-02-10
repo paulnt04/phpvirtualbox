@@ -64,12 +64,13 @@ if($localbrowser) {
 }
 
 /* In some cases, "dir" passed is just a file name */
-if(strpos($vboxRequest['dir'],DSEP)===false) $vboxRequest['dir'] = DSEP;
-
+if(strpos($vboxRequest['dir'],DSEP)===false) {
+	$vboxRequest['dir'] = DSEP;
+}
 
 $dir = $vboxRequest['dir'];
 /* Check that folder restriction validates if it exists */
-if($vboxRequest['dir'] != '/' && count($folders) && $vboxRequest['dir'] != '\\') {
+if($vboxRequest['dir'] != DSEP && count($folders)) {
 	$valid = false;
 	foreach($folders as $f) {
 		if(strpos(strtoupper($dir),strtoupper($f)) === 0) {
@@ -81,12 +82,12 @@ if($vboxRequest['dir'] != '/' && count($folders) && $vboxRequest['dir'] != '\\')
 		folder_start();
 		echo('<li>Access denied to '.htmlentities($dir).' (' . htmlentities(urldecode($vboxRequest['dir'])).')</li>');
 		folder_end();
-		$vboxRequest['dir'] = '/';
+		$vboxRequest['dir'] = DSEP;
 	}
 }
 
 /* Folder Restriction with root '/' requested */
-if($vboxRequest['dir'] == '/' && count($folders)) {
+if($vboxRequest['dir'] == DSEP && count($folders)) {
 	folder_start();
 	foreach($folders as $f) folder_folder($f,true);
 	folder_end();
@@ -102,7 +103,7 @@ if($vboxRequest['fullpath']) {
 			if((strtoupper($dir) != strtoupper($f)) && strpos(strtoupper($dir),strtoupper($f)) === 0) {
 				folder_folder($f,true,true);
 				$path = substr($dir,strlen($f)+1);
-				$path = preg_split('/[\/|\\\]/',$path);
+				$path = preg_split('/'.preg_quote(DSEP,'/').'/',$path);
 				printdir($f,$path);
 			} else {
 				folder_folder($f,true);
@@ -111,7 +112,7 @@ if($vboxRequest['fullpath']) {
 		folder_end();
 	} else {
 
-		$dir = preg_split('/[\/|\\\]/',$dir);
+		$dir = preg_split('/'.preg_quote(DSEP,'/').'/',$dir);
 		$root = array_shift($dir).DSEP;
 		folder_folder($root,true,true);
 		printdir($root,$dir);
@@ -126,6 +127,7 @@ if($vboxRequest['fullpath']) {
 /* Default action. Return dir requested */
 printdir($dir);
 
+
 function printdir($dir, $recurse=array()) {
 
 	global $vbox, $localbrowser, $allowed, $vboxRequest;
@@ -135,8 +137,8 @@ function printdir($dir, $recurse=array()) {
 	try {
 
 
-		if(substr($dir,-1) != '\\' && substr($dir,-1) != '/') $dir .= DSEP;
-
+		if(substr($dir,-1) != DSEP) $dir .= DSEP;
+		
 		$appl = $vbox->vbox->createAppliance();
 		$vfs = $appl->createVFSExplorer('file://'.str_replace(DSEP.DSEP,DSEP,$dir));
 		$progress = $vfs->update();

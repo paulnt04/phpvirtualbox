@@ -723,8 +723,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		if(data['VRDEServer']['netAddress']) {
 			$(vboxDetailsTable).append(__vboxDetailRow(trans("Net Address"), data['VRDEServer']['netAddress']));
 		}
-		var chost = ($('#vboxIndex').data('vboxConfig').consoleHost ? $('#vboxIndex').data('vboxConfig').consoleHost : data['VRDEServer']['netAddress']);
-		if(!chost) { chost = location.hostname;}
+		var chost = vboxGetVRDEAddress();
 		
 		if(links) {
 			tr = __vboxDetailRow(trans("Server Port"), data['VRDEServer']['ports']);
@@ -1134,8 +1133,7 @@ for(var i = 0; i < sections.length; i++) {
 	var cb = document.createElement('input');
 	$(cb).attr({'type':'checkbox','class':'vboxCheckbox','name':sections[i].replace(' ',''),'checked':checked}).click(function(){
 
-		var exp = new Date(2020,12,24);
-		document.cookie = "vboxSectionShow"+$(this).attr('name')+"="+(this.checked ? 1 : 0)+"; expires="+exp.toGMTString()+"; path=/";
+		vboxSetCookie("vboxSectionShow"+$(this).attr('name'),(this.checked ? 1 : 0));
 		$('#vboxDetailsTableBox'+$(this).attr('name')).css('display',(this.checked ? '' : 'none'));
 		$('#vboxIndex').data('vboxCookies')["vboxSectionShow"+$(this).attr('name')] = (this.checked ? 1 : 0);
 
@@ -1182,8 +1180,7 @@ $(ul).attr({'class':'contextMenu contextMenuNoBG','style':'display: none','id':'
 var radio = document.createElement('input');
 $(radio).attr({'class':'vboxRadio','type':'radio','name':'vboxPreviewRadio','value':0}).click(function(){
 	$('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] = 0;
-	var exp = new Date(2020,12,24);
-	document.cookie = "vboxPreviewUpdate=0; expires="+exp.toGMTString()+"; path=/";
+	vboxSetCookie("vboxPreviewUpdate","0");
 });
 if($('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] == 0) {
 	$(radio).attr('checked','checked');
@@ -1215,8 +1212,7 @@ ints.sort(function(a,b){
 for(var i = 0; i < ints.length; i++) {
 	var radio = document.createElement('input');
 	$(radio).attr({'class':'vboxRadio','type':'radio','name':'vboxPreviewRadio','value':ints[i]}).click(function(){
-		var exp = new Date(2020,12,24);
-		document.cookie = "vboxPreviewUpdate="+$(this).val()+"; expires="+exp.toGMTString()+"; path=/";		
+		vboxSetCookie("vboxPreviewUpdate",$(this).val());		
 		$('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] = $(this).val();
 		__vboxDrawPreview();
 	});

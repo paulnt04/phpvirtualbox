@@ -296,7 +296,7 @@ function vboxWizardNewHDInit(callback,suggested) {
 	
 	// Compose folder if suggested name exists
 	if(suggested && suggested.name) {
-		l.add('ComposedMachineFilename',function(d){suggested.path = d.folder},{'name':suggested.name})
+		l.add('ComposedMachineFilename',function(d){suggested.path = vboxDirname(d.file)+$('#vboxIndex').data('vboxConfig').DSEP},{'name':suggested.name})
 	}
 	l.onLoad = function() {
 		var vbw = new vboxWizard('wizardNewHD',trans('Create New Virtual Disk'),'images/vbox/vmw_new_harddisk.png','images/vbox/vmw_new_harddisk_bg.png');
@@ -316,7 +316,7 @@ function vboxWizardNewHDInit(callback,suggested) {
 				if(d && d.progress) {
 					vboxProgress(d.progress,callback,d.id,'progress_media_create_90px.png',trans('Create New Virtual Disk'));
 				} else {
-					callback(d);
+					callback({},d.id);
 				}
 			},{'file':file,'type':type,'size':size});
 			l.run();
@@ -421,8 +421,7 @@ function vboxPrefsInit() {
 		
 		// Language change?
 		if($('#vboxSettingsDialog').data('language') && $('#vboxSettingsDialog').data('language') != __vboxLangName) {
-			var exp = new Date(2020,12,24);
-			document.cookie = "vboxLanguage="+$('#vboxSettingsDialog').data('language')+"; expires="+exp.toGMTString()+"; path=/";
+			vboxSetCookie('vboxLanguage',$('#vboxSettingsDialog').data('language'));
 			l.onLoad = function(){location.reload(true);}
 			
 		// Update host info in case interfaces were added / removed

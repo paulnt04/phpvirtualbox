@@ -62,9 +62,10 @@ if(jQuery) (function($){
 						$(c).removeClass('wait').append(data);
 						if( o.root == t ) $(c).find('UL:hidden').show(); else $(c).find('UL:hidden').slideDown({ duration: o.expandSpeed, easing: o.expandEasing });
 						if(o.scrollTo) {
-							var sto = $(o.scrollTo).find('a[name='+t+']');
-							if(sto[0])
+							var sto = $(o.scrollTo).find('li.vboxListItemSelected').first();
+							if(sto[0]) {
 								$(o.scrollTo).scrollTo(sto,{'axis':'y','offset':{'top':-15}});
+							}
 						}
 						bindTree(c);
 					});
@@ -92,9 +93,8 @@ if(jQuery) (function($){
 							h($(this).attr('name'));
 						}
 						return false;
-					});
-					// Prevent A from triggering the # on non-click events
-					$(t).find('LI A').bind('click', function() {
+						
+					}).bind('click', function() {
 						$(top).find('.vboxListItemSelected').removeClass('vboxListItemSelected');
 						$(this).addClass('vboxListItemSelected');
 						return false;
@@ -103,7 +103,7 @@ if(jQuery) (function($){
 				// Loading message
 				$(this).html('<ul class="jqueryFileTree start"><li class="wait">' + o.loadMessage + '<li></ul>');
 				// Get the initial file list
-				showTree( $(this), escape(o.root) , true);
+				showTree( $(this), o.root, true);
 			});
 		}
 	});

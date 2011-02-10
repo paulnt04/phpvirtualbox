@@ -72,13 +72,14 @@
 			}
 
 			/* Check for server setting */
-			if(document.location.search) {
-				var query = document.location.search.substr(1).split('&');
+			if(location.search) {
+				var query = location.search.substr(1).split('&');
 				for(var kv in query) {
 					kv = query[kv].split('=');
 					if(kv[0] == 'server') {
-						var exp = new Date(2020,12,24);
-						document.cookie = "vboxServer="+unescape(kv[1])+"; expires="+exp.toGMTString()+"; path=/";
+						vboxSetCookie('vboxServer',unescape(kv[1]));
+						location = location.href.substr(0,location.href.length-location.search.length);
+						break;
 					}
 				}
 			}
@@ -136,8 +137,7 @@
 					if($('#vboxVMList').width() < $('#vboxVMList').parent().innerWidth())
 						$('#vboxVMList').css('width',($('#vboxVMList').parent().innerWidth())+'px');
 					
-					var exp = new Date(2020,12,24);
-					document.cookie = "vboxPaneX="+($('#vboxVMList').width())+"; expires="+exp.toGMTString()+"; path=/";
+					vboxSetCookie("vboxPaneX",($('#vboxVMList').width()));
 					
 					$('#vboxPaneVMList').css('width',$('#vboxVMList').css('width'));
 					

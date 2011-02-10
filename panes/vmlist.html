@@ -216,8 +216,7 @@ function vboxVMList(anchorid) {
 					},
 					function(a) {
 						if(a == $('#vboxIndex').data('vboxConfig').name) return;
-						var exp = new Date(2020,12,24);
-						document.cookie = "vboxServer="+a+"; expires="+exp.toGMTString()+"; path=/";
+						vboxSetCookie("vboxServer",a);
 						$('#vboxIndex').trigger('vmselect',null);
 						$('#vboxIndex').data('selectedVM',null);
 						$('#vboxIndex').trigger('hostChange',[a]);

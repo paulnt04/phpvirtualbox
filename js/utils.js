@@ -103,6 +103,12 @@ function vboxGetFile(file,callback,cparams) {
 	return jQuery.get(file,function(f){callback(f,cparams);});
 }
 
+function vboxGetVRDEAddress() {
+	var chost = ($('#vboxIndex').data('vboxConfig').consoleHost ? $('#vboxIndex').data('vboxConfig').consoleHost : vm.VRDEServer.netAddress);
+	if(!chost) { chost = location.hostname;}
+	return chost;
+}
+
 /*
  * The below 2 functions have been taken from vboxweb
 (http://code.google.com/p/vboxweb/), distributed
@@ -744,6 +750,14 @@ function vboxParseCookies() {
 	}	
 	$('#vboxIndex').data('vboxCookies', cookies);
 	$('#vboxIndex').data('vboxCookiesParsed',true);
+}
+
+/ * Set a cookie */
+function vboxSetCookie(k,v) {
+	var exp = new Date(2020,12,24);
+	document.cookie = k+"="+v+"; expires="+exp.toGMTString()+"; path=/";
+	if($('#vboxIndex').data('vboxCookiesParsed'))
+			$('#vboxIndex').data('vboxCookies').k = v;
 }
 
 /* Check version against supported versions */
