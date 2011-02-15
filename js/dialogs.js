@@ -711,7 +711,7 @@ function vboxSettingsInit(title,panes,data,onsave,pane) {
 	    if(i >= panes.length) i = 0;
 	    $('#vboxSettingsMenuList').children('li:eq('+i+')').first().click().each(function(){
 	    	if(tab !== undefined) {
-	    		$('#vboxSettingsPane-'+$(this).data('name')).tabs('select', tab);	    		
+	    		$('#vboxSettingsPane-'+$(this).data('name')).tabs('select', parseInt(tab));
 	    	}
 	    	
 	    });

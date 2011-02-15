@@ -1,4 +1,34 @@
 -------------------------------------
+	4.0-4
+-------------------------------------
+Added Exclusive and VPID hardware acceleration options to
+Acceleration tab visible when $enableAdvancedConfig is set.
+
+Added Automatic SATA Port Count option to the SATA Port Count
+list when $enableAdvancedConfig is set.
+
+Fixed bug that would display the Input tab rather than the
+Description tab when clicking on the Description section link in
+the VM Details section if $enableAdvancedConfig is set.
+
+Fixed bug that would reload the list of VMs rather than refresh
+the list when resetting a VM.
+
+Fixed bug that would not change some settings when using
+PHP < 5.2.0. This was reported by CentOS users regarding the
+Cable Connected network setting in particular.
+
+Circumvent unconfirmed VirtualBox bug when trying to obtain a
+screen shot for the Preview window returns "Could not take a
+screenshot (VERR_TRY_AGAIN)." screen.php now runs
+console->display->invalidateAndUpdate() on error.
+
+VM settings while running are now available via the Settings
+button on the toolbar.
+
+Added more files to default $browserRestrictFiles setting.
+
+-------------------------------------
 	4.0-3	2011-2-10
 -------------------------------------
 UI fixes for some browsers when dragging the resize bar.

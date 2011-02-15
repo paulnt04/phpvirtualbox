@@ -256,6 +256,7 @@ for(var a = 0; a < cons.length; a++) {
 /* Setup SATA port count */
 if($('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
 	var sel = document.forms['frmVboxSettings'].vboxSettingsControllerPortCount;
+	sel.options[0] = new Option(trans('Automatic'),0);
 	for(var i = 1; i <= vboxSettingsStorageBusses.storage.SATA.maxPortCount; i++) {
 		sel.options[sel.options.length] = new Option(i,i);
 	}
@@ -720,7 +721,7 @@ function vboxSettingsSelectController(tbl) {
     
     // Show SATA port count?
     if(busType == 'SATA' && $('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
-	    $(document.forms['frmVboxSettings'].vboxSettingsControllerPortCount).val($(tbl).data('portCount'));
+	    $(document.forms['frmVboxSettings'].vboxSettingsControllerPortCount).val($('#vboxSettingsDialog').data('vboxMachineData').AutoSATAPortCount == 'yes' ? 0 : $(tbl).data('portCount'));
     	$('#vboxSettingsControllerPortCountRow').css('display','');
 	} else {
 		$('#vboxSettingsControllerPortCountRow').css('display','none');

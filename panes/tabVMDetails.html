@@ -504,6 +504,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		$('#vboxVMDetails').find('th.vboxDetailsSection').children('div').addClass('vboxNoLinks');
 	}
 
+	var advancedView = $('#vboxIndex').data('vboxConfig').enableAdvancedView;
 	 
 	// Accessibility check
 	if(data.state == 'Inaccessible') {
@@ -599,9 +600,9 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	$(vboxDetailsTable).append(__vboxDetailRow(trans("Boot Order"), bo.join(trans('LIST_SEP'))));
 
 	// HW advanced config enabled?
-	if($('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
-		// Removed. Do we really need this to be displayed?
-		// $(vboxDetailsTable).append(__vboxDetailRow(trans("VCPU"), (data['HWVirtExProperties'].Enabled ? trans('Enabled') : trans('Disabled')))).append(__vboxDetailRow(trans("Nested Paging"), (data['HWVirtExProperties'].NestedPaging ? trans('Enabled') : trans('Disabled')))).append(__vboxDetailRow(trans("Large Pages"), (data['HWVirtExProperties'].LargePages? trans('Enabled') : trans('Disabled'))));
+	if(advancedView) {
+		$(vboxDetailsTable).append(__vboxDetailRow(trans("VCPU"), (data['HWVirtExProperties'].Enabled ? trans('Enabled') : trans('Disabled')))).append(__vboxDetailRow(trans("Nested Paging"), (data['HWVirtExProperties'].NestedPaging ? trans('Enabled') : trans('Disabled')))).append(__vboxDetailRow(trans("Large Pages"), (data['HWVirtExProperties'].LargePages? trans('Enabled') : trans('Disabled'))));
+		$(vboxDetailsTable).append(__vboxDetailRow(trans("Exclusive use of the hardware virtualization extensions"), (data['HWVirtExProperties'].Exclusive ? trans('Enabled') : trans('Disabled')))).append(__vboxDetailRow(trans("VT-x VPID (Intel only)"), (data['HWVirtExProperties'].VPID ? trans('Enabled') : trans('Disabled'))));
 	}
 
 	// Preview box
@@ -766,7 +767,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		
 		var con = data['storageControllers'][a];
 		
-		$(vboxDetailsTable).append(__vboxDetailRow(con.name, ''));
+		$(vboxDetailsTable).append(__vboxDetailRow(con.name + ((con.bus == 'SATA' && advancedView) ? ' (' + con.portCount + ')' : ''), ''));
 		
 		data['storageControllers'][a]['mediumAttachments'].sort(function(a,b){
 			if(a.port == b.port) {

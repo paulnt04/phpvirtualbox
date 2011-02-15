@@ -6,7 +6,7 @@
 	padding: 0px;
 	margin: 0px;
 	display: none;
-	background: #e9e9e9;
+	background-color: #e9e9e9;
 	background-repeat: no-repeat;
 }
 
@@ -58,11 +58,15 @@ ul.contextMenuNoBG SPAN {
 	background-color: #f0f8ff;
 	border: 1px solid #aaaaaa;
 }
+
+.contextMenu LI.disabled img {
+	display: none;
+}
 .contextMenu LI.disabled A {
 	border: 1px solid transparent;
 }
 
-.contextMenu LI.hover.disabled, .contextMenu LI.disabled A {
+.contextMenu LI.hover.disabled, .contextMenu LI.disabled A, .contextMenu LI.disabled SPAN {
 	color: #AAA;
 	cursor: default;
 }

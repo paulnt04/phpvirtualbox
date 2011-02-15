@@ -436,6 +436,50 @@ class vboxconnector {
 		$gem->releaseRemote();
 		
 	}
+
+	/*
+	 * Attach USB devices to VM
+	 */
+	public function usbAttachDevice($args,&$response) {
+
+		$this->__vboxwebsrvConnect();
+		
+		// create session and lock machine
+		$machine = $this->vbox->findMachine($args['vm']);
+		$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
+		$machine->lockMachine($this->session->handle, 'Shared');
+		
+		$this->session->console->attachUSBDevice($args['id']);
+
+		$this->session->unlockMachine();
+		$this->session->releaseRemote();
+		unset($this->session);
+		$machine->releaseRemote();
+		
+		$response['data']['result'] = 1;
+	}
+
+	/*
+	 * Attach USB devices to VM
+	 */
+	public function usbDetachDevice($args,&$response) {
+
+		$this->__vboxwebsrvConnect();
+		
+		// create session and lock machine
+		$machine = $this->vbox->findMachine($args['vm']);
+		$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
+		$machine->lockMachine($this->session->handle, 'Shared');
+		
+		$this->session->console->detachUSBDevice($args['id']);
+
+		$this->session->unlockMachine();
+		$this->session->releaseRemote();
+		unset($this->session);
+		$machine->releaseRemote();
+		
+		$response['data']['result'] = 1;
+	}
 	
 	/*
 	 * Save Running VM USB device attachments
@@ -499,12 +543,20 @@ class vboxconnector {
 				continue;
 			}
 			
-			for($p = 0; $p < (count($netprops) - 1); $p++) {
-				if($netprops[$p] == 'internalNetwork') continue;
-				if($netprops[$p] == 'attachmentType') continue;
-				$n->{$netprops[$p]} = $args['networkAdapters'][$i][$netprops[$p]];
+			$n->cableConnected = intval($args['networkAdapters'][$i]['cableConnected']);
+			for($p = 0; $p < count($netprops); $p++) {
+				switch($netprops[$p]) {
+					case 'attachmentType':
+					case 'internalNetwork':
+					case 'VDENetwork':
+					case 'enabled':
+					case 'cableConnected':
+						break;
+					default:
+						$n->{$netprops[$p]} = $args['networkAdapters'][$i][$netprops[$p]];
+				}
 			}
-
+				
 			switch($args['networkAdapters'][$i]['attachmentType']) {
 				case 'Bridged':
 					$n->attachToBridgedInterface();
@@ -577,7 +629,7 @@ class vboxconnector {
 		$m->firmwareType = $args['firmwareType'];
 		if($args['chipsetType']) $m->chipsetType = $args['chipsetType']; 
 		if($m->snapshotFolder != $args['snapshotFolder']) $m->snapshotFolder = $args['snapshotFolder'];
-		if($this->settings['enableAdvancedConfig']) $m->hpetEnabled = $args['hpetEnabled'];
+		if(@$this->settings['enableAdvancedConfig']) $m->hpetEnabled = intval($args['hpetEnabled']);
 
 		$m->VRAMSize = $args['VRAMSize'];
 
@@ -594,6 +646,9 @@ class vboxconnector {
 			$m->setHWVirtExProperty('Enabled',($args['HWVirtExProperties']['Enabled'] ? 1 : 0));
 			$m->setHWVirtExProperty('NestedPaging', ($args['HWVirtExProperties']['NestedPaging'] ? 1 : 0));
 			$m->setHWVirtExProperty('LargePages', ($args['HWVirtExProperties']['LargePages'] ? 1 : 0));
+			$m->setHWVirtExProperty('Exclusive', ($args['HWVirtExProperties']['Exclusive'] ? 1 : 0));
+			$m->setHWVirtExProperty('VPID', ($args['HWVirtExProperties']['VPID'] ? 1 : 0));
+			
 		}
 
 		$m->RTCUseUTC = ($args['RTCUseUTC'] ? 1 : 0);
@@ -609,7 +664,7 @@ class vboxconnector {
 		// VRDE settings
 		try {
 			if($m->VRDEServer && $this->vbox->systemProperties->defaultVRDEExtPack) {
-				$m->VRDEServer->enabled = $args['VRDEServer']['enabled'] ? 1 : 0;
+				$m->VRDEServer->enabled = intval($args['VRDEServer']['enabled']);
 				$m->VRDEServer->setVRDEProperty('TCP/Ports',$args['VRDEServer']['ports']);
 				if($this->settings['enableAdvancedConfig'])
 					$m->VRDEServer->setVRDEProperty('TCP/Address',$args['VRDEServer']['netAddress']);
@@ -672,6 +727,14 @@ class vboxconnector {
 					$max = max($max,(intval($ma['port'])+1));
 				}
 				$c->portCount = min(intval($c->maxPortCount),max(count($sc['mediumAttachments']),$max));
+				
+				// Check for "automatic" setting
+				if(@$this->settings['enableAdvancedConfig']) {
+					if(intval(@$sc['portCount']) == 0)
+						$m->setExtraData('phpvb/AutoSATAPortCount','yes');
+					else
+						$m->setExtraData('phpvb/AutoSATAPortCount','no');
+				}				
 			}
 			$c->releaseRemote();
 			
@@ -754,11 +817,20 @@ class vboxconnector {
 
 
 			$n = $m->getNetworkAdapter($i);
-			for($p = 0; $p < (count($netprops) - 1); $p++) {
-				if($netprops[$p] == 'attachmentType' || $netprops[$p] == 'internalNetwork' || $netprops[$p] == 'VDENetwork') continue;
-				$n->{$netprops[$p]} = $args['networkAdapters'][$i][$netprops[$p]];
+			$n->enabled = intval($args['networkAdapters'][$i]['enabled']);
+			$n->cableConnected = intval($args['networkAdapters'][$i]['cableConnected']);
+			for($p = 0; $p < count($netprops); $p++) {
+				switch($netprops[$p]) {
+					case 'attachmentType':
+					case 'internalNetwork':
+					case 'VDENetwork':
+					case 'enabled':
+					case 'cableConnected':
+						break;
+					default:
+						$n->{$netprops[$p]} = $args['networkAdapters'][$i][$netprops[$p]];
+				}
 			}
-			$n->enabled = (bool)$args['networkAdapters'][$i]['enabled'];
 
 
 			switch($args['networkAdapters'][$i]['attachmentType']) {
@@ -2448,6 +2520,8 @@ class vboxconnector {
 				'Enabled' => $m->getHWVirtExProperty('Enabled'),
 				'NestedPaging' => $m->getHWVirtExProperty('NestedPaging'),
 				'LargePages' => $m->getHWVirtExProperty('LargePages'),
+				'Exclusive' => $m->getHWVirtExProperty('Exclusive'),
+				'VPID' => $m->getHWVirtExProperty('VPID')
 				),
 			'CpuProperties' => array(
 				'PAE' => $m->getCpuProperty('PAE')
@@ -2455,8 +2529,7 @@ class vboxconnector {
 			'bootOrder' => $this->__getBootOrder($m),
 			'chipsetType' => $m->chipsetType->__toString(),
 			'GUI' => array('SaveMountedAtRuntime' => $m->getExtraData('GUI/SaveMountedAtRuntime')),
-				
-
+			'AutoSATAPortCount' => (@$this->settings['enableAdvancedConfig'] ? $m->getExtraData('phpvb/AutoSATAPortCount') : 'no')
 		);
 
 	}

@@ -66,11 +66,12 @@ try {
 		$vbox->session = $vbox->websessionManager->getSessionObject($vbox->vbox->handle);
 		$machine->lockMachine($vbox->session->handle,'Shared');
 		$machine->releaseRemote();
-
+		
 		$res = $vbox->session->console->display->getScreenResolution(0);
 
 	    $screenWidth = array_shift($res);
 	    $screenHeight = array_shift($res);
+	    
 
 	    // Force screenshot width while maintaining aspect ratio
 	    if($force_width) {
@@ -95,7 +96,14 @@ try {
 	    }
 
 		// array() for compatibility with readSavedScreenshotPNGToArray return value
-		$imageraw = array($vbox->session->console->display->takeScreenShotPNGToArray(0,$screenWidth, $screenHeight));
+		try {
+			$imageraw = array($vbox->session->console->display->takeScreenShotPNGToArray(0,$screenWidth, $screenHeight));
+		} catch (Exception $e) {
+			// For some reason this is required or you get "Could not take a screenshot (VERR_TRY_AGAIN)" in some cases.
+			// I think it's a bug in the Linux guest additions, but cannot prove it.
+			$vbox->session->console->display->invalidateAndUpdate();
+			$imageraw = array($vbox->session->console->display->takeScreenShotPNGToArray(0,$screenWidth, $screenHeight));
+		}
 
 		$vbox->session->unlockMachine();
 		$vbox->session->releaseRemote();
@@ -120,7 +128,6 @@ try {
 
 	}
 	$vbox->session = null;
-
 
 	header("Content-type: image/png",true);
 

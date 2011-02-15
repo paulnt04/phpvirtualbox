@@ -72,7 +72,7 @@ the file when prompted.
  */
 
 // Restrict file types
-#var $browserRestrictFiles = array('.iso','.vdi','.vmdk','.img','.bin','.vhd','.hdd','.ovf','.ova','.xml','.vbox');
+#var $browserRestrictFiles = array('.iso','.vdi','.vmdk','.img','.bin','.vhd','.hdd','.ovf','.ova','.xml','.vbox','.cdr','.dmg','.ima','.dsk','.vfd');
 
 // Restrict locations / folders
 #var $browserRestrictFolders = array('D:\\','C:\\Users\\Ian'); // Or something like '/home/vbox','/var/ISOs'

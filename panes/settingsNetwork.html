@@ -201,7 +201,7 @@ for(var i = 0; i < parseInt($('#vboxIndex').data('vboxConfig').nicMax); i++) {
 
     document.forms['frmVboxSettings'].elements['vboxSettingsNetAdapter'+a].value = $('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].adapterType;
 	document.forms['frmVboxSettings'].elements['vboxSettingsNetMAC'+a].value = $('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].MACAddress;
-	document.forms['frmVboxSettings'].elements['vboxSettingsNetConnected'+a].checked = ($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].cableConnected);
+	document.forms['frmVboxSettings'].elements['vboxSettingsNetConnected'+a].checked = ($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].cableConnected ? true : false);
 
 	// Enabled adapter
 	if($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].enabled) {
@@ -314,6 +314,7 @@ $('#vboxSettingsDialog').bind('show',function(){
 			document.forms['frmVboxSettings'].elements['vboxSettingsNetEnabled'+a].disabled ='disabled';
 		    document.forms['frmVboxSettings'].elements['vboxSettingsNetAdapter'+a].disabled ='disabled';
 			document.forms['frmVboxSettings'].elements['vboxSettingsNetMAC'+a].disabled ='disabled';
+			$(document.forms['frmVboxSettings'].elements['vboxSettingsNetMAC'+a]).siblings('input').css('display','none');
 			
 			/* Disable these labels */
 			$(document.forms['frmVboxSettings'].elements['vboxSettingsNetEnabled'+a]).parentsUntil('tr').parent().children().addClass('vboxDisabled');

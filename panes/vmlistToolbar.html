@@ -30,9 +30,13 @@ var tButtons = [
 		'label' : 'Settings',
 		'icon' : 'vm_settings',
 		'click' : function () {
-			vboxVMsettingsInit($('#vboxIndex').data('selectedVM').id,function(){$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);});
+			if($('#vboxIndex').data('selectedVM').state != 'Running')
+				vboxVMsettingsInit($('#vboxIndex').data('selectedVM').id,function(){$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);});
 		},
-		'enabled' : function (vm) { return vm && (vm.sessionState == 'Unlocked' && vm.state != 'Saved'); }
+		'enabled' : function (vm) {
+			vboxUpdateSettingsMenu(vm);
+			return vm && ((vm.sessionState == 'Unlocked' && vm.state != 'Saved') || vm.state == 'Running');
+		}
 	},
 	{
 		'name' : 'vmstart',
@@ -50,7 +54,7 @@ var tButtons = [
 					vboxProgress(d.progress,function(){$('#vboxIndex').trigger('vmlistrefresh');},{},icon);
 					return;
 				}
-				$('#vboxIndex').trigger('vmlistreload');
+				$('#vboxIndex').trigger('vmlistrefresh');
 			});
 			
 		},
@@ -62,9 +66,249 @@ var tButtons = [
 		'icon' : 'vm_poweroff',
 		'menu' : true,
 		'click' : function () { return true; /* handled by stop menu */ },
-		'enabled' : function (vm) { return (vm && (jQuery.inArray(vm.state,['Running','Paused','Stuck']) > -1));}
+		'enabled' : function (vm) {
+			vboxUpdateStopMenu(vm);
+			return (vm && (jQuery.inArray(vm.state,['Running','Paused','Stuck']) > -1));
+		}
 	}
 ];
+
+/* Append Top Toolbar */
+vboxSetLangContext('vboxVMList');
+toolbarTop = new vboxToolbar(tButtons);
+toolbarTop.size = 32;
+toolbarTop.addButtons('vboxPaneToolbar');
+vboxUnsetLangContext();
+
+$('#tabMainContent').bind('vmloading',function(){
+	toolbarTop.update();
+}).bind('vmloaded',function(e,vm){
+	toolbarTop.update(vm);
+});
+
+
+/* 'Settings' menu items / actions */
+var vboxVMListSettingsMenu = {
+		
+	'storage' : {
+		'label' : 'Storage',
+		'icon' : 'hd'
+	},
+	'Network' : {
+		'label' : 'Network',
+		'icon' : 'nw'
+	},
+	'USB' : {
+		'label' : 'USB',
+		'icon' : 'usb'
+	},
+	'SharedFolders' : {
+		'label' : 'Shared Folders',
+		'icon' : 'shared_folder'
+	}
+};
+
+
+/* 'Settings' menu */
+var ul = document.createElement('ul');
+ul.setAttribute('class','contextMenu');
+ul.setAttribute('style','display: none');
+ul.setAttribute('id','vboxVMSettingsMenu');
+for(var i in vboxVMListSettingsMenu) {
+	
+	// add name
+	vboxVMListSettingsMenu[i].name = i;
+
+	var li = document.createElement('li');
+	if(i == 'storage') { $(li).attr({'style':'display:none','id':'vboxVMSettingsToolbarStorageHolder'}); }
+	$(li).html("<a href='#" + vboxVMListSettingsMenu[i].name + "' style='background-image: url(images/vbox/" + vboxVMListSettingsMenu[i].icon +"_16px.png);' >"+trans(vboxVMListSettingsMenu[i].label)+"</a>");
+	if(i == 'storage') {
+		/* 'Storage Settings' menu */
+		/*
+		var sl = document.createElement('ul');
+		$(sl).attr({'class':'vboxSettingsStorageAttachmentsMenu','style':'display: none','id':'vboxVMSettingsStorageMenu'}).appendTo(li);
+		*/
+	} else if(i == 'USB') {
+		/* 'USB' menu */
+		var sl = document.createElement('ul');
+		$(sl).attr({'class':'vboxSettingsUSBAttachmentsMenu contextMenuNoBG','style':'display: none','id':'vboxVMSettingsUSBMenu'}).data({'callback':'vboxVMListToolbarUSBUpdate'}).appendTo(li);		
+	}
+	ul.appendChild(li);
+	
+}
+
+/* Append 'Settings' button Menu */
+$('#vboxIndex').append(ul);
+
+
+
+/* 'Stop' button menu initialization  */
+$("#vboxToolbarButton-vboxPaneToolbar-vmsettings").contextMenu({
+		menu: 'vboxVMSettingsMenu',
+		button: 0,
+		mode: 'menu'
+	},
+	function(a, el, pos, srcEl) {
+		
+		if(window['vboxVMsettingsInit' + a]) {
+			window['vboxVMsettingsInit' + a]($('#vboxIndex').data('selectedVM').id,function(){$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);});
+			return;
+		}
+		
+		if(a.indexOf('mount') == 0) {
+			var bpd = a.split('-');
+			vboxMountInit($('#vboxIndex').data('selectedVM').id,bpd[1],bpd[2],bpd[3]);
+			return;
+		}
+	}
+);
+
+/*
+ * Storage mount menu
+ */
+function vboxVMListToolbarStorageUpdate(menu) {
+	
+}
+
+/*
+ * Update USB device list
+ */
+function vboxVMListToolbarUSBUpdate(menu) {
+	$(menu).append($('<li />').html('<span><img src="images/jqueryFileTree/spinner.gif" /></span>').css({'width':'100px','text-align':'center'}));
+	var l = new vboxLoader();
+	l.add('HostUSBDevices',function(d){
+		$('#vboxPaneToolbar').data('hostUSB',d);
+	},{});
+	l.add('VMUSBDevices',function(d){
+		$('#vboxPaneToolbar').data('guestUSB',d);
+	},{'vm':$('#vboxIndex').data('selectedVM').id});
+	l.noLoadingScreen = true;
+	l.onLoad = function() {
+		var hostUSB = $('#vboxPaneToolbar').data('hostUSB');
+		var guestUSB = $('#vboxPaneToolbar').data('guestUSB');
+		$(menu).children().remove();
+		for(var i = 0; i < hostUSB.length; i++) {
+
+			if(!hostUSB[i].product)
+				var dname = trans('Unknown Device')+' '+hostUSB[i].vendorId+':'+hostUSB[i].productId;
+			else
+				var dname = hostUSB[i].manufacturer + ' ' + hostUSB[i].product;
+			dname += ' [' + hostUSB[i].revision + ']';
+			var capt = (hostUSB[i].state == 'Captured' && guestUSB[hostUSB[i].id]);
+			var avail = (capt || (hostUSB[i].state != 'NotSupported' && hostUSB[i].state != 'Unavailable' && hostUSB[i].state != 'Captured'));
+			var cbox = document.createElement('input');
+			$(cbox).attr({'type':'checkbox','class':'vboxCheckbox','checked':(capt ? 'checked' : ''),'disabled':(avail ? '' : 'disabled')}).bind('click',function(e){
+				e.stopPropagation();
+				if($(this).attr('disabled') == 'disabled') return;
+				
+				var cbox = $(this);
+				// Detach
+				if($(this).data('capt')) {
+					vboxAjaxRequest('usbDetachDevice',{'vm':$('#vboxIndex').data('selectedVM').id,'id':$(this).data('usbDevice')},function(d){
+						if(d.result) {
+							cbox.attr('checked','');
+							cbox.data('capt',false);
+						} else {
+							cbox.attr('checked','checked');
+						}
+					});
+				// Attach
+				} else {
+					vboxAjaxRequest('usbAttachDevice',{'vm':$('#vboxIndex').data('selectedVM').id,'id':$(this).data('usbDevice')},function(d){
+						if(d.result) {
+							cbox.attr('checked','checked');
+							cbox.data('capt',true);
+						} else {
+							cbox.attr('checked','');
+						}
+					});
+				}
+			}).data({'usbDevice':hostUSB[i].id,'capt':capt});
+			
+			$(menu).append($('<li />').append($('<span />').append(cbox).append(' '+dname)).attr({'class':(avail ? '' : 'disabled')}));
+		}
+		
+		// No devices?
+		if(hostUSB.length == 0) {
+			$(menu).append($('<li />').html('<span>&lt;'+trans('no devices available')+'&gt;</span>'));
+		}
+	}
+	l.run();
+}
+
+/*
+ *  
+ * Update vboxVMListStopMenu items. Called when 
+ * vboxVMList selection changes $('#vboxIndex').onvmselect
+ *
+ */
+function vboxUpdateSettingsMenu(vm) {
+
+	if(vm && vm.state == 'Running') {
+		$("#vboxToolbarButton-vboxPaneToolbar-vmsettings").enableContextMenu();
+	} else {
+		$("#vboxToolbarButton-vboxPaneToolbar-vmsettings").disableContextMenu();
+	}
+
+	// enable or disable USB
+	if(vm && vm['USBController'] && vm['USBController']['enabled']) {
+		$('#vboxVMSettingsMenu').enableContextMenuItems('#USB');
+		$('#vboxVMSettingsMenu').find('a[href=#USB]').css('background-image','url(images/vbox/usb_16px.png)');
+		$('ul.vboxSettingsUSBAttachmentsMenu').children().remove();
+	} else {
+		$('#vboxVMSettingsMenu').disableContextMenuItems('#USB');
+		$('#vboxVMSettingsMenu').find('a[href=#USB]').css('background-image','url(images/vbox/usb_disabled_16px.png)');
+	}
+	
+	// Enable or disable network
+	var enabledS = false;
+	if(vm && vm.networkAdapters && vm.networkAdapters.length) {
+		for(var a = 0; a < vm.networkAdapters.length; a++) {
+			if(vm.networkAdapters[a].enabled) {
+				enabledS = true;
+				break;
+			}
+		}
+	}
+	if(enabledS) {
+		$('#vboxVMSettingsMenu').enableContextMenuItems('#Network');
+		$('#vboxVMSettingsMenu').find('a[href=#Network]').css('background-image','url(images/vbox/nw_16px.png)');
+	} else {
+		$('#vboxVMSettingsMenu').disableContextMenuItems('#Network');
+		$('#vboxVMSettingsMenu').find('a[href=#Network]').css('background-image','url(images/vbox/nw_disabled_16px.png)');
+	}
+	
+	// vboxVMSettingsToolbarStorageHolder
+	var smenu = $('#vboxVMSettingsToolbarStorageHolder');
+	smenu.siblings('li.vboxVMSettingsStorage').remove();
+	var enabledS = false;
+	if(vm && vm.storageControllers && vm.storageControllers.length) {
+		var storage = new vboxStorage();
+		for(var a = 0; a < vm.storageControllers.length; a++) {
+			for(var b = 0; b < vm['storageControllers'][a]['mediumAttachments'].length; b++) {
+				if(vm['storageControllers'][a]['mediumAttachments'][b].type == 'HardDisk') continue;
+				var portName = storage[vm['storageControllers'][a].bus].slotName(vm['storageControllers'][a]['mediumAttachments'][b].port, vm['storageControllers'][a]['mediumAttachments'][b].device);
+				var m = vm['storageControllers'][a]['mediumAttachments'][b].medium;
+				m = storage.getMediumById((m && m.id ? m.id : null));
+				var mName = storage.getMediumName(m);
+				mName = $('<div />').text(mName).html();
+				var li = document.createElement('li');
+				$(li).attr({'title':mName}).html("<a title='"+mName+"' href='#mount-"+vm['storageControllers'][a].bus+"-"+vm['storageControllers'][a]['mediumAttachments'][b].port+"-"+vm['storageControllers'][a]['mediumAttachments'][b].device+"' style='background-image:url(images/vbox/"+(vm['storageControllers'][a]['mediumAttachments'][b].type == 'DVD' ? 'cd' : 'fd')+"_16px.png);'>"+portName + "</a>").addClass('vboxVMSettingsStorage').insertBefore(smenu);
+				enabledS = true;
+			}
+		}
+	}
+	if(enabledS) {
+		$('#vboxVMSettingsMenu').find('a[href=#Network]').parent().addClass('separator');
+	} else {
+		$('#vboxVMSettingsMenu').find('a[href=#Network]').parent().removeClass('separator');
+	}
+	
+	
+	
+}
+
+
 
 /* 'Stop' menu items / actions */
 var vboxVMListStopMenu = {
@@ -101,15 +345,6 @@ var vboxVMListStopMenu = {
 	}
 	
 };
-
-/* Append Top Toolbar */
-vboxSetLangContext('vboxVMList');
-toolbarTop = new vboxToolbar(tButtons);
-toolbarTop.size = 32;
-toolbarTop.addButtons('vboxPaneToolbar');
-vboxUnsetLangContext();
-$('#vboxIndex').bind('vmselect',toolbarTop.update);
-
 
 
 /* 'Stop' menu */
@@ -159,7 +394,7 @@ $("#vboxToolbarButton-vboxPaneToolbar-vmstop").contextMenu({
 				vboxProgress(d.progress,function(){$('#vboxIndex').trigger('vmlistrefresh');},{},icon);
 				return;
 			}
-			$('#vboxIndex').trigger('vmlistreload');
+			$('#vboxIndex').trigger('vmlistrefresh');
 		});
 		if(a != 'reset') toolbarTop.disableButton(toolbarTop.getButtonByName('vmstop'));
 	}
@@ -169,10 +404,10 @@ $("#vboxToolbarButton-vboxPaneToolbar-vmstop").contextMenu({
 /*
  *  
  * Update vboxVMListStopMenu items. Called when 
- * vboxVMList selection changes $('#vboxIndex').onvmselect
+ * vboxVMList selection changes. Toolbar actually listens for event.
  *
  */
-function vboxUpdateStopMenu(e,vm) {
+function vboxUpdateStopMenu(vm) {
 
 	var enabledOne = false;
 	for(var i in vboxVMListStopMenu) {
@@ -196,7 +431,5 @@ function vboxUpdateStopMenu(e,vm) {
 	}
 	
 }
-// Run this function when the vm selection changes
-$('#vboxIndex').bind('vmselect',vboxUpdateStopMenu);
 
 </script>

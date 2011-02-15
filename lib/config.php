@@ -31,7 +31,7 @@ var $deleteOnRemove = true;
  */
 
 // Restrict file types
-var $browserRestrictFiles = array('.iso','.vdi','.vmdk','.img','.bin','.vhd','.hdd','.ovf','.ova','.xml','.vbox');
+var $browserRestrictFiles = array('.iso','.vdi','.vmdk','.img','.bin','.vhd','.hdd','.ovf','.ova','.xml','.vbox','.cdr','.dmg','.ima','.dsk','.vfd');
 
 /* Screen resolutions for console tab */
 var $consoleResolutions = array('640x480','800x600','1024x768');

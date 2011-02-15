@@ -139,7 +139,15 @@
 	<tr>
 		<th></th>
 		<td><input type='checkbox' name='settingsSystemLargePages' /> <span class='translate'>Enable Large Pages</span></td>
+	</tr>
+	<tr>
+		<th></th>
+		<td><input type='checkbox' name='settingsSystemExclusive' /> <span class='translate'>Enable exclusive use of the hardware virtualization extensions</span></td>
 	</tr>	
+	<tr>
+		<th></th>
+		<td><input type='checkbox' name='settingsSystemVPID' /> <span class='translate'>Enable VT-x VPID (Intel only)</span></td>
+	</tr>			
 </table>
 </div>
 
@@ -166,6 +174,8 @@ if($('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
 	document.forms['frmVboxSettings'].settingsSystemVT.checked = ($('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.Enabled);
 	document.forms['frmVboxSettings'].settingsSystemPaging.checked = ($('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.NestedPaging);
 	document.forms['frmVboxSettings'].settingsSystemLargePages.checked = ($('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.LargePages);
+	document.forms['frmVboxSettings'].settingsSystemExclusive.checked = ($('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.Exclusive);
+	document.forms['frmVboxSettings'].settingsSystemVPID.checked = ($('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.VPID);
 	
 /* Else, remove advanced settings */
 } else {
@@ -279,6 +289,8 @@ $('#vboxSettingsDialog').bind('save',function(){
 		$('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.Enabled = (document.forms['frmVboxSettings'].settingsSystemVT.checked ? 1 : 0);
 		$('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.NestedPaging = (document.forms['frmVboxSettings'].settingsSystemPaging.checked ? 1 : 0);
 		$('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.LargePages = (document.forms['frmVboxSettings'].settingsSystemLargePages.checked ? 1 : 0);
+		$('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.Exclusive = (document.forms['frmVboxSettings'].settingsSystemExclusive.checked ? 1 : 0);
+		$('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.VPID = (document.forms['frmVboxSettings'].settingsSystemVPID.checked ? 1 : 0);
 	}
 	
 	// Boot order
