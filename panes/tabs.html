@@ -119,13 +119,13 @@ function vboxTabs(id) {
 		if(!vm) {
 			this.showTab('#'+this.tabs[0].name);
 			$('#'+this.id).data('machine',null);
-			$('#'+this.id).trigger('vmloaded');
+			$('#vboxIndex').trigger('vmloaded');
 			this.selected = null;
 			this.updateTabs(null);
 			return;
 		}
 
-		$('#'+this.id).trigger('vmloading');
+		$('#vboxIndex').trigger('vmloading');
 		
 		this.selected = vm.id;
 				
@@ -159,7 +159,7 @@ function vboxTabs(id) {
 		
 		// Trigger loaded
 		$('#'+self.id).data('machine',vm);
-		$('#'+self.id).trigger('vmloaded',[vm]);
+		$('#vboxIndex').trigger('vmloaded',[vm]);
 
 		// Trigger show
 		$(''+self.tabSelected).trigger('show',[vm]);

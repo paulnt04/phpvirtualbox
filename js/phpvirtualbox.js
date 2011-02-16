@@ -553,6 +553,7 @@ function vboxMediaMenu(type,callback,mediumPath) {
 	this.callback = callback;
 	this.mediumPath = mediumPath;
 	this.storage = new vboxStorage();
+	this.removeEnabled = true;
 
 	
 	// Generate menu element ID
@@ -644,7 +645,10 @@ function vboxMediaMenu(type,callback,mediumPath) {
 				
 				// Add remove drive
 				var li = document.createElement('li');
-				$(li).html("<a href='#removeD' style='background-image: url(images/vbox/cd_unmount_16px.png);' >"+trans('Remove disk from virtual drive')+"</a>").addClass('separator').addClass('vboxMediumRecentBefore').appendTo(ul);
+				if(!self.removeEnabled) {
+					$(li).addClass('disabled');
+				}				
+				$(li).html("<a href='#removeD' style='background-image: url(images/vbox/cd_unmount"+(self.removeEnabled ? '' : '_disabled')+"__16px.png);' >"+trans('Remove disk from virtual drive')+"</a>").addClass('separator').addClass('vboxMediumRecentBefore').appendTo(ul);
 
 				break;
 			
@@ -665,12 +669,15 @@ function vboxMediaMenu(type,callback,mediumPath) {
 
 				// Add remove drive
 				var li = document.createElement('li');
-				$(li).html("<a href='#removeD' style='background-image: url(images/vbox/fd_unmount_16px.png);' >"+trans('Remove disk from virtual drive')+"</a>").addClass('separator').addClass('vboxMediumRecentBefore').appendTo(ul);
+				if(!self.removeEnabled) {
+					$(li).addClass('disabled');
+				}
+				$(li).html("<a href='#removeD' style='background-image: url(images/vbox/fd_unmount"+(self.removeEnabled ? '' : '_disabled')+"_16px.png);' >"+trans('Remove disk from virtual drive')+"</a>").addClass('separator').addClass('vboxMediumRecentBefore').appendTo(ul);
 				
 				break;
 				
 		}
-				
+		
 	}
 
 	// Update "recent" media list
@@ -691,6 +698,7 @@ function vboxMediaMenu(type,callback,mediumPath) {
 	// Update "remove image from disk" menu item
 	self.menuUpdateRemoveMedia = function(enabled) {
 		var menu = $('#'+self.menu_id());
+		self.removeEnabled = enabled;
 		if(enabled) {
 			menu.enableContextMenuItems('#removeD');
 			menu.find('a[href=#removeD]').css('background-image','url(images/vbox/'+(self.type == 'DVD' ? 'cd' : 'fd')+'_unmount_16px.png)');			

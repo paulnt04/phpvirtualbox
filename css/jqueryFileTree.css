@@ -31,3 +31,5 @@ UL.jqueryFileTree A {
 .jqueryFileTree LI.file_iso, .jqueryFileTree LI.file_cdr { background: url(../images/vbox/cd_16px.png) 0px 1px no-repeat; }
 .jqueryFileTree LI.file_iso, .jqueryFileTree LI.file_cdr, .jqueryFileTree LI.file_dmg { background: url(../images/vbox/cd_16px.png) 0px 1px no-repeat; }
 .jqueryFileTree LI.file_img, .jqueryFileTree LI.file_ima, .jqueryFileTree LI.file_dsk, .jqueryFileTree LI.file_vfd { background: url(../images/vbox/fd_16px.png) 0px 1px no-repeat; }
+.jqueryFileTree LI.file_vbox, .jqueryFileTree LI.file_xml { background: url(../images/vbox/machine_16px.png) 0px 1px no-repeat; }
+

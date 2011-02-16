@@ -47,16 +47,16 @@ var $servers = array(
 
 
 // Host / ip to use for console connections
-//var $consoleHost = '192.168.1.40';
+#var $consoleHost = '192.168.1.40';
 
 // Disable "preview" box
-//var $noPreview = true;
+#var $noPreview = true;
 
 // Default preview box update interval in seconds
-//var $previewUpdateInterval = 30;
+#var $previewUpdateInterval = 30;
 
 // Preview box pixel width
-//var $previewWidth = 180;
+#var $previewWidth = 180;
 
 /*
 Allow to prompt deletion harddisk files on removal from Virtual Media Manager.

@@ -65,7 +65,7 @@ $("#vboxRDPStatus").html(trans("Loading ..."));
 if(vboxConsoleDetached) window.status = $("#vboxRDPStatus").text();
 
 // Listen for tab events
-$('#vboxTabVMConsole').parent().bind('vmloading',function(){
+$('#vboxIndex').bind('vmloading',function(){
 	$('#vboxRDPFormContainer').css({'display':'none'});
 	$('#FlashRDPContainer').css({'visibility':'hidden'});
 });

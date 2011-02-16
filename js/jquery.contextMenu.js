@@ -29,29 +29,44 @@ if(jQuery)( function() {
 			$(this).each( function() {
 				
 				var el = $(this);
-				
-				var offset = $(el).offset();
+								
+				var menu = $('#'+o.menu);
 				
 				// Add contextMenu class
-				$('#' + o.menu).addClass('contextMenu');
+				$(menu).addClass('contextMenu contextMenuLevel0').data('level',0);
 
-				// Hover events
-				var menu = $('#'+o.menu);
-								
+				// Detach sub menus
+				var subMenus = function(root,level) {
+				
+					if(!level) level = 1;
+					
+					$(root).children('li').children('ul').each(function(){
+						var plink = $(this).siblings('a').first();
+						var subId = $(this).attr('id');
+						if(!subId) {
+							var href = plink.attr('href').replace('#','');
+							subId = href + '-Submenu';
+							$(this).attr('id', subId);
+						}
+						$(this).addClass('contextMenu contextSubMenu contextMenuLevel' + level).parent().addClass('contextMenuParent').data({'subId':subId,'level':level});
+						var html = plink.html();
+						plink.html('<table class="vboxInvisible" style="width:100%"><tr><td style="text-align:left">'+html+'</td><td style="text-align:right"><img src="images/rightArrow.png" /></td></tr></table>');
+						$(this).detach().appendTo($('#vboxIndex'));
+						subMenus($(this),level + 1);
+					});
+									
+				}
+				
 				var showMenu = function(srcElement, menu, mode, e) {
 					
 					// Check menu
 					if(!$(menu)[0]) return;
 
 					// Detach sub menus
-					$(menu).children('li').children('ul').each(function(){
-						var plink = $(this).siblings('a').first();
-						var href = plink.attr('href').replace('#','');
-						var html = plink.html();
-						plink.html('<table class="vboxInvisible" style="width:100%"><tr><td style="text-align:left">'+html+'</td><td style="text-align:right"><img src="images/rightArrow.png" /></td></tr></table>');
-						$(this).parent().addClass('contextMenuParent');
-						$(this).addClass('contextMenu contextSubMenu').attr('id',href+'-Submenu').detach().appendTo($('#vboxIndex'));
-					});
+					subMenus(menu);
+					
+					// Hide all other menus at this level
+					$('ul.contextMenuLevel'+$(menu).data('level')).hide();
 					
 					// Detect mouse position
 					var d = {}, posX, posY;
@@ -103,14 +118,17 @@ if(jQuery)( function() {
 					$(menu).find('A').unbind('click');
 					$(menu).find('li').unbind('mouseenter').unbind('mouseleave');
 					$(menu).find('LI:not(.disabled)').hover( function(e) {
+						
 						$(menu).find('LI.hover').removeClass('hover');
-						var subMenuId = $(this).children('a').first().attr('href').replace('#','')+'-Submenu';
+												
+						var subMenuId = $(this).data('subId');
 						var parentId = $(this).parent().attr('id')
 						$(this).addClass('hover');
 						$('ul.contextSubMenu').each(function(){
 							if($(this).attr('id') != parentId) $(this).hide();
 						});
-						showMenu($(this),$('#'+$(this).children('a').first().attr('href').replace('#','')+'-Submenu'),'submenu',e);
+						if(subMenuId) showMenu($(this),$('#'+subMenuId),'submenu',e);
+						
 					},function() {
 						$(menu).find('LI.hover').removeClass('hover');
 					}).children('A').click( function() {
@@ -126,6 +144,7 @@ if(jQuery)( function() {
 						var m = window[$(menu).data('callback')](menu);
 						// New menu returned?
 						if(m) {
+							$(m).addClass('contextSubMenu contextMenuLevel' + ($(menu).data('level')+1)).data('level',($(menu).data('level')+1));
 							showMenu(srcElement, m, 'submenu', e);
 							return;
 						}

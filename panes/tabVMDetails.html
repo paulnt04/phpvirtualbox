@@ -225,7 +225,7 @@ vboxParseCookies();
 
 // Listen for events
 /////////////////////////////
-$('#vboxTabVMDetails').parent().bind('vmloading',function(){
+$('#vboxIndex').bind('vmloading',function(){
 
 	// Clear timer if it is set
 	if($('#vboxVMDetails').data('vboxPreviewTimer')) {

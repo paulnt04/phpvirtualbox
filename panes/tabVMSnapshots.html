@@ -272,7 +272,6 @@ vboxInitDisplay('vboxSnapshotToolbar');
 
 vboxUnsetLangContext();
 
-$('#vboxTabVMSnapshots').parent().bind('vmloading',snapshotToolbar.disable);
 $('#vboxSnapshotList').bind('select',snapshotToolbar.update);
 
 
@@ -286,8 +285,10 @@ $('#vboxTabVMSnapshots').bind('refresh',function(){
 
 
 /* Loading VM */
-$('#vboxTabVMSnapshots').parent().bind('vmloading',function(){
+$('#vboxIndex').bind('vmloading',function(){
 
+	snapshotToolbar.disable();
+	
 	if(snapshotToolbar._timer) {
 		window.clearTimeout(snapshotToolbar._timer);
 		snapshotToolbar._timer = null;
@@ -305,10 +306,8 @@ $('#vboxTabVMSnapshots').parent().bind('vmloading',function(){
 	li.innerHTML = "<div><img src='images/spinner.gif'></div>";
 	$('#vboxSnapshotList').append(li);
 	
-});
-
 /* VM Finished loading */
-$('#vboxTabVMSnapshots').parent().bind('vmloaded',function(e,vm){
+}).bind('vmloaded',function(e,vm){
 
 	$('#vboxTabVMSnapshots').data('machine',vm);
 	
