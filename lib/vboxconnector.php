@@ -340,7 +340,7 @@ class vboxconnector {
 				'osx' => '/Applications/VirtualBox.app/Contents/MacOS/VBoxGuestAdditions.iso',
 				'sunos' => '/opt/VirtualBox/additions/VBoxGuestAdditions.iso',
 				'windows' => 'C:\\Program Files\\Oracle\\VirtualBox\\VBoxGuestAdditions.iso',
-				'windowsx86' => 'C:\\Program Files (x86)\\Oracle\\VirtualBox\\VBoxGuestAdditions.iso'
+				'windowsx86' => 'C:\\Program Files (x86)\\Oracle\\VirtualBox\\VBoxGuestAdditions.iso' // Does this exist?
 			);
 			$hostos = $vbox->vbox->host->operatingSystem;
 			if(stripos($hostos,'windows') !== false) {
@@ -411,7 +411,7 @@ class vboxconnector {
 		foreach($machine->storageControllers as $sc) {
 			foreach($machine->getMediumAttachmentsOfController($sc->name) as $ma) {
 				if($ma->type->__toString() == 'DVD') {
-					$this->session->machine->mountMedium($sc->name, $ma->port, $ma->device, $gem, true);
+					$this->session->machine->mountMedium($sc->name, $ma->port, $ma->device, $gem->handle, true);
 					$response['data']['result'] = 'mounted';
 					$this->cache->expire('__getStorageControllers'.$args['vm']);
 					$this->cache->expire('getMediums');
@@ -1015,7 +1015,7 @@ class vboxconnector {
 		$this->__vboxwebsrvConnect();
 
 		$m = $this->vbox->openMachine($args['file']);
-		$this->vbox->registerMachine($m);
+		$this->vbox->registerMachine($m->handle);
 		
 		$m->releaseRemote();
 		return ($response['data']['result'] = 1);
@@ -2281,6 +2281,9 @@ class vboxconnector {
 				$this->session->machine->attachDevice(trans($DVDbusType.' Controller'),1,0,'DVD',null);
 
 			}
+			
+			// Auto-sata port count
+			$this->session->machine->setExtraData('phpvb/AutoSATAPortCount','yes');
 
 			$this->session->machine->saveSettings();
 			$this->session->unlockMachine();
@@ -2477,14 +2480,13 @@ class vboxconnector {
 	 */
 	private function __getMachine(&$m) {
 
-		$version = $this->getVersion();
-
 		return array(
 			'name' => $m->name,
 			'description' => $m->description,
 			'id' => $m->id,
 			'settingsFilePath' => $m->settingsFilePath,
 			'OSTypeId' => $m->OSTypeId,
+			'OSTypeDesc' => $this->vbox->getGuestOSType($m->OSTypeId)->description,
 			'CPUCount' => $m->CPUCount,
 			'hpetEnabled' => $m->hpetEnabled,
 			'memorySize' => $m->memorySize,
@@ -3113,6 +3115,7 @@ class vboxconnector {
 
 		// connected to...
 		$machines = $m->machineIds;
+		$response['data']['released'] = array();
 		foreach($machines as $uuid) {
 
 			// Find medium attachment
@@ -3137,6 +3140,8 @@ class vboxconnector {
 			$state = $mach->sessionState->__toString();
 
 			if(!count($remove)) continue;
+			
+			$response['data']['released'][] = $uuid;
 
 			// create session
 			$this->session = &$this->websessionManager->getSessionObject($this->vbox->handle);

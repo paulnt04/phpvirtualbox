@@ -213,32 +213,13 @@ $('#wizardExportApplianceStep3').bind('show',function(e,wiz){
 
 /* Edit property that has a text area */
 function vboxExportAppliancePropEditArea(evt,elm) {
-	var input = document.createElement('input');
-	$(input).attr('type','button');
-	$(input).attr('class','vboxbutton');
-	$(input).css({'width':($(this).innerWidth()-12)+'px','margin':'0px'});
-	$(input).val(trans('Edit'));
-	$(input).blur(function(){
-		var p = $(this).parent();
-		var d = vboxDivOverflowHidden($(this).parent());
-		$(d).html($(this).data('preEdit'));
-		$(this).remove();
-		$(p).html('');
-		$(p).append(d);
-	});
-	$(input).data('preEdit', $(this).children().first().html());
-	$(input).click(function(){
-		vboxExportAppliancePropEditDialog(this);
-		$(this).trigger('blur');
-	});
-	$(this).html('');
-	$(this).append(input);	
-	$(this).children().first().focus();	
+	
+	vboxExportAppliancePropEditDialog(evt.target, $('<span />').html($(evt.target).html()).text());
+	
 }
 /* Edit property dialog */
-function vboxExportAppliancePropEditDialog(btn) {
+function vboxExportAppliancePropEditDialog(elm, defaults) {
 	
-	var p = $(btn).parent();
 	var d = document.createElement('div');
 	$(d).css({'display':'none'});
 	var frm = document.createElement('form');
@@ -247,19 +228,20 @@ function vboxExportAppliancePropEditDialog(btn) {
 	var txt = document.createElement('textarea');
 	$(txt).attr('id','vboxExportAppliancePropTextarea');
 	$(txt).css({'height':'99%','width':'99%'});
-	$(txt).val($('<div />').html($(btn).data('preEdit')).text());
+	$(txt).val(defaults);
 	$(frm).append(txt);
 	$(d).append(frm);
 	var buttons = {};
 	buttons[trans('OK')] = function(){
-		var d = vboxDivOverflowHidden(p);
+		var d = vboxDivOverflowHidden(elm);
 		$(d).html($('<div />').text($('#vboxExportAppliancePropTextarea').val()).html());
-		$(p).html('');
-		$(p).append(d);
+		$(elm).html('').append(d);
 		$(this).empty().remove();
 	}
-	buttons[trans('Cancel')] = function(){$(this).empty().remove();}
-	$(d).dialog({'height':300,'width':300,'closeOnEscape':false,'modal':true,'resizable':true,'draggable':true,'buttons':buttons,'title':$(p).parent().children().first().html()});
+	buttons[trans('Cancel')] = function(){
+		$(this).empty().remove();
+	}
+	$(d).dialog({'height':300,'width':300,'closeOnEscape':false,'modal':true,'resizable':true,'draggable':true,'buttons':buttons,'title':$(elm).parent().siblings().first().html()});
 
 }
 /* Edit property that has a text box */

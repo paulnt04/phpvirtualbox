@@ -117,7 +117,7 @@
 					$(r).css('background','#cccccc');
 					return r;
 				},scroll:false,'start':function(e,ui){
-					$('body').attr('unselectable','on').css({'-moz-user-select':'none','-webkit-user-select':'none'});
+					$('body').attr({'unselectable':'on'}).css({'-moz-user-select':'none','-webkit-user-select':'none'});
 					var d = document.createElement('div');
 					$(d).attr({'id':'vboxResizeOverlay','style':'width:100%;height:100%;border:0px;margin:0px;padding:0px;position:absolute;top:0px;left:0px;z-index:10;cursor:'+(jQuery.browser.opera ? 'e-resize' : 'col-resize')})
 					$('#vboxIndex').append(d);
@@ -127,7 +127,7 @@
 				},'stop':function(e){
 
 					$('#vboxResizeOverlay').remove();
-					$('body').attr('unselectable','').css({'-moz-user-select':'','-webkit-user-select':''});
+					$('body').attr({'unselectable':''}).css({'-moz-user-select':'','-webkit-user-select':''});
 					
 					document.body.style.cursor = 'default';
 

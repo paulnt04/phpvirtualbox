@@ -49,8 +49,31 @@
  *
  */
 var vboxApplianceImportProps = {
-		'OS' : {'label':'OS Type','icon':'os_type','edit':null,'display':function(val){
-			return '<img src="images/vbox/'+vboxGuestOSTypeIcon(val)+'" style="height: 16px; width: 16px" /> ' + trans(val);
+		'OS' : {'label':'OS Type','icon':'os_type','edit':function(elm){
+			var input = document.createElement('input');
+			$(input).attr({'type':'button','class':'vboxbutton'}).css({'width':($(elm).innerWidth()-12)+'px','margin':'0px'}).val($(elm).find('span.vboxApplianceOSTitle').html());
+			$(elm).children().hide();	
+			$(elm).append(input);
+			$(elm).children('input:button').first().contextMenu({
+				menu: 'vboxOSTypesMenu',
+				button: 0,
+				mode: 'menu',
+				inSpeed : -1,
+				outSpeed : -1
+			},
+			function(a, el, pos, srcEl) {
+				$(elm).find('span.vboxApplianceOSTitle').html(trans(vboxSettingsOSTypesObj[a]['description']));
+				$(elm).find('img.vboxApplianceOSIcon').attr('src','images/vbox/'+vboxGuestOSTypeIcon(a));
+				$(elm).closest('td').data('descValue',a);
+				$('#vboxImportProps').trigger('selectProp');
+			}).focus();
+			$('#vboxImportProps').one('selectProp',function(){
+				$(elm).children('input:button').first().hide().siblings().show();
+				$(elm).children('input:button').first().remove();
+			});
+			
+		},'display':function(val){
+			return $('<span />').append('<img class="vboxApplianceOSIcon" src="images/vbox/'+vboxGuestOSTypeIcon(val)+'" style="height: 16px; width: 16px; float: left; margin-top: 2px; margin-right: 4px; " /> <span class="vboxApplianceOSTitle">' + trans(val) +'</span>').attr({'unselectable':'on'}).css({'-moz-user-select':'none','-webkit-user-select':'none'}).bind('selectstart',function(e){e.preventDefault();return false;});
 		}},
 		'Name' : {'label':'Name','icon':'name','edit':'text'},
 		'Description' : {'label':'Description','icon':'description','edit':'textarea'},
@@ -116,6 +139,48 @@ vboxApplianceImportProps['NetworkAdapter']['options'] = $('#vboxIndex').data('vb
 delete vboxApplianceImportProps['NetworkAdapter']['options'][0];
 // Sound cards
 vboxApplianceImportProps['SoundCard']['options'] = $('#vboxIndex').data('vboxAudioControllerTypes');
+
+
+// OS Types
+/////////////////////////
+$('ul.vboxOSTypesMenuList').remove();
+
+// shorthand
+var vboxOSTypes = $('#vboxIndex').data('vboxOSTypes');
+var vboxSettingsOSTypes = {};
+var vboxSettingsOSTypesObj = {};
+
+for(var i in vboxOSTypes) {
+
+	// create array of os family types
+	if(!vboxSettingsOSTypes[vboxOSTypes[i].familyId]) {
+		vboxSettingsOSTypes[vboxOSTypes[i].familyId] = {'id':vboxOSTypes[i].familyId,'description':vboxOSTypes[i].familyDescription,'osTypes':[]};
+	}
+
+	vboxSettingsOSTypes[vboxOSTypes[i].familyId].osTypes[vboxSettingsOSTypes[vboxOSTypes[i].familyId].osTypes.length] = {'id':vboxOSTypes[i].id,'description':vboxOSTypes[i].description };
+
+	vboxSettingsOSTypesObj[vboxOSTypes[i].id] = vboxOSTypes[i];
+	
+	// Preload icons
+	vboxOSTypes[i].icon = new Image();
+	vboxOSTypes[i].icon.src = "images/vbox/" + vboxGuestOSTypeIcon(vboxOSTypes[i].id);
+
+}
+
+var ul = document.createElement('ul');
+$(ul).attr({'id':'vboxOSTypesMenu','class':'contextMenu contextMenuNoBG vboxOSTypesMenuList'});
+for(var i = i in vboxSettingsOSTypes) {
+	var li = document.createElement('li');
+	$(li).html('<a href="#null-'+i+'">'+trans(vboxSettingsOSTypes[i].description)+'</a>');
+	var ul2 = document.createElement('ul');
+	$(ul2).addClass('vboxOSTypesMenuList');
+	for(var a in vboxSettingsOSTypes[i]['osTypes']) {
+		var li2 = document.createElement('li');
+		$(li2).html('<a href="#'+vboxSettingsOSTypes[i]['osTypes'][a]['id']+'"><img style="height: 16px; width:16px; margin-left: -22px; margin-top: 2px; float: left; " src="images/vbox/'+vboxGuestOSTypeIcon(vboxSettingsOSTypes[i]['osTypes'][a]['id'])+'" /> '+trans(vboxSettingsOSTypes[i]['osTypes'][a]['description'])+"</a>").appendTo(ul2);
+	}
+	$(li).append(ul2).appendTo(ul);
+}
+$('#vboxIndex').append(ul);
 
 
 
@@ -251,8 +316,10 @@ function wizardImportApplianceParsed(d) {
 					case 'textarea':
 						vboxImportAppliancePropEditArea(this,desc);
 						break;
+					default:
+						if(typeof desc.edit == 'function') desc.edit(this,desc);
 				}
-			});
+			}).attr({'unselectable':'on'}).css({'-moz-user-select':'none','-webkit-user-select':'none'});
 			$(tr).append(td);
 
 			// Hard Disks are handled differently
@@ -353,17 +420,18 @@ function vboxImportAppliancePropEditArea(elm) {
 	$(input).css({'width':($(elm).innerWidth()-12)+'px','margin':'0px'});
 	$(input).val(trans('Edit'));
 	$(input).blur(function(){
-		$(this).hide();
-		$(this).siblings().show();
-		$(this).remove();
 	});
 	$(input).click(function(){
 		vboxImportAppliancePropEditDialog(elm);
-		$(this).trigger('blur');
+		$('#vboxImportProps').trigger('selectProp');
 	});
 	$(elm).children().hide();	
 	$(elm).append(input);
-	$(elm).children('input:button').first().focus();	
+	$(elm).children('input:button').first().focus();
+	$('#vboxImportProps').one('selectProp',function(){
+		$(elm).children('input:button').first().hide().siblings().show();
+		$(elm).children('input:button').first().remove();		
+	});
 }
 
 /* 

@@ -37,6 +37,7 @@ function vboxImportApplianceDialogInit() {
 			l.add('applianceImport',function(d){
 				if(d && d.progress) {
 					vboxProgress(d.progress,function(){
+						$('#vboxIndex').trigger('vmlistreload');
 						// Imported mediums must be refreshed
 						var ml = new vboxLoader();
 						ml.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
@@ -512,7 +513,7 @@ function vboxVMsettingsInitNetwork(vm,callback) {
 function vboxVMsettingsInitUSB(vm,callback) {
 	
 	var panes = new Array(
-		{'name':'USBDevices','label':'USB','icon':'usb'}
+		{'name':'USBDevices','label':'USB Devices','icon':'usb'}
 	);
 	
 	var data = new Array(
@@ -693,7 +694,7 @@ function vboxSettingsInit(title,panes,data,onsave,pane) {
 			$(document).trigger('click');
 		};
 
-	    $('#vboxSettingsDialog').dialog({'closeOnEscape':false,'width':900,'height':500,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxSettingsDialog vboxDialogContent','title':title});			
+	    $('#vboxSettingsDialog').dialog({'closeOnEscape':false,'width':(panes.length > 1 ? 900 : 600),'height':(panes.length > 1 ? 500 : 450),'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxSettingsDialog vboxDialogContent','title':title});			
 
 	    /* Select first or passed menu item */
 	    var i = 0;
@@ -720,7 +721,6 @@ function vboxSettingsInit(title,panes,data,onsave,pane) {
 	    if(panes.length == 1) {
 	    	$('#vboxSettingsMenu').css('display','none');
 	    	$('#vboxSettingsDialog table.vboxSettingsTable').css('width','100%');
-	    	$('#vboxSettingsDialog').dialog({'width':600, 'height': 450});
 	    }
 	    
 	    $('#vboxSettingsDialog').trigger('show');

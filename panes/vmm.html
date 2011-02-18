@@ -430,6 +430,16 @@ var vmmButtons = new Array(
 			buttons[trans('Release')] = function(){
 				var b = this;
 				vboxAjaxRequest('mediumRelease',{'id':m.id,'type':m.deviceType},function(ret){
+					// Check if current VM is in list
+					if(ret && ret.released.length) {
+						var vmid = $('#vboxIndex').data('selectedVM').id;
+						for(var i = 0; i < ret.released.length; i++) {
+							if(vmid == ret.released[i]) {
+								$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);
+								break;
+							}
+						}
+					}
 					var l = new vboxLoader();
 					l.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
 					l.onLoad = vboxVMMFillMediums;

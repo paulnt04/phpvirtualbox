@@ -94,18 +94,24 @@ var vboxVMListSettingsMenu = {
 		'label' : 'Storage',
 		'icon' : 'hd'
 	},
-	'Network' : {
-		'label' : 'Network',
-		'icon' : 'nw'
-	},
 	'USB' : {
-		'label' : 'USB',
+		'label' : 'USB Devices',
 		'icon' : 'usb'
 	},
+	'Network' : {
+		'label' : 'Network Adapters...',
+		'icon' : 'nw'
+	},
 	'SharedFolders' : {
-		'label' : 'Shared Folders',
+		'label' : 'Shared Folders...',
 		'icon' : 'shared_folder'
+	},
+	'GuestAdditions' : {
+		'label' : 'Install Guest Additions',
+		'icon' : 'guesttools',
+		'separator' : true
 	}
+
 };
 
 
@@ -127,6 +133,7 @@ for(var i in vboxVMListSettingsMenu) {
 		var sl = document.createElement('ul');
 		$(sl).attr({'class':'vboxSettingsUSBAttachmentsMenu contextMenuNoBG','style':'display: none','id':'vboxVMSettingsUSBMenu'}).data({'callback':'vboxVMListToolbarUSBUpdate'}).appendTo(li);		
 	}
+	if(vboxVMListSettingsMenu[i].separator) $(li).addClass('separator');
 	ul.appendChild(li);
 	
 }
@@ -149,11 +156,18 @@ $("#vboxToolbarButton-vboxPaneToolbar-vmsettings").contextMenu({
 			return;
 		}
 		
+		if(a == 'GuestAdditions') {
+			vboxInstallGuestAdditions($('#vboxIndex').data('selectedVM').id);
+			return;
+		}
+		
 		if(a.indexOf('mount') == 0) {
 			var bpd = a.split('-');
 			vboxMountInit($('#vboxIndex').data('selectedVM').id,bpd[1],bpd[2],bpd[3]);
 			return;
 		}
+		
+		if(a == 'dvdDevices' || a == 'fdDevices') return;
 		
 		// Assume it was a storage action
 		if(vboxToolbarMediaLast.type == 'DVD') {
@@ -259,13 +273,14 @@ function vboxVMListToolbarUSBUpdate(menu) {
 				}
 			}).data({'usbDevice':hostUSB[i].id,'capt':capt});
 			
-			$(menu).append($('<li />').append($('<span />').append(cbox).append(' '+dname)).attr({'class':(avail ? '' : 'disabled')}));
+			$(menu).append($('<li />').append($('<span />').click(function(){if(!$(this).parent().hasClass('disabled')){$(this).children('input').click();}return false;}).append(cbox).append(' '+dname)).attr({'class':(avail ? '' : 'disabled')}));
 		}
 		
 		// No devices?
 		if(hostUSB.length == 0) {
 			$(menu).append($('<li />').html('<span>&lt;'+trans('no devices available')+'&gt;</span>'));
 		}
+		$(menu).trigger('menuLoaded');
 	}
 	l.run();
 }
@@ -287,12 +302,10 @@ function vboxUpdateSettingsMenu(vm) {
 
 	// enable or disable USB
 	if(vm && vm['USBController'] && vm['USBController']['enabled']) {
-		$('#vboxVMSettingsMenu').enableContextMenuItems('#USB');
-		$('#vboxVMSettingsMenu').find('a[href=#USB]').css('background-image','url(images/vbox/usb_16px.png)');
 		$('ul.vboxSettingsUSBAttachmentsMenu').children().remove();
+		$('#vboxVMSettingsMenu').find('a[href=#USB]').closest('li').css('display','');
 	} else {
-		$('#vboxVMSettingsMenu').disableContextMenuItems('#USB');
-		$('#vboxVMSettingsMenu').find('a[href=#USB]').css('background-image','url(images/vbox/usb_disabled_16px.png)');
+		$('#vboxVMSettingsMenu').find('a[href=#USB]').closest('li').css('display','none');
 	}
 	
 	// Enable or disable network
@@ -306,36 +319,73 @@ function vboxUpdateSettingsMenu(vm) {
 		}
 	}
 	if(enabledS) {
-		$('#vboxVMSettingsMenu').enableContextMenuItems('#Network');
-		$('#vboxVMSettingsMenu').find('a[href=#Network]').css('background-image','url(images/vbox/nw_16px.png)');
+		$('#vboxVMSettingsMenu').find('a[href=#Network]').closest('li').css('display','');
 	} else {
-		$('#vboxVMSettingsMenu').disableContextMenuItems('#Network');
-		$('#vboxVMSettingsMenu').find('a[href=#Network]').css('background-image','url(images/vbox/nw_disabled_16px.png)');
+		$('#vboxVMSettingsMenu').find('a[href=#Network]').closest('li').css('display','none');
 	}
 	
 	// vboxVMSettingsToolbarStorageHolder
 	var smenu = $('#vboxVMSettingsToolbarStorageHolder');
 	smenu.siblings('li.vboxVMSettingsStorage').remove();
+	$('ul.vboxVMSettingsStorage').remove();
 	var enabledS = false;
 	if(vm && vm.storageControllers && vm.storageControllers.length) {
+		var dvdDevices = new Array();
+		var fdDevices = new Array();
 		var storage = new vboxStorage();
 		for(var a = 0; a < vm.storageControllers.length; a++) {
+			var icon = vm['storageControllers'][a].bus.toLowerCase();
+			if(vm['storageControllers'][a].bus == 'SAS') icon = 'sata';
 			for(var b = 0; b < vm['storageControllers'][a]['mediumAttachments'].length; b++) {
+				
 				if(vm['storageControllers'][a]['mediumAttachments'][b].type == 'HardDisk') continue;
+				
 				vm['storageControllers'][a]['mediumAttachments'][b]['controller'] = vm['storageControllers'][a]['name'];
+				
 				var portName = storage[vm['storageControllers'][a].bus].slotName(vm['storageControllers'][a]['mediumAttachments'][b].port, vm['storageControllers'][a]['mediumAttachments'][b].device);
 				var m = vm['storageControllers'][a]['mediumAttachments'][b].medium;
 				m = storage.getMediumById((m && m.id ? m.id : null));
+				
 				var mName = storage.getMediumName(m);
 				mName = $('<div />').text(mName).html();
+				
+				
 				var li = document.createElement('li');
 				var smid = vm.id+'-vboxVMSettingsStorage-'+a+'-'+b;
 				$('#'+smid).remove();
-				$(li).attr({'title':mName}).html("<a title='"+mName+"' href='#mount-"+vm['storageControllers'][a].bus+"-"+vm['storageControllers'][a]['mediumAttachments'][b].port+"-"+vm['storageControllers'][a]['mediumAttachments'][b].device+"' style='background-image:url(images/vbox/"+(vm['storageControllers'][a]['mediumAttachments'][b].type == 'DVD' ? 'cd' : 'fd')+"_16px.png);'>"+portName + "</a>").addClass('vboxVMSettingsStorage');
-				$(li).append($('<ul />').attr({'id':smid}).data({'callback':'vboxVMListToolbarStorageUpdate','storage':vm['storageControllers'][a]['mediumAttachments'][b]})).insertBefore(smenu);
+				$(li).attr({'title':mName}).html("<a title='"+mName+"' href='#mount-"+vm['storageControllers'][a].bus+"-"+vm['storageControllers'][a]['mediumAttachments'][b].port+"-"+vm['storageControllers'][a]['mediumAttachments'][b].device+"' style='background-image:url(images/vbox/"+icon+"_16px.png);'>"+vm['storageControllers'][a]['name'] + ' ('+portName + ")</a>").addClass('vboxVMSettingsStorage');
+				$(li).append($('<ul />').attr({'id':smid}).data({'callback':'vboxVMListToolbarStorageUpdate','storage':vm['storageControllers'][a]['mediumAttachments'][b]}));
+				if(vm['storageControllers'][a]['mediumAttachments'][b].type == 'DVD') {
+					dvdDevices[dvdDevices.length] = $(li);
+				} else {
+					fdDevices[fdDevices.length] = $(li);
+				}
 				enabledS = true;
 			}
 		}
+		if(dvdDevices.length) {
+			var li = document.createElement('li');
+			$(li).html("<a href='#dvdDevices' style='background-image:url(images/vbox/cd_16px.png);'>"+trans('CD/DVD Devices')+'</a>').addClass('vboxVMSettingsStorage');
+			var ul = document.createElement('ul');
+			$(ul).addClass('vboxVMSettingsStorage');
+			for(var i = 0; i < dvdDevices.length; i++) {
+				$(ul).append(dvdDevices[i]);	
+			}
+			$(li).append(ul);
+			$(li).insertBefore(smenu);
+		}
+		if(fdDevices.length) {
+			var li = document.createElement('li');
+			$(li).html("<a href='#fdDevices' style='background-image:url(images/vbox/fd_16px.png);'>"+trans('Floppy Devices')+'</a>').addClass('vboxVMSettingsStorage');
+			var ul = document.createElement('ul');
+			$(ul).addClass('vboxVMSettingsStorage');
+			for(var i = 0; i < fdDevices.length; i++) {
+				$(ul).append(fdDevices[i]);	
+			}
+			$(li).append(ul);
+			$(li).insertBefore(smenu);
+		}
+		
 	}
 	if(enabledS) {
 		$('#vboxVMSettingsMenu').find('a[href=#Network]').parent().addClass('separator');

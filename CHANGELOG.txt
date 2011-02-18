@@ -5,7 +5,8 @@ Added Exclusive and VPID hardware acceleration options to
 Acceleration tab visible when $enableAdvancedConfig is set.
 
 Added Automatic SATA Port Count option to the SATA Port Count
-list when $enableAdvancedConfig is set.
+list when $enableAdvancedConfig is set. New VMs created through
+phpVirtualBox will automatically have this set to Auto.
 
 Fixed bug that would display the Input tab rather than the
 Description tab when clicking on the Description section link in
@@ -18,15 +19,23 @@ Fixed bug that would not change some settings when using
 PHP < 5.2.0. This was reported by CentOS users regarding the
 Cable Connected network setting in particular.
 
+Fixed bug that would not allow you to add a VM through Machine ->
+Add when using PHP < 5.2.0.
+
 Circumvent unconfirmed VirtualBox bug when trying to obtain a
 screen shot for the Preview window returns "Could not take a
 screenshot (VERR_TRY_AGAIN)." screen.php now runs
 console->display->invalidateAndUpdate() on error.
 
 VM settings while running are now available via the Settings
-button on the toolbar.
+button on the toolbar. Moved Install Guest Additions function
+to this menu.
 
 Added more files to default $browserRestrictFiles setting.
+
+OS Type can now be changed when importing a VM.
+
+Added $previewAspectRatio config option.
 
 -------------------------------------
 	4.0-3	2011-2-10

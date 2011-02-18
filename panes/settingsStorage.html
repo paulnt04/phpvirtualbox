@@ -213,6 +213,17 @@ var vboxSettingsStorageObj = function() {
 	this.addAttached = function(m) {
 		if(!m || !m.id) return;
 		var medium = this.storage.getMediumById(m.id);
+		
+		// SafeGuard
+		if(!medium) {
+			alert('A medium listed as attached to this machine was not found in the media registry. Media will now be refreshed and phpVirtualBox reloaded.');
+			var l = new vboxLoader();
+			l.add('Mediums',function(d){return;},{'force_refresh':1});
+			l.add('VMDetails',function(d){return;},{'force_refresh':1,'vm':$('#vboxSettingsDialog').data('vboxMachineData').id});
+			l.onLoad = function(){location.reload(true);}
+			l.run();
+		}
+		
 		this.attachedDirectMediums[medium.id] = medium;
 		if(medium.base) {
 			this.attachedIndirectMediums[medium.base] = medium;

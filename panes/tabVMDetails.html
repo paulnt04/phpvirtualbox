@@ -430,7 +430,7 @@ function __vboxDrawPreview(fromSelf) {
 			$('#vboxDetailsPreviewVMName').css('display','');
 			
 			var width = $('#vboxIndex').data('vboxConfig')['previewWidth'];
-			var height = (width * 3.0/4.0);
+			var height = width / $('#vboxIndex').data('vboxConfig')['previewAspectRatio'];
 			
 			// Clear timer if it is set
 			if($('#vboxVMDetails').data('vboxPreviewTimer')) {
@@ -560,15 +560,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		$(vboxDetailsTable).attr({'class':'vboxDetailsTable'}).append(__vboxDetailHeader("machine_16px.png","General"));
 	}
 
-	$(vboxDetailsTable).append(__vboxDetailRow(trans("Name"), data['name'])).append(__vboxDetailRow(trans("OS Type"), trans(data['OSTypeId'])));
-	
-	// Guest additions link?
-	if(links && data.state == 'Running') {
-		$(vboxDetailsTable).append(__vboxDetailRow('', '<a href="javascript:vboxInstallGuestAdditions(\''+data.id+'\')">('+trans('Install Guest Additions')+')</a>',true));
-	}
-
-
-
+	$(vboxDetailsTable).append(__vboxDetailRow(trans("Name"), data['name'])).append(__vboxDetailRow(trans("OS Type"), trans(data['OSTypeDesc'])));
 	
 	// System
 	//////////////////
@@ -621,7 +613,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 
 		// Set height / width
 		var width = $('#vboxIndex').data('vboxConfig')['previewWidth'];
-		var height = (width * 3.0/4.0);
+		var height = width / $('#vboxIndex').data('vboxConfig')['previewAspectRatio'];
 		$(divWrap).css({'height':height+'px','width':width+'px','text-align':'left'});
 		divPreview.find('img.vboxPreviewMonitor').css('width',width+'px');
 		divPreview.find('img.vboxPreviewMonitorSide').css('height',height+'px');
@@ -1242,7 +1234,7 @@ for(var i = 0; i < ints.length; i++) {
 		}).click(function(){
 			var newwin = window.open('screen.php?vm='+$('#vboxIndex').data('selectedVM').id+'&full=1','vboxSC','toolbar=1,menubar=0,location=0,directories=0,status=true,resize=true');
 		});
-		var sp = document.createElement('sp');
+		var sp = document.createElement('span');
 		$(sp).html(trans('Open in new window'));
 		$(li).append(sp);
 		$(ul).append(li);

@@ -38,7 +38,7 @@ var defLang = __vboxLangName;
 for(var i = 0; i < vboxLanguages.length; i++) {
 	var li = document.createElement('li');
 	$(li).data('language', vboxLanguages[i]);
-	$(li).html(vboxLanguages[i].name);
+	$(li).html((vboxLanguages[i].name_tr ? vboxLanguages[i].name_tr : vboxLanguages[i].name));
 	$(li).attr('class','vboxListItem').hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');});
 	if(defLang == vboxLanguages[i].id) {
 		$(li).addClass('vboxListItemSelected');

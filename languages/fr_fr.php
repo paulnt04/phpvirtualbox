@@ -69,6 +69,12 @@ public static $trans = array(
 'ACPI Sleep Button' => 'ACPI Sleep Boutton',
 'ACPI event not handled' => 'L\'événement ACPI n\'a pas été traité par la machine virtuelle.',
 
+// Settings button while VM is running
+'CD/DVD Devices' => 'Lecteurs CD/DVD',
+'Floppy Devices' => 'Lecteurs de disquette',
+'USB Devices' => 'Périphériques USB',
+'Network Adapters...' => 'Cartes réseau...',
+'Shared Folders...' => 'Dossiers partagés...',
 
 'Approx X remaining' => '%s restant(es)', /* %s will be replaced with a time. E.g. Approx 2 minutes, 4 seconds remaining */
 'X ago' => 'il y as %s', /* %s will be replaced with a time. E.g. 20 hours ago */
@@ -208,13 +214,14 @@ public static $trans = array(
 'Floppy Controller' => 'Contrôleur disquettes',
 'Floppy Drive' => 'Lecteur de disquettes',
 'SCSI Controller' => 'Contrôleur SCSI',
-'SCSI Port' => 'Port SCSI',
+'SCSI Port %s' => 'Port SCSI %s',
 'SATA Controller' => 'Contrôleur SATA',
-'SATA Port' => 'Port SATA',
+'SATA Port %s' => 'Port SATA %s',
 'SAS Controller' => 'Contrôleur SAS',
-'SAS Port' => 'Port SAS',
+'SAS Port %s' => 'Port SAS %s',
 'HardDisk' => 'Disque dur',
 'Floppy' => 'Disquette',
+'Floppy Device %s' => 'Lecteur disquette %s',
 'DVD' => 'CD/DVD',
 'Type (Format)' => 'Type (Format)',
 'Add Attachment' => 'Ajouter périphérique',

@@ -8,45 +8,23 @@ class phpVBoxConfigClass {
 
 /* DEFAULTS */
 	
-/* Default language. See languages folder for more language options.
- * Can also be changed in File -> Preferences -> Language in
- * phpVirtualBox.
- */
 var $language = 'en_us';
 
-// Preview box pixel width
 var $previewWidth = 180;
+var $previewAspectRatio = 1.6;
 
-/*
-Allow to prompt deletion harddisk files on removal from Virtual Media Manager.
-If this is not set, files are always kept. If this is set, you will be PROMPTED
-to decide whether or not you would like to delete the harddisk file(s) when you
-remove a harddisk from virtual media manager. You may still choose not to delete
-the file when prompted.
-*/
 var $deleteOnRemove = true;
 
-/*
- * File / Folder browser settings
- */
-
-// Restrict file types
 var $browserRestrictFiles = array('.iso','.vdi','.vmdk','.img','.bin','.vhd','.hdd','.ovf','.ova','.xml','.vbox','.cdr','.dmg','.ima','.dsk','.vfd');
 
-/* Screen resolutions for console tab */
-var $consoleResolutions = array('640x480','800x600','1024x768');
-
-/* Max number of network cards per VM. Do not set above VirtualBox's limit (typically 8) or below 1 */
+var $consoleResolutions = array('640x480','800x600','1024x768','1280x720','1440x900');
 var $nicMax = 4;
+
+var $vmConfigRefresh = true;
 
 /*
  * Cache tweeking.
  *
- */
-
-/*
- * Timings.
- * NOT a good idea to set any of these unless asked to do so.
  */
 
 var $cacheSettings = array(

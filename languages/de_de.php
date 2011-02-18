@@ -68,6 +68,12 @@ public static $trans = array(
 'ACPI Sleep Button' => 'ACPI Ruhezustand',
 'ACPI event not handled' => 'Die virtuelle Maschine versteht dieses ACPI Ereignis nicht.',
 
+// Settings button while VM is running
+'CD/DVD Devices' => 'CD/DVD-Laufwerke',
+'Floppy Devices' => 'Diskettenlaufwerke',
+'USB Devices' => 'USB-Geräte',
+'Network Adapters...' => 'Netzwerkadapter...',
+'Shared Folders...' => 'Gemeinsame Ordner...',
 
 'Approx X remaining' => 'Etwa %s verbleiben', /* %s will be replaced with a time. E.g. Approx 2 minutes, 4 seconds remaining */
 'X ago' => 'vor %s', /* %s will be replaced with a time. E.g. 20 hours ago */
@@ -204,16 +210,17 @@ public static $trans = array(
 'Primary Slave' => 'Primärer Slave',
 'Secondary Master' => 'Sekundärer Master',
 'Secondary Slave' => 'Sekundärer Slave',
-'Floppy Controller' => 'Floppy Controller',
+'Floppy Controller' => 'Floppy-Controller',
 'Floppy Drive' => 'Diskettenlaufwerk',
-'SCSI Controller' => 'SCSI Controller',
-'SCSI Port' => 'SCSI Port',
-'SATA Controller' => 'SATA Controller',
-'SATA Port' => 'SATA Port',
-'SAS Controller' => 'SAS Controller',
-'SAS Port' => 'SAS Port',
+'SCSI Controller' => 'SCSI-Controller',
+'SCSI Port %s' => 'SCSI-Port %s',
+'SATA Controller' => 'SATA-Controller',
+'SATA Port %s' => 'SATA-Port %s',
+'SAS Controller' => 'SAS-Controller',
+'SAS Port %s' => 'SAS-Port %s',
 'HardDisk' => 'Festplatte',
 'Floppy' => 'Diskette',
+'Floppy Device %s' => 'Diskettenlaufwerk %s',
 'DVD' => 'CD/DVD',
 'Type (Format)' => 'Typ (Format)',
 'Add Attachment' => 'Anlage beifügen',

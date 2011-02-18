@@ -58,6 +58,10 @@ var $servers = array(
 // Preview box pixel width
 #var $previewWidth = 180;
 
+// Change default preview aspect ratio to 1. 
+// http://www.wikipedia.org/wiki/Aspect_ratio_%28image%29#Previous_and_presently_used_aspect_ratios
+#var $previewAspectRatio = 1.6;
+
 /*
 Allow to prompt deletion harddisk files on removal from Virtual Media Manager.
 If this is not set, files are always kept. If this is set, you will be PROMPTED

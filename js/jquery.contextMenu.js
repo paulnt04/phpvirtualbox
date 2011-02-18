@@ -1,17 +1,25 @@
-// jQuery Context Menu Plugin
-//
-// Version 1.01
-//
-// Cory S.N. LaViska
-// A Beautiful Site (http://abeautifulsite.net/)
-//
-// More info: http://abeautifulsite.net/2008/09/jquery-context-menu-plugin/
+/* jQuery Context Menu Plugin
+
+Version 1.01
+
+Cory S.N. LaViska
+A Beautiful Site (http://abeautifulsite.net/)
+
+More info: http://abeautifulsite.net/2008/09/jquery-context-menu-plugin/
+
 //
 // Terms of Use
 //
 // This plugin is dual-licensed under the GNU General Public License
 //   and the MIT License and is copyright A Beautiful Site, LLC.
 //
+
+This jQuery plugin now hardly resembles the original.
+
+$Id$
+
+
+*/
 if(jQuery)( function() {
 	
 	$.extend($.fn, {
@@ -33,14 +41,20 @@ if(jQuery)( function() {
 				var menu = $('#'+o.menu);
 				
 				// Add contextMenu class
-				$(menu).addClass('contextMenu contextMenuLevel0').data('level',0);
+				$(menu).addClass('contextMenu').data('level',0);
 
-				// Detach sub menus
+				/*
+				 * 
+				 * Detach sub menus
+				 * 
+				 */
 				var subMenus = function(root,level) {
 				
 					if(!level) level = 1;
 					
 					$(root).children('li').children('ul').each(function(){
+						
+						
 						var plink = $(this).siblings('a').first();
 						var subId = $(this).attr('id');
 						if(!subId) {
@@ -48,13 +62,52 @@ if(jQuery)( function() {
 							subId = href + '-Submenu';
 							$(this).attr('id', subId);
 						}
-						$(this).addClass('contextMenu contextSubMenu contextMenuLevel' + level).parent().addClass('contextMenuParent').data({'subId':subId,'level':level});
+						$(this).addClass('contextMenu contextSubMenu').data({'level':level}).parent().addClass('contextMenuParent').data({'subId':subId,'level':level});
 						var html = plink.html();
-						plink.html('<table class="vboxInvisible" style="width:100%"><tr><td style="text-align:left">'+html+'</td><td style="text-align:right"><img src="images/rightArrow.png" /></td></tr></table>');
+						plink.html('<table class="vboxInvisible" style="width:100%"><tr><td style="text-align:left">'+html+'</td><td style="text-align:right; width: 22px;"><img src="images/rightArrow.png" /></td></tr></table>');
+
+						// Hide menus trigger
+						var smenu = this;
+						$('#vboxIndex').bind('contextMenuShowLevel',function(e,c){
+							if($(smenu).data('level') >= c.level && $(smenu).attr('id') != c.id) $(smenu).hide();
+						});
+						
 						$(this).detach().appendTo($('#vboxIndex'));
 						subMenus($(this),level + 1);
 					});
 									
+				}
+				
+				/*
+				 * 
+				 * Activate menu items
+				 * 
+				 */
+				var menuItems = function(menu, srcElement) {
+					
+					// When items are selected
+					$(menu).find('A').unbind('click');
+					$(menu).find('li').unbind('mouseenter').unbind('mouseleave');
+					$(menu).find('LI:not(.disabled)').hover( function(e) {
+						
+						$(menu).find('LI.hover').removeClass('hover');
+						$(this).addClass('hover');
+						
+						$('#vboxIndex').trigger('contextMenuShowLevel', {'level':$(this).parent().data('level'), 'id':$(this).parent().attr('id')});
+						
+						var subMenuId = $(this).data('subId');
+						if(subMenuId) showMenu($(this),$('#'+subMenuId),'submenu',e);
+						
+					},function() {
+						$(menu).find('LI.hover').removeClass('hover');
+					}).children('A').click( function() {
+						$(document).unbind('click');
+						$(".contextMenu").hide();
+						// Callback
+						if( callback ) callback( $(this).attr('href').substr(1), $(srcElement), null, this); //{x: x - offset.left, y: y - offset.top, docX: x, docY: y} , this);
+						return false;
+					});
+					
 				}
 				
 				var showMenu = function(srcElement, menu, mode, e) {
@@ -63,10 +116,11 @@ if(jQuery)( function() {
 					if(!$(menu)[0]) return;
 
 					// Detach sub menus
-					subMenus(menu);
+					subMenus(menu,$(menu).data('level')+1);
 					
 					// Hide all other menus at this level
-					$('ul.contextMenuLevel'+$(menu).data('level')).hide();
+					$('#vboxIndex').trigger('contextMenuShowLevel', {'level':$(menu).data('level'), 'id':$(menu).attr('id')});
+					
 					
 					// Detect mouse position
 					var d = {}, posX, posY;
@@ -114,40 +168,29 @@ if(jQuery)( function() {
 					x = (right > windowWidth) ? x - (right - windowWidth) : x;
 					y = (bottom > windowHeight) ? y - (bottom - windowHeight) : y;
 
-					// When items are selected
-					$(menu).find('A').unbind('click');
-					$(menu).find('li').unbind('mouseenter').unbind('mouseleave');
-					$(menu).find('LI:not(.disabled)').hover( function(e) {
-						
-						$(menu).find('LI.hover').removeClass('hover');
-												
-						var subMenuId = $(this).data('subId');
-						var parentId = $(this).parent().attr('id')
-						$(this).addClass('hover');
-						$('ul.contextSubMenu').each(function(){
-							if($(this).attr('id') != parentId) $(this).hide();
-						});
-						if(subMenuId) showMenu($(this),$('#'+subMenuId),'submenu',e);
-						
-					},function() {
-						$(menu).find('LI.hover').removeClass('hover');
-					}).children('A').click( function() {
-						$(document).unbind('click');
-						$(".contextMenu").hide();
-						// Callback
-						if( callback ) callback( $(this).attr('href').substr(1), $(srcElement), null, this); //{x: x - offset.left, y: y - offset.top, docX: x, docY: y} , this);
-						return false;
-					});
 					
 					// Check for callback if nothing is present
 					if($(menu).children().length == 0 && $(menu).data('callback')) {
+						
+						$(menu).one('menuLoaded',function(){
+							menuItems(menu, srcElement);
+						});
+						
 						var m = window[$(menu).data('callback')](menu);
+						
 						// New menu returned?
 						if(m) {
-							$(m).addClass('contextSubMenu contextMenuLevel' + ($(menu).data('level')+1)).data('level',($(menu).data('level')+1));
+							$(m).addClass('contextSubMenu contextMenuLevel' + ($(menu).data('level')+1)).data('level',($(menu).data('level')+1))
+							// Hide menus trigger
+							$('#vboxIndex').bind('contextMenuShowLevel',function(e,c){
+								if($(m).data('level') >= c.level && $(m).attr('id') != c.id) $(m).hide();
+							});
+;
 							showMenu(srcElement, m, 'submenu', e);
 							return;
 						}
+					} else {
+						menuItems(menu, srcElement);
 					}
 					
 					// Menu  show

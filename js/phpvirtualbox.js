@@ -648,7 +648,7 @@ function vboxMediaMenu(type,callback,mediumPath) {
 				if(!self.removeEnabled) {
 					$(li).addClass('disabled');
 				}				
-				$(li).html("<a href='#removeD' style='background-image: url(images/vbox/cd_unmount"+(self.removeEnabled ? '' : '_disabled')+"__16px.png);' >"+trans('Remove disk from virtual drive')+"</a>").addClass('separator').addClass('vboxMediumRecentBefore').appendTo(ul);
+				$(li).html("<a href='#removeD' style='background-image: url(images/vbox/cd_unmount"+(self.removeEnabled ? '' : '_dis')+"_16px.png);' >"+trans('Remove disk from virtual drive')+"</a>").addClass('separator').addClass('vboxMediumRecentBefore').appendTo(ul);
 
 				break;
 			
@@ -672,7 +672,7 @@ function vboxMediaMenu(type,callback,mediumPath) {
 				if(!self.removeEnabled) {
 					$(li).addClass('disabled');
 				}
-				$(li).html("<a href='#removeD' style='background-image: url(images/vbox/fd_unmount"+(self.removeEnabled ? '' : '_disabled')+"_16px.png);' >"+trans('Remove disk from virtual drive')+"</a>").addClass('separator').addClass('vboxMediumRecentBefore').appendTo(ul);
+				$(li).html("<a href='#removeD' style='background-image: url(images/vbox/fd_unmount"+(self.removeEnabled ? '' : '_dis')+"_16px.png);' >"+trans('Remove disk from virtual drive')+"</a>").addClass('separator').addClass('vboxMediumRecentBefore').appendTo(ul);
 				
 				break;
 				
@@ -1297,11 +1297,11 @@ function vboxStorage() {
 		'maxDevicesPerPortCount' : 1,
 		'types' : ['IntelAhci'],
 		'driveTypes' : ['dvd','disk'],
-		'slotName' : function(p,d) { return trans('SATA Port') + ' ' + p; },
+		'slotName' : function(p,d) { return trans('SATA Port %s').replace('%s',p); },
 		'slots' : function() {
 					var s = {};
 					for(var i = 0; i < 30; i++) {
-						s[i+'-0'] = trans('SATA Port') + ' ' + i;
+						s[i+'-0'] = trans('SATA Port %s').replace('%s',i);
 					}
 					return s;
 				}
@@ -1312,11 +1312,11 @@ function vboxStorage() {
 		'maxDevicesPerPortCount' : 1,
 		'driveTypes' : ['disk'],
 		'types' : ['LsiLogic','BusLogic'],
-		'slotName' : function(p,d) { return trans('SCSI Port') + ' ' + p; },
+		'slotName' : function(p,d) { return trans('SCSI Port %s').replace('%s',p); },
 		'slots' : function() {
 						var s = {};
 						for(var i = 0; i < 16; i++) {
-							s[i+'-0'] = trans('SCSI Port') + ' ' + i;
+							s[i+'-0'] = trans('SCSI Port %s').replace('%s',i);
 						}
 						return s;				
 					}
@@ -1327,8 +1327,8 @@ function vboxStorage() {
 		'maxDevicesPerPortCount' : 2,
 		'types' : ['I82078'],
 		'driveTypes' : ['floppy'],
-		'slotName' : function(p,d) { return trans('Floppy Device')+' '+d; },
-		'slots' : function() { return { '0-0':trans('Floppy Device')+' 0', '0-1':trans('Floppy Device')+' 1' }; }
+		'slotName' : function(p,d) { return trans('Floppy Device %s').replace('%s',d); },
+		'slots' : function() { return { '0-0':trans('Floppy Device %s').replace('%s','0'), '0-1':trans('Floppy Device %s').replace('%s','1') }; }
 	};
 
 	
@@ -1337,11 +1337,11 @@ function vboxStorage() {
 			'maxDevicesPerPortCount' : 1,
 			'types' : ['LsiLogicSas'],
 			'driveTypes' : ['disk'],
-			'slotName' : function(p,d) { return trans('SAS Port') + ' ' + p; },
+			'slotName' : function(p,d) { return trans('SAS Port %s').replace('%s',p); },
 			'slots' : function() {
 							var s = {};
 							for(var i = 0; i < 8; i++) {
-								s[i+'-0'] = trans('SAS Port') + ' ' + i;
+								s[i+'-0'] = trans('SAS Port %s').replace('%s',i);
 							}
 							return s;				
 						},
