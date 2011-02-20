@@ -716,7 +716,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		if(data['VRDEServer']['netAddress']) {
 			$(vboxDetailsTable).append(__vboxDetailRow(trans("Net Address"), data['VRDEServer']['netAddress']));
 		}
-		var chost = vboxGetVRDEAddress();
+		var chost = vboxGetVRDEAddress(data);
 		
 		if(links) {
 			tr = __vboxDetailRow(trans("Server Port"), data['VRDEServer']['ports']);

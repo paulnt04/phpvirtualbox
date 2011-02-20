@@ -372,6 +372,7 @@ ul.vboxMenuBar li {
 table.vboxVMListVM { margin-bottom: 5px; vertical-align: top; }
 table.vboxVMListVM td { padding: 2px; white-space: nowrap; }
 table.vboxVMListVM td.vboxVMSessionOpen { font-style: italic; }
+#vboxPaneVMList img.vboxHostIcon { border: 1px solid #999; }
 
 /* Toolbar above vm list */
 #vboxPaneToolbar { float: left; }

@@ -103,9 +103,15 @@ function vboxGetFile(file,callback,cparams) {
 	return jQuery.get(file,function(f){callback(f,cparams);});
 }
 
-function vboxGetVRDEAddress() {
-	var chost = ($('#vboxIndex').data('vboxConfig').consoleHost ? $('#vboxIndex').data('vboxConfig').consoleHost : vm.VRDEServer.netAddress);
-	if(!chost) { chost = location.hostname;}
+function vboxGetVRDEAddress(vm) {
+	var chost = ($('#vboxIndex').data('vboxConfig').consoleHost ? $('#vboxIndex').data('vboxConfig').consoleHost : (vm && vm.VRDEServer && vm.VRDEServer.netAddress ? vm.VRDEServer.netAddress : null));
+	if(!chost) {
+		// Set to host
+		chost = $('#vboxIndex').data('vboxConfig').host;
+		// Check for localhost / 127.0.0.1
+		if(chost == 'localhost' || chost == '127.0.0.1')
+			chost = location.hostname;
+	}
 	return chost;
 }
 

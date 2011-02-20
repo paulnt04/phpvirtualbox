@@ -197,7 +197,7 @@ function vboxVMList(anchorid) {
 		
 		// VM OS type icon
 		var td = document.createElement('td');
-		$(td).attr({'rowspan':'2'}).html("<img src='images/vbox/" + vboxGuestOSTypeIcon(vmn.OSTypeId) + "' />");
+		$(td).attr({'rowspan':'2'}).html("<img src='images/vbox/" + vboxGuestOSTypeIcon(vmn.OSTypeId) + "' " + (vmn.id == 'host' ? "class='vboxHostIcon'" : "") + " />");
 		
 		tr.appendChild(td);
 		

@@ -1,5 +1,5 @@
 -------------------------------------
-	4.0-4
+	4.0-4	
 -------------------------------------
 Added Exclusive and VPID hardware acceleration options to
 Acceleration tab visible when $enableAdvancedConfig is set.
@@ -36,6 +36,19 @@ Added more files to default $browserRestrictFiles setting.
 OS Type can now be changed when importing a VM.
 
 Added $previewAspectRatio config option.
+
+Fixed bug that would always set consoleHost to the server being
+connected to as specified by $location in config.php.
+
+To ensure a more sane default setting, the remote display IP is
+now determined in the following order:
+	- consoleHost setting if set in config.php
+	- IP address if set in VM's vrdeaddress setting
+	- IP address / host specified of server's $location setting
+		in config.php
+	- If setting is 127.0.0.1 or localhost, use phpVirtualBox's IP
+		address / hostname in its URL as determined by the web
+		browser.
 
 -------------------------------------
 	4.0-3	2011-2-10

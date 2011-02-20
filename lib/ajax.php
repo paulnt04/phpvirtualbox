@@ -50,9 +50,6 @@ switch($vboxRequest['fn']) {
 
 		if(!$response['data']['nicMax']) $response['data']['nicMax'] = 4;
 
-		// console host?
-		if(!$response['data']['consoleHost']) $response['data']['consoleHost'] = $response['data']['host'];
-
 		// Are default settings being used?
 		if($settings->warnDefault) {
 			$response['errors'][] = array(

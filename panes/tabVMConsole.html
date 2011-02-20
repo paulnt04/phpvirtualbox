@@ -92,7 +92,7 @@ $('#vboxTabVMConsole').bind('show',function(e,vm){
 	$("#vboxRDPStatus").html('');
 	if(vboxConsoleDetached) window.status = $("#vboxRDPStatus").text();
 	
-	var chost = vboxGetVRDEAddress();
+	var chost = vboxGetVRDEAddress(vm);
 	chost+=':'+vm.consolePort;
 	$(document.vboxRDPForm.serverAddress).val(chost);
 
