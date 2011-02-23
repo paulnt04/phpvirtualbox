@@ -15,6 +15,8 @@ var $previewAspectRatio = 1.6;
 
 var $deleteOnRemove = true;
 
+var $sessionSecurityLevel = 2;
+
 var $browserRestrictFiles = array('.iso','.vdi','.vmdk','.img','.bin','.vhd','.hdd','.ovf','.ova','.xml','.vbox','.cdr','.dmg','.ima','.dsk','.vfd');
 
 var $consoleResolutions = array('640x480','800x600','1024x768','1280x720','1440x900');
@@ -75,6 +77,7 @@ function __construct() {
 		foreach($this->servers as $s) {
 			if($s['name'] == $_COOKIE['vboxServer']) {				
 				foreach($s as $k=>$v) $this->$k = $v;
+				break;
 			}
 		}
 	// If servers is not an array, set to empty array
@@ -99,6 +102,25 @@ function __construct() {
 		$this->consoleHost = $this->rdpHost;
 
 	
+}
+
+// Set Server
+function setServer($server) {
+	foreach($this->servers as $s) {
+		if($s['name'] == $server) {				
+			foreach($s as $k=>$v) $this->$k = $v;
+			break;
+		}
+	}
+}
+// Set server for authentication
+function getServerAuthMaster() {
+	foreach($this->servers as $s) {
+		if($s['authMaster']) {				
+			return $s['name'];
+		}
+	}
+	return $this->servers[0]['name'];
 }
 
 }

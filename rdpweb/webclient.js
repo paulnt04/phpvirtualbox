@@ -14,7 +14,7 @@ var RDPWebClient = {
       var params = {};
       params.wmode="opaque";
       params.menu="false";
-      params.bgcolor="#ffffff";
+      params.bgcolor="#e9e9e9";
       params.quality="low";
       params.allowScriptAccess="always";
 
@@ -24,8 +24,8 @@ var RDPWebClient = {
       var stamp = new Date();
       var seed = "?s=" + stamp.getTime();
 
-      swfobject.embedSWF(FlashFileName + seed, FlashId, "100", "100", "9.0.0","", flashvars, params, attributes);
-      
+      swfobject.embedSWF(FlashFileName + seed, FlashId, "100%", "100%", "9.0.0",
+                         "", flashvars, params, attributes);
     },
     isRDPWebControlById: function(Id)
     {
@@ -56,7 +56,7 @@ var RDPWebClient = {
                 window.addEventListener("contextmenu", function(event) { return RDPWebClient._MozillaContextMenu(event); }, true);
                 window.addEventListener("mousedown", function(event) { return RDPWebClient._MozillaMouse(event, true); }, true);
                 window.addEventListener("mouseup", function(event) { return RDPWebClient._MozillaMouse(event, false); }, true);
-                flash.addEventListener("mouseout", function(event) { return RDPWebClient._MozillaMouseOut(); }, true);
+                flash.addEventListener("mouseout", function(event) { return RDPWebClient._MozillaMouseOut(event); }, true);
             }
             else
             {
@@ -119,7 +119,8 @@ var RDPWebClient = {
     },
     _MozillaMouseOut: function(event)
     {
-        if (event && event.target && RDPWebClient.isRDPWebControlById(event.target.id))
+    	if(!event) return true;
+        if (RDPWebClient.isRDPWebControlById(event.target.id))
         {
             RDPWebClient._callMouseOut(event.target.id);
         }

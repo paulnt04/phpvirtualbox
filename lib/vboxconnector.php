@@ -8,6 +8,8 @@ class vboxconnector {
 
 	// Fatal error number
 	const PHPVB_ERRNO_FATAL = 32;
+	// Connection error number
+	const PHPVB_ERRNO_CONNECT = 64;
 
 	/* VBOX Constants */
 	var $resultcodes = array(
@@ -32,7 +34,7 @@ class vboxconnector {
 	// Is set to true when a progress operation is created
 	var $progressCreated = false;
 
-	public function __construct () {
+	public function __construct ($useAuthMaster = false) {
 
 		require_once(dirname(__FILE__).'/cache.php');
 		require_once(dirname(__FILE__).'/language.php');
@@ -40,13 +42,24 @@ class vboxconnector {
 
 		/* Set.. .. settings */
 		$settings = new phpVBoxConfigClass();
-		$this->settings = get_object_vars($settings);
-		if(!$this->settings['nicMax']) $this->settings['nicMax'] = 4;
 
+		// Are default settings being used?
+		if($settings->warnDefault) {
+			throw new Exception("No configuration found. Rename the file <b>config.php-example</b> in phpVirtualBox's folder to <b>config.php</b> and edit as needed.<p>For more detailed instructions, please see the installation wiki on phpVirtualBox's web site. <p><a href='http://code.google.com/p/phpvirtualbox/w/list' target=_blank>http://code.google.com/p/phpvirtualbox/w/list</a>.</p>",vboxconnector::PHPVB_ERRNO_FATAL);
+		}
+		
 		// Check for SoapClient class
 		if(!class_exists('SoapClient')) {
-			define('VBOX_ERR_FATAL','PHP does not have the SOAP extension enabled.');
+			throw new Exception('PHP does not have the SOAP extension enabled.',vboxconnector::PHPVB_ERRNO_FATAL);
 		}
+
+		// use authentication master server?
+		if($useAuthMaster) {
+			$settings->setServer($settings->getServerAuthMaster());
+		}
+		
+		$this->settings = get_object_vars($settings);
+		if(!$this->settings['nicMax']) $this->settings['nicMax'] = 4;
 
 		// Cache handler object.
 		$this->cache = new cache();
@@ -66,14 +79,11 @@ class vboxconnector {
 
 		// Already connected?
 		if($this->connected) return true;
-
-		/*
-		 *  Check for fatal initialization error
-		 */
-		if(@constant('VBOX_ERR_FATAL')) {
-			throw new Exception(constant('VBOX_ERR_FATAL'),vboxconnector::PHPVB_ERRNO_FATAL);
-		}
 		
+		// Valid session?
+		if(!$this->skipSessionCheck && !$_SESSION['valid']) {
+			throw new Exception(trans('Not logged in.'),vboxconnector::PHPVB_ERRNO_FATAL);
+		}
 
 		//Connect to webservice
 		$this->client = new SoapClient(dirname(__FILE__)."/vboxwebService.wsdl",
@@ -93,13 +103,13 @@ class vboxconnector {
 		} catch (Exception $e) {
 			if(!($msg = $e->getMessage()))
 			$msg = 'Error logging in to vboxwebsrv.';
-			throw new Exception($msg,vboxconnector::PHPVB_ERRNO_FATAL);
+			throw new Exception($msg,vboxconnector::PHPVB_ERRNO_CONNECT);
 		}
 
 
 		// Error logging in
 		if(!$this->vbox->handle) {
-			throw new Exception('Error logging in or connecting to vboxwebsrv.',vboxconnector::PHPVB_ERRNO_FATAL);
+			throw new Exception('Error logging in or connecting to vboxwebsrv.',vboxconnector::PHPVB_ERRNO_CONNECT);
 		}
 
 		return ($this->connected = true);
@@ -157,6 +167,11 @@ class vboxconnector {
 	 */
 	function __call($fn,$args) {
 
+		// Valid session?
+		if(!$this->skipSessionCheck && !$_SESSION['valid']) {
+			throw new Exception(trans('Not logged in.'),vboxconnector::PHPVB_ERRNO_FATAL);
+		}
+				
 		$req = &$args[0];
 		$response = &$args[1][0]; # fix for allow_call_time_pass_reference = Off setting
 
@@ -896,7 +911,27 @@ class vboxconnector {
 				$this->errors[] = $e;
 			}
 		}
-		if($spChanged) $expire[] = '__getSerialPorts'.$args['id']; 
+		if($spChanged) $expire[] = '__getSerialPorts'.$args['id'];
+
+		// LPT Ports
+		if($this->settings['enableLPTConfig']) {
+			$lptChanged = false;
+			for($i = 0; $i < count($args['parallelPorts']); $i++) {
+				$p = $m->getParallelPort($i);
+				if(!($p->enabled || intval($args['parallelPorts'][$i]['enabled']))) continue;
+				$lptChanged = true;
+				try {
+					$p->IOBase = @hexdec($args['parallelPorts'][$i]['IOBase']);
+					$p->IRQ = intval($args['parallelPorts'][$i]['IRQ']);
+					$p->path = $args['parallelPorts'][$i]['path'];
+					$p->enabled = intval($args['parallelPorts'][$i]['enabled']);
+					$p->releaseRemote();
+				} catch (Exception $e) {
+					$this->errors[] = $e;
+				}
+			}
+			if($lptChanged) $expire[] = '__getParallelPorts'.$args['id']; 
+		}		
 
 		// Shared Folders
 		$sharedchanged = false;
@@ -2033,6 +2068,9 @@ class vboxconnector {
 		// Serial Ports
 		$data['serialPorts'] = $this->__getCachedMachineData('__getSerialPorts',@$args['vm'],$machine,@$args['force_refresh']);
 		
+		// LPT Ports
+		$data['parallelPorts'] = $this->__getCachedMachineData('__getParallelPorts',@$args['vm'],$machine,@$args['force_refresh']);
+		
 		// Shared Folders
 		$data['sharedFolders'] = $this->__getCachedMachineData('__getSharedFolders',@$args['vm'],$machine,@$args['force_refresh']);
 
@@ -2553,7 +2591,7 @@ class vboxconnector {
 
 	/*
 	 *
-	 * Fill Serial port 
+	 * Fill Serial ports 
 	 *
 	 */
 	private function __getSerialPorts(&$m) {
@@ -2569,6 +2607,33 @@ class vboxconnector {
 					'IRQ' => $p->IRQ,
 					'hostMode' => $p->hostMode->__toString(),
 					'server' => intval($p->server),
+					'path' => $p->path
+				);
+				$p->releaseRemote();
+			} catch (Exception $e) {
+				// Ignore
+			}
+		}
+		return $ports;
+	}
+
+	/*
+	 *
+	 * Fill LPT ports 
+	 *
+	 */
+	private function __getParallelPorts(&$m) {
+		if(!$this->settings['enableLPTConfig']) return array();
+		$ports = array();
+		$max = intval($this->vbox->systemProperties->parallelPortCount);
+		for($i = 0; $i < $max; $i++) {
+			try {
+				$p = $m->getParallelPort($i);
+				$ports[] = array(
+					'slot' => $p->slot,
+					'enabled' => intval($p->enabled),
+					'IOBase' => '0x'.strtoupper(sprintf('%3s',dechex($p->IOBase))),
+					'IRQ' => $p->IRQ,
 					'path' => $p->path
 				);
 				$p->releaseRemote();
@@ -3448,7 +3513,8 @@ class vboxconnector {
 			'defaultAudioDriver' => (string)$this->vbox->systemProperties->defaultAudioDriver,
 			'maxGuestMonitors' => $this->vbox->systemProperties->maxGuestMonitors,
 			'defaultVRDEExtPack' => $this->vbox->systemProperties->defaultVRDEExtPack,
-			'serialPortCount' => $this->vbox->systemProperties->serialPortCount
+			'serialPortCount' => $this->vbox->systemProperties->serialPortCount,
+			'parallelPortCount' => $this->vbox->systemProperties->parallelPortCount
 		);
 		return true;
 	}

@@ -18,9 +18,11 @@ the list when resetting a VM.
 Fixed bug that would not change some settings when using
 PHP < 5.2.0. This was reported by CentOS users regarding the
 Cable Connected network setting in particular.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=192
 
 Fixed bug that would not allow you to add a VM through Machine ->
 Add when using PHP < 5.2.0.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=199
 
 Circumvent unconfirmed VirtualBox bug when trying to obtain a
 screen shot for the Preview window returns "Could not take a
@@ -49,6 +51,30 @@ now determined in the following order:
 	- If setting is 127.0.0.1 or localhost, use phpVirtualBox's IP
 		address / hostname in its URL as determined by the web
 		browser.
+
+Fixed multi-server bug when initial server is unreachable.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=200
+
+Added basic authentication.
+
+Added icons to dialog titles.
+
+Added Spanish (Latin America) translation.
+
+Fixed preview window redraws in Safari and Chrome (webkit).
+
+jQuery upgrade to 1.5.
+
+jQuery UI upgrade to 1.8.9.
+
+Fixed Opera bug that would cause it to stop refreshing the list of
+VMs.
+
+Maximize use of browser caching when grabbing images for preview
+window.
+
+Added Parallel Port configuration and associated $enableLPTConfig
+configuration setting.
 
 -------------------------------------
 	4.0-3	2011-2-10

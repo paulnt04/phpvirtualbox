@@ -402,7 +402,7 @@ function vboxSettingsSFEditDialog() {
 	
 	$('#vboxIndex').append(d);
 	
-	$('#vboxSettingsSFEdit').dialog({'width':800,'modal':true,'autoOpen':false,'stack':true,'dialogClass':'vboxNonTabbed','title':trans('Shared Folder')});
+	$('#vboxSettingsSFEdit').dialog({'width':800,'modal':true,'autoOpen':false,'stack':true,'dialogClass':'vboxDialogContent vboxNonTabbed','title':'<img src="images/vbox/shared_folder_16px.png" class="vboxDialogTitleIcon" /> '+trans('Shared Folder')});
 
 	return $('#vboxSettingsSFEdit');
 }

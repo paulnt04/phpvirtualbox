@@ -26,8 +26,8 @@
     <link rel="stylesheet" type="text/css" href="css/layout.css"/>
 
     <!-- External / vendor scripts -->
-    <script type="text/javascript" src="js/jquery.js"></script>
-    <script type="text/javascript" src="js/jquery-ui.js"></script>
+    <script type="text/javascript" src="js/jquery-1.5-min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui-1.8.9-min.js"></script>
     <script type="text/javascript" src="js/jquery.contextMenu.js"></script>
 	<script type="text/javascript" src="js/jquery.tipped-2.1b.min.js"></script>
 	<script type="text/javascript" src="js/jqueryFileTree.js"></script>	
@@ -52,6 +52,19 @@
 	
 		$(document).ready(function(){
 
+			/* Check for server setting */
+			if(location.search) {
+				var query = location.search.substr(1).split('&');
+				for(var kv in query) {
+					kv = query[kv].split('=');
+					if(kv[0] == 'server') {
+						vboxSetCookie('vboxServer',unescape(kv[1]));
+						location = location.href.substr(0,location.href.length-location.search.length);
+						break;
+					}
+				}
+			}
+			
 			// If everything loaded correctly, trans() should be defined in
 			// js/language.php and language data should be present.
 			// If not, there is a PHP error somewhere.
@@ -71,94 +84,44 @@
 				return;
 			}
 
-			/* Check for server setting */
-			if(location.search) {
-				var query = location.search.substr(1).split('&');
-				for(var kv in query) {
-					kv = query[kv].split('=');
-					if(kv[0] == 'server') {
-						vboxSetCookie('vboxServer',unescape(kv[1]));
-						location = location.href.substr(0,location.href.length-location.search.length);
-						break;
-					}
-				}
-			}
-			
-			// Data mediator ready for use
-			dataMediator = new vboxDataMediator();
-
-			var l = new vboxLoader();
-			
-			l.add('Config',function(d){$('#vboxIndex').data('vboxConfig',d);});
-			l.add('GuestOSTypes',function(d){$('#vboxIndex').data('vboxOSTypes',d);});
-			l.add('SystemProperties',function(d){$('#vboxIndex').data('vboxSystemProperties',d);});
-			l.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
-			l.add('HostDetails',function(d){$('#vboxIndex').data('vboxHostDetails',d);});
-			l.add('RecentMediums',function(d){$('#vboxIndex').data('vboxRecentMediums',d);});
-
-			l.addFile('panes/topmenu.html',function(f){$('#vboxIndex').append(f);},{});
-			l.addFile('panes/tabs.html',function(f){$('#vboxPaneTabContent').append(f);},{})
-			l.addFile('panes/vmlistToolbar.html',function(f){$('#vboxIndex').append(f);},{});
-			l.addFile('panes/vmlist.html',function(f){$('#vboxPaneVMList').append(f);},{});
-
-			l.onLoad = function() {
-
-				// Fatal error previously occurred
-				if($('#vboxIndex').data('vboxFatalError')) return;
-
-				// Check supported version
-				vboxVersionCheck($('#vboxIndex').data('vboxConfig').version);
-
-				// Resizable
-				///////////////////////
-				$('#vboxResizeBar').draggable({cursor:(jQuery.browser.opera ? 'e-resize' : 'col-resize'),axis:'x',zIndex:99,helper:function(){
-					var r = $('#vboxResizeBar').clone();
-					$(r).unbind('mouseleave');
-					$(r).css('background','#cccccc');
-					return r;
-				},scroll:false,'start':function(e,ui){
-					$('body').attr({'unselectable':'on'}).css({'-moz-user-select':'none','-webkit-user-select':'none'});
-					var d = document.createElement('div');
-					$(d).attr({'id':'vboxResizeOverlay','style':'width:100%;height:100%;border:0px;margin:0px;padding:0px;position:absolute;top:0px;left:0px;z-index:10;cursor:'+(jQuery.browser.opera ? 'e-resize' : 'col-resize')})
-					$('#vboxIndex').append(d);
-					document.body.style.cursor = (jQuery.browser.opera ? 'e-resize' : 'col-resize');
-					$('#vboxResizeBar').data('vboxX',e.pageX);
-					
-				},'stop':function(e){
-
-					$('#vboxResizeOverlay').remove();
-					$('body').attr({'unselectable':''}).css({'-moz-user-select':'','-webkit-user-select':''});
-					
-					document.body.style.cursor = 'default';
-
-					var nx = $('#vboxVMList').width() + (e.pageX - $('#vboxResizeBar').data('vboxX'));
-					$('#vboxVMList').css('width',(nx)+'px');
-
-					// Constraint check
-					if($('#vboxVMList').width() < $('#vboxVMList').parent().innerWidth())
-						$('#vboxVMList').css('width',($('#vboxVMList').parent().innerWidth())+'px');
-					
-					vboxSetCookie("vboxPaneX",($('#vboxVMList').width()));
-					
-					$('#vboxPaneVMList').css('width',$('#vboxVMList').css('width'));
-					
-				}}).css('cursor',(jQuery.browser.opera ? 'e-resize' : 'col-resize')).bind('mouseenter',function(){
-					$(this).css('background',"#cccccc");
-				}).bind('mouseleave',function(){
-					$(this).css('background',"");
-				})[0].onselectstart = function () { return false; };
+			// Resizable
+			///////////////////////
+			$('#vboxResizeBar').draggable({cursor:(jQuery.browser.opera ? 'e-resize' : 'col-resize'),axis:'x',zIndex:99,helper:function(){
+				var r = $('#vboxResizeBar').clone();
+				$(r).unbind('mouseleave');
+				$(r).css('background','#cccccc');
+				return r;
+			},scroll:false,'start':function(e,ui){
+				$('body').attr({'unselectable':'on'}).css({'-moz-user-select':'none','-webkit-user-select':'none'});
+				var d = document.createElement('div');
+				$(d).attr({'id':'vboxResizeOverlay','style':'width:100%;height:100%;border:0px;margin:0px;padding:0px;position:absolute;top:0px;left:0px;z-index:10;cursor:'+(jQuery.browser.opera ? 'e-resize' : 'col-resize')})
+				$('#vboxIndex').append(d);
+				document.body.style.cursor = (jQuery.browser.opera ? 'e-resize' : 'col-resize');
+				$('#vboxResizeBar').data('vboxX',e.pageX);
 				
-				// Resize to last setting
-				vboxParseCookies();
-				if($('#vboxIndex').data('vboxCookies')['vboxPaneX']) {
-					$('#vboxVMList').css('width',($('#vboxIndex').data('vboxCookies')['vboxPaneX'])+'px');
-				}
-				
-			}
-			l.onShow = function() { $(window).trigger('resize'); }
+			},'stop':function(e){
 
-			l.hideRoot = true;
-			l.run();
+				$('#vboxResizeOverlay').remove();
+				$('body').attr({'unselectable':''}).css({'-moz-user-select':'','-webkit-user-select':''});
+				
+				document.body.style.cursor = 'default';
+
+				var nx = $('#vboxVMList').width() + (e.pageX - $('#vboxResizeBar').data('vboxX'));
+				$('#vboxVMList').css('width',(nx)+'px');
+
+				// Constraint check
+				if($('#vboxVMList').width() < $('#vboxVMList').parent().innerWidth())
+					$('#vboxVMList').css('width',($('#vboxVMList').parent().innerWidth())+'px');
+				
+				vboxSetCookie("vboxPaneX",($('#vboxVMList').width()));
+				
+				$('#vboxPaneVMList').css('width',$('#vboxVMList').css('width'));
+				
+			}}).css('cursor',(jQuery.browser.opera ? 'e-resize' : 'col-resize')).bind('mouseenter',function(){
+				$(this).css('background',"#cccccc");
+			}).bind('mouseleave',function(){
+				$(this).css('background',"");
+			})[0].onselectstart = function () { return false; };
 
 			// Resize table elements
 			$(window).resize(function(){
@@ -176,6 +139,7 @@
 
 			// Refresh data when host changes
 			$('#vboxIndex').bind('hostChange',function(){
+				
 				var l = new vboxLoader();
 				
 				l.add('Config',function(d){$('#vboxIndex').data('vboxConfig',d);});
@@ -189,6 +153,97 @@
 
 				l.run();
 			});
+			
+			// Load panes and data after login
+			///////////////////////////////////
+			$('#vboxIndex').bind('login', function() {
+			
+				var l = new vboxLoader();
+				
+				l.add('Config',function(d){$('#vboxIndex').data('vboxConfig',d);});
+				l.add('GuestOSTypes',function(d){$('#vboxIndex').data('vboxOSTypes',d);});
+				l.add('SystemProperties',function(d){$('#vboxIndex').data('vboxSystemProperties',d);});
+				l.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
+				l.add('HostDetails',function(d){$('#vboxIndex').data('vboxHostDetails',d);});
+				l.add('RecentMediums',function(d){$('#vboxIndex').data('vboxRecentMediums',d);});
+	
+				l.addFile('panes/topmenu.html',function(f){$('#vboxIndex').append(f);},{});
+				l.addFile('panes/tabs.html',function(f){$('#vboxPaneTabContent').append(f);},{})
+				l.addFile('panes/vmlistToolbar.html',function(f){$('#vboxIndex').append(f);},{});
+				l.addFile('panes/vmlist.html',function(f){$('#vboxPaneVMList').append(f);},{});
+	
+				l.onLoad = function() {
+	
+					// Resize to last setting
+					vboxParseCookies();
+					if($('#vboxIndex').data('vboxCookies')['vboxPaneX']) {
+						$('#vboxVMList').css('width',($('#vboxIndex').data('vboxCookies')['vboxPaneX'])+'px');
+					}
+					
+				}
+				l.onShow = function() { $(window).trigger('resize'); }
+	
+				l.hideRoot = true;
+				l.run();
+				
+			});
+						
+			// Data mediator ready for use
+			dataMediator = new vboxDataMediator();
+
+			// Check for valid session. Provide login box.
+			function vboxCheckSession(tried) {
+				
+				// check session info
+				if($('#vboxIndex').data('vboxSession') && $('#vboxIndex').data('vboxSession').valid) {
+					$('#vboxIndex').trigger('login');
+					return;
+				}
+				
+				// Was there an error?
+				if($('#vboxIndex').data('vboxSession') && !$('#vboxIndex').data('vboxSession').result) {
+					return;
+				}
+
+				// No valid session. Load login pane
+				$('#vboxLogin').find('input[name=password]').val('');
+				$('#vboxLogin').dialog('open');
+				
+				// Display error if we tried to log in
+				if(tried) {
+					vboxAlert('Invalid username or password.',{'width':'auto'});
+				}
+				
+			}
+
+			var login = new vboxLoader()
+			login.add('Session',function(d){$('#vboxIndex').data('vboxSession',d);});
+			login.addFile('panes/login.html',function(f){$('#vboxIndex').append(f);});
+			login.onLoad = function() {
+
+				var buttons = {};
+				buttons[trans('Login')] = function() {
+					var u = $('#vboxLogin').find('input[name=username]').val();
+					var p = $('#vboxLogin').find('input[name=password]').val();
+					$(this).dialog('close');
+					var trylogin = new vboxLoader();
+					trylogin.add('login',function(d){$('#vboxIndex').data('vboxSession',d);},{'u':u,'p':p});
+					trylogin.onLoad = function() { vboxCheckSession(true);}
+					trylogin.mode = 'save';
+					trylogin.run();
+				}
+				
+				// Create but do not open dialog
+				$('#vboxLogin').dialog({'closeOnEscape':false,'width':300,'height':160,'buttons':buttons,'modal':true,'autoOpen':false,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/OSE/about_16px.png" class="vboxDialogTitleIcon" /> phpVirtualBox :: ' + trans('Log in')});
+
+				// Trick loader into not showing root pane again
+				this.hideRoot = false;
+				vboxCheckSession();
+				
+				
+			};
+			login.hideRoot = true;
+			login.run();
 			
 		});
 	</script>
@@ -207,7 +262,7 @@
 		</td>
 	</tr>
 	<tr style='vertical-align: middle;'>
-		<td id='vboxToolbarMain' style='height: 70px; border:0px;padding:0px;margin:0px;border-spacing:0px;' class='vboxToolbarGrad'>
+		<td id='vboxToolbarMain' style='height: 66px; border:0px;padding:0px;margin:0px;border-spacing:0px;' class='vboxToolbarGrad'>
 			<!-- VMList toolbar -->
 			<div id='vboxPaneToolbar'></div>
 			<!-- Tabs / Buttons -->

@@ -1,5 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "html-dtd/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:xi="http://www.w3.org/2001/XInclude">
+<html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <meta http-equiv="Expires" content="0"/>
@@ -112,6 +111,8 @@
             flash.setProperty("displayHeight", "1024");
         }
       
+        flash.setProperty("keyboardLayout", document.InputForm.keyboardLayout.value);
+
         document.getElementById("Information").innerHTML =
             "Version: " + FlashVersion +". Connecting to " + getFlashProperty(FlashId, "serverAddress") + "...";
         
@@ -160,6 +161,17 @@
       /* If false is returned, the form will not be submitted and we stay on the same page. */
       return false;
     }
+    function applyKeyboardLayout()
+    {
+      var flash = RDPWebClient.getFlashById(FlashId);
+      if (flash)
+      {
+        flash.setProperty("keyboardLayout", document.InputForm.keyboardLayout.value);
+      }
+      
+      /* If false is returned, the form will not be submitted and we stay on the same page. */
+      return false;
+    }
   </script>
 </head>
 
@@ -167,14 +179,23 @@
   <h2>RDP Web Client</h2>
   
   <form name="InputForm" onsubmit="return Connect()">
-    Computer: <input type=text size=20 name=serverAddress value="10.16.204.216">
+    <p>
+    Computer: <input type=text size=20 name=serverAddress value="">
     User name: <input type=text size=20 name=logonUsername value="">
     Password: <input type=password size=20 name=logonPassword value="">
+    </p>
+    <p>
     Desktop size: <select name=desktopSize>
       <option value="800">800x600</option>
       <option value="1024">1024x768</option>
       <option value="1280">1280x1024</option>
     </select>
+    Keyboard layout: <select name=keyboardLayout>
+      <option value="en">EN</option>
+      <option value="de">DE</option>
+    </select>
+    <input name=layoutButton type=button value="Change keyboard layout" onClick="return applyKeyboardLayout()">
+    </p>
     <p>
     <input name=connectionButton type=submit value="Connect">
     <input name=cadButton type=button value="Ctrl-Alt-Del" onClick="return sendCAD()">

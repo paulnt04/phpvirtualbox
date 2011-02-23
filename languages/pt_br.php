@@ -59,6 +59,30 @@ public static $trans = array(
 'Interface Language' => 'Idioma da Interface',
 'Language' => 'Idioma',
 
+// Users and Login
+'Username' => 'Usuário',
+'Password' => 'Senha',
+'Log in' => 'Entrar',
+'Log out' => 'Sair',
+'Change Password' => 'Alterar Senha',
+'Old Password' => 'Senha Anterior',
+'New Password' => 'Nova Senha',
+'The passwords you have entered do not match.' => 'As senhas inseridas não conferem.',
+'Password changed.' => 'Senha Alterada.',
+'The password you have entered is invalid.' => 'A senha inserida é inválida.',
+'Retype' => 'Digite novamente', // Retype password
+'Invalid username or password.' => 'Usuário ou senha inválidos.',
+'Users' => 'Usuários',
+'Add User' => 'Adicionar Usuário',
+'A user with that username already exists.' => 'Este nome de usuário já existe.',
+'Remove User' => 'Remover Usuário',
+'Are you sure you want to remove the user <b>%s</b>? This action
+cannot be undone.' => 'Tem certeza que deseja remover este usuário? Esta ação não poderá ser desfeita.',
+'Edit User' => 'Editar Usuário',
+'Admin User' => 'Usuário Admin',
+'Can administer users' => 'Pode administrar usuários',
+'Not logged in.' => 'Não conectado.',
+
 // Power button
 'Stop' => 'Parar',
 'Pause' => 'Pausar',
@@ -279,6 +303,10 @@ public static $trans = array(
 'RawFile' => 'Arquivo de Saída',
 'Create Pipe' => 'Criar Pipe',
 'Port/File Path' => 'Porta/Caminho do Arquivo',
+
+'Parallel Ports' => 'Portas Paralelas',
+'Enable Parallel Port' => 'Habilitar Porta Paralela',
+'Port Path' => 'Caminho da Porta',
 
 
 'USB' => 'USB',

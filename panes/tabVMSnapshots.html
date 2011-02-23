@@ -128,7 +128,7 @@ var tButtons = [
   			};
   			buttons[trans('Cancel')] = function() { $(this).dialog('close'); }
   			
-  			$('#vboxSnapshotNew').dialog({'closeOnEscape':false,'width':'400px','height':'auto','buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':trans('Take Snapshot')});
+  			$('#vboxSnapshotNew').dialog({'closeOnEscape':false,'width':'400px','height':'auto','buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/take_snapshot_16px.png" class="vboxDialogTitleIcon" />' + trans('Take Snapshot')});
   			
   	  	},
   		'separator' : true
@@ -241,7 +241,7 @@ var tButtons = [
 					$(this).dialog('close');
 				};
 				
-				$('#vboxSnapshotDetails').dialog({'closeOnEscape':false,'width':'600px','height':'auto','buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':trans('Snapshot Details')});
+				$('#vboxSnapshotDetails').dialog({'closeOnEscape':false,'width':'600px','height':'auto','buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/show_snapshot_details_16px.png" class="vboxDialogTitleIcon" /> '+trans('Snapshot Details')});
 			};
 			l.run();
   	  	},

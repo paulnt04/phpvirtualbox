@@ -15,7 +15,7 @@
 //
 // Output a list of files for jQuery File Tree
 //
-//	]--- Modified by Ian Moore for phpVirtualBox
+//	]--- Modified by Ian Moore for phpVirtualBox.
 //
 // $Id$
 //
@@ -30,11 +30,17 @@ require_once(dirname(__FILE__).'/config.php');
 require_once(dirname(__FILE__).'/utils.php');
 require_once(dirname(__FILE__).'/vboxconnector.php');
 
+session_init();
+if(!$_SESSION['valid']) return;
+
+/*
+ * Get Settings
+ */
+$settings = new phpVBoxConfigClass();
+
+
 $vbox = new vboxconnector();
 $vbox->connect();
-
-
-$settings = new phpVBoxConfigClass();
 
 
 $allowed = $settings->browserRestrictFiles;

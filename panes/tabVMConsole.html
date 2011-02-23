@@ -81,13 +81,6 @@ $('#vboxTabVMConsole').bind('show',function(e,vm){
 
 	$('#vboxTabVMUnavailable').css({'display':'none'});
 	
-	// Already selected VM
-	if(vm.id == $('#vboxTabVMConsole').data('lastVM')) {
-		$('#vboxRDPFormContainer').css({'display':''});
-		$('#FlashRDPContainer').css({'visibility':'visible'});
-	}		
-	$('#vboxTabVMConsole').data('lastVM', vm.id);
-	
 	vboxRDPDisconnect();
 	$("#vboxRDPStatus").html('');
 	if(vboxConsoleDetached) window.status = $("#vboxRDPStatus").text();
@@ -185,6 +178,8 @@ function RDPWebEventLoaded(flashid) {
 	    vboxConsoleDetached = true;
 	    vboxRDPConnect();
 	} else {
+		$('#vboxRDPConnParams').css({'visibility':'visible'});
+		$('#vboxRDPFormContainer').css('display','');
 	    $(window).bind('resize',function(){
 	    	setTimeout("vboxRDPConnect()",1000);
 	    });		
@@ -226,6 +221,8 @@ function RDPWebEventDisconnected(flashId) {
     document.vboxRDPForm.connectionButton.value = trans("Connect");
     document.vboxRDPForm.connectionButton.onclick=function() {return vboxRDPConnect();}
     vboxUnsetLangContext();
+    
+    $('#vboxRDPFormContainer').css({'display':''});
 }
 
    

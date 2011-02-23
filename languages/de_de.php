@@ -59,6 +59,29 @@ public static $trans = array(
 'Interface Language' => 'Sprache der Nutzeroberfläche',
 'Language' => 'Sprache',
 
+// Users and Login
+'Username' => 'Benutzername',
+'Password' => 'Passwort',
+'Log in' => 'einloggen',
+'Log out' => 'ausloggen',
+'Change Password' => 'Passwort ändern',
+'Old Password' => 'Aktuelles Passwort',
+'New Password' => 'Neues Passwort',
+'The passwords you have entered do not match.' => 'Die Passwörter die Sie eingegeben haben stimmen nicht überein.',
+'Password changed.' => 'Kennwort geändert.',
+'The password you have entered is invalid.' => 'Der von Ihnen eingegebene Kennwort ist ungültig.',
+'Retype' => 'Retype', // Retype password
+'Invalid username or password.' => 'Ungültiger Benutzername oder Kennwort.',
+'Users' => 'Benutzer',
+'Add User' => 'Hinzufügen eines Benutzers',
+'A user with that username already exists.' => 'Ein Benutzer mit diesem Benutzernamen existiert bereits.',
+'Remove User' => 'Entfernen Sie diese User',
+'Are you sure you want to remove the user <b>%s</b>? This action cannot be undone.' => 'Sie sind sicher, dass Sie den Benutzer entfernen <b>%s</b>? Diese Aktion kann nicht rückgängig gemacht werden.',
+'Edit User' => 'Bearbeiten dieses Benutzers',
+'Admin User' => 'Administrative Benutzer',
+'Can administer users' => 'Kann verwalten Benutzer',
+'Not logged in.' => 'Nicht eingeloggt.',
+
 // Power button
 'Stop' => 'Stoppen',
 'Pause' => 'Pausieren',
@@ -280,6 +303,9 @@ public static $trans = array(
 'Create Pipe' => 'Erzeuge Pipe',
 'Port/File Path' => 'Port/Datei-Pfad',
 
+'Parallel Ports' => 'Parallel-Ports',
+'Enable Parallel Port' => 'Parallele Schnittstelle aktivieren',
+'Port Path' => 'Portpfad',
 
 'USB' => 'USB',
 'USB Controller' => 'USB Controller',

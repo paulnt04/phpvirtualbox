@@ -33,7 +33,8 @@ var $servers = array(
                 'name' => 'London',
                 'username' => 'user',
                 'password' => 'pass',
-                'location' => 'http://192.168.1.1:18083/'
+                'location' => 'http://192.168.1.1:18083/',
+                'authMaster' => true // Use this server for authentication
         ),
         array(
                 'name' => 'New York',
@@ -44,7 +45,11 @@ var $servers = array(
 );
 */
 
+// Disable authentication
+#var $noAuth = true;
 
+// Enable Parallel Port configuration
+#var $enableLPTConfig = true;
 
 // Host / ip to use for console connections
 #var $consoleHost = '192.168.1.40';
@@ -91,12 +96,29 @@ the file when prompted.
  * Misc
  */
 
+/* Session Security Level
+	
+The following options are valid:
+
+0 - Use only Browser's User-Agent string
+1 - Use first octet of client IP
+2 - Use second octet of client IP
+3 - Use third octet of client IP
+4 - Use entire client IP
+
+Each option stacks with previous options. For example, the default setting of 2 uses:
+	Browser's User-Agent string + first octet of client IP + second octet of client IP
+
+Do not change / set unless you have a good reason.
+*/
+#var $sessionSecurityLevel = 2;
+ 
 /* Disable any of phpVirtualBox's main tabs */
 #var $disableTabVMSnapshots = true; // Snapshots tab
 #var $disableTabVMConsole = true; // Console tab
 
 /* Screen resolutions for console tab */
-//var $consoleResolutions = array('640x480','800x600','1024x768');
+#var $consoleResolutions = array('640x480','800x600','1024x768','1280x720','1440x900');
 
 /* Max number of network cards per VM. Do not set above VirtualBox's limit (typically 8) or below 1 */
 #var $nicMax = 4;

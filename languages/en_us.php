@@ -3,10 +3,6 @@
 /*
  * English / US language file
  *
- * The decision to use PHP for language files instead of JS
- * was made in case the PHP back-end needs to inject translated
- * messages into the interface.
- *
  * $Id$
  *
  */
@@ -62,6 +58,29 @@ public static $trans = array(
 'Select Folder' => 'Select Folder',
 'Server List' => 'Server List',
 'Interface Language' => 'Interface Language',
+
+// Users and Login
+'Username' => 'Username',
+'Password' => 'Password',
+'Log in' => 'Log in',
+'Log out' => 'Log out',
+'Change Password' => 'Change Password',
+'Old Password' => 'Old Password',
+'New Password' => 'New Password',
+'The passwords you have entered do not match.' => 'The passwords you have entered do not match.',
+'Password changed.' => 'Password changed.',
+'The password you have entered is invalid.' => 'The password you have entered is invalid.',
+'Retype' => 'Retype', // Retype password
+'Invalid username or password.' => 'Invalid username or password.',
+'Users' => 'Users',
+'Add User' => 'Add User',
+'A user with that username already exists.' => 'A user with that username already exists.',
+'Remove User' => 'Remove User',
+'Are you sure you want to remove the user <b>%s</b>? This action cannot be undone.' => 'Are you sure you want to remove the user <b>%s</b>? This action cannot be undone.',
+'Edit User' => 'Edit User',
+'Admin User' => 'Admin User',
+'Can administer users' => 'Can administer users',
+'Not logged in.' => 'Not logged in.',
 
 // Power button
 'Stop' => 'Stop',
@@ -284,6 +303,9 @@ public static $trans = array(
 'Create Pipe' => 'Create Pipe',
 'Port/File Path' => 'Port/File Path',
 
+'Parallel Ports' => 'Parallel Ports',
+'Enable Parallel Port' => 'Enable Parallel Port',
+'Port Path',
 
 'USB' => 'USB',
 'USB Controller' => 'USB Controller',

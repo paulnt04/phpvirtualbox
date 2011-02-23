@@ -13,7 +13,7 @@
 	</tr>
 	<tr style='vertical-align:top'>
 		<td style='width: 400px'>
-			<ul id='vboxSettingsGlobalNetList' class='vboxBordered vboxHover' style='width: 400px; margin-top: 0px;'>
+			<ul id='vboxSettingsGlobalNetList' class='vboxBordered vboxList vboxHover' style='width: 400px; margin-top: 0px;'>
 				<li>interface</li>
 			</ul>
 		</td>
@@ -135,7 +135,7 @@ var sButtons = new Array(
 		'name' : 'delNet',
 		'label' : 'Remove host-only network',
 		'icon' : 'remove_host_iface',
-		'enabled' : function (item) { return ($(item).data('name')); },
+		'enabled' : function (item) { return ($(item).data('interface')); },
 		'click' : function () {
 
 			var item = $('#vboxSettingsGlobalNetList').children('li.vboxListItemSelected').first();
@@ -163,19 +163,19 @@ var sButtons = new Array(
 						},null,trans('Remove host-only network'));
 					}
 					
-				},{'id':$(item).data('id')});
+				},{'id':$(item).data('interface').id});
 
 				l.onLoad = function(){$(dialog).empty().remove();}
 				l.run();
 			}
-			vboxConfirm(trans('Delete Interface Message1').replace('%s','<b>'+$(item).data('name')+'</b>')+'<p>'+trans('Delete Interface Message2')+'</p>',buttons);	
+			vboxConfirm(trans('Delete Interface Message1').replace('%s','<b>'+$(item).data('interface').name+'</b>')+'<p>'+trans('Delete Interface Message2')+'</p>',buttons);	
 		}
 	},
 	{
 		'name' : 'editNet',
 		'label' : 'Edit host-only network',
 		'icon' : 'guesttools',
-		'enabled' : function (item) { return ($(item).data('name')); },
+		'enabled' : function (item) { return ($(item).data('interface')); },
 		'click' : function () {
 			vboxSettingsGlobalNetEditDialog();
 		}
@@ -188,8 +188,8 @@ $('#vboxSettingsGlobalNetList').bind('select',netToolbar.update);
 
 $('#vboxSettingsGlobalNetList').bind('select',function(e,i){
 	if(i) {
-		$('#vboxSettingsGlobalNetAdapterLabel').html($(i).data('dhcpEnabled') ? trans('DHCP enabled') : trans('Manually configured'));
-		$('#vboxSettingsGlobalNetDHCPLabel').html($(i).data('dhcpServer').enabled ? trans('Enabled') : trans('Disabled'));
+		$('#vboxSettingsGlobalNetAdapterLabel').html($(i).data('interface').dhcpEnabled ? trans('DHCP enabled') : trans('Manually configured'));
+		$('#vboxSettingsGlobalNetDHCPLabel').html($(i).data('interface').dhcpServer.enabled ? trans('Enabled') : trans('Disabled'));
 	} else {
 		$('#vboxSettingsGlobalNetAdapterLabel').html('');
 		$('#vboxSettingsGlobalNetDHCPLabel').html('');		
@@ -207,7 +207,7 @@ function vboxSettingsGlobalNetworkAddAdpater(n) {
 	// If the adapter exists, don't add it
 	var exists = false;
 	$('#vboxSettingsGlobalNetList').children('li').each(function(){
-		if($(this).data('id') == n.id) {
+		if($(this).data('interface').id == n.id) {
 			exists = true;
 			return false;
 		}
@@ -217,7 +217,7 @@ function vboxSettingsGlobalNetworkAddAdpater(n) {
 	
 	var li = document.createElement('li');
 	li.setAttribute('class','vboxListItem');
-	$(li).html($('<div />').text(n.name).html()).hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');}).data(n).click(function(){
+	$(li).html($('<div />').text(n.name).html()).hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');}).data('interface',n).click(function(){
 		$(this).parent().children('li.vboxListItemSelected').removeClass('vboxListItemSelected').addClass('vboxListItem');
 		$(this).addClass('vboxListItemSelected').removeClass('vboxListItem');
 		$('#vboxSettingsGlobalNetList').trigger('select',this);
@@ -255,7 +255,7 @@ vboxInitDisplay('vboxSettingsGlobalNetEditDialog');
 var buttons = {};
 buttons[trans('OK')] = function(){
 
-	var nic = $('#vboxSettingsGlobalNetList').children('li.vboxListItemSelected').first().data();
+	var nic = $('#vboxSettingsGlobalNetList').children('li.vboxListItemSelected').first().data('interface');
 	
 	nic.IPAddress = $('#vboxSettingsGlobalNetIPv4').val();
 	nic.networkMask = $('#vboxSettingsGlobalNetIPv4Mask').val();
@@ -268,16 +268,16 @@ buttons[trans('OK')] = function(){
 	nic.dhcpServer.lowerIP = $('#vboxSettingsGlobalNetLower').val();
 	nic.dhcpServer.upperIP = $('#vboxSettingsGlobalNetUpper').val();
 
-	$('#vboxSettingsGlobalNetList').children('li.vboxListItemSelected').first().data(nic);
+	$('#vboxSettingsGlobalNetList').children('li.vboxListItemSelected').first().data('interface',nic);
 	
 	$(this).dialog("close");
 };
 buttons[trans('Cancel')] = function(){$(this).dialog("close");};
-$('#vboxSettingsGlobalNetEditDialog').dialog({'buttons':buttons,'width':500,'modal':true,'autoOpen':false,'stack':true,'title':trans('Host-only Network Details')});
+$('#vboxSettingsGlobalNetEditDialog').dialog({'buttons':buttons,'width':500,'modal':true,'autoOpen':false,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/nw_16px.png" class="vboxDialogTitleIcon" /> ' +trans('Host-only Network Details')});
 
 function vboxSettingsGlobalNetEditDialog() {
 
-	var nic = $('#vboxSettingsGlobalNetList').children('li.vboxListItemSelected').first().data();
+	var nic = $('#vboxSettingsGlobalNetList').children('li.vboxListItemSelected').first().data('interface');
 
 	// Set Form Values
 	$('#vboxSettingsGlobalNetIPv4').val(nic.IPAddress);
@@ -332,9 +332,7 @@ $('#vboxSettingsDialog').bind('save',function(){
 	$('#vboxSettingsDialog').data('vboxHostOnlyNetworking').networkInterfaces = new Array();
 
 	$('#vboxSettingsGlobalNetList').children('li').each(function(){
-		delete $(this).data().events;
-		delete $(this).data().handle;
-		$('#vboxSettingsDialog').data('vboxHostOnlyNetworking').networkInterfaces[$('#vboxSettingsDialog').data('vboxHostOnlyNetworking').networkInterfaces.length] = $(this).data();		
+		$('#vboxSettingsDialog').data('vboxHostOnlyNetworking').networkInterfaces[$('#vboxSettingsDialog').data('vboxHostOnlyNetworking').networkInterfaces.length] = $(this).data('interface');		
 	});
 });
 

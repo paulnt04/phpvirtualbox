@@ -1,0 +1,20 @@
+<!-- $Id$
+Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
+-->
+<div id='vboxLogin'>
+<form>
+<table class='vboxVertical'>
+<tr>
+	<th><span class='translate'>Username</span>:</th>
+	<td><input type='text' name='username' class='vboxText' /></td>
+</tr>
+<tr>
+	<th><span class='translate'>Password</span>:</th>
+	<td><input type='password' name='password' class='vboxText' /></td>
+</tr>
+</table>
+</form>
+</div>
+<script type='text/javascript'>
+$('#vboxLogin').find(".translate").html(function(i,h){return trans(h);}).removeClass('translate');
+</script>

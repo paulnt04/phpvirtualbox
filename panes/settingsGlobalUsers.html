@@ -1,0 +1,283 @@
+<!-- 
+
+	Users
+	Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
+	
+	$Id$
+
+ -->
+<div>
+<table style='width: auto; margin-left:auto; margin-right:auto;'>
+	<tr>
+		<td colspan='2'><span class='translate'>Users</span>:</td>
+	</tr>
+	<tr style='vertical-align:top'>
+		<td style='width: 400px'>
+			<ul id='vboxSettingsUserList' class='vboxBordered vboxList vboxHover' style='width: 400px; margin-top: 0px;'>
+				<li>user</li>
+			</ul>
+		</td>
+		<td style='width: 10px' id='vboxSettingsGlobalUsersToolbar'></td>
+	</tr>
+</table>
+
+
+<!-- Main Div -->
+</div>
+
+
+<script type='text/javascript'>
+
+/* Build Toolbar */
+
+/*
+ * Init Shared Folder buttons and toolbar
+ */
+
+var sButtons = new Array(
+
+	{
+		'name' : 'addUser',
+		'label' : 'Add User',
+		'icon' : 'new',
+		'click' : function () {
+	
+			var l = new vboxLoader();
+			l.addFile('panes/userEdit.html',function(f){$('#vboxIndex').append(f);});
+			l.onLoad = function(){
+
+				// Set mode
+				$('#vboxUserEdit').trigger('setMode','addUser');
+				
+				var buttons = {};
+				buttons[trans('OK')] = function() {
+					var u = $('#vboxUserEdit').find('input[name=username]').first().val();
+					var p1 = $('#vboxUserEdit').find('input[name=npass1]').first().val();
+					var p2 = $('#vboxUserEdit').find('input[name=npass2]').first().val();
+					var a = ($('#vboxUserEdit').find('input[name=admin]').first().attr('checked') ? 1 : 0);
+					if(u.length == 0) {
+						$(this).remove();
+						return;
+					}
+					if(p1.length == 0 || (p1 != p2)) {
+						vboxAlert(trans('The passwords you have entered do not match.'),{'width':'auto'});
+						return;
+					}
+					var dialog = this;
+					var chp = new vboxLoader();
+					chp.mode = 'save';
+					chp.add('addUser',function(d){
+						if(d) {
+							if(d.result) {
+								vboxSettingsGlobalAddUserList({'username':u,'admin':a});
+								$(dialog).remove();
+							} else {
+								vboxAlert(trans('A user with that username already exists.'),{'width':'auto'});
+							}
+						} else {
+							// unknown error
+							$(dialog).remove();
+						}
+					},{'u':u,'p':p1,'a':a});
+					chp.run();
+				}
+				buttons[trans('Cancel')] = function(){
+					$(this).remove();
+				}
+				$('#vboxUserEdit').dialog({'closeOnEscape':false,'width':400,'height':220,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/new_16px.png" class="vboxDialogTitleIcon" /> '+trans('Add User')});
+
+			}
+			l.run();
+		}
+	},
+
+	{
+		'name' : 'delUser',
+		'label' : 'Remove User',
+		'icon' : 'delete',
+		'noDisabledIcon' : true,
+		'enabled' : function (item) { return (item && $(item).data('username') && $(item).data('username') != $('#vboxIndex').data('vboxSession').user); },
+		'click' : function () {
+			var buttons = {};
+			buttons[trans('OK')] = function() {
+				var user = $('#vboxSettingsUserList').children('li.vboxListItemSelected').data();
+				var l = new vboxLoader();
+				l.mode = 'save';
+				l.add('delUser',function(d){
+					if(d && d.result == 1) {
+						$('#vboxSettingsUserList').children('li.vboxListItemSelected').remove();
+						$('#vboxSettingsUserList').trigger('select',null);
+					}
+				},{'u':user.username});
+				l.run();
+				$(this).remove();
+			}
+			var user = $('#vboxSettingsUserList').children('li.vboxListItemSelected').data();
+			vboxConfirm(trans('Are you sure you want to remove the user <b>%s</b>? This action cannot be undone.').replace('%s',user.username),buttons);
+		}
+	},
+	{
+		'name' : 'chpwUser',
+		'label' : 'Change Password',
+		'icon' : 'register',
+		'noDisabledIcon' : true,
+		'enabled' : function (item) { return (item && $(item).data('username') && $(item).data('username') == $('#vboxIndex').data('vboxSession').user); },
+		'click' : function () {
+			var l = new vboxLoader();
+			l.addFile('panes/userEdit.html',function(f){$('#vboxIndex').append(f);});
+			l.onLoad = function(){
+				
+				// Set mode
+				$('#vboxUserEdit').trigger('setMode','changePassword');
+				
+				var buttons = {};
+				buttons[trans('OK')] = function() {
+					var o = $('#vboxUserEdit').find('input[name=opass]').first().val();
+					var n1 = $('#vboxUserEdit').find('input[name=npass1]').first().val();
+					var n2 = $('#vboxUserEdit').find('input[name=npass2]').first().val();
+					if(o.length == 0) {
+						vboxAlert(trans('The password you have entered is invalid.'),{'width':'auto'});
+						return;
+					}
+					if(n1.length == 0 || (n1 != n2)) {
+						vboxAlert(trans('The passwords you have entered do not match.'),{'width':'auto'});
+						return;
+					}
+					var dialog = this;
+					var chp = new vboxLoader();
+					chp.mode = 'save';
+					chp.add('changePassword',function(d){
+						if(d) {
+							if(d.result) {
+								vboxAlert(trans('Password changed.'),{'width':'auto'});
+								$(dialog).remove();
+							} else {
+								vboxAlert(trans('The password you have entered is invalid.'),{'width':'auto'});
+							}
+						} else {
+							// unknown error
+							$(dialog).remove();
+						}
+					},{'old':o,'new':n1});
+					chp.run();
+				}
+				buttons[trans('Cancel')] = function(){
+					$(this).remove();
+				}
+				$('#vboxUserEdit').dialog({'closeOnEscape':false,'width':400,'height':200,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/register_16px.png" class="vboxDialogTitleIcon" /> '+trans('Change Password')});
+			}
+			l.run();			
+			
+		}
+	},
+	{
+		'name' : 'editUser',
+		'label' : 'Edit User',
+		'icon' : 'register',
+		'noDisabledIcon' : true,
+		'enabled' : function (item) { return (item && $(item).data('username') && $(item).data('username') != $('#vboxIndex').data('vboxSession').user); },
+		'click' : function () {
+			
+			var l = new vboxLoader();
+			l.addFile('panes/userEdit.html',function(f){$('#vboxIndex').append(f);});
+			l.onLoad = function(){
+
+				// Set mode
+				$('#vboxUserEdit').trigger('setMode','editUser');
+				
+				// Set values
+				var user = $('#vboxSettingsUserList').children('li.vboxListItemSelected').data();
+				$('#vboxEditUserUsername').html(user.username);
+				$('#vboxUserEdit').find('input[name=admin]').first().attr('checked', (user.admin ? 'checked' : ''));
+				
+				var buttons = {};
+				buttons[trans('OK')] = function() {
+					
+					var p1 = $('#vboxUserEdit').find('input[name=npass1]').first().val();
+					var p2 = $('#vboxUserEdit').find('input[name=npass2]').first().val();
+					var a = ($('#vboxUserEdit').find('input[name=admin]').first().attr('checked') ? 1 : 0);
+					
+					if(p1.length > 0 && (p1 != p2)) {
+						vboxAlert(trans('The passwords you have entered do not match.'),{'width':'auto'});
+						return;
+					}
+					var dialog = this;
+					var chp = new vboxLoader();
+					chp.mode = 'save';
+					chp.add('editUser',function(d){
+						if(d && d.result) {
+							$('#vboxSettingsUserList').children('li.vboxListItemSelected').data({'admin':a}).html(user.username + (a ? ' ('+trans('Admin User')+')' : ''));
+							$(dialog).remove();
+						} else {
+							// unknown error
+							$(dialog).remove();
+						}
+					},{'u':user.username,'p':p1,'a':a});
+					chp.run();
+				}
+				buttons[trans('Cancel')] = function(){
+					$(this).remove();
+				}
+				$('#vboxUserEdit').dialog({'closeOnEscape':false,'width':400,'height':230,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/register_16px.png" class="vboxDialogTitleIcon" /> '+trans('Edit User')});
+
+			}
+			l.run();
+			
+		}
+	}
+);
+
+userToolbar = new vboxToolbarSmall(sButtons);
+userToolbar.addButtons('vboxSettingsGlobalUsersToolbar');
+$('#vboxSettingsUserList').bind('select',userToolbar.update);
+
+/*
+ *
+ * Function to fill users
+ * 
+ */
+function vboxSettingsGlobalAddUserList(n) {
+
+	var li = document.createElement('li');
+	li.setAttribute('class','vboxListItem');
+	$(li).html($('<div />').html(n.username + (n.admin ? ' ('+trans('Admin User')+')' : ''))).hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');}).data(n).click(function(){
+		$(this).parent().children('li.vboxListItemSelected').removeClass('vboxListItemSelected').addClass('vboxListItem');
+		$(this).addClass('vboxListItemSelected').removeClass('vboxListItem');
+		$('#vboxSettingsUserList').trigger('select',this);
+	});
+	
+	$('#vboxSettingsUserList').append(li);
+	
+}
+
+/*
+ * 
+ * Fill network adapters
+ *
+ */
+$('#vboxSettingsUserList').children().remove();
+var users = $('#vboxSettingsDialog').data('vboxUsers');
+for(var i in users) {
+	vboxSettingsGlobalAddUserList(users[i]);
+}
+$('#vboxSettingsUserList').trigger('select',null);
+
+
+
+/* 
+ * 
+ * Update Data onSave() 
+ * 
+ */
+$('#vboxSettingsDialog').bind('save',function(){
+	return;
+});
+
+/*
+ * Remove dialogs on close
+ */
+$('#vboxSettingsDialog').bind('close',function(){
+	return;
+});
+ 
+</script>

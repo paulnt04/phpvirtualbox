@@ -60,6 +60,29 @@ public static $trans = array(
 'Select Folder' => 'Выбрать папку',
 'Server List' => 'Список серверов',
 
+// Users and Login
+'Username' => 'Имя пользователя',
+'Password' => 'Пароль',
+'Log in' => 'Войти',
+'Log out' => 'Выйти',
+'Change Password' => 'Изменить пароль',
+'Old Password' => 'Старый пароль',
+'New Password' => 'Новый пароль',
+'The passwords you have entered do not match.' => 'Пароли не совпадают.',
+'Password changed.' => 'Пароль изменен.',
+'The password you have entered is invalid.' => 'Пароль, который выввели неверный.',
+'Retype' => 'Повторить пароль', // Retype password
+'Invalid username or password.' => 'Некорректное имя пользователя или пароль.',
+'Users' => 'Пользователи',
+'Add User' => 'Добавить пользователя',
+'A user with that username already exists.' => 'Пользователь с такимименем уже существует.',
+'Remove User' => 'Удалить пользователя',
+'Are you sure you want to remove the user <b>%s</b>? This action cannot be undone.' => 'Вы уверены, что хотите удалить пользователя <b>%s</b>? Это действие не может быть отменено.',
+'Edit User' => 'Редактировать параметры пользователя',
+'Admin User' => 'Администратор',
+'Can administer users' => 'Может управлять пользователями',
+'Not logged in.' => 'Вы не вошли в систему.',
+
 // Power button
 'Stop' => 'Остановить',
 'Pause' => 'Пауза',
@@ -286,6 +309,9 @@ public static $trans = array(
 'Create Pipe' => 'Создать канал',
 'Port/File Path' => 'Путь к порту/файлу',
 
+'Parallel Ports' => 'LPT-порты',
+'Enable Parallel Port' => 'Включить параллельный порт',
+'Port Path' => 'Путь к порту',
 
 'USB' => 'USB',
 'USB Controller' => 'USB контроллер',

@@ -10,7 +10,7 @@
 /*
  * Wizard (new HardDisk or VM)
  */
-function vboxWizard(name, title, img, bg) {
+function vboxWizard(name, title, img, bg, icon) {
 	
 	var self = this;
 	this.steps = 0;
@@ -89,7 +89,7 @@ function vboxWizard(name, title, img, bg) {
 			vboxInitDisplay(self.name+'Content');
 			vboxUnsetLangContext();
 			
-			$(d).dialog({'closeOnEscape':false,'width':self.width,'height':'auto','buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent vboxWizard','title':self.title});
+			$(d).dialog({'closeOnEscape':false,'width':self.width,'height':'auto','buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent vboxWizard','title':(icon ? '<img src="images/vbox/'+icon+'_16px.png" class="vboxDialogTitleIcon" /> ' : '') + self.title});
 
 			self.displayStep(1);
 		};
@@ -319,10 +319,16 @@ function vboxToolbarSmall(buttons) {
 	}
 	
 	self.enableButton = function(b) {
-		$('#vboxToolbarButton-' + self.id + '-' + b.name).css('background-image','url(images/vbox/' + b.icon + '_'+self.size+'px.png)').attr('disabled','');
+		if(b.noDisabledIcon)
+			$('#vboxToolbarButton-' + self.id + '-' + b.name).css('display','').attr('disabled','');
+		else
+			$('#vboxToolbarButton-' + self.id + '-' + b.name).css('background-image','url(images/vbox/' + b.icon + '_'+self.size+'px.png)').attr('disabled','');
 	}
 	self.disableButton = function(b) {
-		$('#vboxToolbarButton-' + self.id + '-' + b.name).css('background-image','url(images/vbox/' + b.icon + '_'+self.disabledString+'_'+self.size+'px.png)').attr('disabled','disabled').removeClass('vboxToolbarSmallButtonHover').addClass('vboxToolbarSmallButton');
+		if(b.noDisabledIcon)
+			$('#vboxToolbarButton-' + self.id + '-' + b.name).css('display','none').attr('disabled','disabled').removeClass('vboxToolbarSmallButtonHover').addClass('vboxToolbarSmallButton');
+		else
+			$('#vboxToolbarButton-' + self.id + '-' + b.name).css('background-image','url(images/vbox/' + b.icon + '_'+self.disabledString+'_'+self.size+'px.png)').attr('disabled','disabled').removeClass('vboxToolbarSmallButtonHover').addClass('vboxToolbarSmallButton');
 	}
 
 	// Generate HTML element for button
@@ -939,6 +945,10 @@ function vboxMenuBar(name) {
 		$('#vboxIndex').append(ul);
 	}
 
+	/* add floating link or text */
+	self.addFloat = function (f) {
+		$('#'+self.name+'MenuBar').append($('<div />').attr({'class':'vboxFloatText'}).css({'float':'right'}).html(f));
+	}
 	
 	/* Create and add menu bar */
 	self.addMenuBar = function(id) {
@@ -1167,7 +1177,7 @@ function vboxLoader() {
 	/* Removes loading screen and show body */
 	this._stop = function() {
 
-		if (self.onLoad) self.onLoad();
+		if(self.onLoad) self.onLoad();
 
 		if(!self.noLoadingScreen) $('#vboxLoaderDialog').empty().remove();
 		
@@ -1199,6 +1209,28 @@ function vboxSerialPorts() {
 	}
 	
 }
+
+/*
+ * Common LPT port options
+ */
+function vboxParallelPorts() {
+	
+	this.ports = [
+      { 'name':"LPT1", 'irq':7, 'port':'0x3BC' },
+      { 'name':"LPT2", 'irq':5, 'port':'0x378' },
+      { 'name':"LPT3", 'irq':5, 'port':'0x278' }
+	];
+	
+	this.getPortName = function(irq,port) {
+		for(var i = 0; i < this.ports.length; i++) {
+			if(this.ports[i].irq == irq && this.ports[i].port.toUpperCase() == port.toUpperCase())
+				return this.ports[i].name;
+		}
+		return 'User-defined';
+	}
+	
+}
+
 /*
  * 	Common storage / controller functions
  */

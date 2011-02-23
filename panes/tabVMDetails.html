@@ -67,8 +67,7 @@
 									</tr>
 									<tr>
 										<td class='vboxInvisible' style='text-align:right'><img src='images/monitor_left.png' style='width:15px;' class='vboxPreviewMonitorSide' /></td>
-										<td class='vboxInvisible'><div id='vboxDetailsPreviewWrap' style='text-align:center;background-color:#000;border:0px;display:table;#position:relative;background-repeat: no-repeat;padding:0px;margin:0px;'>
-										</div></td>
+										<td class='vboxInvisible'><div id='vboxDetailsPreviewWrap' style='text-align:center;background-color:#000;border:0px;display:table;#position:relative;background-repeat: no-repeat;padding:0px;margin:0px;'></div></td>
 										<td class='vboxInvisible' style='text-align:left' ><img src='images/monitor_right.png' style='width:14px;' class='vboxPreviewMonitorSide' /></td>
 									</tr>
 									<tr style='vertical-align:top;'>
@@ -151,6 +150,21 @@
 					<div>
 						<img style='float:left;  margin-right: 3px;' src='images/vbox/serial_port_16px.png' />
 						<span style='float:left'><a href="javascript:vboxDetailSettingsLink('SerialPorts');" class='translate'>Serial Ports</a></span>
+						<span class='vboxDetailsUpDnImgSpan' style='float:right'>
+							<img src='images/arrow_grad_up.png' />
+						</span>
+					</div>
+				</th>
+			</tr>
+		</table>
+
+		<!-- ParallelPorts -->
+		<table id='vboxDetailsTableBoxParallelPorts' class='vboxDetailsTable vboxDetailsTableBox ui-corner-all'>
+			<tr class='vboxDetailsHead'>
+				<th class='vboxDetailsSection' colspan='2'>
+					<div>
+						<img style='float:left;  margin-right: 3px;' src='images/vbox/parallel_port_16px.png' />
+						<span style='float:left'><a href="javascript:vboxDetailSettingsLink('ParallelPorts');" class='translate'>Parallel Ports</a></span>
 						<span class='vboxDetailsUpDnImgSpan' style='float:right'>
 							<img src='images/arrow_grad_up.png' />
 						</span>
@@ -273,8 +287,17 @@ $('#vboxIndex').bind('vmloading',function(){
 			__vboxDisplayHostDetailsData(vm);
 			
 		} else {
+
+			// Update menu items and sections
+			if($('#vboxIndex').data('vboxConfig').enableLPTConfig) {
+				$('#vboxDetailsShowMenuItemParallelPorts').css('display','');
+			} else {
+				$('#vboxDetailsShowMenuItemParallelPorts').css('display','none');
+			}
+			
 			$('#vboxVMDetails').data('vmusb',(vm['USBController'] && vm['USBController']['enabled']));
 			__vboxDisplayDetailsData(vm,null,true,true);
+			
 		}
 			
 	} else {
@@ -410,8 +433,18 @@ function __vboxDetailRowIndented(name,value,html) {
 
 // Draw preview scren
 var __vboxDrawPreviewImg = null;
+/* For preview window fix for webkit based browsers */
+function vboxDisplayGetBase64Image(img) {
+    // Create an empty canvas element
+    var canvas = document.createElement("canvas");
+    canvas.width = img.width;
+    canvas.height = img.height;
+    var ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0);
+    return canvas.toDataURL("image/png");
+}
 
-function __vboxDrawPreview(fromSelf) {
+function __vboxDrawPreview(fromSelf,state) {
 
 	if(!fromSelf && $('#vboxVMDetails').data('vboxPreviewTimer')) {
 		window.clearTimeout($('#vboxVMDetails').data('vboxPreviewTimer'));
@@ -420,8 +453,9 @@ function __vboxDrawPreview(fromSelf) {
 			
 	$(__vboxDrawPreviewImg).empty().remove();
 	var w = $('#vboxIndex').data('vboxConfig')['previewWidth'];
-	__vboxDrawPreviewImg = document.createElement('img');
+	__vboxDrawPreviewImg = new Image();
 	__vboxDrawPreviewImg.onload = function(){
+
 		
 		// Error or machine not running
 		if(this.height <= 1) {
@@ -441,7 +475,6 @@ function __vboxDrawPreview(fromSelf) {
 			
 		} else {
 
-
 			// Calculate height based on width
 			var width = $('#vboxIndex').data('vboxConfig')['previewWidth'];
 			var factor = width / this.width;
@@ -450,15 +483,36 @@ function __vboxDrawPreview(fromSelf) {
 			
 			$('#vboxDetailsPreviewVMName').css('display','none');
 			$('#vboxDetailsPreviewImg').css({'display':'','height':height+'px','width':width+'px'});
-			if($.browser.msie)
-				$('#vboxDetailsPreviewImg').css({"filter":"progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled='true', src='"+this.src+"', sizingMethod='scale')"});
-			else
-				$('#vboxDetailsPreviewImg').css({'background':'url('+this.src+') top left no-repeat','-moz-background-size':'100% 100%','background-size':'100% 100%','-webkit-background-size':'100% 100%'});
-
+			
+			// IE uses filter
+			if($.browser.msie) {
+				
+				if($('#vboxIndex').data('selectedVM').state == 'Running') {
+					
+					// Setting background URL keeps image from being requested again, but does not allow us to set
+					// the size of the image. This is fine, since the image is returned in the size requested.
+					$('#vboxDetailsPreviewImg').css({"filter":""}).parent().css({'background':'url('+this.src+')'});
+				
+				} else {
+					
+					// This causes the image to be requested again, but is the only way to size the background image.
+					// Saved preview images are not returned in the size requested and must be resized at runtime by
+					// the browser.
+					$('#vboxDetailsPreviewImg').css({"filter":"progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled='true', src='"+this.src+"', sizingMethod='scale')"}).parent().css({'background':'#000'});
+				}
+				
+			// Webkit based browsers will re-download the image if we just set the image source
+			} else if($.browser.webkit) {
+				
+				$('#vboxDetailsPreviewImg').css({'background-image':'url('+vboxDisplayGetBase64Image(this)+')'});
+			
+			} else {
+				$('#vboxDetailsPreviewImg').css({'background-image':'url('+this.src+')','background-size':(width+1) +'px ' + (height+1)+'px'});
+			}
 			// Keep refreshing preview if VM is running
-			if($('#vboxIndex').data('selectedVM').state == 'Running') {
+			if(state == 'Running') {
 				$('#vboxVMDetails').data('vboxPreviewTimer',window.setTimeout(function(){
-					__vboxDrawPreview(true);
+					__vboxDrawPreview(true, state);
 				},$('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] * 1000));
 			}
 			
@@ -469,14 +523,15 @@ function __vboxDrawPreview(fromSelf) {
 	};
 
 	// Update disabled? State not Running or Saved
-	if($('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] == 0 || ($('#vboxIndex').data('selectedVM').state != 'Running' && $('#vboxIndex').data('selectedVM').state != 'Saved')) {
+	if($('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] == 0 || (state != 'Running' && state != 'Saved')) {
 		__vboxDrawPreviewImg.height = 0;
 		__vboxDrawPreviewImg.onload();
 	} else {
 		// Running VMs get random numbers. Saved are based on last state change.
 		// Try to let the browser cache Saved screen shots
-		if($('#vboxIndex').data('selectedVM').state == 'Running') {
-			var randid = Math.random(); 
+		if(state == 'Running') {
+			var currentTime = new Date();
+			var randid = Math.floor(currentTime.getTime() / 1000);			
 		} else {
 			var randid = $('#vboxIndex').data('selectedVM').lastStateChange;
 		}
@@ -618,8 +673,10 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		divPreview.find('img.vboxPreviewMonitor').css('width',width+'px');
 		divPreview.find('img.vboxPreviewMonitorSide').css('height',height+'px');
 	
-		$('<img />').attr({'id':'vboxDetailsPreviewImg','src':'images/monitor_glossy.png'}).css({'display':'none',
+		$('<img />').attr({'id':'vboxDetailsPreviewImg','src':'images/monitor_glossy.png','vspace':'0px','hspace':'0px'}).css({'display':'none',
 			'top':'0px','margin':'0px','border':'0px','padding':'0px',
+			'background-position':'top left','background-repeat':'no-repeat',
+			'-moz-background-size':'100% 100%','background-size':'100% 100%','-webkit-background-size':'100% 100%','background-spacing':'0px 0px',
 			'position':'relative','height':height+'px','width':width+'px','float':'left'
 		}).appendTo(divWrap);
 
@@ -650,10 +707,12 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 			$(divOut1).attr({'id':'vboxDetailsPreviewVMName','style':'overflow:hidden;position:relative;height:'+height+'px;width:'+width+'px'});
 			var divOut2 = document.createElement('div');
 			$(divOut2).attr('style','position:relative;left:0px;display:table-cell;vertical-align:middle;padding:4px;color:#fff;font-weight:bold;text-align:center;height:'+height+'px;width:'+width+'px');
-			if($.browser.msie)
+			if($.browser.msie) {
+				divWrap.css({'background':'#000'});
 				$(divOut2).css({"filter":"progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled='true', src='images/monitor_glossy.png', sizingMethod='scale')"});
-			else
-				$(divOut2).css({'background':'url(images/monitor_glossy.png) top left no-repeat','-moz-background-size':'100% 100%','background-size':'100% 100%','-webkit-background-size':'100% 100%'});
+			} else {
+				$(divOut2).css({'background':'url(images/monitor_glossy.png) top left no-repeat','-moz-background-size':'100% 100%','background-size':(width+1) +'px ' + (height+1)+'px','-webkit-background-size':'100% 100%'});
+			}
 			$(divOut2).html($('<div />').html(data.name).text()).appendTo(divOut1);
 			$(divWrap).append(divOut1);
 
@@ -666,7 +725,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 
 			if((data.state == 'Running' || data.state == 'Saved') && $('#vboxIndex').data('vboxCookies')["vboxSectionShowPreview"] != 0) {
 
-				__vboxDrawPreview();
+				__vboxDrawPreview(false,data.state);
 								
 			} else {
 				
@@ -939,7 +998,54 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		$(vboxDetailsTable).append(__vboxDetailRow('<span class="vboxDetailsNone">'+trans('Disabled')+'</span>','',true));		
 	}
 
+	// Parallel Ports
+	///////////////////
+	if($('#vboxIndex').data('vboxConfig').enableLPTConfig) {
 
+		if(boxes) {
+	
+			// append blank footer row
+			$(vboxDetailsTable).append(__vboxDetailRow('',''));
+			
+			var vboxDetailsTable = $('#vboxDetailsTableBoxParallelPorts');
+			$(vboxDetailsTable).find('tr.vboxDetailRow').empty().remove();
+	
+			if($('#vboxIndex').data('vboxCookies')["vboxSectionShowParallelPorts"] == 0) {
+				$(vboxDetailsTable).hide();
+			} else {
+				$(vboxDetailsTable).show();
+			}
+	
+		} else {
+			$(vboxDetailsTable).append(__vboxDetailHeader('parallel_port_16px.png',"Parallel Ports"));
+		}
+		
+	
+		var vboxDetailsTableSPorts = 0;
+		var vboxSP = new vboxParallelPorts();
+		for(var i = 0; i < data['parallelPorts'].length; i++) {
+			
+			p = data['parallelPorts'][i];
+			
+			if(!p.enabled) continue;
+			
+			// compose extra info
+			var xtra = trans(vboxSP.getPortName(p.IRQ,p.IOBase));
+			xtra += ' (' + p.path + ')'
+			
+			$(vboxDetailsTable).append(__vboxDetailRow(trans("Port X").replace('%s',(i + 1)), xtra));
+			vboxDetailsTableSPorts++;
+					
+		}
+		
+		if(vboxDetailsTableSPorts == 0) {
+			$(vboxDetailsTable).append(__vboxDetailRow('<span class="vboxDetailsNone">'+trans('Disabled')+'</span>','',true));		
+		}
+
+	} else {
+		$('#vboxDetailsTableBoxParallelPorts').hide()
+	}
+	
 	// USB
 	///////////////////
 	if(boxes && data['USBController']) {
@@ -1109,7 +1215,7 @@ function __vboxDisplayHostDetailsData(data) {
  */
 var ul = document.createElement('ul');
 $(ul).attr({'class':'contextMenu contextMenuNoBG','style':'display: none','id':'vboxDetailsShowMenu'});
-var sections = new Array('General','System','Preview','Display','Storage','Audio','Network','Serial Ports','USB','Shared Folders','Description');
+var sections = new Array('General','System','Preview','Display','Storage','Audio','Network','Serial Ports','Parallel Ports','USB','Shared Folders','Description');
 for(var i = 0; i < sections.length; i++) {
 
 	
@@ -1123,6 +1229,7 @@ for(var i = 0; i < sections.length; i++) {
 		checked = '';
 	
 	var li = document.createElement('li');
+	$(li).attr('id','vboxDetailsShowMenuItem'+sections[i].replace(' ',''));
 	var cb = document.createElement('input');
 	$(cb).attr({'type':'checkbox','class':'vboxCheckbox','name':sections[i].replace(' ',''),'checked':checked}).click(function(){
 
@@ -1134,7 +1241,7 @@ for(var i = 0; i < sections.length; i++) {
 		if($(this).attr('name') == 'Preview') {
 			if(this.checked && $('#vboxIndex').data('selectedVM').id != 'host') {
 				$('#vboxDetailsTableBoxPreviewSpacer').show();
-				__vboxDrawPreview();
+				__vboxDrawPreview(false, $('#vboxIndex').data('selectedVM').state);
 			} else {
 				$('#vboxDetailsTableBoxPreviewSpacer').hide();
 				// Clear timer if it is set
@@ -1189,7 +1296,7 @@ var sp = document.createElement('span');
 $(sp).html(trans('Update Disabled')).click(function(){$(this).siblings('input').click();});
 $(li).append(sp);
 $(ul).append(li);
-var ints = [1,3,5,10,20];
+var ints = [3,5,10,20,30,60];
 // check for update interval
 if($('#vboxIndex').data('vboxConfig').previewUpdateInterval && jQuery.inArray($('#vboxIndex').data('vboxConfig').previewUpdateInterval, ints) < 0) {
 	ints[ints.length] = $('#vboxIndex').data('vboxConfig').previewUpdateInterval;
@@ -1207,7 +1314,7 @@ for(var i = 0; i < ints.length; i++) {
 	$(radio).attr({'class':'vboxRadio','type':'radio','name':'vboxPreviewRadio','value':ints[i]}).click(function(){
 		vboxSetCookie("vboxPreviewUpdate",$(this).val());		
 		$('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] = $(this).val();
-		__vboxDrawPreview();
+		__vboxDrawPreview(false, $('#vboxIndex').data('selectedVM').state);
 	});
 
 	if($('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] == ints[i])

@@ -21,12 +21,13 @@
 
 // Create VM list
 vboxVMList = new vboxVMList('vboxVMList');
+vboxVMList.interval = ($('#vboxIndex').data('vboxConfig').listUpdateInterval ? $('#vboxIndex').data('vboxConfig').listUpdateInterval : 5);
 
 // Initial action update
 $('#vboxIndex').trigger('vmselect',null);
 
 // Start vboxVMList
-vboxVMList.run(($('#vboxIndex').data('vboxConfig').listUpdateInterval ? $('#vboxIndex').data('vboxConfig').listUpdateInterval : 5));
+vboxVMList.run();
 
 
 /*
@@ -48,6 +49,7 @@ function vboxVMList(anchorid) {
 	this.sortDefault = function(a,b){return strnatcasecmp(a.name,b.name);}
 	this.lastUpdatedDiv = null;
 	this.anchor = $('#'+anchorid);
+	this.interval = 5;
 
 	// If there are multiple servers configured, setup menu
 	if($('#vboxIndex').data('vboxConfig').servers.length) {
@@ -67,6 +69,9 @@ function vboxVMList(anchorid) {
 	/////////////////////////
 	self.updateList = function(currVMList) {
 
+		// We were stopped before the request returned data
+		if(!self._running) return;
+		
 		var currTime = new Date()
 		self.time = currTime.getTime();
 		
@@ -215,14 +220,9 @@ function vboxVMList(anchorid) {
 						mode: 'menu'
 					},
 					function(a) {
-						if(a == $('#vboxIndex').data('vboxConfig').name) return;
+						if(a == $('#vboxIndex').data('vboxConfig').name) return;						
 						vboxSetCookie("vboxServer",a);
-						$('#vboxIndex').trigger('vmselect',null);
-						$('#vboxIndex').data('selectedVM',null);
 						$('#vboxIndex').trigger('hostChange',[a]);
-						self.anchor.html("<div id='vboxVMListSpinner' style='text-align: center'><img src='images/spinner.gif' /></div>");
-						self.vms = self.selected = null;
-						$('#vboxIndex').trigger('vmlistreload');
 					}
 				);
 				$(td).html('VirtualBox ').append(span);
@@ -283,7 +283,7 @@ function vboxVMList(anchorid) {
 		return (self.selected == null ? null : self.vms[self.selected]);
 	}
 	
-	self.run = function(interval) {
+	self.run = function() {
 		
 		if(self._running) return;
 
@@ -296,7 +296,15 @@ function vboxVMList(anchorid) {
 			self.refresh();
 		}).bind('vmlistrefresh',function(){
 			self.refresh();
-		});
+		}).bind('hostChange',function(){
+			
+			$('#vboxIndex').trigger('vmselect',null);
+			$('#vboxIndex').data('selectedVM',null);
+			self.anchor.html("<div id='vboxVMListSpinner' style='text-align: center'><img src='images/spinner.gif' /></div>");
+			self.vms = self.selected = null;
+			self.stop();
+			
+		}).bind('hostChange',function(){self.start();});
 		
 		// Custom sort function?
 		if($('#vboxIndex').data('vboxConfig').vmListSort) {
@@ -307,12 +315,15 @@ function vboxVMList(anchorid) {
 				self.sort = null;
 			}
 		}
+		
+		self.start();
 
+	}
+	
+	self.start = function() {
 		self.refresh();
-		// secs to milisecs
-		interval *= 1000;
 		// Run every X seconds?
-		self._running = window.setInterval(this.refresh,interval);
+		self._running = window.setInterval(self.refresh,self.interval*1000);		
 	}
 	
 	self.stop = function() {

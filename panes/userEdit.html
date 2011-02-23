@@ -1,0 +1,48 @@
+<!-- $Id$
+Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
+-->
+<div id='vboxUserEdit'>
+<form>
+<table class='vboxVertical'>
+<tr class='addUser'>
+	<th><span class='translate'>Username</span>:</th>
+	<td><input type='text' name='username' class='vboxText' /></td>
+</tr>
+<tr class='editUser'>
+	<th><span class='translate'>Username</span>:</th>
+	<td><span id='vboxEditUserUsername'></span></td>
+</tr>
+
+<tr class='addUser editUser'>
+	<th><span class='translate'>Admin User</span>:</th>
+	<td><input type='checkbox' name='admin' class='vboxCheckbox' /> <span class='translate'>Can administer users</span></td>
+</tr>
+<tr class='changePassword'>
+	<th><span class='translate'>Old Password</span>:</th>
+	<td><input type='password' name='opass' class='vboxText' /></td>
+</tr>
+<tr class='editUser'>
+	<td colspan='2' style='text-align: center; border-top: 1px solid #000'><span style='font-weight: bold' class='translate'>Change Password</span></td>
+</tr>
+<tr class='changePassword addUser editUser'>
+	<th><span class='translate'>New Password</span>:</th>
+	<td><input type='password' name='npass1' class='vboxText' /></td>
+</tr>
+<tr class='changePassword addUser editUser'>
+	<th><span class='translate'>Retype</span>:</th>
+	<td><input type='password' name='npass2' class='vboxText' /></td>
+</tr>
+</table>
+</form>
+</div>
+<script type='text/javascript'>
+
+	$('#vboxUserEdit').find(".translate").html(function(i,h){return trans(h);}).removeClass('translate');
+	
+	
+	$('#vboxUserEdit').bind('setMode',function(e,mode) {
+		
+		$('#vboxUserEdit').find('table').first().find('tr:not(.'+mode+')').css('display','none');
+		
+	});
+</script>

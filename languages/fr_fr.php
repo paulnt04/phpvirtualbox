@@ -60,6 +60,29 @@ public static $trans = array(
 'Interface Language' => 'Langue de l\'interface',
 'Language' => 'Langage',
 
+// Users and Login
+'Username' => 'Nom d\'utilisateur',
+'Password' => 'Mot de passe',
+'Log in' => 'Connectez-vous',
+'Log out' => 'Déconnectez-vous',
+'Change Password' => 'Changer mot de passe',
+'Old Password' => 'Mot de passe actuel',
+'New Password' => 'Nouveau mot de passe',
+'The passwords you have entered do not match.' => 'Les mots de passe que vous avez saisi ne correspond pas.',
+'Password changed.' => 'Mot de passe changé.',
+'The password you have entered is invalid.' => 'Le mot de passe que vous avez entré n\'est pas valide.',
+'Retype' => 'Retaper', // Retype password
+'Invalid username or password.' => 'Nom d\'utilisateur ou mot de passe.',
+'Users' => 'Utilisateurs',
+'Add User' => 'Ajouter un utilisateur',
+'A user with that username already exists.' => 'Un utilisateur avec cet identifiant existe déjà.',
+'Remove User' => 'Supprimer cet utilisateur',
+'Are you sure you want to remove the user <b>%s</b>? This action cannot be undone.' => 'Etes-vous sûr de vouloir supprimer l\'utilisateur <b>%s</b>? Cette action ne peut pas être annulée.',
+'Edit User' => 'Modifier cet utilisateur',
+'Admin User' => 'Administrative de l\'utilisateur',
+'Can administer users' => 'Peut administrer des utilisateurs',
+'Not logged in.' => 'Non connecté.',
+
 // Power button
 'Stop' => 'Extinction',
 'Pause' => 'Pauser',
@@ -281,6 +304,10 @@ public static $trans = array(
 'RawFile' => 'Redirection fichier',
 'Create Pipe' => 'Créer le tube',
 'Port/File Path' => 'Port/Chemin',
+
+'Parallel Ports' => 'Ports parallèles',
+'Enable Parallel Port' => 'Activer le port parallèle',
+'Port Path' => 'Chemin du port',
 
 
 'USB' => 'USB',

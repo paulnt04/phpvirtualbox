@@ -15,12 +15,12 @@ INSTALLATION:
 
 Rename config.php-example to config.php and edit as needed.
 
+Default login is username: admin password: admin
+
 Please see the wiki located at http://code.google.com/p/phpvirtualbox/ for
 detailed installation and configuration instructions.
 
-WARNING:
+PASSWORD RECOVERY:
 
-This is intended to be run on a local network or intranet where access to the
-phpVirtualBox script is limited by network connectivity. The script performs no
-front-end user authentication of any kind. In other words, anyone who has access
-to this script on your web server may administer your VirtualBox installation.
+Rename recovery.php-disabled to recovery.php, navigate to it in your web
+browser and follow the instructions presented.

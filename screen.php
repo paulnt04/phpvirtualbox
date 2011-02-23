@@ -6,15 +6,23 @@
 # Turn off PHP notices
 error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT);
 
+
+require_once(dirname(__FILE__).'/lib/config.php');
+require_once(dirname(__FILE__).'/lib/utils.php');
+require_once(dirname(__FILE__).'/lib/vboxconnector.php');
+
+// Allow caching of some screenshot data
+Header('ETag: "' . $_REQUEST['vm'].'_'.$_REQUEST['randid'].'"');
+session_cache_limiter('private_no_expire');
+
+// Check for valid session
+session_init();
+if(!$_SESSION['valid']) return;
+
 // Clean request
 $_REQUEST = array_merge($_GET,$_POST);
 
-require_once(dirname(__FILE__).'/lib/config.php');
-require_once(dirname(__FILE__).'/lib/vboxconnector.php');
-
-
 $settings = new phpVBoxConfigClass();
-
 $vbox = new vboxconnector();
 $vbox->connect();
 
@@ -27,7 +35,6 @@ $vbox->connect();
 // Set width. Else assume we want real time updates if VM is running below
 if($_REQUEST['width'])
 	$force_width = $_REQUEST['width'];
-
 
 
 try {
@@ -63,6 +70,19 @@ try {
 	// Take active screenshot if machine is running
 	if($machine->state->__toString() == 'Running') {
 
+		// Let the browser cache images for 3 seconds
+    	if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) >= (time()-3)) {
+			if (php_sapi_name()=='CGI') {
+				Header("Status: 304 Not Modified");
+			} else {
+				Header("HTTP/1.0 304 Not Modified");
+			}
+      		exit;
+    	}
+		
+
+    	header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+    	
 		$vbox->session = $vbox->websessionManager->getSessionObject($vbox->vbox->handle);
 		$machine->lockMachine($vbox->session->handle,'Shared');
 		$machine->releaseRemote();
@@ -85,14 +105,13 @@ try {
 				$screenHeight = ($screenWidth * 3.0/4.0);
 			}
 
-		// If no width is set, assume we want real-time updates
+		// If no width is set, we were reached from Open in New Window
 	    } else {
 
 			//Set no caching
 			header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
 			header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 			header("Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0");
-			header("Pragma: no-cache");
 	    }
 
 		// array() for compatibility with readSavedScreenshotPNGToArray return value
