@@ -280,6 +280,9 @@ var vboxDefaultOSTypeId = 'Debian';
 var dosfam = null; // holds defaultostype family id
 for(var i in vboxOSTypes) {
 
+	// Skip unsupported OS types
+	if(!vboxOSTypes[i].supported) continue;
+	
 	// create array of os family types
 	if(!newVMOSTypes[vboxOSTypes[i].familyId]) {
 		newVMOSTypes[vboxOSTypes[i].familyId] = {'id':vboxOSTypes[i].familyId,'description':vboxOSTypes[i].familyDescription,'osTypes':[]};

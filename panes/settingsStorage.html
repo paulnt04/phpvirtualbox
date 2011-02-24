@@ -482,6 +482,14 @@ function vboxSettingsAddAttachment(d,bus) {
  */
 function vboxSettingsSelectAttachment(tbl) {
 
+	// Null selection?
+	if(!tbl) {
+	    $('#vboxSettingsController').css('display','none');
+	    $('#vboxSettingsMediaInfo').css('display','none');
+	    $('#vboxSettingsStorageAttachment').css('display','none');
+	    return;
+	}
+	
 	/* Display Changes */
 	if(!$(tbl).hasClass('vboxListItemSelected')) {
 		$('#vboxSettingsStorageTree').find('table.vboxListItemSelected').removeClass('vboxListItemSelected').addClass('vboxListItem');
@@ -703,6 +711,14 @@ $(document.forms['frmVboxSettings'].vboxSettingsStorageHostCache).click(function
 
 function vboxSettingsSelectController(tbl) {
 
+	// Null selection?
+	if(!tbl) {
+	    $('#vboxSettingsController').css('display','none');
+	    $('#vboxSettingsMediaInfo').css('display','none');
+	    $('#vboxSettingsStorageAttachment').css('display','none');
+	    return;
+	}
+	
 	/* set classes for selected / unselected */
     $('#vboxSettingsStorageTree').find('table[class]').removeClass('vboxListItemSelected').addClass('vboxListItem');
     $(tbl).removeClass('vboxListItem').addClass('vboxListItemSelected');
@@ -900,13 +916,24 @@ mAttachToolbarFD.addButton('vboxSettingsAddAttachmentsMenuFDDiv');
 
 
 /*
- * Update menu items on select
+ * Update menu items on select and display
  */
 $('#vboxSettingsStorageTree').bind('itemselect',function(e,item){
+	
 	$('#vboxSettingsAddAttachmentsMenuCDDiv').hide();
 	$('#vboxSettingsAddAttachmentsMenuHDDiv').hide();
 	$('#vboxSettingsAddAttachmentsMenuFDDiv').hide();
+	
+	// Null selection hides everything
+	if(!item) {
+	    $('#vboxSettingsController').css('display','none');
+	    $('#vboxSettingsMediaInfo').css('display','none');
+	    $('#vboxSettingsStorageAttachment').css('display','none');
+	    return;
+	}
+	
 	if(!$(item).data('attachment')) return;
+	
 	switch($(item).data('attachment').type) {
 		case 'HardDisk':
 			$('#vboxSettingsAddAttachmentsMenuHDDiv').show();
@@ -977,7 +1004,7 @@ $('#vboxSettingsStorageTree').bind('itemselect',function(e,item){
 		'name' : 'removeattach',
 		'label' : 'Remove Attachment',
 		'icon' : 'attachment_remove',
-		'enabled' : function (item) { return ($(item).data('controller')); },
+		'enabled' : function (item) { return ($(item).data('attachment')); },
 		'click' : function () {
 
 			// Set previous item to last?
@@ -988,7 +1015,10 @@ $('#vboxSettingsStorageTree').bind('itemselect',function(e,item){
 			}
 			
 			var next = $(cur).next().find('table.vboxListItem').first();
-			if(!$(next).html()) {next = $('#vboxSettingsController'+$('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().data('controller').bus).find('table.vboxListItem').first();}
+			if(!$(next).html()) {
+				var con = $('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().data('controller');
+				if(con) next = $('#vboxSettingsController'+con.bus).find('table.vboxListItem').first();
+			}
 			$('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().parent().remove();
 			if(!$(next).trigger('click').html()) $('#vboxSettingsStorageTree').trigger('itemselect',null);
 		}		

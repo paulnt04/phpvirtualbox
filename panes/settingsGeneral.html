@@ -117,9 +117,12 @@ var vboxOSTypes = $('#vboxIndex').data('vboxOSTypes');
 // Default OS Type set to my fav :) Eventually will move to config.php
 var vboxDefaultOSTypeId = 'Debian';
 
-
+var myOSType = $('#vboxSettingsDialog').data('vboxMachineData').OSTypeId;
 var dosfam = null; // holds defaultostype family id
 for(var i in vboxOSTypes) {
+	
+	// Only ostypes supported by this install
+	if(!vboxOSTypes[i].supported && myOSType != vboxOSTypes[i].id) continue;
 
 	// create array of os family types
 	if(!vboxSettingsOSTypes[vboxOSTypes[i].familyId]) {

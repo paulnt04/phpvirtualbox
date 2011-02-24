@@ -20,6 +20,7 @@ function session_init() {
 	if(!function_exists('session_start') || $settings->noAuth) {
 		global $_SESSION;
 		$_SESSION['valid'] = true;
+		$_SESSION['authCheckHeartbeat'] = time();
 		return;
 	}
 	ini_set('session.use_trans_sid', 0);

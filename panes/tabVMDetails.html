@@ -1183,6 +1183,19 @@ function __vboxDisplayHostDetailsData(data) {
 	$(vboxDetailsTable).append(__vboxDetailHeader("machine_16px.png",trans("General"),null,null,true));
 	if($('#vboxIndex').data('vboxConfig').servers.length) $(vboxDetailsTable).append(__vboxDetailRow(trans("Name"), $('#vboxIndex').data('vboxConfig').name));	
 	$(vboxDetailsTable).append(__vboxDetailRow(trans("OS Type"), data['operatingSystem'] + ' (' + data['OSVersion'] +')')).append(__vboxDetailRow("VirtualBox", $('#vboxIndex').data('vboxConfig').version.string+' ('+$('#vboxIndex').data('vboxConfig').version.revision+')')).append(__vboxDetailRow(trans("Base Memory"), data['memorySize'] + ' ' + trans('MB'))).append(__vboxDetailRow(trans("Processors"), data['cpus'][0] + ' (' + data['cpus'].length +')'));
+	
+	// Processor features?
+	if($('#vboxIndex').data('vboxConfig').enableAdvancedConfig && data.cpuFeatures) {
+		var cpuFeatures = new Array();
+		for(var f in data.cpuFeatures) {
+			if(!data.cpuFeatures[f]) continue;
+			cpuFeatures[cpuFeatures.length] = trans(f);
+		}
+		if(cpuFeatures.length) {
+			$(vboxDetailsTable).append(__vboxDetailRow('',cpuFeatures.join(trans('LIST_SEP'))));
+		}
+		
+	}
 
 	$(vboxDetailsTable).append(__vboxDetailRow('',''));
 	$('#vboxHostDetails').append(vboxDetailsTable);
@@ -1200,11 +1213,49 @@ function __vboxDisplayHostDetailsData(data) {
 		}
 		$(vboxDetailsTable).append(__vboxDetailRowIndented(trans('netMediumType'),trans(data['networkInterfaces'][i].mediumType) + (data['networkInterfaces'][i].hardwareAddress ? ' (' + data['networkInterfaces'][i].hardwareAddress + ')' : '')));
 	}
+	$(vboxDetailsTable).append(__vboxDetailRow('',''));
+	$('#vboxHostDetails').append(vboxDetailsTable);
+	
+	var storage = new vboxStorage();
 
+	// CD/DVD Devices
+	if(data['DVDDrives'].length) {
+	
+		var vboxDetailsTable = document.createElement('table');
+		$(vboxDetailsTable).attr({'class':'vboxDetailsTable vboxDetailsTableBox ui-corner-all'}).append(__vboxDetailHeader("cd_16px.png",trans("CD/DVD Devices"),null,null,true));
+	
+		for(var i = 0; i < data['DVDDrives'].length; i++) {		
+			
+			var m = storage.getMediumById(data['DVDDrives'][i].id);
+			
+			$(vboxDetailsTable).append(__vboxDetailRow(storage.getMediumName(m),''));
+			
+		}
+
+		$(vboxDetailsTable).append(__vboxDetailRow('',''));
+		$('#vboxHostDetails').append(vboxDetailsTable);
+	}	
+
+	// Floppy Devices
+	if(data['floppyDrives'].length) {
+	
+		var vboxDetailsTable = document.createElement('table');
+		$(vboxDetailsTable).attr({'class':'vboxDetailsTable vboxDetailsTableBox ui-corner-all'}).append(__vboxDetailHeader("fd_16px.png",trans("Floppy Devices"),null,null,true));
+	
+		for(var i = 0; i < data['floppyDrives'].length; i++) {		
+			
+			var m = storage.getMediumById(data['floppyDrives'][i].id);
+			
+			$(vboxDetailsTable).append(__vboxDetailRow(storage.getMediumName(m),''));
+			
+		}
+
+		$(vboxDetailsTable).append(__vboxDetailRow('',''));
+		$('#vboxHostDetails').append(vboxDetailsTable);
+	}	
 	
 	// Append Table
-	$(vboxDetailsTable).append(__vboxDetailRow('',''));
-	$('#vboxHostDetails').append(vboxDetailsTable).show();
+	$('#vboxHostDetails').show();
 }
 
 

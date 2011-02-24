@@ -67,21 +67,30 @@ function vboxVMList(anchorid) {
 	
 	// Update list of VMs
 	/////////////////////////
-	self.updateList = function(currVMList) {
+	self.updateList = function(d) {
 
 		// We were stopped before the request returned data
 		if(!self._running) return;
 		
+		
 		var currTime = new Date()
 		self.time = currTime.getTime();
 		
-		if(!currVMList || (!currVMList.length && !currVMList['empty']) && self._running) {
+		if(!d || !d.vmlist) {
 			vboxAlert(trans('Error vmlist 1')+'<p>'+trans('Error vmlist 2')+'</p>');
 			self.stop();
 			self.anchor.children().remove();
 			return;
 		}
-			
+
+		/* Check Key
+			If we've changed hosts before the last ajax call to get a list of VMs
+			returns, we'd have a list of VMs from the previously selected VirtualBox
+			host.
+		*/
+		if(d.server_key != $('#vboxIndex').data('vboxConfig').key) return;
+		currVMList = d.vmlist;
+
 		// First time run?
 		if(self.vms === null) {
 			self.anchor.children().remove();
@@ -89,8 +98,7 @@ function vboxVMList(anchorid) {
 		}
 
 		// check for empty VM list
-		if(currVMList['empty']) { currVMList = []; }
-		else if(self.sort) {
+		if(self.sort) {
 			try {
 				currVMList.sort(self.sort);
 			} catch (err) {
@@ -191,11 +199,10 @@ function vboxVMList(anchorid) {
 	self.vmHTML = function (vmn) {
 		
 		var tbl = document.createElement('table');
-		$(tbl).data(vmn);
 		$(tbl).attr({'id':'vboxVMListItem-'+self.anchorid+'-'+vmn.id,'class':"vboxVMListVM vboxListItem" + (self.vms[vmn.id].selected ? "Selected" : "")}).bind('click',function(){
-			if($(this).data('id') == 'host' && $('#vboxIndex').data('selectedVM') && $('#vboxIndex').data('selectedVM')['id'] == $(this).data('id')) return;
-			$('#vboxIndex').data('selectedVM',$(this).data());
-			$('#vboxIndex').trigger('vmselect',[$(this).data()]);
+			if(vmn.id == 'host' && $('#vboxIndex').data('selectedVM') && $('#vboxIndex').data('selectedVM')['id'] == vmn.id) return;
+			$('#vboxIndex').data('selectedVM',vmn);
+			$('#vboxIndex').trigger('vmselect',[vmn]);
 		}).hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');});
 
 		var tr = document.createElement('tr');
@@ -225,12 +232,12 @@ function vboxVMList(anchorid) {
 						$('#vboxIndex').trigger('hostChange',[a]);
 					}
 				);
-				$(td).html('VirtualBox ').append(span);
+				$(td).html('<span class="vboxVMName">VirtualBox</span> ').append(span);
 			} else {				
-				td.innerHTML = vmn.name;
+				$(td).html('<span class="vboxVMName">'+vmn.name+'</span>');
 			}
 		} else {
-			td.appendChild(document.createTextNode(vmn.name + (vmn.currentSnapshot ? ' (' + vmn.currentSnapshot + ')' : '')));
+			$(td).append('<span class="vboxVMName">'+$('<span />').text(vmn.name).html()+'</span>'+ (vmn.currentSnapshot ? ' (' + $('<span />').text(vmn.currentSnapshot).html() + ')' : ''));
 		}
 		
 		tr.appendChild(td);
@@ -241,7 +248,7 @@ function vboxVMList(anchorid) {
 		
 		var td = document.createElement('td');
 		if(vmn.id != 'host' && vmn.sessionState != 'Unlocked') td.setAttribute('class','vboxVMSessionOpen');
-		td.innerHTML = "<img src='images/vbox/" + vboxMachineStateIcon(vmn.state) +"' /> " + trans(vmn.state);
+		td.innerHTML = "<img src='images/vbox/" + vboxMachineStateIcon(vmn.state) +"' /> <span class='vboxVMState'>" + trans(vmn.state) + '</span>';
 
 		// Add VirtualBox version if hosting
 		if(vmn.id == 'host')
@@ -251,6 +258,7 @@ function vboxVMList(anchorid) {
 		tbl.appendChild(tr);
 		
 		return tbl;
+		
 	}
 
 	self.removeVM = function(id) {
@@ -300,11 +308,9 @@ function vboxVMList(anchorid) {
 			
 			$('#vboxIndex').trigger('vmselect',null);
 			$('#vboxIndex').data('selectedVM',null);
-			self.anchor.html("<div id='vboxVMListSpinner' style='text-align: center'><img src='images/spinner.gif' /></div>");
-			self.vms = self.selected = null;
 			self.stop();
 			
-		}).bind('hostChange',function(){self.start();});
+		}).bind('hostChanged',function(){self.start();});
 		
 		// Custom sort function?
 		if($('#vboxIndex').data('vboxConfig').vmListSort) {
@@ -328,6 +334,8 @@ function vboxVMList(anchorid) {
 	
 	self.stop = function() {
 		if(!self._running) return;
+		self.anchor.html("<div id='vboxVMListSpinner' style='text-align: center'><img src='images/spinner.gif' /></div>");
+		self.vms = self.selected = null;		
 		window.clearInterval(self._running);
 		self._running = null;
 	}

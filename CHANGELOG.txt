@@ -4,7 +4,7 @@
 Added Exclusive and VPID hardware acceleration options to
 Acceleration tab visible when $enableAdvancedConfig is set.
 
-Added Automatic SATA Port Count option to the SATA Port Count
+Added "Automatic" SATA Port Count option to the SATA Port Count
 list when $enableAdvancedConfig is set. New VMs created through
 phpVirtualBox will automatically have this set to Auto.
 
@@ -22,7 +22,6 @@ http://code.google.com/p/phpvirtualbox/issues/detail?id=192
 
 Fixed bug that would not allow you to add a VM through Machine ->
 Add when using PHP < 5.2.0.
-http://code.google.com/p/phpvirtualbox/issues/detail?id=199
 
 Circumvent unconfirmed VirtualBox bug when trying to obtain a
 screen shot for the Preview window returns "Could not take a
@@ -41,6 +40,7 @@ Added $previewAspectRatio config option.
 
 Fixed bug that would always set consoleHost to the server being
 connected to as specified by $location in config.php.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=199
 
 To ensure a more sane default setting, the remote display IP is
 now determined in the following order:
@@ -55,7 +55,7 @@ now determined in the following order:
 Fixed multi-server bug when initial server is unreachable.
 http://code.google.com/p/phpvirtualbox/issues/detail?id=200
 
-Added basic authentication.
+Added basic authentication and associated options.
 
 Added icons to dialog titles.
 
@@ -74,7 +74,18 @@ Maximize use of browser caching when grabbing images for preview
 window.
 
 Added Parallel Port configuration and associated $enableLPTConfig
-configuration setting.
+configuration setting - EXPERIMENTAL - VirtualBox provides no
+documentation or official support for this. Nor can I.
+
+Added CD/DVD and Floppy drives to host details.
+
+Host details now displays CPU features if $enableAdvancedConfig
+is selected.
+
+OS Type selectors now properly display only OS types supported by
+the VirtualBox host based on its processors' features.
+
+Minor UI changes in VM list.
 
 -------------------------------------
 	4.0-3	2011-2-10

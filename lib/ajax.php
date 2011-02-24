@@ -120,6 +120,7 @@ try {
 				$_SESSION['valid'] = true;
 				$_SESSION['user'] = $vboxRequest['u'];
 				$_SESSION['admin'] = intval($vbox->vbox->getExtraData('phpvb/users/'.$vboxRequest['u'].'/admin'));
+				$_SESSION['authCheckHeartbeat'] = time();
 			}
 		
 		/* Get Session Data */
@@ -239,11 +240,19 @@ try {
 			$vbox = new vboxconnector();
 
 			/*
-			 * 1 in every 20 requests will check that the account has not
+			 * Every 1 minute we'll check that the account has not
 			 * been deleted since login, and update admin credentials.
 			 */
-			if($_SESSION['user'] && (rand(0,19) == 11)) {
-				$vbcheck = new vboxconnector(true);
+			if($_SESSION['user'] && ((intval($_SESSION['authCheckHeartbeat'])+60) < time())) {
+				
+				// Check to see if we only have 1 server or are already connected
+				// to the authentication master server
+				if($vbox->settings['authMaster'] || count($vbox->settings['servers']) == 1) {
+					$vbcheck = &$vbox;
+				} else {
+					$vbcheck = new vboxconnector(true);
+				}
+				
 				$vbcheck->connect();
 				$p = $vbcheck->vbox->getExtraData('phpvb/users/'.$_SESSION['user'].'/pass');
 				if(!$vbcheck->vbox->getExtraData('phpvb/users/'.$_SESSION['user'].'/pass')) {
@@ -251,8 +260,8 @@ try {
 					unset($_SESSION['valid']);
 				} else {
 					$_SESSION['admin'] = intval($vbcheck->vbox->getExtraData('phpvb/users/'.$_SESSION['user'].'/admin'));
+					$_SESSION['authCheckHeartbeat'] = time();
 				}
-				$vbcheck = null;
 			}
 			
 			if(!$_SESSION['valid'])
@@ -264,7 +273,7 @@ try {
 			} else {
 				$vbox->$vboxRequest['fn']($vboxRequest,array(&$response));
 			}
-	
+			
 	} // </switch()>
 	
 } catch (Exception $e) {

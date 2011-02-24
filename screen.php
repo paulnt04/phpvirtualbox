@@ -11,6 +11,7 @@ require_once(dirname(__FILE__).'/lib/config.php');
 require_once(dirname(__FILE__).'/lib/utils.php');
 require_once(dirname(__FILE__).'/lib/vboxconnector.php');
 
+
 // Allow caching of some screenshot data
 Header('ETag: "' . $_REQUEST['vm'].'_'.$_REQUEST['randid'].'"');
 session_cache_limiter('private_no_expire');
@@ -71,8 +72,19 @@ try {
 	if($machine->state->__toString() == 'Running') {
 
 		// Let the browser cache images for 3 seconds
-    	if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) >= (time()-3)) {
-			if (php_sapi_name()=='CGI') {
+		$ctime = 0;
+		if(strpos($_SERVER['HTTP_IF_NONE_MATCH'],'_')) {
+			$ctime = preg_replace("/.*_/",str_replace('"','',$_SERVER['HTTP_IF_NONE_MATCH']));
+		} else if(strpos($_ENV['HTTP_IF_NONE_MATCH'],'_')) {
+			$ctime = preg_replace("/.*_/",str_replace('"','',$_ENV['HTTP_IF_NONE_MATCH']));
+		} else if(strpos($_SERVER['HTTP_IF_MODIFIED_SINCE'],'GMT')) {
+			$ctime = strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']);
+		} else if(strpos($_ENV['HTTP_IF_MODIFIED_SINCE'],'GMT')) {
+			$ctime = strtotime($_ENV['HTTP_IF_MODIFIED_SINCE']);
+		}
+		
+    	if($ctime >= (time()-3)) {
+			if (strpos(strtolower(php_sapi_name()),'cgi') !== false) {
 				Header("Status: 304 Not Modified");
 			} else {
 				Header("HTTP/1.0 304 Not Modified");
@@ -129,16 +141,27 @@ try {
 
 	} else {
 
-		// Let the browser cache images
-    	if(isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) >= $dlm) {
-			if (php_sapi_name()=='CGI') {
+		// Let the browser cache saved state images
+		$ctime = 0;
+		if(strpos($_SERVER['HTTP_IF_NONE_MATCH'],'_')) {
+			$ctime = preg_replace("/.*_/",str_replace('"','',$_SERVER['HTTP_IF_NONE_MATCH']));
+		} else if(strpos($_ENV['HTTP_IF_NONE_MATCH'],'_')) {
+			$ctime = preg_replace("/.*_/",str_replace('"','',$_ENV['HTTP_IF_NONE_MATCH']));
+		} else if(strpos($_SERVER['HTTP_IF_MODIFIED_SINCE'],'GMT')) {
+			$ctime = strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']);
+		} else if(strpos($_ENV['HTTP_IF_MODIFIED_SINCE'],'GMT')) {
+			$ctime = strtotime($_ENV['HTTP_IF_MODIFIED_SINCE']);
+		}
+		
+    	if($dlm <= $ctime) {
+			if (strpos(strtolower(php_sapi_name()),'cgi') !== false) {
 				Header("Status: 304 Not Modified");
 			} else {
 				Header("HTTP/1.0 304 Not Modified");
 			}
       		exit;
     	}
-
+		
 
     	if($_REQUEST['full']) $imageraw = $machine->readSavedScreenshotPNGToArray(0);
     	else $imageraw = $machine->readSavedThumbnailPNGToArray(0);

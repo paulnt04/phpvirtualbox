@@ -369,9 +369,11 @@ ul.vboxMenuBar li {
 	border: 1px solid #aaaaaa;
 }
 #vboxPaneVMList td.vboxVMTitle { width: 100% }
-table.vboxVMListVM { margin-bottom: 5px; vertical-align: top; }
-table.vboxVMListVM td { padding: 2px; white-space: nowrap; }
-table.vboxVMListVM td.vboxVMSessionOpen { font-style: italic; }
+#vboxVMList table.vboxVMListVM { margin-bottom: 5px; vertical-align: top; }
+#vboxVMList table.vboxVMListVM td { padding: 2px; white-space: nowrap; }
+#vboxVMList table.vboxVMListVM span.vboxVMName { font-weight: bold; }
+#vboxVMList table.vboxVMListVM span.vboxVMState { font-size: 0.9em; }
+#vboxVMList table.vboxVMListVM td.vboxVMSessionOpen { font-style: italic; }
 #vboxPaneVMList img.vboxHostIcon { border: 1px solid #999; }
 
 /* Toolbar above vm list */

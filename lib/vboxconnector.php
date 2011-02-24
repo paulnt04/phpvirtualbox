@@ -1715,20 +1715,25 @@ class vboxconnector {
 		$this->__vboxwebsrvConnect();
 
 		$ts = $this->vbox->getGuestOSTypes();
+		
+		$supp64 = ($this->vbox->host->getProcessorFeature('LongMode') && $this->vbox->host->getProcessorFeature('HWVirtEx'));
 
 		foreach($ts as $g) {
 
+			// Avoid multiple calls
+			$bit64 = $g->is64Bit;
 			$response['data'][] = array(
 				'familyId' => $g->familyId,
 				'familyDescription' => $g->familyDescription,
 				'id' => $g->id,
 				'description' => $g->description,
-				'is64Bit' => $g->is64Bit,
+				'is64Bit' => $bit64,
 				'recommendedRAM' => $g->recommendedRAM,
-				'recommendedHDD' => ($g->recommendedHDD/1024)/1024
+				'recommendedHDD' => ($g->recommendedHDD/1024)/1024,
+				'supported' => intval(!$bit64 || $supp64)
 			);
-			
 		}
+		
 		return true;
 	}
 
@@ -1907,7 +1912,6 @@ class vboxconnector {
 			'operatingSystem' => $host->operatingSystem,
 			'OSVersion' => $host->OSVersion,
 			'memorySize' => $host->memorySize,
-			'Acceleration3DAvailable' => $host->Acceleration3DAvailable,
 			'cpus' => array(),
 			'networkInterfaces' => array(),
 			'DVDDrives' => array(),
@@ -1920,7 +1924,15 @@ class vboxconnector {
 		for($i = 0; $i < $host->processorCount; $i++) {
 			$response['data']['cpus'][$i] = $host->getProcessorDescription($i);
 		}
-
+		
+		/*
+		 * Supported CPU features?
+		 */
+		$response['data']['cpuFeatures'] = array();
+		foreach(array('HWVirtEx'=>'VCPU','PAE'=>'PAE','NestedPaging'=>'Nested Paging','LongMode'=>'Long Mode (64-bit)') as $k=>$v) {
+			$response['data']['cpuFeatures'][$v] = intval($host->getProcessorFeature($k));
+		}	
+		
 		/*
 		 * NICs
 		 */
@@ -2088,12 +2100,12 @@ class vboxconnector {
 			$data['sessionState'] = $machine->sessionState->__toString();
 			$data['currentStateModified'] = $machine->currentStateModified;
 
-			$mdlm = ($machine->lastStateChange/1000);
+			$mdlm = floor($machine->lastStateChange/1000);
 
 			// Get current console port
 			if($data['state'] == 'Running') {
 				$console = $this->cache->get('__consolePort'.$args['vm'],120000);
-				if($console === false || $console['lastStateChange'] < $mdlm) {
+				if($console === false || intval($console['lastStateChange']) < $mdlm) {
 					$this->session = &$this->websessionManager->getSessionObject($this->vbox->handle);
 					$machine->lockMachine($this->session->handle, 'Shared');
 					$data['consolePort'] = $this->session->console->VRDEServerInfo->port;
@@ -2153,7 +2165,7 @@ class vboxconnector {
 		$machine = $this->vbox->findMachine($args['vm']);
 
 		$cache = array('__consolePort'.$args['vm'],'__getMachine'.$args['vm'],'__getNetworkAdapters'.$args['vm'],'__getStorageControllers'.$args['vm'],
-			'__getSharedFolders'.$args['vm'],'__getUSBController'.$args['vm'],'getMediums');
+			'__getSharedFolders'.$args['vm'],'__getUSBController'.$args['vm'],'getMediums','__getSerialPorts'.$args['vm'],'__getParallelPorts'.$args['vm']);
 
 		// Only unregister or delete?
 		if($args['unregister']) {
@@ -2374,18 +2386,20 @@ class vboxconnector {
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
 
+		$response['data']['vmlist'] = array();
+		
 		//Get a list of registered machines
 		$machines = $this->vbox->machines;
 
 		foreach ($machines as $machine) {
 
 			try {
-				$response['data'][] = array(
+				$response['data']['vmlist'][] = array(
 					'name' => $machine->name,
 					'state' => $machine->state->__toString(),
 					'OSTypeId' => $machine->getOSTypeId(),
 					'id' => $machine->id,
-					'lastStateChange' => $machine->lastStateChange,
+					'lastStateChange' => floor($machine->lastStateChange/1000),
 					'sessionState' => $machine->sessionState->__toString(),
 					'currentSnapshot' => ($machine->currentSnapshot->handle ? $machine->currentSnapshot->name : '')
 				);
@@ -2395,7 +2409,7 @@ class vboxconnector {
 
 				if($machine) {
 
-					$response['data'][] = array(
+					$response['data']['vmlist'][] = array(
 						'name' => $machine->id,
 						'state' => 'Inaccessible',
 						'OSTypeId' => 'Other',
@@ -2414,7 +2428,8 @@ class vboxconnector {
 				$machine->releaseRemote();
 			} catch (Exception $e) { }
 		}
-		if(!is_array($response['data']) || !count($response['data'])) $response['data']['empty'] = 1;
+		$response['data']['server_key'] = $this->settings['key'];
+		$response['data']['result'] = 1;
 		return true;
 
 	}

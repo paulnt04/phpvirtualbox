@@ -152,6 +152,9 @@ var vboxSettingsOSTypesObj = {};
 
 for(var i in vboxOSTypes) {
 
+	// Skip unsupported OS Types
+	if(!vboxOSTypes[i].supported) continue;
+	
 	// create array of os family types
 	if(!vboxSettingsOSTypes[vboxOSTypes[i].familyId]) {
 		vboxSettingsOSTypes[vboxOSTypes[i].familyId] = {'id':vboxOSTypes[i].familyId,'description':vboxOSTypes[i].familyDescription,'osTypes':[]};

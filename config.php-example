@@ -1,6 +1,6 @@
 <?php
 /*
- * phpVirtualBox example configuration.
+ * phpVirtualBox example configuration. $Id$
  *
  * rename to config.php and edit as needed.
  *
@@ -10,6 +10,8 @@ class phpVBoxConfig {
 /* Username / Password for system user that runs VirtualBox */
 var $username = 'vbox';
 var $password = 'pass';
+
+/* SOAP URL of vboxwebsrv (not phpVirtualBox's URL) */
 var $location = 'http://127.0.0.1:18083/';
 
 /* Default language. See languages folder for more language options.
@@ -47,9 +49,6 @@ var $servers = array(
 
 // Disable authentication
 #var $noAuth = true;
-
-// Enable Parallel Port configuration
-#var $enableLPTConfig = true;
 
 // Host / ip to use for console connections
 #var $consoleHost = '192.168.1.40';
@@ -142,6 +141,15 @@ var $vmListSort = 'function(a,b) {
 
 // Disable setting SATA controllers port count to the max port number found when saving VMs.
 #var $disableSataPortCount = true;
+
+/* Enable Parallel Port configuration - EXPERIMENTAL
+LPT support may or may not work for you. Conflicting information
+is available regarding VirtualBox's implementation. I cannot
+provide support or instructions for implementing this. I doubt one
+could get support from VirtualBox for it.
+*/
+#var $enableLPTConfig = true;
+
 
 /*
  * Cache tweeking.

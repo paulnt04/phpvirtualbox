@@ -485,7 +485,16 @@ function vboxVMsettingsInit(vm,callback,pane) {
 	vboxSettingsInit(trans('Settings'),panes,data,function(){
 		var loader = new vboxLoader();
 		loader.mode = 'save';
-		loader.add('saveVM',function(){if(callback){callback();}},$('#vboxSettingsDialog').data('vboxMachineData'));
+		loader.add('saveVM',function(){return;},$('#vboxSettingsDialog').data('vboxMachineData'));
+		loader.onLoad = function() {
+			// Refresh mediums
+			var mload = new vboxLoader();
+			mload.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
+			mload.onLoad = function() {
+				if(callback){callback();}
+			}
+			mload.run();
+		}
 		loader.run();
 	},pane,'settings');
 }

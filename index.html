@@ -87,31 +87,24 @@
 			// Resizable
 			///////////////////////
 			$('#vboxResizeBar').draggable({cursor:(jQuery.browser.opera ? 'e-resize' : 'col-resize'),axis:'x',zIndex:99,helper:function(){
-				var r = $('#vboxResizeBar').clone();
-				$(r).unbind('mouseleave');
-				$(r).css('background','#cccccc');
-				return r;
+				$('#vboxResizeBarTmp').remove();
+				var r = $('#vboxResizeBar').clone(false);
+				return $(r).attr({'id':'vboxResizeBarTmp'}).unbind('mouseleave').css({'background':'#cccccc'});
 			},scroll:false,'start':function(e,ui){
-				$('body').attr({'unselectable':'on'}).css({'-moz-user-select':'none','-webkit-user-select':'none'});
-				var d = document.createElement('div');
-				$(d).attr({'id':'vboxResizeOverlay','style':'width:100%;height:100%;border:0px;margin:0px;padding:0px;position:absolute;top:0px;left:0px;z-index:10;cursor:'+(jQuery.browser.opera ? 'e-resize' : 'col-resize')})
-				$('#vboxIndex').append(d);
-				document.body.style.cursor = (jQuery.browser.opera ? 'e-resize' : 'col-resize');
+				$('#vboxResizeOverlay').remove();
+				$('body').attr({'unselectable':'on'}).css({'-moz-user-select':'none','-webkit-user-select':'none','cursor':(jQuery.browser.opera ? 'e-resize' : 'col-resize')});
+				$('#vboxIndex').append($('<div />').attr({'id':'vboxResizeOverlay','style':'width:100%;height:100%;border:0px;margin:0px;padding:0px;position:absolute;top:0px;left:0px;z-index:10;cursor:'+(jQuery.browser.opera ? 'e-resize' : 'col-resize')}));
 				$('#vboxResizeBar').data('vboxX',e.pageX);
 				
 			},'stop':function(e){
 
+				$('#vboxResizeBarTmp').remove();
 				$('#vboxResizeOverlay').remove();
-				$('body').attr({'unselectable':''}).css({'-moz-user-select':'','-webkit-user-select':''});
+				$('body').attr({'unselectable':''}).css({'-moz-user-select':'','-webkit-user-select':'','cursor':'default'});
 				
-				document.body.style.cursor = 'default';
 
 				var nx = $('#vboxVMList').width() + (e.pageX - $('#vboxResizeBar').data('vboxX'));
 				$('#vboxVMList').css('width',(nx)+'px');
-
-				// Constraint check
-				if($('#vboxVMList').width() < $('#vboxVMList').parent().innerWidth())
-					$('#vboxVMList').css('width',($('#vboxVMList').parent().innerWidth())+'px');
 				
 				vboxSetCookie("vboxPaneX",($('#vboxVMList').width()));
 				
