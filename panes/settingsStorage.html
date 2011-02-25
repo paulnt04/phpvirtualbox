@@ -7,176 +7,184 @@
 
 -->
 
-<table style='width: 100%'>
-	<tr>
-		<td style='width: 50%; padding: 6px;'>
-		<table class='vboxSettingsHeadingLine'
-			style='width: 100%; border-spacing: 0; border: 0px; margin: 0px; padding: 0px;'>
-			<tr style='vertical-align: middle'>
-				<td style='white-space: nowrap; width: auto;'><span
-					class='translate'>Storage Tree</span></td>
-				<td style='width: 100%'>
-					<hr style='width: 100%;' class='vboxSeperatorLine'/>
-				</td>
-			</tr>
-		</table>
+<table style='width: 100%; height: 350px;'>
+	<tr style='height: 100%'>
+		<td style='width: 50%; padding: 6px;' id='vboxStoragePaneLeft'>
+		
+			<table class='vboxSettingsHeadingLine'
+				style='width: 100%; border-spacing: 0; border: 0px; margin: 0px; padding: 0px;'>
+				<tr style='vertical-align: middle'>
+					<td style='white-space: nowrap; width: auto;'><span
+						class='translate'>Storage Tree</span></td>
+					<td style='width: 100%'>
+						<hr style='width: 100%;' class='vboxSeperatorLine'/>
+					</td>
+				</tr>
+			</table>
 
 
-		<!-- Storage Controllers -->
-		<div id='vboxSettingsStorageTree' class='vboxBordered'>
-			<ul class='vboxHover vboxHoverBorderless'>
-				<li>Storage Thingy</li>
-				<li>
-				<ul>
-					<li>Attachment Thingy</li>
+			<!-- Storage Controllers -->
+			<div id='vboxSettingsStorageTree' style='height: 290px' class='vboxBordered'>
+				<ul class='vboxHover vboxHoverBorderless'>
+					<li>Storage Thingy</li>
+					<li>
+					<ul>
+						<li>Attachment Thingy</li>
+					</ul>
+					</li>
 				</ul>
-				</li>
-			</ul>
-		</div>
+			</div>
 
-		<!-- Controller Toolbar -->
-		<div id='vboxSettingsControllersButtons' style='text-align: right'>
-		</div>
+			<!-- Controller Toolbar -->
+			<div id='vboxSettingsControllersButtons' style='text-align: right'>
+			</div>
 
 
 		</td>
-		<td style='background: #aaa; padding: 1px; border: 0px; width: 1px;' class='vboxSeperatorLine'></td>
-		<td style='width: 50%; padding: 6px;'>
+		
+		<!-- Resize Bar -->
+		<td style='height: 100%; width:3px; padding:0px; margin:0px;'>
+			<div style='margin:0px; margin-top: 2px; padding:0px; width: 3px; height: 99%; background:#aaa;' id='vboxStorageResizeBar' ></div>
+		</td>
+		
+		<td style='width: 50%; padding: 6px;' id='vboxStoragePaneRight'>
 
-		<table class='vboxSettingsHeadingLine'
-			style='width: 100%; border-spacing: 0; border: 0px; margin: 0px; padding: 0px;'>
-			<tr style='vertical-align: middle'>
-				<td style='white-space: nowrap; width: auto;'><span
-					class='translate'>Attributes</span></td>
-				<td style='width: 100%; white-space: nowrap;'><hr style='width: 100%;' class='vboxSeperatorLine'/></td>
-			</tr>
-		</table>
+			<table class='vboxSettingsHeadingLine'
+				style='width: 100%; border-spacing: 0; border: 0px; margin: 0px; padding: 0px;'>
+				<tr style='vertical-align: middle'>
+					<td style='white-space: nowrap; width: auto;'><span
+						class='translate'>Attributes</span></td>
+					<td style='width: 100%; white-space: nowrap;'><hr style='width: 100%;' class='vboxSeperatorLine'/></td>
+				</tr>
+			</table>
+	
+	
+			<!-- Controller Settings -->
+			<div id='vboxSettingsController' style='width: 100%; display: none;'>
+				<table style='width: 100%' class='vboxVertical'>
+					<tr>
+						<th><span class='translate'>Name</span>:</th>
+						<td style='width: 100%'><input type='text' class='vboxText'
+							name='vboxSettingsStorageItemName' style='width: 100%' /></td>
+					</tr>
+					<tr>
+						<th><span class='translate'>Type</span>:</th>
+						<td><select name='vboxSettingsStorageControllerType'
+							style='width: 100%'>
+							<option value='ICH6'>ICH6</option>
+						</select></td>
+					</tr>
+					<tr>
+						<th></th>
+						<td style='width: 100%'>
+							<input type='checkbox' class='vboxCheckbox'
+							name='vboxSettingsStorageHostCache'/> <span class='translate'>Use host I/O cache</span></td>
+					</tr>
+					<tr id='vboxSettingsControllerPortCountRow' style='display: none'>
+						<th><span class='translate'>SATA Port Count</span>:</th>
+						<td>
+							<select name='vboxSettingsControllerPortCount'>
+							</select>
+						</td>
+					</tr>			
+				</table>
+			</div>
+	
+			<!-- Attachment Settings -->
+			<div id='vboxSettingsStorageAttachment' style='display: none'>
+				<table class='vboxVertical'>
+					<tr style='vertical-align: middle;'>
+						<th><span class='translate' id='vboxSettingsControllerSlotLabel'>HardDisk</span>:</th>
+						<td style='width: 100%'>
+							<table class='vboxInvisible' style='width: 100%'>
+								<tr style='vertical-align: middle'>
+									<td style='width: 100%'>
+										<select	name='vboxSettingsControllerSlot' style='width: 100%'></select>
+									</td>
+									<td>
+										<div id='vboxSettingsAddAttachmentsMenuHDDiv' style='display: none'></div>
+										<div id='vboxSettingsAddAttachmentsMenuFDDiv' style='display: none'></div>
+										<div id='vboxSettingsAddAttachmentsMenuCDDiv' style='display: none'></div>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr id='vboxSettingsControllerDeviceOptionRow'>
+						<th></th>
+						<td><input type='checkbox' class='vboxCheckbox'
+							name='vboxSettingsControllerDeviceOption'
+							style='float: left' /> <span
+							id='vboxSettingsControllerDeviceOptionLabel'>Passthrough</span></td>
+					</tr>
+				</table>
+			</div>
 
-
-		<!-- Controller Settings -->
-		<div id='vboxSettingsController' style='width: 100%; display: none;'>
-		<table style='width: 100%' class='vboxVertical'>
-			<tr>
-				<th><span class='translate'>Name</span>:</th>
-				<td style='width: 100%'><input type='text' class='vboxText'
-					name='vboxSettingsStorageItemName' style='width: 100%' /></td>
-			</tr>
-			<tr>
-				<th><span class='translate'>Type</span>:</th>
-				<td><select name='vboxSettingsStorageControllerType'
-					style='width: 100%'>
-					<option value='ICH6'>ICH6</option>
-				</select></td>
-			</tr>
-			<tr>
-				<th></th>
-				<td style='width: 100%'>
-					<input type='checkbox' class='vboxCheckbox'
-					name='vboxSettingsStorageHostCache'/> <span class='translate'>Use host I/O cache</span></td>
-			</tr>
-			<tr id='vboxSettingsControllerPortCountRow' style='display: none'>
-				<th><span class='translate'>SATA Port Count</span>:</th>
-				<td>
-					<select name='vboxSettingsControllerPortCount'>
-					</select>
-				</td>
-			</tr>			
-		</table>
-		</div>
-
-		<!-- Attachment Settings -->
-		<div id='vboxSettingsStorageAttachment' style='display: none'>
-		<table class='vboxVertical'>
-			<tr style='vertical-align: middle;'>
-				<th><span class='translate' id='vboxSettingsControllerSlotLabel'>HardDisk</span>:</th>
-				<td style='width: 100%'>
-					<table class='vboxInvisible' style='width: 100%'>
-						<tr style='vertical-align: middle'>
-							<td style='width: 100%'>
-								<select	name='vboxSettingsControllerSlot' style='width: 100%'></select>
-							</td>
-							<td>
-								<div id='vboxSettingsAddAttachmentsMenuHDDiv' style='display: none'></div>
-								<div id='vboxSettingsAddAttachmentsMenuFDDiv' style='display: none'></div>
-								<div id='vboxSettingsAddAttachmentsMenuCDDiv' style='display: none'></div>
-							</td>
+			<!--  Selected Media Info -->
+			<div id='vboxSettingsMediaInfo' style='display: none'>
+				<table class='vboxSettingsHeadingLine'
+					style='width: 100%; border-spacing: 0; border: 0px; margin: 0px; padding: 0px;'>
+					<tr style='vertical-align: middle'>
+						<td style='white-space: nowrap; width: auto;'><span
+							class='translate'>Information</span></td>
+						<td style='width: 100%'>
+						<hr style='width: 100%; ' class='vboxSeperatorLine'/>
+						</td>
+					</tr>
+				</table>
+	
+	
+				<!-- HardDisk Media  -->
+				<div id='vboxSettingsHDInfo'>
+					<table class='vboxVertical'>
+						<tr>
+							<th><span class='translate'>Type (Format)</span>:</th>
+							<td><span id='vboxSettingsHDtype'>Image</span></td>
+						</tr>				
+						<tr>
+							<th><span class='translate'>Virtual Size</span>:</th>
+							<td><span id='vboxSettingsHDvsize'>30 GB</span></td>
+						</tr>
+						<tr>
+							<th><span class='translate'>Actual Size</span>:</th>
+							<td><span id='vboxSettingsHDasize'>30 GB</span></td>
+						</tr>
+						<tr>
+							<th><span class='translate'>Location</span>:</th>
+							<td><span id='vboxSettingsHDlocation'>/usr/local/blah/etc..</span></td>
+						</tr>
+						<tr>
+							<th><span class='translate'>Attached to</span>:</th>
+							<td><span id='vboxSettingsHDattached'>Some Virtual
+							Machine Name</span></td>
 						</tr>
 					</table>
-				</td>
-			</tr>
-			<tr id='vboxSettingsControllerDeviceOptionRow'>
-				<th></th>
-				<td><input type='checkbox' class='vboxCheckbox'
-					name='vboxSettingsControllerDeviceOption'
-					style='float: left' /> <span
-					id='vboxSettingsControllerDeviceOptionLabel'>Passthrough</span></td>
-			</tr>
-		</table>
-		</div>
-		<div id='vboxSettingsMediaInfo' style='display: none'>
-		<table class='vboxSettingsHeadingLine'
-			style='width: 100%; border-spacing: 0; border: 0px; margin: 0px; padding: 0px;'>
-			<tr style='vertical-align: middle'>
-				<td style='white-space: nowrap; width: auto;'><span
-					class='translate'>Information</span></td>
-				<td style='width: 100%'>
-				<hr style='width: 100%; ' class='vboxSeperatorLine'/>
-				</td>
-			</tr>
-		</table>
-
-
-		<!-- HardDisk Media  -->
-		<div id='vboxSettingsHDInfo'>
-		<table class='vboxVertical'>
-			<tr>
-				<th><span class='translate'>Type (Format)</span>:</th>
-				<td><span id='vboxSettingsHDtype'>Image</span></td>
-			</tr>				
-			<tr>
-				<th><span class='translate'>Virtual Size</span>:</th>
-				<td><span id='vboxSettingsHDvsize'>30 GB</span></td>
-			</tr>
-			<tr>
-				<th><span class='translate'>Actual Size</span>:</th>
-				<td><span id='vboxSettingsHDasize'>30 GB</span></td>
-			</tr>
-			<tr>
-				<th><span class='translate'>Location</span>:</th>
-				<td><span id='vboxSettingsHDlocation'>/usr/local/blah/etc..</span></td>
-			</tr>
-			<tr>
-				<th><span class='translate'>Attached to</span>:</th>
-				<td><span id='vboxSettingsHDattached'>Some Virtual
-				Machine Name</span></td>
-			</tr>
-		</table>
-		</div>
-
-		<!-- DVD/CD Media  -->
-		<div id='vboxSettingsImageInfo'>
-		<table class='vboxVertical'>
-			<tr>
-				<th><span class='translate'>Type</span>:</th>
-				<td><span id='vboxSettingsImageType'>Image</span></td>
-			</tr>		
-			<tr>
-				<th><span class='translate'>Size</span>:</th>
-				<td><span id='vboxSettingsImageSize'>30 GB</span></td>
-			</tr>
-			<tr>
-				<th><span class='translate'>Location</span>:</th>
-				<td><span id='vboxSettingsImageLocation'>/usr/local/blah/etc..</span></td>
-			</tr>
-			<tr>
-				<th><span class='translate'>Attached to</span>:</th>
-				<td><span id='vboxSettingsImageAttached'>Some Virtual
-				Machine Name</span></td>
-			</tr>
-		</table>
-		</div>
-
-		</div>
+				</div>
+	
+				<!-- DVD/CD Media  -->
+				<div id='vboxSettingsImageInfo'>
+					<table class='vboxVertical'>
+						<tr>
+							<th><span class='translate'>Type</span>:</th>
+							<td><span id='vboxSettingsImageType'>Image</span></td>
+						</tr>		
+						<tr>
+							<th><span class='translate'>Size</span>:</th>
+							<td><span id='vboxSettingsImageSize'>30 GB</span></td>
+						</tr>
+						<tr>
+							<th><span class='translate'>Location</span>:</th>
+							<td><span id='vboxSettingsImageLocation'>/usr/local/blah/etc..</span></td>
+						</tr>
+						<tr>
+							<th><span class='translate'>Attached to</span>:</th>
+							<td><span id='vboxSettingsImageAttached'>Some Virtual
+							Machine Name</span></td>
+						</tr>
+					</table>
+				</div>
+	
+			</div>
 		</td>
 	</tr>
 </table>

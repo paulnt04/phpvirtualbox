@@ -243,11 +243,21 @@ var vmmButtons = new Array(
 							type = 'Floppy';
 							break;
 					}
-					vboxAjaxRequest('mediumAdd',{'path':$('#vboxVMMAddMediumImage').val(),'type':type},function(ret){
+					var mLocation = $('#vboxVMMAddMediumImage').val();
+					vboxAjaxRequest('mediumAdd',{'path':mLocation,'type':type},function(ret){
 						var l = new vboxLoader();
 						l.add('Mediums',function(data){$('#vboxIndex').data('vboxMediums',data);});
 						l.onLoad = function() {
+							
 							vboxVMMFillMediums((ret && ret.id ? ret.id : null));
+
+							var changed = vboxAddRecentMedium(mLocation, $('#vboxIndex').data('vboxRecentMediums')[type]);
+							
+							if(changed) {
+								// Update Recent Mediums in background
+								vboxAjaxRequest('mediumRecentUpdate',{'type':type,'list':$('#vboxIndex').data('vboxRecentMediums')[type]},function(){});
+							}
+
 						}
 						l.run();
 					});

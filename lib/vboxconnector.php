@@ -826,6 +826,17 @@ class vboxconnector {
 
 			// Check for redirection rules diff
 			$ndiff = ($ndiff || (@serialize($args['networkAdapters'][$i]['redirects']) != @serialize($adapters[$i]['redirects'])));
+			
+			// Check for nat engine options change
+			if(!$ndiff && $this->settings['enableAdvancedConfig'] && $args['networkAdapters'][$i]['attachmentType'] == 'NAT') {
+				$neProps = array('aliasMode','dnsPassDomain','dnsProxy','dnsUseHostResolver');
+				foreach($neProps as $p) {
+					if(intval($args['networkAdapters'][$i]['NatDriver'][$p]) == intval($adapters[$i]['NatDriver'][$p])) continue;
+					$ndiff = true;
+					break;
+				}
+				
+			}
 
 			if(!$ndiff) { continue; }
 			$netchanged = true;
@@ -874,6 +885,17 @@ class vboxconnector {
 					foreach($args['networkAdapters'][$i]['redirects'] as $r) {
 						$r = split(',',$r);
 						$n->NatDriver->addRedirect($r[0],$r[1],$r[2],$r[3],$r[4],$r[5]);
+					}
+					
+					// Advanced NAT settings
+					if($this->settings['enableAdvancedConfig']) {
+						$aliasMode = $n->NatDriver->aliasMode & 1; 
+						if(intval($args['networkAdapters'][$i]['NatDriver']['aliasMode'] & 2)) $aliasMode |= 2;
+						if(intval($args['networkAdapters'][$i]['NatDriver']['aliasMode'] & 4)) $aliasMode |= 4;
+						$n->NatDriver->aliasMode = $aliasMode;
+						$n->NatDriver->dnsProxy = intval($args['networkAdapters'][$i]['NatDriver']['dnsProxy']);
+						$n->NatDriver->dnsPassDomain = intval($args['networkAdapters'][$i]['NatDriver']['dnsPassDomain']);
+						$n->NatDriver->dnsUseHostResolver = intval($args['networkAdapters'][$i]['NatDriver']['dnsUseHostResolver']);
 					}
 
 					break;
@@ -2473,21 +2495,28 @@ class vboxconnector {
 	 */
 	private function __getNetworkAdapter(&$n) {
 
+		// Avoid duplicate calls
+		$at = $n->attachmentType->__toString();
+		if($at == 'NAT') $nd = $n->NatDriver;
+		else $nd = null;
 		return array(
 			'adapterType' => $n->adapterType->__toString(),
 			'slot' => $n->slot,
 			'enabled' => $n->enabled,
 			'MACAddress' => $n->MACAddress,
-			'attachmentType' => $n->attachmentType->__toString(),
+			'attachmentType' => $at,
 			'hostInterface' => $n->hostInterface,
 			'internalNetwork' => $n->internalNetwork,
 			'NATNetwork' => $n->NATNetwork,
 			'VDENetwork' => ($this->settings['enableVDE'] ? $n->VDENetwork : ''),
 			'cableConnected' => $n->cableConnected,
+			'NatDriver' => ($at == 'NAT' ? 
+				array('aliasMode' => intval($nd->aliasMode),'dnsPassDomain' => intval($nd->dnsPassDomain), 'dnsProxy' => intval($nd->dnsProxy), 'dnsUseHostResolver' => intval($nd->dnsUseHostResolver))
+				: array('aliasMode' => 0,'dnsPassDomain' => 0, 'dnsProxy' => 0, 'dnsUseHostResolver' => 0)),
 			'lineSpeed' => $n->lineSpeed,
 			'redirects' => (
-				$n->attachmentType->__toString() == 'NAT' ?
-				$n->NatDriver->getRedirects()
+				$at == 'NAT' ?
+				$nd->getRedirects()
 				: array()
 				)
 			);

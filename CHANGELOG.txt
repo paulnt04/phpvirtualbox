@@ -85,7 +85,15 @@ is selected.
 OS Type selectors now properly display only OS types supported by
 the VirtualBox host based on its processors' features.
 
-Minor UI changes in VM list.
+Minor UI changes; VM List, Storage settings, and Boot order icons.
+
+Adding media through the Virtual Media Manager now updates the
+"recent media" list.
+
+Added advanced NAT settings for Network Adapters visible when
+$enableAdvancedConfig is set.
+
+Updated German translations.
 
 -------------------------------------
 	4.0-3	2011-2-10

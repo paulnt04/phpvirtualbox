@@ -56,7 +56,7 @@ public static $trans = array(
 'Select File' => 'Datei auswählen',
 'Select Folder' => 'Ordner auswählen',
 'Server List' => 'Server-Liste',
-'Interface Language' => 'Sprache der Nutzeroberfläche',
+'Interface Language' => 'Sprache der Benutzeroberfläche',
 'Language' => 'Sprache',
 
 // Users and Login
@@ -69,25 +69,25 @@ public static $trans = array(
 'New Password' => 'Neues Passwort',
 'The passwords you have entered do not match.' => 'Die Passwörter die Sie eingegeben haben stimmen nicht überein.',
 'Password changed.' => 'Kennwort geändert.',
-'The password you have entered is invalid.' => 'Der von Ihnen eingegebene Kennwort ist ungültig.',
+'The password you have entered is invalid.' => 'Das von Ihnen eingegebene Kennwort ist ungültig.',
 'Retype' => 'Retype', // Retype password
 'Invalid username or password.' => 'Ungültiger Benutzername oder Kennwort.',
 'Users' => 'Benutzer',
 'Add User' => 'Hinzufügen eines Benutzers',
 'A user with that username already exists.' => 'Ein Benutzer mit diesem Benutzernamen existiert bereits.',
-'Remove User' => 'Entfernen Sie diese User',
-'Are you sure you want to remove the user <b>%s</b>? This action cannot be undone.' => 'Sie sind sicher, dass Sie den Benutzer entfernen <b>%s</b>? Diese Aktion kann nicht rückgängig gemacht werden.',
+'Remove User' => 'Entfernen Sie diesen Benutzer',
+'Are you sure you want to remove the user <b>%s</b>? This action cannot be undone.' => 'Sind Sie sicher, dass Sie den Benutzer <b>%s</b> entfernen möchten? Diese Aktion kann nicht rückgängig gemacht werden.',
 'Edit User' => 'Bearbeiten dieses Benutzers',
-'Admin User' => 'Administrative Benutzer',
-'Can administer users' => 'Kann verwalten Benutzer',
+'Admin User' => 'Administrativer Benutzer',
+'Can administer users' => 'Kann Benutzer verwalten',
 'Not logged in.' => 'Nicht eingeloggt.',
 
 // Power button
 'Stop' => 'Stoppen',
-'Pause' => 'Pausieren',
-'Reset' => 'Neu Starten',
-'Save State' => 'Zustand Speichern',
-'ACPI Power Button' => 'ACPI Ein/Ausschalter',
+'Pause' => 'Anhalten',
+'Reset' => 'Neustarten',
+'Save State' => 'Zustand speichern',
+'ACPI Power Button' => 'ACPI Ein/Ausschalten',
 'ACPI Sleep Button' => 'ACPI Ruhezustand',
 'ACPI event not handled' => 'Die virtuelle Maschine versteht dieses ACPI Ereignis nicht.',
 
@@ -109,7 +109,7 @@ public static $trans = array(
 'Preview' => 'Vorschau',
 'Update Disabled' => 'Update deaktiviert',
 'Every X seconds' => 'alle %s Sekunde(n)', /* %s will be replaced with numeric values */
-'Open in new window' => 'Neues Fenster', /* View VM screenshot in new window*/
+'Open in new window' => 'In neuem Fenster öffnen', /* View VM screenshot in new window*/
 
 /* Snapshots */
 'Snapshots' => 'Momentaufnahme',
@@ -123,7 +123,7 @@ public static $trans = array(
 'Snapshot Details' => 'Einzelheiten der Momentaufnahme',
 'Snapshot Name' => 'Name der Momentaufnahme',
 'Snapshot Description' => 'Beschreibung der Momentaufnahme',
-'Restore Snapshot Message' => 'Sind Sie sicher, dass Sie die Momentaufnahme %s wiederherstellen möchten? Dabei wird der aktuelle Zustand dieser Maschine gelöscht und kann nicht weiderhergestellt werden.',
+'Restore Snapshot Message' => 'Sind Sie sicher, dass Sie die Momentaufnahme %s wiederherstellen möchten? Dabei wird der aktuelle Zustand dieser Maschine gelöscht und kann nicht wiederhergestellt werden.',
 'Delete Snapshot Message1' => 'Wenn Sie diese Momentaufnahme löschen, wird der damalige Status ebenso gelöscht. Daten, die zum Zeitpunkt der Momentaufnahme über mehrere Dateien verteilt wurden, werden in einer Datei zusammen gefasst. Dies kann längere Zeit dauern. Die Momentaufnahme kann nicht wiederhergestellt werden.',
 'Delete Snapshot Message2' => 'Sind Sie sicher, dass Sie die Momentaufnahme %s löschen möchten?',
 'Taken' => 'Aufgenommen',
@@ -132,7 +132,7 @@ public static $trans = array(
 /* Discard State */
 'Discard' => 'Verwerfen',
 'Discard Message1' => 'Sind Sie sicher, dass Sie den gespeicherten Zustand der virtuellen Maschine %s verwerfen möchten?', // %s willl be replaced with VM name
-'Discard Message2' => 'Diese Aktion entspricht dem Neustart oder Ausschalten der Maschine ohne das Gastsystem ordnungsgemäß herunter zu fahren.',
+'Discard Message2' => 'Diese Aktion entspricht dem Neustart oder Ausschalten der Maschine ohne das Gastsystem ordnungsgemäß herunterzufahren.',
 
 /* Delete or Unregister Inaccessible Machine */
 'VM Inaccessible' => 'Auf die ausgewählte virtuelle Maschine kann nicht zugegriffen werden. Bitte beachten Sie die nachstehende Fehlermeldung. Um die Möglichkeit des Zugriffs nochmals zu Überprüfen, drücken Sie den Konpf Neu Laden.',
@@ -174,7 +174,7 @@ public static $trans = array(
 'DHCP enabled' => 'DHCP aktiviert',
 'Manually configured' => 'Manuell konfiguriert',
 'Delete Interface Message1' => 'Wenn Sie dieses Host-only Netzwerk entfernen, wird die Host-only Schnittstelle entfernt, zu der dieses Netzwerk gehört. Möchten Sie diese (Host-only Netzwerk) Schnittstelle %s entfernen?',
-'Delete Interface Message2' => 'Anmerkung: Diese Schnittstelle wird möglicherweise von einem oder mehreren virtuellen Netzwerkadapter genutzt, die zu einer Ihrer virtuellen Maschinen gehören. Sobald diese Schnittstelle entfernt wird, werden diese Netzwerkadapter nicht mehr funktionieren bis Sie die Einstellungen der virtuellen Maschinen korrigiert haben. Entweder wählen Sie einen anderen Schnittstellen Namen oder einen anderen Typ Netzwerkadapter.',
+'Delete Interface Message2' => 'Anmerkung: Diese Schnittstelle wird möglicherweise von einem oder mehreren virtuellen Netzwerkadaptern genutzt, welche zu einer Ihrer virtuellen Maschinen gehören. Sobald diese Schnittstelle entfernt wird, werden diese Netzwerkadapter nicht mehr funktionieren bis Sie die Einstellungen der virtuellen Maschinen korrigiert haben. Entweder wählen Sie einen anderen Schnittstellen Namen oder einen anderen Typ von Netzwerkadapter.',
 
 'System' => 'System',
 'Base Memory' => 'Hauptspeicher',
@@ -246,7 +246,7 @@ public static $trans = array(
 'Floppy Device %s' => 'Diskettenlaufwerk %s',
 'DVD' => 'CD/DVD',
 'Type (Format)' => 'Typ (Format)',
-'Add Attachment' => 'Anlage beifügen',
+'Add Attachment' => 'Anlage hinzufügen',
 'Remove Attachment' => 'Anlage entfernen',
 'Add Controller' => 'Controller hinzufügen',
 'Remove Controller' => 'Controller entfernen',
@@ -422,10 +422,10 @@ public static $trans = array(
 'PoweredOff' => 'Ausgeschaltet',
 'Saved' => 'Gespeichert',
 'Teleported' => 'Übertragen',
-'Aborted' => 'Abgestürzt',
+'Aborted' => 'Abgebrochen',
 'Running' => 'Läuft',
 'Paused' => 'Angehalten',
-'Stuck' => 'Stuck',
+'Stuck' => 'Klemmt',
 'Teleporting' => 'Übertragen',
 'LiveSnapshotting' => 'Live Snapshotting',
 'Starting' => 'Starten',
@@ -478,7 +478,7 @@ public static $trans = array(
 'Hard Disk Storage Type' => 'Festplatten Typ',
 'newDisk Step2 Message1' => 'Welchen Typ  virtueller Festplatte möchten Sie anlegen.',
 'newDisk Step2 dynamic' => '<b>Dynamisch wachsend</b> bedeutet, dass zu Anfang nur wenig Platz auf der phyikalischen Festplatte genutzt wird. Die virtuelle Festplatte wächst dynamisch (bis zur festgelegten Größe) nach Bedarf des Gastsystems.',
-'newDisk Step2 fixed' => '<b>Feste Größe</b> bedeutet kein Waxhstum. Die virtuelle Festplatte wird mit der Größe, die Sie gewählt haben, als Datei auf der physikalischen Festplatte angelegt. Dieser vorgang kann einige Zeit dauern und ist abhängig von den Leistungsmerkmalen Ihrer physikalischen Festplatte.',
+'newDisk Step2 fixed' => '<b>Feste Größe</b> bedeutet kein Wachstum. Die virtuelle Festplatte wird mit der Größe, die Sie gewählt haben, als Datei auf der physikalischen Festplatte angelegt. Dieser Vorgang kann einige Zeit dauern und ist abhängig von den Leistungsmerkmalen Ihrer physikalischen Festplatte.',
 'Storage Type' => 'Speicher Typ',
 'Dynamically expanding storage' => 'Dynamisch wachsend',
 'Fixed-size storage' => 'Feste Größe',
@@ -491,14 +491,14 @@ public static $trans = array(
 
 /* New virtual machine wizard */
 'Create New Virtual Machine' => 'Neue virtuelle Maschine anlegen',
-'New Virtual Machine Wizard' => 'Assistent für vVirtuelle Maschinen',
+'New Virtual Machine Wizard' => 'Assistent für virtuelle Maschinen',
 'newVM Welcome' => 'Willkommen beim Assistenten für neue virtuelle Maschinen!',
 'newVM Step1 Message1' => 'Dieser Assistent begleitet Sie auf den notwendigen Schritten, um eine neue virtuelle Maschine mit Virtualbox anzulegen.',
 'newVM Step1 Message2' => 'Nutzen Sie die Schaltflächen Vor und Zurück, um zur nächsten oder vorigen Seite zu navigieren.',
 'VM Name and OS Type' => 'VM Name und Betriebssystem',
 'newVM Step2 Message1' => 'Geben Sie der neuen virtuellen Maschine einen Namen und wählen Sie das Betriebssystem, das Sie in diese Maschine isntallieren möchten.',
 'newVM Step2 Message2' => 'Nutzen Sie den Namen, um einen Hinweis auf die Verwendung und/oder Konfiguration der virtuellen Maschine zu haben. VirtualBox und Komponenten verwenden diesen Namen zur Identifizierung .',
-'newVM Step3 Message1' => 'Geben Sie die Größe des Hauptspeichers (RAM) in Megabytes an, das diese Maschine erhalten soll.',
+'newVM Step3 Message1' => 'Geben Sie die Größe des Hauptspeichers (RAM) in Megabytes an, den diese Maschine erhalten soll.',
 'newVM Step3 Message2' => 'Vorgeschlagene Größe %s MB.', /* %s will be replaced with the recommended memory size at run time */
 'Virtual Hard Disk' => 'Virtuelle Festplatte',
 'Boot Hard Disk' => 'Startplatte',
@@ -521,8 +521,8 @@ public static $trans = array(
 'Appliance Export Wizard' => 'Assistent für den Export einer Appliance',
 'Appliance Export Wizard Welcome' => 'Willkommen beim Assistenten für den Export von Appliances!',
 'appExport Step1 Message1' => 'Dieser Assistent begleitet Sie auf den notwendigen Schritten, die zum Export einer Appliance notwendig sind.',
-'appExport Step1 Message2' => 'Nutzen Sie die Schaltflächen Vor und Zurück, um zur nächsten oder vorigen Seite zu navigieren.. Mit der Schaltfläche Abbrechen können Sie den Assistenten jederzeit verlassen.',
-'appExport Step1 Message3' => 'Bitte wählen Sie die virtuelle(n) Maschine(n), die zu einer Appliance hinzugefügt werden sollen. Achten Sie daruaf, dass diese Maschinen vor dem Export ausgeschaltet sind.',
+'appExport Step1 Message2' => 'Nutzen Sie die Schaltflächen Vor und Zurück, um zur nächsten oder vorigen Seite zu navigieren. Mit der Schaltfläche Abbrechen können Sie den Assistenten jederzeit verlassen.',
+'appExport Step1 Message3' => 'Bitte wählen Sie die virtuelle(n) Maschine(n), die zu einer Appliance hinzugefügt werden sollen. Achten Sie darauf, dass diese Maschinen vor dem Export ausgeschaltet sind.',
 'Appliance Export Settings' => 'Appliance Export Einstellungen',
 'appExport Step2 Message1' => 'Sie können hier zusätzliche Konfigurationseinstellungen für die ausgewählten Maschinen vornehmen. Einstellungen ändern Sie durch Doppelklick auf die einzelnen Punkte.',
 'appExport Step3 Message1' => 'Bitte geben Sie einen Dateinamen für die OVF an.',
@@ -530,7 +530,7 @@ public static $trans = array(
 'Appliance Import Wizard' => 'Assistent für den Import einer Appliance',
 'Appliance Import Wizard Welcome' => 'Willkommen beim Assistenten für den Import virtueller Maschinen!',
 'appImport Step1 Message1' => 'Dieser Assistent begleitet Sie auf den notwendigen Schritten, die zum Import einer Appliance notwendig sind.',
-'appImport Step1 Message2' => 'Nutzen Sie die Schaltflächen Vor und Zurück, um zur nächsten oder vorigen Seite zu navigieren.. Mit der Schaltfläche Abbrechen können Sie den Assistenten jederzeit verlassen.',
+'appImport Step1 Message2' => 'Nutzen Sie die Schaltflächen Vor und Zurück, um zur nächsten oder vorigen Seite zu navigieren. Mit der Schaltfläche Abbrechen können Sie den Assistenten jederzeit verlassen.',
 'appImport Step1 Message3' => 'VirtualBox kann derzeit Appliances importieren, die im Open Virtualization Format (OVF) gespeichert sind. Um Fortzufahren, wählen Sie eine Datei zum Import aus:',
 'Appliance Import Settings' => 'Appliance Import Einstellungen',
 'appImport Step2 Message1' => 'Die Appliance enthält diese Maschinen und ihre vorgeschlagenen Einstellungen. Sie können die meisten Einstellungen durch Doppelklick oder an/abwählen nachstehender Auswahlboxen ändern.',
@@ -547,18 +547,18 @@ public static $trans = array(
 'Warnings' => 'Warnungen',
 
 /* Operation in progress onUnLoad warning message */
-'Operation in progress' => 'Warnung: Interne Aktioin läuft. Wenn Sie dieses Fenster schließen oder diese Seite verlassen, kann das zu unerwünschten oder unbeabsichtigten Effekten führen. Bitte warten Sie bis die Aktion abgeschlossen ist.',
+'Operation in progress' => 'Warnung: Interne Aktion läuft. Wenn Sie dieses Fenster schließen oder diese Seite verlassen, kann das zu unerwünschten oder unbeabsichtigten Effekten führen. Bitte warten Sie bis die Aktion abgeschlossen ist.',
 'Loading ...' => 'Lädt ...', // "loading ..." screen
 
 /* Versions */
-'Unsupported version' => 'Sie verwenden eine nicht erprobte Version von VirtualBox (%s) mit phpVirtualbox. Unbekannte und unvorhersehbare Ergebnisse können auftreten.',
+'Unsupported version' => 'Sie verwenden eine noch nicht getestete Version von VirtualBox (%s) mit phpVirtualbox. Unbekannte und unvorhersehbare Ergebnisse können auftreten.',
 'Do not show message again' => 'Diese Meldung nicht mehr anzeigen.',
 
 /* Fatal connection error */
 'Fatal error' => 'Bei der Kommunikation mit dem vboxwebsrv ist ein Fehler aufgetreten. Bevor dieser Fehler nicht behoben wird und diese Seite neu geladen wurde, werden von phpVirtualBox keine Anfragen mehr gesendet. Einzelheiten entnehmen Sie der folgenden Dialogbox.',
 
 /* Guest properties error */
-'Unable to retrieve guest properties' => 'Die Eigensachaften des Gastes können nicht ermittelt werden. Stellen Sie sicher, das die Maschine läuft und die Gasterweiterungen von VirtualBox installiert sind.',
+'Unable to retrieve guest properties' => 'Die Eigenschaften des Gastes können nicht ermittelt werden. Stellen Sie sicher, das die Maschine läuft und die Gasterweiterungen von VirtualBox installiert sind.',
 
 /*Remote Console */
 'User name' => 'Benutzername',
@@ -576,8 +576,8 @@ public static $trans = array(
 
 /* Guest Additions */
 'Install Guest Additions' => 'Gasterweiterungen installieren',
-'Guest Additions Mounted' => 'The VirtualBox Guest Additions CD image has been mounted on a CD/DVD drive in the virtual machine. To complete the installation process, you must log into the virtual machine and manually install the VirtualBox Guest Additions.',
-'Guest Additions No CDROM' => 'Das CD-Abbild mit den Gast-Erweiterungen konnte nicht an die maschine gebunden werden, da diese Maschine kein CD/DVD-Laufwerk besitzt. Bitte fügen Sie ein solches auf der Seite Massenspeicher der Einstellungen für die virtuelle Maschine hinzu.',
+'Guest Additions Mounted' => 'Das CD-Abbild mit den Gasterweiterungen wurde erfolgreich an ein CD/DVD-Laufwerk der virtuellen Maschine gebunden. Um den Installationsvorgang abzuschließen müssen Sie sich in die virtuelle Maschine einloggen und die Installation der Virtualbox Gasterweiterungen vornehmen.',
+'Guest Additions No CDROM' => 'Das CD-Abbild mit den Gast-Erweiterungen konnte nicht an die Maschine gebunden werden, da diese Maschine kein CD/DVD-Laufwerk besitzt. Bitte fügen Sie ein solches auf der Seite Massenspeicher der Einstellungen für die virtuelle Maschine hinzu.',
 
 /* USB devices */
 'USB Device' => 'USB-Gerät', // USB device name

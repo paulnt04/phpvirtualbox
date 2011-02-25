@@ -33,6 +33,24 @@
              </select>
           </td>
 	</tr>
+	
+	<!-- Advanced NAT Settings -->
+	<tr class='vboxSettingsAdvancedNat' style='display: none'>
+		<th><span class='translate'>NAT Alias Mode</span> :</th>
+		<td>
+			<input type='checkbox' class='vboxCheckbox' class='vboxEnablerListen' name='vboxSettingsNetAliasModeProxyOnly' /> <span class='translate vboxEnablerListen'>Proxy Only</span><br />
+			<input type='checkbox' class='vboxCheckbox' class='vboxEnablerListen' name='vboxSettingsNetAliasModeSamePorts' /> <span class='translate vboxEnablerListen'>Same Ports</span><br />
+		</td>
+	</tr>
+	<tr class='vboxSettingsAdvancedNat' style='display: none'>
+		<th><span class='translate'>Advanced NAT Options</span> :</th>
+		<td>
+			<input type='checkbox' class='vboxCheckbox' class='vboxEnablerListen' name='vboxSettingsNetPassDNSDomain' /> <span class='translate'>Pass DNS Domain</span><br />
+			<input type='checkbox' class='vboxCheckbox' class='vboxEnablerListen' name='vboxSettingsNetDNSProxy' /> <span class='translate'>DNS Proxy</span><br />
+			<input type='checkbox' class='vboxCheckbox' class='vboxEnablerListen' name='vboxSettingsNetUseHostResolver' /> <span class='translate'>Use Host Resolver</span>
+		</td>
+	</tr>
+
 	<tr>
 		<th>
 			<input class="netImgAdvanced vboxImgButton" style='background: url(images/rightArrow.png) 3px 2px no-repeat; width: 14px; height: 14px;' type="button" value="" />
@@ -59,7 +77,8 @@
 	<tr class='vboxSettingsNetToggleAdvanced' style='display: none'>
 		<th></th>
 		<td><input type='button' class='vboxButton vboxSettingsNetPFButton' class='vboxEnablerListen' name='vboxSettingsNetPF' value='Port Forwarding' /></td>
-	</tr>	
+	</tr>
+		
 </table>
 </div>
 <script type='text/javascript'>
@@ -217,6 +236,15 @@ for(var i = 0; i < parseInt($('#vboxIndex').data('vboxConfig').nicMax); i++) {
 			$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[nicIndex].redirects = rules;
 		});
 	});
+	
+	// Set Nat values
+	if($('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
+		document.forms['frmVboxSettings'].elements['vboxSettingsNetAliasModeProxyOnly'+a].checked = (($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].NatDriver.aliasMode & 2) ? true : false);
+		document.forms['frmVboxSettings'].elements['vboxSettingsNetAliasModeSamePorts'+a].checked = (($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].NatDriver.aliasMode & 4) ? true : false);
+		document.forms['frmVboxSettings'].elements['vboxSettingsNetPassDNSDomain'+a].checked = ($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].NatDriver.dnsPassDomain ? true : false);
+		document.forms['frmVboxSettings'].elements['vboxSettingsNetDNSProxy'+a].checked = ($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].NatDriver.dnsProxy ? true : false);
+		document.forms['frmVboxSettings'].elements['vboxSettingsNetUseHostResolver'+a].checked = ($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].NatDriver.dnsUseHostResolver ? true : false);
+	}
 
 
 }
@@ -249,10 +277,15 @@ function vboxSettingsUpdateNetworkOptions(sel) {
 		
 		$(nsel).children().remove();
 		$(nsel).attr('disabled','disabled');
+		
+		if(sel.value == 'NAT' && $('#vboxIndex').data('vboxConfig').enableAdvancedConfig) ptable.find('tr.vboxSettingsAdvancedNat').css('display','');
+		else ptable.find('tr.vboxSettingsAdvancedNat').css('display','none');
 
 		
 	} else {
 
+		ptable.find('tr.vboxSettingsAdvancedNat').css('display','none');
+		
 		$(th).removeClass('vboxDisabled');
 		
 		$(nsel).children().remove();
@@ -354,6 +387,20 @@ $('#vboxSettingsDialog').bind('save',function(){
 				break;				
 		}
 		
+		// Set Nat values
+		if($('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
+			var aliasMode = $('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].NatDriver.aliasMode & 1;
+			if(document.forms['frmVboxSettings'].elements['vboxSettingsNetAliasModeProxyOnly'+a].checked) {
+				aliasMode |= 2;
+			}
+			if(document.forms['frmVboxSettings'].elements['vboxSettingsNetAliasModeSamePorts'+a].checked) {
+				aliasMode |= 4;
+			}
+			$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].NatDriver.aliasMode = aliasMode;
+			$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].NatDriver.dnsPassDomain = (document.forms['frmVboxSettings'].elements['vboxSettingsNetPassDNSDomain'+a].checked ? 1 : 0)
+			$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].NatDriver.dnsProxy = (document.forms['frmVboxSettings'].elements['vboxSettingsNetDNSProxy'+a].checked ? 1 : 0);
+			$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].NatDriver.dnsUseHostResolver = (document.forms['frmVboxSettings'].elements['vboxSettingsNetUseHostResolver'+a].checked ? 1 : 0);
+		}
 
 		$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].adapterType = document.forms['frmVboxSettings'].elements['vboxSettingsNetAdapter'+a].value;
 		$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].MACAddress = document.forms['frmVboxSettings'].elements['vboxSettingsNetMAC'+a].value;
