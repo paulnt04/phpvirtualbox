@@ -485,7 +485,8 @@ function vboxVMsettingsInit(vm,callback,pane) {
 	vboxSettingsInit(trans('Settings'),panes,data,function(){
 		var loader = new vboxLoader();
 		loader.mode = 'save';
-		loader.add('saveVM',function(){return;},$('#vboxSettingsDialog').data('vboxMachineData'));
+		var sdata = $.extend($('#vboxSettingsDialog').data('vboxMachineData'),{'enableAdvancedConfig':$('#vboxIndex').data('vboxConfig').enableAdvancedConfig});
+		loader.add('saveVM',function(){return;},sdata);
 		loader.onLoad = function() {
 			// Refresh mediums
 			var mload = new vboxLoader();
@@ -520,7 +521,8 @@ function vboxVMsettingsInitNetwork(vm,callback) {
 	vboxSettingsInit(trans('Settings'),panes,data,function(){
 		var loader = new vboxLoader();
 		loader.mode = 'save';
-		loader.add('saveVMNetwork',function(){if(callback){callback();}},$('#vboxSettingsDialog').data('vboxMachineData'));
+		var sdata = $.extend($('#vboxSettingsDialog').data('vboxMachineData'),{'enableAdvancedConfig':$('#vboxIndex').data('vboxConfig').enableAdvancedConfig});
+		loader.add('saveVMNetwork',function(){if(callback){callback();}},sdata);
 		loader.run();
 	},'Network','nw');
 }

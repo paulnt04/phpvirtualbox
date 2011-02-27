@@ -10,7 +10,7 @@
 /*
  * Check for port range or list of ports
  */
-if(preg_match('/[^\d]/',$_REQUEST['port'])) {
+if(preg_match('/[^\d]/',$_GET['port'])) {
 
 	require_once(dirname(__FILE__).'/config.php');
 	require_once(dirname(__FILE__).'/lib/vboxconnector.php');
@@ -18,20 +18,20 @@ if(preg_match('/[^\d]/',$_REQUEST['port'])) {
 	$vbox = new vboxconnector();
 	$vbox->connect();
 
-	$args = array('vm'=>$_REQUEST['vm']);
+	$args = array('vm'=>$_GET['vm']);
 	$response = array();
 	$vbox->getVMDetails($args,$response);
 
-	$_REQUEST['port'] = $response['data']['consolePort'];
+	$_GET['port'] = $response['data']['consolePort'];
 
 }
 
 header("Content-type: application/x-rdp",true);
-header("Content-disposition: attachment; filename=\"". $_REQUEST['vm'] .".rdp\"",true);
+header("Content-disposition: attachment; filename=\"". $_GET['vm'] .".rdp\"",true);
 
 echo('
 auto connect:i:1
-full address:s:'.$_REQUEST['host'].($_REQUEST['port'] ? ':'.$_REQUEST['port'] : '').'
+full address:s:'.$_GET['host'].($_GET['port'] ? ':'.$_GET['port'] : '').'
 compression:i:1
 displayconnectionbar:i:1
 ');

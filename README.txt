@@ -22,5 +22,5 @@ detailed installation and configuration instructions.
 
 PASSWORD RECOVERY:
 
-Rename recovery.php-disabled to recovery.php, navigate to it in your web
-browser and follow the instructions presented.
+Rename the file recovery.php-disabled to recovery.php, navigate to it in
+your web browser, and follow the instructions presented.

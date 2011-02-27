@@ -779,9 +779,11 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		
 		if(links) {
 			tr = __vboxDetailRow(trans("Server Port"), data['VRDEServer']['ports']);
-			tr.childNodes[1].innerHTML = "<a href='rdp.php?host=" + chost + '&port=' + data['VRDEServer']['ports'] + "&vm=" + encodeURIComponent(data['name']) + "'>" + data['VRDEServer']['ports'] + "</a>";
+			if(data['state'] == 'Running' || !data['VRDEServer']['ports'].match(/[^\d]/)) {
+				tr.childNodes[1].innerHTML = "<a href='rdp.php?host=" + chost + '&port=' + data['VRDEServer']['ports'] + "&vm=" + encodeURIComponent(data['name']) + "'>" + data['VRDEServer']['ports'] + "</a>";
+			}
 			if(data['state'] == 'Running' && data['consolePort']) {
-				tr.childNodes[1].innerHTML += ' (' + chost + ':' + data['consolePort'] + ')';
+				tr.childNodes[1].innerHTML += ' <img src="images/vbox/blank.gif" style="vspace:0px;hspace:0px;height2px;width:10px;" /> (' + chost + ':' + data['consolePort'] + ')';
 			}
 			$(vboxDetailsTable).append(tr);
 		} else {

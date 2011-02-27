@@ -37,11 +37,15 @@ $(document).ready(function(){
  * and stores any data that should persist for this
  * browser session 
  */
-function vboxAjaxRequest(fn,params,callback,xtra) {
+function vboxAjaxRequest(fn,params,callback,xtra,run) {
 
 	// Fatal error previously occurred
 	if($('#vboxIndex').data('vboxFatalError')) return;
 
+	// Keep run count for retries
+	if(!run)
+		run = 1;
+	
 	params['fn'] = fn;
 	
 	/* Reserved for future use */
@@ -122,8 +126,8 @@ function vboxAjaxRequest(fn,params,callback,xtra) {
 		"json").error(function(d,etext,xlr) {
 			// Opera sometimes fails for seemingly no reason.
 			// No idea why. This takes care of it though.
-			if(!etext || !etext.length) {
-				vboxAjaxRequest(fn,params,callback,xtra);
+			if((!etext || !etext.length) && run < 4) {
+				vboxAjaxRequest(fn,params,callback,xtra,(run+1));
 			} else {
 				alert('ajax error: ' + etext);
 				callback(null,xtra);

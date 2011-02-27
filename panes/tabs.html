@@ -17,7 +17,7 @@ $('#vboxTabsList').append(ul);
 var tabs = [
     {'name':'vboxTabVMDetails','content':'tabVMDetails','label':'Details','icon':'settings','enabled':function(){return true;}},
     {'name':'vboxTabVMConsole','content':'tabVMConsole','label':'Console','icon':'vrdp','enabled':function(vm){
-    	return (vm && vm.id != 'host' && vm.state == 'Running' && vm.VRDEServer && vm.VRDEServer.VRDEExtPack);
+    	return (vm && vm.id != 'host' && vm.state == 'Running' && vm.VRDEServer && vm.VRDEServer.VRDEExtPack && vm.consolePort > 0);
     }},
     {'name':'vboxTabVMSnapshots','content':'tabVMSnapshots','label':'Snapshots','icon':'take_snapshot','enabled':function(vm){
     	return (vm && vm.id && vm.id != 'host');

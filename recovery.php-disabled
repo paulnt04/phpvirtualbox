@@ -1,5 +1,8 @@
 <?php
 /*
+
+	phpVirtualBox admin password recovery.
+	
 	Rename recovery.php-disabled to recovery.php, navigate to it in your web
 	browser and follow the instructions presented.
 	

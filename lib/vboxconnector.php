@@ -544,7 +544,9 @@ class vboxconnector {
 		$machine = $this->vbox->findMachine($args['id']);
 		$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
 		$machine->lockMachine($this->session->handle, 'Shared');
-
+		
+		$this->settings['enableAdvancedConfig'] = ($this->settings['enableAdvancedConfig'] && $args['enableAdvancedConfig']);
+		
 		// Network Adapters
 		$netprops = array('internalNetwork','NATNetwork','cableConnected','attachmentType');
 		
@@ -595,7 +597,18 @@ class vboxconnector {
 						$r = split(',',$r);
 						$n->NatDriver->addRedirect($r[0],$r[1],$r[2],$r[3],$r[4],$r[5]);
 					}
-
+					
+					// Advanced NAT settings
+					if($this->settings['enableAdvancedConfig']) {
+						$aliasMode = $n->NatDriver->aliasMode & 1; 
+						if(intval($args['networkAdapters'][$i]['NatDriver']['aliasMode'] & 2)) $aliasMode |= 2;
+						if(intval($args['networkAdapters'][$i]['NatDriver']['aliasMode'] & 4)) $aliasMode |= 4;
+						$n->NatDriver->aliasMode = $aliasMode;
+						$n->NatDriver->dnsProxy = intval($args['networkAdapters'][$i]['NatDriver']['dnsProxy']);
+						$n->NatDriver->dnsPassDomain = intval($args['networkAdapters'][$i]['NatDriver']['dnsPassDomain']);
+						$n->NatDriver->dnsUseHostResolver = intval($args['networkAdapters'][$i]['NatDriver']['dnsUseHostResolver']);
+					}
+					
 					break;
 				default:
 					$n->detach();
@@ -625,9 +638,9 @@ class vboxconnector {
 		$machine = $this->vbox->findMachine($args['id']);
 		$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
 		$machine->lockMachine($this->session->handle, 'Write');
-
-		// Version (OSE) checks below
-		$version = $this->getVersion();
+		
+		// Client and server must agree on advanced config setting
+		$this->settings['enableAdvancedConfig'] = ($this->settings['enableAdvancedConfig'] && $args['enableAdvancedConfig']);
 
 		// Cache items to expire
 		$expire = array();
@@ -2054,8 +2067,6 @@ class vboxconnector {
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
 
-		$version = $this->getVersion();
-
 		//Get registered machine or snapshot machine
 		if($snapshot) {
 
@@ -2246,8 +2257,6 @@ class vboxconnector {
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
 
-		$version = $this->getVersion();
-		
 		// create machine
 		$m = $this->vbox->createMachine(null,$args['name'],$args['ostype'],null,null);
 
@@ -2613,7 +2622,7 @@ class vboxconnector {
 			'bootOrder' => $this->__getBootOrder($m),
 			'chipsetType' => $m->chipsetType->__toString(),
 			'GUI' => array('SaveMountedAtRuntime' => $m->getExtraData('GUI/SaveMountedAtRuntime')),
-			'AutoSATAPortCount' => (@$this->settings['enableAdvancedConfig'] ? $m->getExtraData('phpvb/AutoSATAPortCount') : 'no')
+			'AutoSATAPortCount' => $m->getExtraData('phpvb/AutoSATAPortCount')
 		);
 
 	}

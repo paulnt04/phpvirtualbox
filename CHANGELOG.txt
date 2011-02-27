@@ -1,5 +1,5 @@
 -------------------------------------
-	4.0-4	
+	4.0-4
 -------------------------------------
 Added Exclusive and VPID hardware acceleration options to
 Acceleration tab visible when $enableAdvancedConfig is set.
@@ -71,7 +71,7 @@ Fixed Opera bug that would cause it to stop refreshing the list of
 VMs.
 
 Maximize use of browser caching when grabbing images for preview
-window.
+window utilizing ETag and If-Modified-Since HTTP headers.
 
 Added Parallel Port configuration and associated $enableLPTConfig
 configuration setting - EXPERIMENTAL - VirtualBox provides no
@@ -85,7 +85,7 @@ is selected.
 OS Type selectors now properly display only OS types supported by
 the VirtualBox host based on its processors' features.
 
-Minor UI changes; VM List, Storage settings, and Boot order icons.
+Minor UI changes.
 
 Adding media through the Virtual Media Manager now updates the
 "recent media" list.
@@ -94,6 +94,8 @@ Added advanced NAT settings for Network Adapters visible when
 $enableAdvancedConfig is set.
 
 Updated German translations.
+
+Added GPLv3.txt and updated verbiage in LICENSE.txt. 
 
 -------------------------------------
 	4.0-3	2011-2-10

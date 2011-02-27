@@ -155,7 +155,7 @@ could get support from VirtualBox for it.
  * Cache tweeking.
  *
  */
-// Refresh VM cache when VM Settings window is loaded
+// Refresh VM cache when VM Settings window is loaded. Default is true. Set to false to disable.
 #var $vmConfigRefresh = true;
 
 // Path
