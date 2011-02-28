@@ -134,7 +134,7 @@ var menu = {
 			'name':'machineNew',
 			'title':'New',
 			'icon':'new',
-			'click':function(){vboxWizardNewVMInit(function(){$('#vboxIndex').trigger('vmlistreload');})}
+			'click':function(){vboxWizardNewVMInit(function(){return;})}
         },
         {
 			'name':'machineAdd',
@@ -149,6 +149,7 @@ var menu = {
 					l.onLoad = function(){
 						var lm = new vboxLoader();
 						lm.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
+						lm.onLoad = function() {$('#vboxIndex').trigger('vmlistreload');}
 						lm.run();
 					}
 					l.run();

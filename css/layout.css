@@ -515,7 +515,7 @@ div.vboxSettingsDialog div.ui-dialog-buttonpane {
 #vboxSettingsPane .vboxNonTabbed { border: 2px solid #999; padding: 6px; }
 
 /* Storage Settings */
-#vboxSettingsStorageTree { background: #fff; padding: 4px 0px 2px 6px; overflow: scroll; overflow-y: auto; overflow-x: hidden; }
+#vboxSettingsStorageTree { background: #fff; padding: 4px 0px 2px 6px; overflow: auto; }
 #vboxSettingsControllersButtons { text-align: right; }
 #vboxSettingsControllersButtons { width: 100%; text-align: right; }
 

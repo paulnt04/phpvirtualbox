@@ -162,7 +162,10 @@ function vboxWizardNewVMInit(callback) {
 			vboxAjaxRequest('createVM',{'disk':disk,'ostype':ostype,'memory':mem,'name':name},function(){
 				var lm = new vboxLoader();
 				lm.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
-				if(callback){ lm.onLoad = callback;}
+				lm.onLoad = function(){
+					$('#vboxIndex').trigger('vmlistreload');
+					if(callback) callback();
+				}
 				lm.run();
 			});
 			

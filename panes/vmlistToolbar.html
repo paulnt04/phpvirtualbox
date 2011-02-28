@@ -19,9 +19,7 @@ var tButtons = [
 		'label' : 'New',
 		'icon' : 'vm_new',
 		'click' : function(){
-			vboxWizardNewVMInit(function(){
-				$('#vboxIndex').trigger('vmlistreload');
-			});
+			vboxWizardNewVMInit(function(){return;});
 		}
 	},
 	

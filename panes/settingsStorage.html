@@ -9,187 +9,188 @@
 
 <table style='width: 100%; height: 350px;'>
 	<tr style='height: 100%'>
-		<td style='width: 50%; padding: 6px;' id='vboxStoragePaneLeft'>
-		
-			<table class='vboxSettingsHeadingLine'
-				style='width: 100%; border-spacing: 0; border: 0px; margin: 0px; padding: 0px;'>
-				<tr style='vertical-align: middle'>
-					<td style='white-space: nowrap; width: auto;'><span
-						class='translate'>Storage Tree</span></td>
-					<td style='width: 100%'>
-						<hr style='width: 100%;' class='vboxSeperatorLine'/>
-					</td>
-				</tr>
-			</table>
-
-
-			<!-- Storage Controllers -->
-			<div id='vboxSettingsStorageTree' style='height: 290px' class='vboxBordered'>
-				<ul class='vboxHover vboxHoverBorderless'>
-					<li>Storage Thingy</li>
-					<li>
-					<ul>
-						<li>Attachment Thingy</li>
+		<td width='50%' style='padding: 6px;'>
+			<div id='vboxStoragePaneLeft'>
+				<table class='vboxSettingsHeadingLine'
+					style='width: 100%; border-spacing: 0; border: 0px; margin: 0px; padding: 0px;'>
+					<tr style='vertical-align: middle'>
+						<td style='white-space: nowrap; width: auto;'><span
+							class='translate'>Storage Tree</span></td>
+						<td style='width: 100%'>
+							<hr style='width: 100%;' class='vboxSeperatorLine'/>
+						</td>
+					</tr>
+				</table>
+	
+	
+				<!-- Storage Controllers -->
+				<div id='vboxSettingsStorageTree' style='height: 290px' class='vboxBordered'>
+					<ul class='vboxHover vboxHoverBorderless'>
+						<li>Storage Thingy</li>
+						<li>
+						<ul>
+							<li>Attachment Thingy</li>
+						</ul>
+						</li>
 					</ul>
-					</li>
-				</ul>
+				</div>
+	
+				<!-- Controller Toolbar -->
+				<div id='vboxSettingsControllersButtons' style='text-align: right'>
+				</div>
+	
+	
 			</div>
-
-			<!-- Controller Toolbar -->
-			<div id='vboxSettingsControllersButtons' style='text-align: right'>
-			</div>
-
-
 		</td>
-		
+				
 		<!-- Resize Bar -->
 		<td style='height: 100%; width:3px; padding:0px; margin:0px;'>
 			<div style='margin:0px; margin-top: 2px; padding:0px; width: 3px; height: 99%; background:#aaa;' id='vboxStorageResizeBar' ></div>
 		</td>
 		
-		<td style='width: 50%; padding: 6px;' id='vboxStoragePaneRight'>
-
-			<table class='vboxSettingsHeadingLine'
-				style='width: 100%; border-spacing: 0; border: 0px; margin: 0px; padding: 0px;'>
-				<tr style='vertical-align: middle'>
-					<td style='white-space: nowrap; width: auto;'><span
-						class='translate'>Attributes</span></td>
-					<td style='width: 100%; white-space: nowrap;'><hr style='width: 100%;' class='vboxSeperatorLine'/></td>
-				</tr>
-			</table>
-	
-	
-			<!-- Controller Settings -->
-			<div id='vboxSettingsController' style='width: 100%; display: none;'>
-				<table style='width: 100%' class='vboxVertical'>
-					<tr>
-						<th><span class='translate'>Name</span>:</th>
-						<td style='width: 100%'><input type='text' class='vboxText'
-							name='vboxSettingsStorageItemName' style='width: 100%' /></td>
-					</tr>
-					<tr>
-						<th><span class='translate'>Type</span>:</th>
-						<td><select name='vboxSettingsStorageControllerType'
-							style='width: 100%'>
-							<option value='ICH6'>ICH6</option>
-						</select></td>
-					</tr>
-					<tr>
-						<th></th>
-						<td style='width: 100%'>
-							<input type='checkbox' class='vboxCheckbox'
-							name='vboxSettingsStorageHostCache'/> <span class='translate'>Use host I/O cache</span></td>
-					</tr>
-					<tr id='vboxSettingsControllerPortCountRow' style='display: none'>
-						<th><span class='translate'>SATA Port Count</span>:</th>
-						<td>
-							<select name='vboxSettingsControllerPortCount'>
-							</select>
-						</td>
-					</tr>			
-				</table>
-			</div>
-	
-			<!-- Attachment Settings -->
-			<div id='vboxSettingsStorageAttachment' style='display: none'>
-				<table class='vboxVertical'>
-					<tr style='vertical-align: middle;'>
-						<th><span class='translate' id='vboxSettingsControllerSlotLabel'>HardDisk</span>:</th>
-						<td style='width: 100%'>
-							<table class='vboxInvisible' style='width: 100%'>
-								<tr style='vertical-align: middle'>
-									<td style='width: 100%'>
-										<select	name='vboxSettingsControllerSlot' style='width: 100%'></select>
-									</td>
-									<td>
-										<div id='vboxSettingsAddAttachmentsMenuHDDiv' style='display: none'></div>
-										<div id='vboxSettingsAddAttachmentsMenuFDDiv' style='display: none'></div>
-										<div id='vboxSettingsAddAttachmentsMenuCDDiv' style='display: none'></div>
-									</td>
-								</tr>
-							</table>
-						</td>
-					</tr>
-					<tr id='vboxSettingsControllerDeviceOptionRow'>
-						<th></th>
-						<td><input type='checkbox' class='vboxCheckbox'
-							name='vboxSettingsControllerDeviceOption'
-							style='float: left' /> <span
-							id='vboxSettingsControllerDeviceOptionLabel'>Passthrough</span></td>
-					</tr>
-				</table>
-			</div>
-
-			<!--  Selected Media Info -->
-			<div id='vboxSettingsMediaInfo' style='display: none'>
+		<td width='50%' style='padding: 6px;'>
+			<div id='vboxStoragePaneRight'>
 				<table class='vboxSettingsHeadingLine'
 					style='width: 100%; border-spacing: 0; border: 0px; margin: 0px; padding: 0px;'>
 					<tr style='vertical-align: middle'>
 						<td style='white-space: nowrap; width: auto;'><span
-							class='translate'>Information</span></td>
-						<td style='width: 100%'>
-						<hr style='width: 100%; ' class='vboxSeperatorLine'/>
-						</td>
+							class='translate'>Attributes</span></td>
+						<td style='width: 100%; white-space: nowrap;'><hr style='width: 100%;' class='vboxSeperatorLine'/></td>
 					</tr>
 				</table>
-	
-	
-				<!-- HardDisk Media  -->
-				<div id='vboxSettingsHDInfo'>
-					<table class='vboxVertical'>
+		
+		
+				<!-- Controller Settings -->
+				<div id='vboxSettingsController' style='width: 100%; display: none;'>
+					<table style='width: 100%' class='vboxVertical'>
 						<tr>
-							<th><span class='translate'>Type (Format)</span>:</th>
-							<td><span id='vboxSettingsHDtype'>Image</span></td>
-						</tr>				
-						<tr>
-							<th><span class='translate'>Virtual Size</span>:</th>
-							<td><span id='vboxSettingsHDvsize'>30 GB</span></td>
+							<th><span class='translate'>Name</span>:</th>
+							<td style='width: 100%'><input type='text' class='vboxText'
+								name='vboxSettingsStorageItemName' style='width: 100%' /></td>
 						</tr>
-						<tr>
-							<th><span class='translate'>Actual Size</span>:</th>
-							<td><span id='vboxSettingsHDasize'>30 GB</span></td>
-						</tr>
-						<tr>
-							<th><span class='translate'>Location</span>:</th>
-							<td><span id='vboxSettingsHDlocation'>/usr/local/blah/etc..</span></td>
-						</tr>
-						<tr>
-							<th><span class='translate'>Attached to</span>:</th>
-							<td><span id='vboxSettingsHDattached'>Some Virtual
-							Machine Name</span></td>
-						</tr>
-					</table>
-				</div>
-	
-				<!-- DVD/CD Media  -->
-				<div id='vboxSettingsImageInfo'>
-					<table class='vboxVertical'>
 						<tr>
 							<th><span class='translate'>Type</span>:</th>
-							<td><span id='vboxSettingsImageType'>Image</span></td>
-						</tr>		
-						<tr>
-							<th><span class='translate'>Size</span>:</th>
-							<td><span id='vboxSettingsImageSize'>30 GB</span></td>
+							<td><select name='vboxSettingsStorageControllerType'
+								style='width: 100%'>
+								<option value='ICH6'>ICH6</option>
+							</select></td>
 						</tr>
 						<tr>
-							<th><span class='translate'>Location</span>:</th>
-							<td><span id='vboxSettingsImageLocation'>/usr/local/blah/etc..</span></td>
+							<th></th>
+							<td style='width: 100%'>
+								<input type='checkbox' class='vboxCheckbox'
+								name='vboxSettingsStorageHostCache'/> <span class='translate'>Use host I/O cache</span></td>
 						</tr>
-						<tr>
-							<th><span class='translate'>Attached to</span>:</th>
-							<td><span id='vboxSettingsImageAttached'>Some Virtual
-							Machine Name</span></td>
+						<tr id='vboxSettingsControllerPortCountRow' style='display: none'>
+							<th><span class='translate'>SATA Port Count</span>:</th>
+							<td>
+								<select name='vboxSettingsControllerPortCount'>
+								</select>
+							</td>
+						</tr>			
+					</table>
+				</div>
+		
+				<!-- Attachment Settings -->
+				<div id='vboxSettingsStorageAttachment' style='display: none'>
+					<table class='vboxVertical'>
+						<tr style='vertical-align: middle;'>
+							<th><span class='translate' id='vboxSettingsControllerSlotLabel'>HardDisk</span>:</th>
+							<td style='width: 100%'>
+								<table class='vboxInvisible' style='width: 100%'>
+									<tr style='vertical-align: middle'>
+										<td style='width: 100%'>
+											<select	name='vboxSettingsControllerSlot' style='width: 100%'></select>
+										</td>
+										<td>
+											<div id='vboxSettingsAddAttachmentsMenuHDDiv' style='display: none'></div>
+											<div id='vboxSettingsAddAttachmentsMenuFDDiv' style='display: none'></div>
+											<div id='vboxSettingsAddAttachmentsMenuCDDiv' style='display: none'></div>
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr id='vboxSettingsControllerDeviceOptionRow'>
+							<th></th>
+							<td><input type='checkbox' class='vboxCheckbox'
+								name='vboxSettingsControllerDeviceOption'
+								style='float: left' /> <span
+								id='vboxSettingsControllerDeviceOptionLabel'>Passthrough</span></td>
 						</tr>
 					</table>
 				</div>
 	
+				<!--  Selected Media Info -->
+				<div id='vboxSettingsMediaInfo' style='display: none'>
+					<table class='vboxSettingsHeadingLine'
+						style='width: 100%; border-spacing: 0; border: 0px; margin: 0px; padding: 0px;'>
+						<tr style='vertical-align: middle'>
+							<td style='white-space: nowrap; width: auto;'><span
+								class='translate'>Information</span></td>
+							<td style='width: 100%'>
+							<hr style='width: 100%; ' class='vboxSeperatorLine'/>
+							</td>
+						</tr>
+					</table>
+		
+		
+					<!-- HardDisk Media  -->
+					<div id='vboxSettingsHDInfo'>
+						<table class='vboxVertical'>
+							<tr>
+								<th><span class='translate'>Type (Format)</span>:</th>
+								<td><span id='vboxSettingsHDtype'>Image</span></td>
+							</tr>				
+							<tr>
+								<th><span class='translate'>Virtual Size</span>:</th>
+								<td><span id='vboxSettingsHDvsize'>30 GB</span></td>
+							</tr>
+							<tr>
+								<th><span class='translate'>Actual Size</span>:</th>
+								<td><span id='vboxSettingsHDasize'>30 GB</span></td>
+							</tr>
+							<tr>
+								<th><span class='translate'>Location</span>:</th>
+								<td><span id='vboxSettingsHDlocation'>/usr/local/blah/etc..</span></td>
+							</tr>
+							<tr>
+								<th><span class='translate'>Attached to</span>:</th>
+								<td><span id='vboxSettingsHDattached'>Some Virtual
+								Machine Name</span></td>
+							</tr>
+						</table>
+					</div>
+		
+					<!-- DVD/CD Media  -->
+					<div id='vboxSettingsImageInfo'>
+						<table class='vboxVertical'>
+							<tr>
+								<th><span class='translate'>Type</span>:</th>
+								<td><span id='vboxSettingsImageType'>Image</span></td>
+							</tr>		
+							<tr>
+								<th><span class='translate'>Size</span>:</th>
+								<td><span id='vboxSettingsImageSize'>30 GB</span></td>
+							</tr>
+							<tr>
+								<th><span class='translate'>Location</span>:</th>
+								<td><span id='vboxSettingsImageLocation'>/usr/local/blah/etc..</span></td>
+							</tr>
+							<tr>
+								<th><span class='translate'>Attached to</span>:</th>
+								<td><span id='vboxSettingsImageAttached'>Some Virtual
+								Machine Name</span></td>
+							</tr>
+						</table>
+					</div>
+		
+				</div>
 			</div>
 		</td>
 	</tr>
 </table>
 <script language='javascript'>
-
 /*
  * 
  * Static storage controller types
@@ -1195,9 +1196,64 @@ $('#vboxSettingsDialog').bind('save',function(){
 
 });
 
+/*
+ * Set pane sizes and resize bar
+ */
+ $('#vboxSettingsDialog').bind('show',function(){
+	 
+	var bothWidth = ($('#vboxStoragePaneLeft').parent().innerWidth() + $('#vboxStoragePaneRight').parent().innerWidth() - 24) / 2;
+	$('#vboxStoragePaneLeft').css({'width':bothWidth+'px','overflow':'hidden'});
+	$('#vboxStoragePaneRight').css({'width':bothWidth+'px','overflow':'hidden'});
+	
+	$('#vboxStorageResizeBar').draggable({cursor:(jQuery.browser.opera ? 'e-resize' : 'col-resize'),axis:'x',zIndex:99,helper:function(){
+		
+		$('#vboxResizeBarTmp').remove();
+		var r = $('#vboxResizeBar').clone(false);
+		return $(r).attr({'id':'vboxResizeBarTmp'});
+		
+	},scroll:false,'start':function(e,ui){
+		
+		$('#vboxStorageResizeBar').data('vboxX',e.pageX);
+
+		$('#vboxResizeOverlay').remove();
+		$('body').attr({'unselectable':'on'}).css({'-moz-user-select':'none','-webkit-user-select':'none','cursor':(jQuery.browser.opera ? 'e-resize' : 'col-resize')});
+		$('#vboxIndex').append($('<div />').attr({'id':'vboxResizeOverlay','style':'width:100%;height:100%;border:0px;margin:0px;padding:0px;position:absolute;top:0px;left:0px;z-index:10;cursor:'+(jQuery.browser.opera ? 'e-resize' : 'col-resize')}));
+		
+	},'drag':function(e){
+
+		$('#vboxResizeBarTmp').remove();
+		$('#vboxResizeOverlay').remove();
+		
+		var sStart = $('#vboxStorageResizeBar').data('vboxX');
+		var sStop = e.pageX;
+		var sWidth = Math.abs(sStop - sStart);
+		
+		var lWidth = parseInt($('#vboxStoragePaneLeft').css('width'));
+		var rWidth = parseInt($('#vboxStoragePaneRight').css('width'));
+		
+		if(sStop > sStart) {
+			
+			// Check for snapping
+			if(rWidth - sWidth < 100) {
+				$('#vboxStoragePaneLeft').css({'width':'100%'});
+				$('#vboxStoragePaneRight').parent().css({'display':'none'});
+			} else {
+				$('#vboxStoragePaneLeft').css({'width':(lWidth + sWidth)+'px'});
+				$('#vboxStoragePaneRight').css({'width':(rWidth - sWidth)+'px'});
+			}
+			
+		} else {
+			$('#vboxStoragePaneLeft').css({'width':(lWidth - sWidth)+'px'});
+			$('#vboxStoragePaneRight').css({'width':(rWidth + sWidth)+'px'});						
+		}
+		
+		$('#vboxStorageResizeBar').data('vboxX',e.pageX);
+	},'stop':function(e) {
+		$('body').attr({'unselectable':''}).css({'-moz-user-select':'','-webkit-user-select':'','cursor':'default'});
+	}}).css('cursor',(jQuery.browser.opera ? 'e-resize' : 'col-resize')).parent().onselectstart = function () { return false; };
+
+	
+});
+
 
 </script>
-
-
-
-
