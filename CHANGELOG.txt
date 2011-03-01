@@ -1,4 +1,10 @@
 -------------------------------------
+	4.0-4b		2011-3-1
+-------------------------------------
+Fixed bug that would not display error messages when attempting
+to log in if there was an error connecting to vboxwebsrv.
+
+-------------------------------------
 	4.0-4	2011-3-1
 -------------------------------------
 Added Exclusive and VPID hardware acceleration options to

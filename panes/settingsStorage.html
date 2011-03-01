@@ -1254,8 +1254,10 @@ $('#vboxSettingsStorageTableWrapper').one('show',function(){
 			if(snapped) {
 				if(snapped > sStop || (rWidth - sWidth < 150)) { return; }
 				else if(snapped && snapped <= sStop) {
+					
+					// Unsnap left pane
 					$('#vboxStoragePaneRight').parent().css({'width':'auto'});
-					$('#vboxStoragePaneLeft').css({'display':''});
+					$('#vboxStoragePaneLeft').css({'display':''}).parent().css({'padding':'6px'});
 					$('#vboxStorageResizeBar').data('vboxSnapped',0);
 					lWidth = $('#vboxStorageResizeBar').data('vboxSnappedWidthL');
 					rWidth = $('#vboxStorageResizeBar').data('vboxSnappedWidthR');
@@ -1266,7 +1268,7 @@ $('#vboxSettingsStorageTableWrapper').one('show',function(){
 			if(rWidth - sWidth < 150) {
 				
 				$('#vboxStoragePaneLeft').css({'width':'100%'}).parent().css({'width':'100%'});
-				$('#vboxStoragePaneRight').css({'display':'none','width':'10px'});
+				$('#vboxStoragePaneRight').css({'display':'none','width':'10px'}).parent().css({'padding':'0px'});
 				$('#vboxStorageResizeBar').data('vboxSnapped',e.pageX);
 				$('#vboxStorageResizeBar').data('vboxSnappedWidthL', (lWidth + sWidth));
 				$('#vboxStorageResizeBar').data('vboxSnappedWidthR', (rWidth - sWidth));
@@ -1283,8 +1285,10 @@ $('#vboxSettingsStorageTableWrapper').one('show',function(){
 			if(snapped) {
 				if(snapped < sStop || (lWidth - sWidth < 150)) { return; }
 				else if(snapped && snapped >= sStop) {
+					
+					// Unsnap right pane
 					$('#vboxStoragePaneLeft').parent().css({'width':'auto'});
-					$('#vboxStoragePaneRight').css({'display':''}).parent().css({'width':'100%'}); // 100% to fix webkit
+					$('#vboxStoragePaneRight').css({'display':''}).parent().css({'width':'100%','padding':'6px'}); // 100% to fix webkit
 					$('#vboxStorageResizeBar').data('vboxSnapped',0);
 					lWidth = $('#vboxStorageResizeBar').data('vboxSnappedWidthL');
 					rWidth = $('#vboxStorageResizeBar').data('vboxSnappedWidthR');
@@ -1296,7 +1300,7 @@ $('#vboxSettingsStorageTableWrapper').one('show',function(){
 			if(lWidth - sWidth < 150) {
 				
 				$('#vboxStoragePaneRight').css({'width':'100%'}).parent().css({'width':'100%'});
-				$('#vboxStoragePaneLeft').css({'display':'none','width':'10px'});
+				$('#vboxStoragePaneLeft').css({'display':'none','width':'10px'}).parent().css({'padding':'0px'});
 				$('#vboxStorageResizeBar').data('vboxSnapped',e.pageX);
 				$('#vboxStorageResizeBar').data('vboxSnappedWidthL', (lWidth - sWidth));
 				$('#vboxStorageResizeBar').data('vboxSnappedWidthR', (rWidth + sWidth));

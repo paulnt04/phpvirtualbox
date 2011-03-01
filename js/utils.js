@@ -65,11 +65,11 @@ function vboxAjaxRequest(fn,params,callback,xtra,run) {
 
 				if(d.errors.length > 0) {
 					
+					
 					for(var i = 0; i < d.errors.length; i++) {
 						
 						// Handle fatal and connection errors
 						if(d.errors[i].fatal || d.errors[i].connection) {
-							
 							
 							// Multiple Servers check
 							if(d.errors[i].connection && $('#vboxIndex').data('vboxConfig')	) {
@@ -91,8 +91,8 @@ function vboxAjaxRequest(fn,params,callback,xtra,run) {
 								
 								
 							
-							// Ignore connection errors until we have config data
-							} else if(!d.errors[i].connection) {
+							// Ignore connection errors until we have config data unless this was a login attempt
+							} else if(!d.errors[i].connection || fn == 'login') {
 								
 								// If we have config data, and the error is fatal, halt processing
 								if(d.errors[i].fatal && $('#vboxIndex').data('vboxConfig')) {
