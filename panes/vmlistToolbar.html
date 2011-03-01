@@ -13,53 +13,15 @@
  */
 var tButtons = [
 	
-	/* Top toolbar buttons / actions */
+	/* All toolbar items need a 'name' property */
+	$.extend({},vboxVMActions['new'],{'name':'new'}),
+	$.extend({},vboxVMActions['settings'],{'name':'settings','enabled':function(vm){
+		vboxUpdateSettingsMenu(vm);
+		return ((vm && vm.state == 'Running') || vboxVMActions['settings'].enabled(vm));
+	}}),
+	$.extend({},vboxVMActions['start'],{'name':'start'}),
 	{
-		'name' : 'vmnew',
-		'label' : 'New',
-		'icon' : 'vm_new',
-		'click' : function(){
-			vboxWizardNewVMInit(function(){return;});
-		}
-	},
-	
-	{
-		'name' : 'vmsettings',
-		'label' : 'Settings',
-		'icon' : 'vm_settings',
-		'click' : function () {
-			if($('#vboxIndex').data('selectedVM').state != 'Running')
-				vboxVMsettingsInit($('#vboxIndex').data('selectedVM').id,function(){$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);});
-		},
-		'enabled' : function (vm) {
-			vboxUpdateSettingsMenu(vm);
-			return vm && ((vm.sessionState == 'Unlocked' && vm.state != 'Saved') || vm.state == 'Running');
-		}
-	},
-	{
-		'name' : 'vmstart',
-		'label' : 'Start',
-		'icon' : 'vm_start',
-		'click' : function (btn) {
-		
-			btn.toolbar.disableButton(btn);
-			vboxAjaxRequest('setStateVMpowerUp',{'vm':$('#vboxIndex').data('selectedVM').id},function(d){
-				// check for progress operation
-				if(d && d.progress) {
-					var icon = null;
-					if($('#vboxIndex').data('selectedVM').state == 'Saved') icon = 'progress_state_restore_90px.png';
-					else icon = 'progress_start_90px.png';
-					vboxProgress(d.progress,function(){$('#vboxIndex').trigger('vmlistrefresh');},{},icon);
-					return;
-				}
-				$('#vboxIndex').trigger('vmlistrefresh');
-			});
-			
-		},
-		'enabled' : function (vm) { return (vm && (jQuery.inArray(vm.state,['PoweredOff','Paused','Saved','Aborted']) > -1));}	
-	},
-	{
-		'name' : 'vmstop',
+		'name' : 'stop',
 		'label' : 'Stop',
 		'icon' : 'vm_poweroff',
 		'menu' : true,
@@ -142,7 +104,7 @@ $('#vboxIndex').append(ul);
 
 
 /* 'Stop' button menu initialization  */
-$("#vboxToolbarButton-vboxPaneToolbar-vmsettings").contextMenu({
+$("#vboxToolbarButton-vboxPaneToolbar-settings").contextMenu({
 		menu: 'vboxVMSettingsMenu',
 		button: 0,
 		mode: 'menu'
@@ -292,9 +254,9 @@ function vboxVMListToolbarUSBUpdate(menu) {
 function vboxUpdateSettingsMenu(vm) {
 
 	if(vm && vm.state == 'Running') {
-		$("#vboxToolbarButton-vboxPaneToolbar-vmsettings").enableContextMenu();
+		$("#vboxToolbarButton-vboxPaneToolbar-settings").enableContextMenu();
 	} else {
-		$("#vboxToolbarButton-vboxPaneToolbar-vmsettings").disableContextMenu();
+		$("#vboxToolbarButton-vboxPaneToolbar-settings").disableContextMenu();
 		return;
 	}
 
@@ -401,38 +363,12 @@ function vboxUpdateSettingsMenu(vm) {
 
 /* 'Stop' menu items / actions */
 var vboxVMListStopMenu = {
-		
-	'savestate' : {
-		'label' : 'Save State',
-		'icon' : 'fd',
-		'states' : ['Running']
-	},
-	'sleep' : {
-		'label' : 'ACPI Sleep Button',
-		'icon' : 'acpi',
-		'states' : ['Running']
-	},
-	'powerbutton' : {
-		'label' : 'ACPI Power Button',
-		'icon' : 'acpi',
-		'states' : ['Running']
-	},
-	'pause' : {
-		'label' : 'Pause',
-		'icon' : 'pause',
-		'states' : ['Running']
-	},
-	'powerdown' : {
-		'label' : 'Power Off',
-		'icon' : 'poweroff',
-		'states' : ['Running','Paused','Stuck']
-	},	
-	'reset' : {
-		'label' : 'Reset',
-		'icon' : 'reset',
-		'states' : ['Running']
-	}
-	
+	'savestate':vboxVMActions['savestate'],
+	'sleep':vboxVMActions['sleep'],
+	'powerbutton':vboxVMActions['powerbutton'],
+	'pause':vboxVMActions['pause'],
+	'powerdown':vboxVMActions['powerdown'],
+	'reset':vboxVMActions['reset']	
 };
 
 
@@ -448,7 +384,7 @@ for(var i in vboxVMListStopMenu) {
 	vboxVMListStopMenu[i].name = i;
 
 	var li = document.createElement('li');
-	li.innerHTML = "<a href='#" + vboxVMListStopMenu[i].name + "' style='background-image: url(images/vbox/" + vboxVMListStopMenu[i].icon +"_16px.png);' >"+trans(vboxVMListStopMenu[i].label)+"</a>";
+	li.innerHTML = "<a href='#" + i + "' style='background-image: url(images/vbox/" + vboxVMListStopMenu[i].icon +"_16px.png);' >"+trans(vboxVMListStopMenu[i].label)+"</a>";
 	ul.appendChild(li);
 	
 }
@@ -460,32 +396,14 @@ $('#vboxIndex').append(ul);
 
 
 /* 'Stop' button menu initialization  */
-$("#vboxToolbarButton-vboxPaneToolbar-vmstop").contextMenu({
+$("#vboxToolbarButton-vboxPaneToolbar-stop").contextMenu({
 		menu: 'vboxStopMenu',
 		button: 0,
 		mode: 'menu'
 	},
 	function(a, el, pos) {
-		var fn = null;
-		var icon = null;
-		switch(a) {
-			case 'powerdown': fn = 'setStateVMpowerDown'; icon='progress_poweroff_90px.png'; break;
-			case 'powerbutton': fn = 'setStateVMpowerButton'; break;
-			case 'sleep': fn = 'setStateVMsleepButton'; break;
-			case 'savestate': fn = 'setStateVMsaveState'; icon='progress_state_save_90px.png'; break;
-			case 'pause': fn = 'setStateVMpause'; break;
-			case 'reset': fn = 'setStateVMreset'; break;
-		}
-		if(fn == null) return;
-		vboxAjaxRequest(fn,{'vm':$('#vboxIndex').data('selectedVM').id},function(d){
-			// check for progress operation
-			if(d && d.progress) {
-				vboxProgress(d.progress,function(){$('#vboxIndex').trigger('vmlistrefresh');},{},icon);
-				return;
-			}
-			$('#vboxIndex').trigger('vmlistrefresh');
-		});
-		if(a != 'reset') toolbarTop.disableButton(toolbarTop.getButtonByName('vmstop'));
+		vboxVMActions[a].click();		
+		if(a != 'reset') toolbarTop.disableButton(toolbarTop.getButtonByName('stop'));
 	}
 );
 
@@ -502,7 +420,7 @@ function vboxUpdateStopMenu(vm) {
 	for(var i in vboxVMListStopMenu) {
 		
 		// enable or disable
-		if(vm && jQuery.inArray(vm.state,vboxVMListStopMenu[i].states) > -1) {
+		if(vm && vboxVMActions[i].enabled(vm)) {
 			$('#vboxStopMenu').enableContextMenuItems('#'+i);
 			$('#vboxStopMenu').find('a[href=#'+i+']').css('background-image','url(images/vbox/'+vboxVMListStopMenu[i].icon+'_16px.png)');
 			enabledOne = true;
@@ -514,9 +432,9 @@ function vboxUpdateStopMenu(vm) {
 	}
 	
 	if(!enabledOne) {
-		$("#vboxToolbarButton-vboxPaneToolbar-vmstop").disableContextMenu();
+		$("#vboxToolbarButton-vboxPaneToolbar-stop").disableContextMenu();
 	} else {
-		$("#vboxToolbarButton-vboxPaneToolbar-vmstop").enableContextMenu();
+		$("#vboxToolbarButton-vboxPaneToolbar-stop").enableContextMenu();
 	}
 	
 }

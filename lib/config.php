@@ -24,6 +24,8 @@ var $nicMax = 4;
 
 var $vmConfigRefresh = true;
 
+var $vmListSort = 'name';
+
 /*
  * Cache tweeking.
  *
@@ -42,6 +44,7 @@ var $cacheSettings = array(
 		'__getSerialPorts' => 7200,
 		'__getSharedFolders' => 7200,
 		'__getUSBController' => 7200,
+		'getVMSortOrder' => 300 // 5 minutes
 );
 	
 /*

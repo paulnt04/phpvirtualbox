@@ -23,6 +23,18 @@
 vboxVMList = new vboxVMList('vboxVMList');
 vboxVMList.interval = ($('#vboxIndex').data('vboxConfig').listUpdateInterval ? $('#vboxIndex').data('vboxConfig').listUpdateInterval : 5);
 
+
+// VM List Context menu for each VM
+vboxVMList.contextMenuItems = [
+	$.extend({},vboxVMActions['settings'],{'name':'settings'}),
+	$.extend({},vboxVMActions['remove'],{'name':'remove'}),
+	$.extend({},vboxVMActions['start'],{'name':'start','separator' : true}),
+	$.extend({},vboxVMActions['discard'],{'name':'discard'}),
+	$.extend({},vboxVMActions['pause'],{'name':'pause'}),
+	$.extend({},vboxVMActions['refresh'],{'name':'refresh','separator' : true}),
+	$.extend({},vboxVMActions['logs'],{'name':'logs'})
+];
+
 // Initial action update
 $('#vboxIndex').trigger('vmselect',null);
 
@@ -47,9 +59,12 @@ function vboxVMList(anchorid) {
 	this.vms = null;
 	this.anchorid = anchorid;
 	this.sortDefault = function(a,b){return strnatcasecmp(a.name,b.name);}
+	this._sortOrder = {};
+	this._updateSortOrder = false;
 	this.lastUpdatedDiv = null;
 	this.anchor = $('#'+anchorid);
 	this.interval = 5;
+	this.contextMenuItems = null;
 
 	// If there are multiple servers configured, setup menu
 	if($('#vboxIndex').data('vboxConfig').servers.length) {
@@ -65,6 +80,11 @@ function vboxVMList(anchorid) {
 		
 	}
 	
+	// Context Menu Handler
+	self.contextMenuHandler = function(a) {
+		vboxVMActions[a].click();
+	}
+	
 	// Update list of VMs
 	/////////////////////////
 	self.updateList = function(d) {
@@ -73,9 +93,6 @@ function vboxVMList(anchorid) {
 		if(!self._running) return;
 		
 		
-		var currTime = new Date()
-		self.time = currTime.getTime();
-		
 		if(!d || !d.vmlist) {
 			vboxAlert(trans('Error vmlist 1')+'<p>'+trans('Error vmlist 2')+'</p>');
 			self.stop();
@@ -83,13 +100,24 @@ function vboxVMList(anchorid) {
 			return;
 		}
 
+		// Don't refresh list while sorting
+		if(self._sorting) {
+			self._lastList = d;
+			return;
+		}
+
+		var currTime = new Date()
+		self.time = currTime.getTime();
+
 		/* Check Key
 			If we've changed hosts before the last ajax call to get a list of VMs
 			returns, we'd have a list of VMs from the previously selected VirtualBox
 			host.
 		*/
 		if(d.server_key != $('#vboxIndex').data('vboxConfig').key) return;
+		
 		currVMList = d.vmlist;
+		
 
 		// First time run?
 		if(self.vms === null) {
@@ -97,6 +125,11 @@ function vboxVMList(anchorid) {
 			self.vms = {};
 		}
 
+		// Update sort order from request?
+		if(self._updateSortOrder) {
+			self._sortOrder = d.sortOrder;
+		}
+		
 		// check for empty VM list
 		if(self.sort) {
 			try {
@@ -112,12 +145,11 @@ function vboxVMList(anchorid) {
 		
 		
 		// Host machine added manually
-		host = [{'id':'host','state':'Hosting','name':'VirtualBox ('+$('#vboxIndex').data('vboxConfig').name+')','OSTypeId':'VirtualBox_Host'}];
+		host = new Array({'id':'host','state':'Hosting','name':'VirtualBox ('+$('#vboxIndex').data('vboxConfig').name+')','OSTypeId':'VirtualBox_Host'});
 		currVMList = host.concat(currVMList);
 
-		
 		// Each item in list
-		for(var i in currVMList) {	
+		for(var i = 0; i < currVMList.length; i++) {	
 		
 			// Does not exist, add to list
 			if(!self.vms[currVMList[i].id]) {
@@ -152,7 +184,6 @@ function vboxVMList(anchorid) {
 			
 			$(self.lastUpdatedDiv).html(hours+':'+minutes+':'+secs);
 		}
-
 		
 	}
 	
@@ -203,7 +234,7 @@ function vboxVMList(anchorid) {
 			if(vmn.id == 'host' && $('#vboxIndex').data('selectedVM') && $('#vboxIndex').data('selectedVM')['id'] == vmn.id) return;
 			$('#vboxIndex').data('selectedVM',vmn);
 			$('#vboxIndex').trigger('vmselect',[vmn]);
-		}).hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');});
+		}).hover(function(){if(self.dragging)return;$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');}).data('vmid',vmn.id);
 
 		var tr = document.createElement('tr');
 		
@@ -216,6 +247,7 @@ function vboxVMList(anchorid) {
 		// VM Name
 		var td = document.createElement('td');
 		td.setAttribute('class', 'vboxVMTitle');
+		
 		// Host can have HTML in name
 		if(vmn.id == 'host') {
 			// Check for multiple server config
@@ -256,6 +288,16 @@ function vboxVMList(anchorid) {
 		
 		tr.appendChild(td);
 		tbl.appendChild(tr);
+		
+		// Context menu?
+		if(self.contextMenuId) {
+			$(tbl).contextMenu({
+				menu: self.contextMenuId,
+				menusetup : function(el) {
+					if(!$(el).hasClass('vboxListItemSelected')) $(el).trigger('click');
+				}
+			},self.contextMenuHandler);
+		}
 		
 		return tbl;
 		
@@ -312,15 +354,126 @@ function vboxVMList(anchorid) {
 			
 		}).bind('hostChanged',function(){self.start();});
 		
-		// Custom sort function?
-		if($('#vboxIndex').data('vboxConfig').vmListSort) {
-			try {
-				eval("self.sort = " + $('#vboxIndex').data('vboxConfig').vmListSort);
-			} catch (err) {
-				vboxAlert('There was an error parsing your custom sort function. It will not be used.<p>'+err+'</p>');
-				self.sort = null;
-			}
+		// Sort functions
+		switch($('#vboxIndex').data('vboxConfig').vmListSort) {
+		
+			// Sort by GUI
+			case 'gui':
+			case 'GUI':
+				
+				self.sort = function(a,b) {
+					
+					// Check for host
+					if(a.id == 'host') return -1;
+					if(b.id == 'host') return 1;
+					
+					//A is not in sort list
+					if(typeof(self._sortOrder[a.id]) == 'undefined') {
+						if(typeof(self._sortOrder[b.id]) == 'undefined') return self.sortDefault(a,b);
+						return -1; // b is defined, a is not
+					}
+					if(typeof(self._sortOrder[b.id]) == 'undefined') return 1; // a is defined, b is not
+					if(parseInt(self._sortOrder[a.id]) == parseInt(self._sortOrder[b.id])) return 0;
+					return(parseInt(self._sortOrder[a.id]) < parseInt(self._sortOrder[b.id]) ? -1 : 1);
+					
+				}
+
+				// Use returned sort order
+				self._updateSortOrder = true;
+				
+				break;
+				
+			// Sort by name - default
+			case 'name':
+				break;
+				
+			// Running vms placed at top of list
+			case 'running':
+				self.sort = function(a,b) {
+					if(a.state == "Running" && b.state != "Running") return -1;
+					if(b.state == "Running" && a.state != "Running") return 1;
+					return self.sortDefault(a,b);
+				}				
+				break;
+		
+			// State change
+			case 'statechange':
+			case 'stateChange':
+				self.sort = function(a,b) {
+					if(a.lastStateChange > b.lastStateChange) return -1;
+					if(b.lastStateChange > a.lastStateChange) return 1;
+					return self.sortDefault(a,b);
+				}
+				break;
+				
+			// Custom sort function
+			default:
+				try {
+					eval("self.sort = " + $('#vboxIndex').data('vboxConfig').vmListSort);
+				} catch (err) {
+					vboxAlert('There was an error parsing your custom sort function. It will not be used.<p>'+err+'</p>');
+					self.sort = null;
+				}
 		}
+		
+		/*
+		 *
+		 * VM List context menu items?
+		 *
+		 */
+		if(self.contextMenuItems && self.contextMenuItems.length) {
+			self.contextMenuId = 'vboxVMList-'+self.anchorid+'-contextMenu';
+			var ul = document.createElement('ul');
+			$(ul).attr({'id':self.contextMenuId,'style':'display: none;'});
+			for(var i = 0; i < self.contextMenuItems.length; i++) {
+				var li = document.createElement('li');
+				// Check for 16px icon
+				if(self.contextMenuItems[i].icon_16) self.contextMenuItems[i].icon = self.contextMenuItems[i].icon_16;
+				$('<li />').html("<a href='#" + self.contextMenuItems[i].name + "' style='background-image: url(images/vbox/" + self.contextMenuItems[i].icon +"_16px.png);' >"+trans(self.contextMenuItems[i].label)+"</a>").addClass((self.contextMenuItems[i].separator ? 'separator' : 'noseparator')).appendTo(ul);
+			}
+			$('#vboxIndex').append(ul).bind('vmselect',function(e,vm){
+				for(var i = 0; i < self.contextMenuItems.length; i++) {
+					if(self.contextMenuItems[i].enabled(vm)) {
+						$('#'+self.contextMenuId).enableContextMenuItems('#'+self.contextMenuItems[i].name);
+						$('#'+self.contextMenuId).find('a[href=#'+self.contextMenuItems[i].name+']').css('background-image','url(images/vbox/'+self.contextMenuItems[i].icon+'_16px.png)');						
+					} else {
+						$('#'+self.contextMenuId).disableContextMenuItems('#'+self.contextMenuItems[i].name);
+						$('#'+self.contextMenuId).find('a[href=#'+self.contextMenuItems[i].name+']').css('background-image','url(images/vbox/'+(self.contextMenuItems[i].icon_disabled ? self.contextMenuItems[i].icon_disabled : self.contextMenuItems[i].icon+'_dis')+'_16px.png)');												
+					}
+				}
+			});
+		}
+		
+		/*
+		 *
+		 * VM List sortable?
+		 *
+		 */
+		if($('#vboxIndex').data('vboxConfig').vmListSort == 'gui') {
+			
+			// God, I love jQuery
+			$('#'+self.anchorid).sortable({'start':function(){self._sorting=true;},'stop':function(){
+				self._sorting=false;
+				if(self._lastList) self.updateList(self._lastList);
+			},'update':function(){
+				var sortOrder = {};
+				var sortOrderCounter = 0;
+				$('#'+self.anchorid).children().each(function(){
+					if($(this).data('vmid') != 'host') {
+						sortOrder[$(this).data('vmid')] = sortOrderCounter++;
+					}
+				});
+				self._sortOrder = sortOrder;
+				self._updateSortOrder = false;
+				vboxAjaxRequest('setVMSortOrder',{'sortOrder':sortOrder},function(){
+					// Resume using sort order returned from server
+					self._updateSortOrder = true;
+				});
+			}});
+		}
+		
+		// Disable dragging selection
+		$('#'+self.anchorid).disableSelection();
 		
 		self.start();
 
@@ -345,6 +498,5 @@ function vboxVMList(anchorid) {
 	}
 
 }
-
 
 </script>

@@ -521,7 +521,8 @@ div.vboxSettingsDialog div.ui-dialog-buttonpane {
 
 #vboxSettingsStorageTree table { width: 100%; margin: 0px; padding: 0px; }
 #vboxSettingsStorageTree table td { height: 20px; white-space: nowrap; border: 0px; padding: 0px; margin: 0px; width: auto; }
-#vboxSettingsStorageTree table td.vboxSettingsStorageTypeIcon { width: 20px; height: 20px; }
+#vboxSettingsStorageTree table td.vboxSettingsStorageTypeIcon img { width: 20px; height: 20px; padding: 0px; margin:0px; vspace: 0px; hspace: 0px; }
+#vboxSettingsStorageTree table td.vboxSettingsStorageTypeIcon { width: 20px; }
 #vboxSettingsStorageTree table tr { vertical-align: middle; }
 	
 #vboxSettingsStorageTree input { display: inline; }

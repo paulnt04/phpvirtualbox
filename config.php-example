@@ -127,14 +127,29 @@ Do not change / set unless you have a good reason.
  */
 #var $enableAdvancedConfig = true;
 
-/* Custom VMList sort function in JavaScript */
-/* This places running VMs at the top of the list
-var $vmListSort = 'function(a,b) {
-	if(a.state == "Running" && b.state != "Running") return -1;
-	if(b.state == "Running" && a.state != "Running") return 1;
-	return strnatcasecmp(a.name,b.name);
-}';
+/* 
+	Sorting VM List options
+
+	var $vmListSort = 'name'; // Default. Sort VM list by VM name
+	var $vmListSort = 'running'; // Place running VMs at the top of the list
+	var $vmListSort = 'gui'; // Use drag-and-drop / manual vm ordering
+	var $vmListSort = 'stateChange'; // Order by VMs' last state change
+	var $vmListSort = 'function(..){...}' // uses custom javascript function. Example follows:
+	
+	// This places running VMs at the top of the list, then orders by
+	// the last VM state change, then by name. 
+	var $vmListSort = 'function(a,b) {
+		if(a.state == "Running" && b.state != "Running") return -1;
+		if(b.state == "Running" && a.state != "Running") return 1;
+		if(a.lastStateChange < b.lastStateChange) return 1;
+		if(b.lastStateChange < a.lastStateChange) return -1;
+		return strnatcasecmp(a.name,b.name);
+	}';
+	
+	NOTE: In a multi-user situation, 'gui' is probably a bad idea.
+	
 */
+#var $vmListSort = 'name';
 
 // Allow VDE network configuration. This must be supported by the underlying VirtualBox installation!
 #var $enableVDE = true; 

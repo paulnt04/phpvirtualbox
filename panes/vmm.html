@@ -502,11 +502,11 @@ vmmToolbar.addButtons('vboxMMToolbar');
 /* Actions Menu */
 var menu = {
 	'name':'vboxMMactions',
-	'title':'Actions',
+	'label':'Actions',
 	'menu':[
         {
 			'name':'vmmActionsClone',
-			'title':'Clone',
+			'label':'Clone',
 			'icon':'vdm_add',
 			'click':function(){
 			
@@ -576,7 +576,7 @@ var menu = {
         },
         {
 			'name':'vmmActionsImmutable',
-			'title':'Immutable',
+			'label':'Immutable',
 			'icon':'hd_new',
 			'click':function(){
 
@@ -599,7 +599,7 @@ var menu = {
         },
         {
 			'name':'vmmActionsNormal',
-			'title':'Normal',
+			'label':'Normal',
 			'icon':'vdm_release',
 			'click':function(){
 		   		var m = $('#vboxVMMHDList').find('tr.vboxListItemSelected').first().data('id');
@@ -624,7 +624,7 @@ var menu = {
 			 *	Remove a medium
 			 */
 			'name' : 'vmmremove',
-			'title' : 'Remove',
+			'label' : 'Remove',
 			'icon' : 'hd_remove',
 			'separator':$('#vboxIndex').data('vboxConfig').enableAdvancedConfig,
 			'enabled' : function (item) {return item && !item.target && ($(item).data('attachedTo').length == 0 && $(item).data('children').length == 0); },
@@ -638,7 +638,7 @@ var menu = {
 			 *	Release a medium from all attachments
 			 */
 			'name' : 'vmmrelease',
-			'title' : 'Release',
+			'label' : 'Release',
 			'icon' : 'hd_release',
 			'enabled' : function (item) {
 				return item && !item.target && ($(item).data('attachedTo').length > 0) && $(item).data('children').length == 0 && $(item).data('hasSnapshots') == 0;
@@ -650,7 +650,7 @@ var menu = {
 		},
 		{
 			'name' : 'vmmrefresh',
-			'title' : 'Refresh',
+			'label' : 'Refresh',
 			'icon' : 'refresh',
 			'click' : function () {
 				var btn = vmmToolbar.getButtonByName('vmmrefresh');

@@ -7,6 +7,263 @@
  * 
  */
 
+
+/*
+ * Common VM Actions - These assume that they will be run on the
+ * selected VM as stored in $('#vboxIndex').data('selectedVM')
+ */
+var vboxVMActions = {
+		
+	/* New VM Wizard */
+	'new':{
+			'label':'New',
+			'icon':'vm_new',
+			'icon_16':'new',
+			'click':function(){vboxWizardNewVMInit(function(){return;})}
+	},
+	
+	/* Add a VM */
+	'add': {
+		'label':'Add',
+		'icon':'vm_add',
+		'click':function(){
+			vboxFileBrowser($('#vboxIndex').data('vboxSystemProperties').defaultMachineFolder,function(f){
+				if(!f) return;
+				var l = new vboxLoader();
+				l.mode = 'save';
+				l.add('addVM',function(){},{'file':f});
+				l.onLoad = function(){
+					var lm = new vboxLoader();
+					lm.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
+					lm.onLoad = function() {$('#vboxIndex').trigger('vmlistreload');}
+					lm.run();
+				}
+				l.run();
+				
+			},false);
+		}
+	},
+
+	/* Start VM */
+	'start' : {
+		'name' : 'start',
+		'label' : 'Start',
+		'icon' : 'vm_start',
+		'icon_16' : 'start',
+		'click' : function (btn) {
+		
+			// Disable toolbar button that triggered this action?
+			if(btn && btn.toolbar) btn.toolbar.disableButton(btn);
+			
+			vboxAjaxRequest('setStateVMpowerUp',{'vm':$('#vboxIndex').data('selectedVM').id},function(d){
+				// check for progress operation
+				if(d && d.progress) {
+					var icon = null;
+					if($('#vboxIndex').data('selectedVM').state == 'Saved') icon = 'progress_state_restore_90px.png';
+					else icon = 'progress_start_90px.png';
+					vboxProgress(d.progress,function(){$('#vboxIndex').trigger('vmlistrefresh');},{},icon);
+					return;
+				}
+				$('#vboxIndex').trigger('vmlistrefresh');
+			});
+			
+		},
+		'enabled' : function (vm) { return (vm && (jQuery.inArray(vm.state,['PoweredOff','Paused','Saved','Aborted']) > -1));}	
+	},
+	
+	/* VM Settings */
+	'settings': {
+		'label':'Settings',
+		'icon':'vm_settings',
+		'icon_16':'settings',
+		'click':function(){
+			if($('#vboxIndex').data('selectedVM') && $('#vboxIndex').data('selectedVM').state == 'Running') return;
+			
+			vboxVMsettingsInit($('#vboxIndex').data('selectedVM').id,function(){
+				$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);
+			});
+		},
+		'enabled':function(vm){ return vm && (vm.state == 'PoweredOff' || vm.state == 'Aborted'); }
+	},
+	
+	/* Refresh a VM */
+	'refresh': {
+		'label':'Refresh',
+		'icon':'refresh',
+		'icon_disabled':'refresh_disabled',
+		'click':function(){
+			var l = new vboxLoader();
+			l.add('VMDetails',function(d){
+				// Special case for host refresh
+				if(d.id == 'host') {
+					$('#vboxIndex').data('vboxHostDetails',d);
+				}
+				$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);
+			},{'vm':$('#vboxIndex').data('selectedVM').id,'force_refresh':1});
+			
+			// Host refresh also refreshes system properties
+			if($('#vboxIndex').data('selectedVM').id == 'host') {
+				l.add('SystemProperties',function(d){$('#vboxIndex').data('vboxSystemProperties',d);},{'force_refresh':1});
+			}
+			l.run();
+    	},
+		'enabled':function(vm){ return vm; }
+    },
+    
+    /* Delete / Remove a VM */
+    'remove' : {
+		'label':'Remove',
+		'icon':'delete',
+		'click':function(){
+
+			var buttons = {};
+
+			/* Unregister Inaccessible or Delete? */
+			if($('#vboxIndex').data('selectedVM').state == 'Inaccessible') {
+				
+				buttons[trans('Unregister')] = function(){
+					$(this).empty().remove();
+					var l = new vboxLoader();
+					l.add('removeVM',function(){},{'vm':$('#vboxIndex').data('selectedVM').id,'unregister':1});
+					l.mode = 'save';
+					l.onLoad = function(){$('#vboxIndex').trigger('vmlistreload');};
+					l.run();
+				}
+				var q = trans('Unregister VM Message1').replace('%s','<b>'+$('#vboxIndex').data('selectedVM').name+'</b>') + '<p>'+trans('Unregister VM Message2')+'</p>';
+				
+			} else {
+				buttons[trans('Delete all files')] = function(){
+					$(this).empty().remove();
+					vboxAjaxRequest('removeVM',{'vm':$('#vboxIndex').data('selectedVM').id,'delete':1},function(d){
+						// check for progress operation
+						if(d && d.progress) {
+							vboxProgress(d.progress,function(){$('#vboxIndex').trigger('vmlistreload');},{},'progress_delete_90px.png');
+							return;
+						}
+						$('#vboxIndex').trigger('vmlistreload');
+					});
+				}
+				buttons[trans('Remove only')] = function(){
+					$(this).empty().remove();
+					vboxAjaxRequest('removeVM',{'vm':$('#vboxIndex').data('selectedVM').id,'keep':1},function(d){
+						// check for progress operation
+						if(d && d.progress) {
+							vboxProgress(d.progress,function(){$('#vboxIndex').trigger('vmlistreload');});
+							return;
+						}
+						$('#vboxIndex').trigger('vmlistreload');
+					});
+				}
+				
+				var q = trans('Delete VM Message1').replace('%s','<b>'+$('#vboxIndex').data('selectedVM').name+'</b>') + '<p>'+trans('Delete VM Message2')+'</p>';
+			}				
+			vboxConfirm(q,buttons);
+    	
+    	},
+		'enabled':function(vm){ return vm && (vm.state == 'PoweredOff' || vm.state == 'Aborted' || vm.state == 'Inaccessible'); }
+    },
+    
+    /* Discard VM State */
+    'discard' : {
+		'label':'Discard',
+		'icon':'discard',
+		'click':function(){
+			var buttons = {};
+			buttons[trans('Discard')] = function(){
+				$(this).empty().remove();
+				var l = new vboxLoader();
+				l.add('setStateVMdiscardSavedState',function(){},{'vm':$('#vboxIndex').data('selectedVM').id});
+				l.mode = 'save';
+				l.onLoad = function(){$('#vboxIndex').trigger('vmlistrefresh');};
+				l.run();
+			}
+			vboxConfirm(trans('Discard Message1').replace('%s','<b>'+$('#vboxIndex').data('selectedVM').name+'</b>') + '<p><b>'+trans('Discard Message2')+'</b></p>',buttons);
+		},
+		'enabled':function(vm){ return (vm && vm.state == 'Saved'); }
+    },
+    
+    /* Show VM Logs */
+    'logs' : {
+		'label':'Show Log',
+		'icon':'show_logs',
+		'icon_disabled':'show_logs_disabled',
+		'click':function(){
+    		vboxShowLogsDialogInit($('#vboxIndex').data('selectedVM').id);
+		},
+		'enabled':function(vm){ return (vm && vm.id && vm.id != 'host'); }
+    },
+
+    /* Save VM State */
+	'savestate' : {
+		'label' : 'Save State',
+		'icon' : 'fd',
+		'enabled' : function(vm){ return (vm && vm.state == 'Running'); },
+		'click' : function() {vboxVMActions.powerAction('savestate');}
+	},
+	/* Send sleep button */
+	'sleep' : {
+		'label' : 'ACPI Sleep Button',
+		'icon' : 'acpi',
+		'enabled' : function(vm){ return (vm && vm.state == 'Running'); },
+		'click' : function() {vboxVMActions.powerAction('sleep');}
+	},
+	/* Send Power Button */
+	'powerbutton' : {
+		'label' : 'ACPI Power Button',
+		'icon' : 'acpi',
+		'enabled' : function(vm){ return (vm && vm.state == 'Running'); },
+		'click' : function() {vboxVMActions.powerAction('powerbutton');}
+	},
+	/* Pause VM */
+	'pause' : {
+		'label' : 'Pause',
+		'icon' : 'pause',
+		'icon_disabled' : 'pause_disabled',
+		'enabled' : function(vm){ return (vm && vm.state == 'Running'); },
+		'click' : function() {vboxVMActions.powerAction('pause'); }
+	},
+	/* Power Off VM */
+	'powerdown' : {
+		'label' : 'Power Off',
+		'icon' : 'poweroff',
+		'enabled' : function(vm) { return (vm && jQuery.inArray(vm.state,['Running','Paused','Stuck']) > -1); },
+		'click' : function() {vboxVMActions.powerAction('powerdown'); }
+	},
+	/* Reset VM */
+	'reset' : {
+		'label' : 'Reset',
+		'icon' : 'reset',
+		'enabled' : function(vm){ return (vm && vm.state == 'Running'); },
+		'click' : function() {vboxVMActions.powerAction('reset'); }
+	},
+	
+	/* Power Action Helper function */
+	'powerAction' : function(pa){
+		switch(pa) {
+			case 'powerdown': fn = 'setStateVMpowerDown'; icon='progress_poweroff_90px.png'; break;
+			case 'powerbutton': fn = 'setStateVMpowerButton'; break;
+			case 'sleep': fn = 'setStateVMsleepButton'; break;
+			case 'savestate': fn = 'setStateVMsaveState'; icon='progress_state_save_90px.png'; break;
+			case 'pause': fn = 'setStateVMpause'; break;
+			case 'reset': fn = 'setStateVMreset'; break;
+			default: return;
+		}
+		vboxAjaxRequest(fn,{'vm':$('#vboxIndex').data('selectedVM').id},function(d){
+			// check for progress operation
+			if(d && d.progress) {
+				vboxProgress(d.progress,function(){
+					if(pa != 'reset' && pa != 'sleep' && pa != 'powerbutton') $('#vboxIndex').trigger('vmlistrefresh');
+				},{},icon);
+				return;
+			}
+			if(pa != 'reset' && pa != 'sleep' && pa != 'powerbutton') $('#vboxIndex').trigger('vmlistrefresh');
+		});		
+		
+	}
+    
+}
+	
+
 /*
  * Wizard (new HardDisk or VM)
  */
@@ -930,9 +1187,11 @@ function vboxMenuBar(name) {
 		
 		for(var i in m.menu) {
 			if(typeof i == 'function') continue;
+			// 16px icon?
+			if(m.menu[i].icon_16) m.menu[i].icon = m.menu[i].icon_16;
 			var li = document.createElement('li');
 			var a = document.createElement('a');
-			$(a).attr({'id':m.menu[i].name,'href':'#'+m.menu[i].name}).html(trans(m.menu[i].title));
+			$(a).attr({'id':m.menu[i].name,'href':'#'+m.menu[i].name}).html(trans(m.menu[i].label));
 			if(m.menu[i].icon_absolute) a.setAttribute('style','background-image: url('+m.menu[i].icon+')');
 			else a.setAttribute('style','background-image: url(images/vbox/'+m.menu[i].icon+'_16px.png)');
 			if(m.menu[i].separator) $(li).addClass('separator');
@@ -958,7 +1217,7 @@ function vboxMenuBar(name) {
 		$('#'+id).prepend(d);
 		
 		for(var i = 0; i < self.menus.length; i++) {
-			$('#'+self.name+'MenuBar').append('<span id="'+self.menus[i].name+'">'+trans(self.menus[i].title)+'</span>');	
+			$('#'+self.name+'MenuBar').append('<span id="'+self.menus[i].name+'">'+trans(self.menus[i].label)+'</span>');	
 			$('#'+self.menus[i].name).contextMenu({
 			 		menu: self.menus[i].name+'Menu',
 			 		button: 0,

@@ -33,6 +33,7 @@ if(jQuery)( function() {
 			if( o.inSpeed == 0 ) o.inSpeed = -1;
 			if( o.outSpeed == 0 ) o.outSpeed = -1;
 			if( o.button == undefined) o.button = 2;
+			if( o.clickthrough == undefined) o.clickthrough = false;
 			// Loop each context menu
 			$(this).each( function() {
 				
@@ -203,6 +204,8 @@ if(jQuery)( function() {
 				// Simulate a true click
 				$(this).mousedown( function(e) {
 					if( $(el).hasClass('disabled') ) return true;
+					if(!( e.button == o.button || (o.button == 0 && e.button == 1 && $.browser.msie))) return;
+					if(o.clickthrough) $(el).trigger('click');
 					var evt = e;
 					evt.stopPropagation();
 					$(this).mouseup( function(e) {
@@ -211,6 +214,10 @@ if(jQuery)( function() {
 						$(this).unbind('mouseup');
 						if( evt.button == o.button || (o.button == 0 && evt.button == 1 && $.browser.msie)) {
 							
+							// Menu setup function
+							if(o.menusetup) {
+								o.menusetup(el);
+							}
 							// Hide context menus that may be showing
 							$(".contextMenu").hide();
 

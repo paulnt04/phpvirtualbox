@@ -462,7 +462,7 @@ function vboxVMsettingsInit(vm,callback,pane) {
 	
 		{'name':'General','label':'General','icon':'machine','tabbed':true},
 		{'name':'System','label':'System','icon':'chipset','tabbed':true},
-		{'name':'Display','label':'Display','icon':'fullscreen','tabbed':true},
+		{'name':'Display','label':'Display','icon':'vrdp','tabbed':true},
 		{'name':'Storage','label':'Storage','icon':'attachment'},
 		{'name':'Audio','label':'Audio','icon':'sound'},
 		{'name':'Network','label':'Network','icon':'nw','tabbed':true},
@@ -655,7 +655,7 @@ function vboxSettingsInit(title,panes,data,onsave,pane,icon) {
 			$('#vboxSettingsDialog .vboxSettingsPaneSection').css({'display':'none'});
 			
 			// Show selected pane
-			$('#vboxSettingsPane-' + $(this).data('name')).css({'display':''});
+			$('#vboxSettingsPane-' + $(this).data('name')).css({'display':''}).children().first().trigger('show');
 			
 			// Opera hidden select box bug
 			////////////////////////////////

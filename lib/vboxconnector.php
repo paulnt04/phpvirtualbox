@@ -2405,6 +2405,39 @@ class vboxconnector {
 
 
 	/*
+	 * 
+	 * Set vm sort order
+	 * 
+	 */
+	public function setVMSortOrder($args,&$response) {
+		
+		// Connect to vboxwebsrv
+		$this->__vboxwebsrvConnect();
+		
+		asort($args['sortOrder']);
+		
+		$sortOrder = join(',',array_flip($args['sortOrder']));
+		
+		$this->vbox->setExtraData("GUI/SelectorVMPositions", $sortOrder);
+		
+		$this->cache->expire('getVMSortOrder');
+	}
+	
+	/*
+	 * 
+	 * Get VM sort order 
+	 * 
+	 */
+	public function getVMSortOrderCached($args,&$response) {
+		
+		// Connect to vboxwebsrv
+		$this->__vboxwebsrvConnect();
+		
+		$response['data']['sortOrder'] = array_flip(array_filter(explode(',',$this->vbox->getExtraData("GUI/SelectorVMPositions"))));
+		
+	}
+	
+	/*
 	 *
 	 *
 	 * Return a list of VMs along with their
@@ -2416,8 +2449,13 @@ class vboxconnector {
 
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
-
+		
 		$response['data']['vmlist'] = array();
+		
+		// get sort order
+		$so = array();
+		$this->getVMSortOrder($args,array(&$so));
+		$response['data']['sortOrder'] = $so['data']['sortOrder'];
 		
 		//Get a list of registered machines
 		$machines = $this->vbox->machines;

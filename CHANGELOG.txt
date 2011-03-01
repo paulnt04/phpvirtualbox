@@ -63,7 +63,7 @@ Added Spanish (Latin America) translation.
 
 Fixed preview window redraws in Safari and Chrome (webkit).
 
-jQuery upgrade to 1.5.
+jQuery upgrade to 1.5.1.
 
 jQuery UI upgrade to 1.8.9.
 
@@ -75,12 +75,13 @@ window utilizing ETag and If-Modified-Since HTTP headers.
 
 Added Parallel Port configuration and associated $enableLPTConfig
 configuration setting - EXPERIMENTAL - VirtualBox provides no
-documentation or official support for this. Nor can I.
+documentation or official support for this. Nor can I. LPT support
+only works in Linux.
 
 Added CD/DVD and Floppy drives to host details.
 
 Host details now displays CPU features if $enableAdvancedConfig
-is selected.
+is enabled.
 
 OS Type selectors now properly display only OS types supported by
 the VirtualBox host based on its processors' features.
@@ -95,7 +96,15 @@ $enableAdvancedConfig is set.
 
 Updated German translations.
 
-Added GPLv3.txt and updated verbiage in LICENSE.txt. 
+Added GPLv3.txt and updated verbiage in LICENSE.txt.
+
+Updated Storage VM Settings pane to mimic VirtualBox GUI resizable
+behavior.
+
+Added right-click functionality to VMs in the VM list.
+
+Added more vmListSort options - including the option to manually
+sort VMs with drag-and-drop. See config.php-example.
 
 -------------------------------------
 	4.0-3	2011-2-10
