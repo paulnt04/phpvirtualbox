@@ -101,9 +101,10 @@ var vboxVMActions = {
 				$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);
 			},{'vm':$('#vboxIndex').data('selectedVM').id,'force_refresh':1});
 			
-			// Host refresh also refreshes system properties
+			// Host refresh also refreshes system properties, VM sort order
 			if($('#vboxIndex').data('selectedVM').id == 'host') {
 				l.add('SystemProperties',function(d){$('#vboxIndex').data('vboxSystemProperties',d);},{'force_refresh':1});
+				l.add('VMSortOrder',function(d){return;},{'force_refresh':1});
 			}
 			l.run();
     	},

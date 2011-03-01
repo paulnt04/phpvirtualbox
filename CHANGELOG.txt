@@ -1,5 +1,5 @@
 -------------------------------------
-	4.0-4
+	4.0-4	2011-3-1
 -------------------------------------
 Added Exclusive and VPID hardware acceleration options to
 Acceleration tab visible when $enableAdvancedConfig is set.
@@ -55,7 +55,7 @@ now determined in the following order:
 Fixed multi-server bug when initial server is unreachable.
 http://code.google.com/p/phpvirtualbox/issues/detail?id=200
 
-Added basic authentication and associated options.
+Added basic user authentication and associated options.
 
 Added icons to dialog titles.
 
@@ -101,7 +101,8 @@ Added GPLv3.txt and updated verbiage in LICENSE.txt.
 Updated Storage VM Settings pane to mimic VirtualBox GUI resizable
 behavior.
 
-Added right-click functionality to VMs in the VM list.
+Added right-click functionality and tooltips to VMs in the VM
+list.
 
 Added more vmListSort options - including the option to manually
 sort VMs with drag-and-drop. See config.php-example.

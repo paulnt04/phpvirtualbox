@@ -327,22 +327,12 @@ $('#vboxVMDetails').find('tr.vboxDetailsHead').each(function(){
 			var src = 'images/arrow_grad_dn.png';				
 		}
 		$(this).find('span.vboxDetailsUpDnImgSpan').children('img').attr('src',src);
-		e.stopPropagation();
-		e.preventDefault();				
 		return false;
 	}).hover(function(){
 		$(this).addClass('hover');},
 		function(){$(this).removeClass('hover');}
-	).bind('onselectstart',function(e){
-		e.stopPropagation();
-		e.preventDefault();				
-		return false;
-	}).bind('onmousedown',function(e){
-		e.stopPropagation();
-		e.preventDefault();								
-		return false;
-	}).attr('unselectable','on').css('MozUserSelect','none').find('*').attr('unselectable','on').css('MozUserSelect','none');
-}).find('.translate').html(function(i,h){return trans(h);}).removeClass('translate');
+	).disableSelection();
+}).disableSelection().find('.translate').html(function(i,h){return trans(h);}).removeClass('translate');
 
 // translate loading
 $('#vboxDetailsLoading').find('.translate').html(function(i,h){return trans(h);}).removeClass('translate');

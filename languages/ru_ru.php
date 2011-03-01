@@ -591,6 +591,18 @@ public static $trans = array(
 'USB Attached' => 'Подключено', // Is it attached to the VM
 'USB Available' => 'Доступно', // 	Is it available
 
+/* VM List Tooltip
+ * %1 replaced with VM Name
+ * %2 replaced with VM state
+ * %3 replaced with time since state change
+ * %4 replaced with session state (locked or unlocked)
+ * */
+'<nobr>%1</nobr><br /><nobr>%2 since %3</nobr><br /><nobr>Session %4</nobr>' => '<nobr>%1</nobr><br /><nobr>%2 с %3</nobr><br /><nobr>Сессия %4</nobr>',
+// Session states
+'Locked' => 'Заблокировано',
+'Unlocked' => 'Разблокировано',
+'Unlocking' => 'Разблокируется',
+
 /* Operating Systems */
 'Other' => 'Other/Unknown',
 'Windows31' => 'Windows 3.1',

@@ -1046,7 +1046,7 @@ class vboxconnector {
 								$f->$p = $args['USBController']['deviceFilters'][$i][$p];
 							}
 
-							$m->USBController->insertDeviceFilter($i,$f);
+							$m->USBController->insertDeviceFilter($i,$f->handle);
 							$f->releaseRemote();
 							$offset--;
 						}

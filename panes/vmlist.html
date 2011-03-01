@@ -269,7 +269,15 @@ function vboxVMList(anchorid) {
 				$(td).html('<span class="vboxVMName">'+vmn.name+'</span>');
 			}
 		} else {
+			
 			$(td).append('<span class="vboxVMName">'+$('<span />').text(vmn.name).html()+'</span>'+ (vmn.currentSnapshot ? ' (' + $('<span />').text(vmn.currentSnapshot).html() + ')' : ''));
+			
+			var sdate = new Date(vmn.lastStateChange * 1000);
+
+			// Table gets tool tips
+			vboxSetLangContext('vboxVMList');
+			$(tbl).tipped({'source':trans('<nobr>%1</nobr><br /><nobr>%2 since %3</nobr><br /><nobr>Session %4</nobr>').replace('%1',('<b>'+$('<span />').text(vmn.name).html()+'</b>'+(vmn.currentSnapshot ? ' (' + $('<span />').text(vmn.currentSnapshot).html() + ')' : ''))).replace('%2',trans(vmn.state)).replace('%3',sdate.toLocaleString()).replace('%4',trans(vmn.sessionState)),'position':'mouse','delay':2000});
+			vboxUnsetLangContext();
 		}
 		
 		tr.appendChild(td);
@@ -382,6 +390,12 @@ function vboxVMList(anchorid) {
 				self._updateSortOrder = true;
 				
 				break;
+			
+			// Sort by OS type
+			case 'os':
+			case 'OS':				
+				self.sort = function(a,b) { return strnatcasecmp(a.OSTypeId,b.OSTypeId); }
+				break;
 				
 			// Sort by name - default
 			case 'name':
@@ -452,7 +466,7 @@ function vboxVMList(anchorid) {
 		if($('#vboxIndex').data('vboxConfig').vmListSort == 'gui') {
 			
 			// God, I love jQuery
-			$('#'+self.anchorid).sortable({'start':function(){self._sorting=true;},'stop':function(){
+			$('#'+self.anchorid).sortable({'axis':'y','start':function(){self._sorting=true;},'stop':function(){
 				self._sorting=false;
 				if(self._lastList) self.updateList(self._lastList);
 			},'update':function(){

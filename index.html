@@ -87,12 +87,15 @@
 			// Resizable
 			///////////////////////
 			$('#vboxResizeBar').draggable({cursor:(jQuery.browser.opera ? 'e-resize' : 'col-resize'),axis:'x',zIndex:99,helper:function(){
+				
 				$('#vboxResizeBarTmp').remove();
 				var r = $('#vboxResizeBar').clone(false);
 				return $(r).attr({'id':'vboxResizeBarTmp'}).unbind('mouseleave').css({'background':'#cccccc'});
+				
 			},scroll:false,'start':function(e,ui){
+				
 				$('#vboxResizeOverlay').remove();
-				$('body').attr({'unselectable':'on'}).css({'-moz-user-select':'none','-webkit-user-select':'none','cursor':(jQuery.browser.opera ? 'e-resize' : 'col-resize')});
+				$('body').disableSelection().css({'cursor':(jQuery.browser.opera ? 'e-resize' : 'col-resize')});
 				$('#vboxIndex').append($('<div />').attr({'id':'vboxResizeOverlay','style':'width:100%;height:100%;border:0px;margin:0px;padding:0px;position:absolute;top:0px;left:0px;z-index:10;cursor:'+(jQuery.browser.opera ? 'e-resize' : 'col-resize')}));
 				$('#vboxResizeBar').data('vboxX',e.pageX);
 				
@@ -100,7 +103,7 @@
 
 				$('#vboxResizeBarTmp').remove();
 				$('#vboxResizeOverlay').remove();
-				$('body').attr({'unselectable':''}).css({'-moz-user-select':'','-webkit-user-select':'','cursor':'default'});
+				$('body').enableSelection().css({'cursor':'default'});
 				
 
 				var nx = $('#vboxVMList').width() + (e.pageX - $('#vboxResizeBar').data('vboxX'));
@@ -114,7 +117,7 @@
 				$(this).css('background',"#cccccc");
 			}).bind('mouseleave',function(){
 				$(this).css('background',"");
-			})[0].onselectstart = function () { return false; };
+			}).parent().disableSelection();
 
 			// Resize table elements
 			$(window).resize(function(){
@@ -228,7 +231,8 @@
 				
 				// Create but do not open dialog
 				$('#vboxLogin').dialog({'closeOnEscape':false,'width':300,'height':160,'buttons':buttons,'modal':true,'autoOpen':false,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/OSE/about_16px.png" class="vboxDialogTitleIcon" /> phpVirtualBox :: ' + trans('Log in')});
-
+				$('#vboxLogin').find('input[name=username]').first().focus();
+				
 				// Trick loader into not showing root pane again
 				this.hideRoot = false;
 				vboxCheckSession();

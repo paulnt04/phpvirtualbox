@@ -52,6 +52,15 @@ function clean_request() {
 }
 
 /*
+ * Support for PHP compiled with --disable-hash
+ */
+if(!function_exists('hash')) {
+// Lower security, but better than nothing
+function hash($type,$str='') {
+	return sha1(json_encode($str));
+}
+}
+/*
  * Support for PHP compiled with --disable-json
  */
 if(!function_exists('json_encode')) {

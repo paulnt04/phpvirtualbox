@@ -1204,11 +1204,25 @@ $('#vboxSettingsDialog').bind('save',function(){
  * Set pane sizes and resize bar
  */
 $('#vboxSettingsStorageTableWrapper').one('show',function(){
-	 
+	
+	// Hide children to get true width
+	$('#vboxStoragePaneLeft').children().css({'display':'none'});
+	$('#vboxStoragePaneRight').children().css({'display':'none'});
+	
+	// Get and set size
 	var bothWidth = ($('#vboxStoragePaneLeft').parent().innerWidth() + $('#vboxStoragePaneRight').parent().innerWidth() - 24) / 2;
 	$('#vboxStoragePaneLeft').css({'width':bothWidth+'px','overflow':'hidden'}).parent().css({'width':'auto'});
 	$('#vboxStoragePaneRight').css({'width':bothWidth+'px','overflow':'hidden'}).parent().css({'width':'auto'});
+
+	// Show children again
+	$('#vboxStoragePaneLeft').children().css({'display':''});
+	$('#vboxStoragePaneRight').children().css({'display':''});
 	
+	// Re-trigger list selection to show correct info
+	if(!$('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().click().hasClass('vboxListItemSelected'))
+		$('#vboxSettingsStorageTree').trigger('itemselect',null);
+	
+	// Draggable resize bar
 	$('#vboxStorageResizeBar').draggable({cursor:(jQuery.browser.opera ? 'e-resize' : 'col-resize'),axis:'x',zIndex:99,helper:function(){
 		
 		return $('<span />'); // dummy element
@@ -1218,7 +1232,7 @@ $('#vboxSettingsStorageTableWrapper').one('show',function(){
 		$('#vboxStorageResizeBar').data('vboxX',e.pageX);
 
 		$('#vboxResizeOverlay').remove();
-		$('body').attr({'unselectable':'on'}).css({'-moz-user-select':'none','-webkit-user-select':'none','cursor':(jQuery.browser.opera ? 'e-resize' : 'col-resize')});
+		$('body').disableSelection().css({'cursor':(jQuery.browser.opera ? 'e-resize' : 'col-resize')});
 		$('#vboxSettingsDialog').append($('<div />').attr({'id':'vboxResizeOverlay','style':'width:99%;height:99%;border:0px;margin:0px;padding:0px;position:absolute;top:0px;left:0px;cursor:'+(jQuery.browser.opera ? 'e-resize' : 'col-resize')}));
 		
 	},'drag':function(e){
@@ -1296,9 +1310,9 @@ $('#vboxSettingsStorageTableWrapper').one('show',function(){
 		$('#vboxStorageResizeBar').data('vboxX',e.pageX);
 		
 	},'stop':function(e) {
-		$('body').attr({'unselectable':''}).css({'-moz-user-select':'','-webkit-user-select':'','cursor':'default'});
+		$('body').enableSelection().css({'cursor':'default'});
 		$('#vboxResizeOverlay').remove();
-	}}).css('cursor',(jQuery.browser.opera ? 'e-resize' : 'col-resize')).parent().onselectstart = function () { return false; };
+	}}).css('cursor',(jQuery.browser.opera ? 'e-resize' : 'col-resize')).parent().disableSelection();
 
 	
 });

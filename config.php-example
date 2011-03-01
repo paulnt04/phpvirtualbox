@@ -134,6 +134,7 @@ Do not change / set unless you have a good reason.
 	var $vmListSort = 'running'; // Place running VMs at the top of the list
 	var $vmListSort = 'gui'; // Use drag-and-drop / manual vm ordering
 	var $vmListSort = 'stateChange'; // Order by VMs' last state change
+	var $vmListSort = 'os'; // Sort by OS type
 	var $vmListSort = 'function(..){...}' // uses custom javascript function. Example follows:
 	
 	// This places running VMs at the top of the list, then orders by
@@ -162,6 +163,9 @@ LPT support may or may not work for you. Conflicting information
 is available regarding VirtualBox's implementation. I cannot
 provide support or instructions for implementing this. I doubt one
 could get support from VirtualBox for it.
+
+!!! VirtualBox LPT support only works in Linux. !!!
+
 */
 #var $enableLPTConfig = true;
 
