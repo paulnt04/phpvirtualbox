@@ -174,6 +174,7 @@ table tr td.vboxFileFolderInput input.vboxImgButton { width: 20px; margin-left: 
 	text-align: center;
 	padding: 4px;
 }
+
 .vboxToolbarButtonHover {
 	border-bottom: 1px solid #777;
 	border-right: 1px solid #777;
@@ -266,17 +267,16 @@ div.vboxVMLog form textarea, div.vboxAjaxErrorDetails form textarea {
 #vboxVMMDialog { background: #e9e9e9; padding: 0px; margin: 0px; }
 #vboxVirtualMediaManager .ui-tabs { background: #e9e9e9; margin: 0px 6px 0px 6px;}
 #vboxVirtualMediaManager .ui-tabs-panel { background: #fff; }
-#vboxVirtualMediaManager .vboxListTable td { white-space: nowrap; padding: 2px; }
 .vboxVMMSpacer { width: 12px; height: 1px; margin: 0px; padding: 0px; }
 #vboxVirtualMediaManager table.vboxVMMList { font-size: 0.9em; }
 #vboxVirtualMediaManager table td input.vboxVMMMediaExpand { background-position:left center;height:16px;width:10px;margin:0px 2px 0px 0px;padding: 0px; border: 0px; }
+#vboxVirtualMediaManager .vboxListTable td,
+	#vboxVirtualMediaManager .vboxListTable th { white-space: nowrap; padding: 2px; }
 #vboxVirtualMediaManager table.vboxVMMList tr > th, #vboxVirtualMediaManager table.vboxVMMList tr > td { padding-left: 12px; }
-#vboxVirtualMediaManager table.vboxVMMList th { padding-left: 12px; padding-right: 12px; }
 #vboxVirtualMediaManager table.vboxVMMList tr,
 	#vboxVirtualMediaManager table.vboxVMMList span { vertical-align: middle; height: 16px; background-position: 0px 0px; }
 #vboxVirtualMediaManager table.vboxVMMList span { display: inline-block; } 
-
-#vboxVirtualMediaManager div.vboxVMMList { min-height: 200px; }
+#vboxVirtualMediaManager div.vboxVMMMediumInfo { font-size: 0.9em; }
 #vboxVirtualMediaManager .vboxVMMMediumInfo table { border: 1px solid #000; margin-top: 12px; width: 100%; background: #fafafa; }
 #vboxVirtualMediaManager .vboxVMMMediumInfo th { padding-left: 18px; text-align: right; width: auto; white-space: nowrap; }
 #vboxVirtualMediaManager .vboxVMMMediumInfo td { padding-left: 10px; text-align: left; width: 100%; }

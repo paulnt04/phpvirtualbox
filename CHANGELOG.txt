@@ -1,5 +1,17 @@
 -------------------------------------
-	4.0-4b		2011-3-1
+	4.0-5	
+-------------------------------------
+Added Norwegian translation.
+
+Fixed translation of 'Log in' in log in dialog.
+
+Fixed bug that would not allow editing of NAT port forwarding
+http://code.google.com/p/phpvirtualbox/issues/detail?id=215
+
+Virtual Media Manager now has scrolling media list.
+
+-------------------------------------
+	4.0-4b	2011-3-1
 -------------------------------------
 Fixed bug that would not display error messages when attempting
 to log in if there was an error connecting to vboxwebsrv.

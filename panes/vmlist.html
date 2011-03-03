@@ -50,7 +50,7 @@ vboxVMList.run();
  * as a result of an ajax request returning, "this" refers to the
  * JavaScript window object rather than the originating object.
  * Creating and using a class local "self" variable that refers
- * to the object gets around this (no pun intended) limitation.
+ * to the object gets around this limitation.
  */
 
 function vboxVMList(anchorid) {
@@ -145,7 +145,7 @@ function vboxVMList(anchorid) {
 		
 		
 		// Host machine added manually
-		host = new Array({'id':'host','state':'Hosting','name':'VirtualBox ('+$('#vboxIndex').data('vboxConfig').name+')','OSTypeId':'VirtualBox_Host'});
+		host = new Array({'id':'host','state':'Hosting','name':$('#vboxIndex').data('vboxConfig').name,'OSTypeId':'VirtualBox_Host'});
 		currVMList = host.concat(currVMList);
 
 		// Each item in list
@@ -266,7 +266,7 @@ function vboxVMList(anchorid) {
 				);
 				$(td).html('<span class="vboxVMName">VirtualBox</span> ').append(span);
 			} else {				
-				$(td).html('<span class="vboxVMName">'+vmn.name+'</span>');
+				$(td).html('<span class="vboxVMName">VirtualBox</span> ('+vmn.name+')');
 			}
 		} else {
 			
@@ -479,9 +479,10 @@ function vboxVMList(anchorid) {
 				});
 				self._sortOrder = sortOrder;
 				self._updateSortOrder = false;
+				window.clearTimeout(self._sortOrderTimer);
 				vboxAjaxRequest('setVMSortOrder',{'sortOrder':sortOrder},function(){
-					// Resume using sort order returned from server
-					self._updateSortOrder = true;
+					// Resume using sort order returned from server after one refresh interval
+					self._sortOrderTimer = window.setTimeout(function(){self._updateSortOrder = true;},self.interval*1000);
 				});
 			}});
 		}

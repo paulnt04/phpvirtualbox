@@ -77,6 +77,7 @@ var vboxVMActions = {
 		'icon':'vm_settings',
 		'icon_16':'settings',
 		'click':function(){
+			
 			if($('#vboxIndex').data('selectedVM') && $('#vboxIndex').data('selectedVM').state == 'Running') return;
 			
 			vboxVMsettingsInit($('#vboxIndex').data('selectedVM').id,function(){
@@ -240,6 +241,7 @@ var vboxVMActions = {
 	
 	/* Power Action Helper function */
 	'powerAction' : function(pa){
+		icon ='';
 		switch(pa) {
 			case 'powerdown': fn = 'setStateVMpowerDown'; icon='progress_poweroff_90px.png'; break;
 			case 'powerbutton': fn = 'setStateVMpowerButton'; break;
@@ -464,7 +466,7 @@ function vboxToolbar(buttons) {
 		$(td).attr({'id':'vboxToolbarButton-' + self.id + '-' + b.name,
 			'class':'vboxToolbarButton ui-corner-all vboxEnabled vboxToolbarButton'+self.size,
 			'style':self.buttonStyle+'; min-width: '+(self.size+12)+'px;'
-		}).html('<img src="images/vbox/'+b.icon+'_'+self.size+'px.png" class="vboxToolbarImg" /><br />' + $('<div />').html(trans(b.label)).text()).bind('click',function(){
+		}).html('<img src="images/vbox/'+b.icon+'_'+self.size+'px.png" class="vboxToolbarImg" style="height:'+self.size+'px;width:'+self.size+'px;"/><br />' + $('<div />').html(trans(b.label)).text()).bind('click',function(){
 			if($(this).hasClass('vboxDisabled')) return;
 			$(this).data('toolbar').click($(this).data('name'));
 		// store data
@@ -1341,7 +1343,7 @@ function vboxLoader() {
 				'dialogClass' : 'vboxLoaderDialog',
 				'width' : 'auto',
 				'height' : 60,
-				'modal' : true,
+				'modal' : false,
 				'resizable' : false,
 				'draggable' : false,
 				'closeOnEscape' : false,

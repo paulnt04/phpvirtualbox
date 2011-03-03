@@ -118,14 +118,15 @@ function vboxPortForwardConfigInit(rules,callback) {
 		buttons[trans('OK')] = function(){
 			// Get rules
 			var rules = $('#vboxSettingsPortForwardingList').children('tr');
+			var rulesToPass = new Array();
 			for(var i = 0; i < rules.length; i++) {
 				if($(rules[i]).data('vboxRule')[3] == 0 || $(rules[i]).data('vboxRule')[5] == 0) {
 					vboxAlert(trans('The current port forwarding rules are not valid'));
 					return;
 				}
-				rules[i] = $(rules[i]).data('vboxRule');
+				rulesToPass[i] = $(rules[i]).data('vboxRule');
 			}
-			callback(rules);
+			callback(rulesToPass);
 			$(this).trigger('close').empty().remove();
 		};
 		buttons[trans('Cancel')] = function(){$(this).trigger('close').empty().remove();};
@@ -279,7 +280,10 @@ function vboxVMMDialogInit(callback,type,hideDiff,attached,vmPath) {
 					$("#vboxVMMTabs").tabs('select',2);
 					$("#vboxVMMTabs").tabs('disable',0);
 					$("#vboxVMMTabs").tabs('disable',1);
-					break; 
+					break;
+				default:
+					$("#vboxVMMTabs").tabs('select',0);
+					break;
 			}
 		}
 	}

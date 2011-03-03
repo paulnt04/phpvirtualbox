@@ -6,18 +6,22 @@
 	$Id$
 
  -->
-<div id='vboxVirtualMediaManager'>
+<table id='vboxVirtualMediaManager' style='height: 100%; border:0px;margin:0px;padding:0px;width:100%;border-spacing:0px;border-width:0px;'>
 
 	<!-- Top menu -->
-	<div id='vboxMMMenu'></div>
+	<tr><td style='height:1%;padding:0px;margin:0px;border:0px;'><div id='vboxMMMenu' style='margin:0px;'></div></td></tr>
 	
 	<!--  Toolbar Created by JavaScript below -->
-	<div id='vboxMMToolbar' style='padding: 4px' class='vboxToolbarGrad'></div>
+	<tr><td style='height:1%;padding:0px;margin:0px;border:0px;'><div id='vboxMMToolbar' style='padding:4px; margin:0px;' class='vboxToolbarGrad'></div></td></tr>
 
+	<!-- Tab Placeholder -->
+	<tr style='vertical-align: top;'><td style='height:1%;padding:0px;margin:0px;border:0px;'><div id='vboxVMMContainerTop' style='border:0px;margin-bottom:0px;padding-bottom:0px;'></div></td></tr>
+	
 	<!-- Tabs for Media -->
-	<div id='vboxVMMTabs'>
+	<tr style='vertical-align: top;'>
+	<td style='padding:0px;margin:0px;border:0px;' id='vboxVMMContainer'><div id='vboxVMMTabs' style=''>
 
-		<ul>
+		<ul id='vboxVMMTabList'>
 			<li><a href="#vmmDisks"><span><img id='vmmDisksIcon' style="vertical-align: middle" src="images/vbox/hd_16px.png" border="0" /> <span class='translate'>Hard Disks</span></span></a></li>
 			<li><a href="#vmmCDs"><span><img id='vmmCDsIcon' style="vertical-align: middle" src="images/vbox/cd_16px.png" border="0" /> <span class='translate'>CD/DVD Images</span></span></a></li>
 			<li><a href="#vmmFloppys"><span><img id='vmmFloppysIcon' style="vertical-align: middle" src="images/vbox/fd_16px.png" border="0" /> <span class='translate'>Floppy Images</span></span></a></li>		
@@ -30,36 +34,48 @@
 		 -->
 		<div id='vmmDisks'>
 			<div class='vboxBordered vboxVMMList'>
-			<table width='100%' style='border-spacing: 0px; border: 0px;' class='vboxHorizontal vboxListTable vboxVMMList'>
-				<thead>
-					<tr>
-						<th style='width: 100%;'><span class='translate'>Name</span></th>
-						<th style='width: auto'><span class='translate'>Virtual Size</span></th>
-						<th style='width: auto'><span class='translate'>Actual Size</span></th>
-					</tr>
-				</thead>
-				<tbody id='vboxVMMHDList' class='vboxHover'>
-					<tr>
-						<td>Item 1</td>
-						<td>Item 2</td>
-						<td>Item 3</td>
-					</tr>
-				</tbody>
-			</table>
+				<div class='vmmTableHead'>
+					<table width='100%' style='border-spacing: 0px; border: 0px;' class='vboxHorizontal vboxListTable vboxVMMList'>
+						<thead>
+							<tr>
+								<th style='width: 100%;'><span class='translate'>Name</span></th>
+								<th style='width: auto'><span class='translate'>Virtual Size</span></th>
+								<th style='width: auto'><span class='translate'>Actual Size</span></th>
+								<th style='width: auto;padding:0px;margin:0px;'><img src="images/vbox/blank.gif" style="height:1px;width:1px" /></th>
+							</tr>
+						</thead>
+					</table>
+				</div>
+				<div class='vmmTableBody'>
+					<table class='vboxHorizontal vboxListTable vboxVMMList'>
+						<tbody id='vboxVMMHDList' class='vboxHover'>
+							<tr>
+								<td>Item 1</td>
+								<td>Item 2</td>
+								<td>Item 3</td>
+							</tr>
+							<tr>
+								<td>Item 1</td>
+								<td>Item 2</td>
+								<td>Item 3</td>
+							</tr>							
+						</tbody>
+					</table>
+				</div>
 			</div>
 			<div class='vboxVMMMediumInfo'>
 				<table>
 					<tr>
 						<th><span class='translate'>Location</span>:</th>
-						<td><span class='vmmMediumLocation'></span></td>
+						<td><input class='vmmMediumLocation' type='text' style='width:100%;border:0px solid transparent;background:transparent;' value='' readonly /></td>
 					</tr>
 					<tr>
 						<th><span class='translate'>Type (Format)</span>:</th>
-						<td><span class='vmmMediumType'></span></td>
+						<td><input class='vmmMediumType' type='text' style='width:100%;border:0px solid transparent;background:transparent;' value='' readonly /></td>
 					</tr>
 					<tr>
 						<th><span class='translate'>Attached to</span>:</th>
-						<td><span class='vmmMediumAttachedTo'></span></td>
+						<td><input class='vmmMediumAttachedTo' type='text' style='width:100%;border:0px solid transparent;background:transparent;' value='' readonly /></td>
 					</tr>
 					<tr class='vmmAccessErr'>
 						<td colspan='2'></td>
@@ -77,35 +93,41 @@
 		 -->
 		<div id='vmmCDs'>
 			<div class='vboxVMMList vboxBordered'>
-				<table width='100%' style='border-spacing: 0px; border: 0px;' class='vboxHorizontal vboxListTable vboxVMMList'>
-					<thead>
-						<tr>
-							<th style='width: 100%'><span class='translate'>Name</span></th>
-							<th style='width: auto'><span class='translate'>Size</span></th>
-						</tr>
-					</thead>
-					
-					<tbody id='vboxVMMCDList' class='vboxHover'>
-						<tr>
-							<td>Item 1</td>
-							<td>Item 3</td>
-						</tr>
-						<tr>
-							<td>Item 1</td>
-							<td>Item 3</td>
-						</tr>
-					</tbody>
-				</table>
+				<div class='vmmTableHead'>
+					<table width='100%' style='border-spacing: 0px; border: 0px;' class='vboxHorizontal vboxListTable vboxVMMList'>
+						<thead>
+							<tr>
+								<th style='width: 100%'><span class='translate'>Name</span></th>
+								<th style='width: auto'><span class='translate'>Size</span></th>
+								<th style='width: auto;padding:0px;margin:0px;'><img src="images/vbox/blank.gif" style="height:1px;width:1px" /></th>
+							</tr>
+						</thead>
+					</table>
+				</div>
+				<div class='vmmTableBody'>
+					<table width='100%' style='border-spacing: 0px; border: 0px;' class='vboxHorizontal vboxListTable vboxVMMList'>
+						<tbody id='vboxVMMCDList' class='vboxHover'>
+							<tr>
+								<td>Item 1</td>
+								<td>Item 3</td>
+							</tr>
+							<tr>
+								<td>Item 1</td>
+								<td>Item 3</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
 			</div>
 			<div class='vboxVMMMediumInfo'>
 				<table>
 					<tr>
 						<th><span class='translate'>Location</span>:</th>
-						<td><span class='vmmMediumLocation'></span></td>
+						<td><input class='vmmMediumLocation' type='text' style='width:100%;border:0px solid transparent;background:transparent;' value='' readonly /></td>
 					</tr>
 					<tr>
 						<th><span class='translate'>Attached to</span>:</th>
-						<td><span class='vmmMediumAttachedTo'></span></td>
+						<td><input class='vmmMediumAttachedTo' type='text' style='width:100%;border:0px solid transparent;background:transparent;' value='' readonly /></td>
 					</tr>
 					<tr class='vmmAccessErr'>
 						<td colspan='2'></td>
@@ -124,40 +146,47 @@
 		 -->
 		<div id='vmmFloppys'>
 			<div class='vboxVMMList vboxBordered'>
-				<table width='100%' style='border-spacing: 0px; border: 0px;' class='vboxHorizontal vboxListTable vboxVMMList'>
-					<thead>
-						<tr>
-							<th style='width: 100%'><span class='translate'>Name</span></th>
-							<th style='width: auto'><span class='translate'>Size</span></th>
-						</tr>
-					</thead>
-					<tbody id='vboxVMMFDList' class='vboxHover'>
-						<tr>
-							<td>Item 1</td>
-							<td>Item 2</td>
-						</tr>
-					</tbody>
-				</table>
+				<div class='vmmTableHead'>
+					<table width='100%' style='border-spacing: 0px; border: 0px;' class='vboxHorizontal vboxListTable vboxVMMList'>
+						<thead>
+							<tr>
+								<th style='width: 100%'><span class='translate'>Name</span></th>
+								<th style='width: auto'><span class='translate'>Size</span></th>
+								<th style='width: auto;padding:0px;margin:0px;'><img src="images/vbox/blank.gif" style="height:1px;width:1px" /></th>
+							</tr>
+						</thead>
+					</table>
+				</div>
+				<div class='vmmTableBody'>
+					<table width='100%' style='border-spacing: 0px; border: 0px;' class='vboxHorizontal vboxListTable vboxVMMList'>
+						<tbody id='vboxVMMFDList' class='vboxHover'>
+							<tr>
+								<td>Item 1</td>
+								<td>Item 2</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
 			</div>
 			<div class='vboxVMMMediumInfo'>
 				<table>
 					<tr>
 						<th><span class='translate'>Location</span>:</th>
-						<td><span class='vmmMediumLocation'></span></td>
+						<td><input class='vmmMediumLocation' type='text' style='width:100%;border:0px solid transparent;background:transparent;' value='' readonly /></td>
 					</tr>
 					<tr>
 						<th><span class='translate'>Attached to</span>:</th>
-						<td><span class='vmmMediumAttachedTo'></span></td>
+						<td><input class='vmmMediumAttachedTo' type='text' style='width:100%;border:0px solid transparent;background:transparent;' value='' readonly /></td>
 					</tr>
 					<tr class='vmmAccessErr'>
 						<td colspan='2'></td>
 					</tr>					
 				</table>
-			</div>
+			</div>		
 		</div>
-	</div>
-	
-</div>
+	</div></td>
+	</tr>
+</table>
 <script type='text/javascript'>
 
 /*
@@ -171,7 +200,14 @@ vboxUnsetLangContext();
  * Setup Tabs
  */
 $("#vboxVMMTabs").tabs().bind("tabsshow",function(ev,el){
-	if(!$('#'+el.panel.id).find('tbody').children('tr.vboxListItemSelected').first().children().first().click().html()) {
+	
+	var elm = $('#'+el.panel.id);
+
+	// Resize table
+	vboxVMMSizeTable(elm);
+	
+	// Medium selection
+	if(!$(elm).find('tbody').children('tr.vboxListItemSelected').first().children().first().click().length) {
 		$('#vboxVirtualMediaManager').trigger('mediumselect',[null]);
 	}	
 });
@@ -677,9 +713,9 @@ vboxUnsetLangContext();
 /* Display selected media info */
 function vboxVMMMediaInfo(e,m) {
 	m = (m ? $(m).data() : null);
-	$('#vboxVirtualMediaManager').find('.vmmMediumLocation').html((m && m.location ? m.location : '--'));
-	$('#vboxVirtualMediaManager').find('.vmmMediumType').html((m && m.deviceType == 'HardDisk' ? vboxMediumType(m) + ' (' + m.format + ')' : '--'));
-	$('#vboxVirtualMediaManager').find('.vmmMediumAttachedTo').html(m ? vboxMediumAttachedTo(m) : '--');
+	$('#vboxVirtualMediaManager').find('.vmmMediumLocation').val((m && m.location ? m.location : '--'));
+	$('#vboxVirtualMediaManager').find('.vmmMediumType').val((m && m.deviceType == 'HardDisk' ? vboxMediumType(m) + ' (' + m.format + ')' : '--'));
+	$('#vboxVirtualMediaManager').find('.vmmMediumAttachedTo').val(m ? vboxMediumAttachedTo(m) : '--');
 	if(m && m.state == 'Inaccessible' && m.lastAccessError) {
 		$('#vboxVirtualMediaManager').find('tr.vmmAccessErr').css({'display':''}).children().html(m.lastAccessError);
 	} else {
@@ -721,10 +757,10 @@ function vboxVMMAddMedium(d,depth,hideDiff,attached) {
 		btn.setAttribute('style','background-image: url(images/vbox/arrow_right_10px.png)');
 		$(btn).toggle(function(){
 				$(this).css({'background-image':'url(images/vbox/arrow_down_10px.png)'});
-				$(this).parent().parent().toggleClass('collapsed').trigger('showChildren',true);
+				$(this).closest('tr').toggleClass('collapsed').trigger('showChildren',true);
 			},function(){
 				$(this).css({'background-image':'url(images/vbox/arrow_right_10px.png)'});				
-				$(this).parent().parent().toggleClass('collapsed').trigger('hideChildren',true);
+				$(this).closest('tr').toggleClass('collapsed').trigger('hideChildren',true);
 		});
 		$(td).append(btn);
 	} else if(depth) {
@@ -751,8 +787,7 @@ function vboxVMMAddMedium(d,depth,hideDiff,attached) {
 	switch(d.deviceType) {
 		case 'HardDisk': 
 			var td = document.createElement('td');
-			$(td).addClass('vboxHoverMid')
-			td.innerHTML = $('<div />').html(vboxMbytesConvert(d.logicalSize)).text();
+			$(td).addClass('vboxHoverMid').append($('<span />').html(vboxMbytesConvert(d.logicalSize)));
 			tr.appendChild(td);
 			var target = '#vboxVMMHDList';
 			break;
@@ -764,15 +799,8 @@ function vboxVMMAddMedium(d,depth,hideDiff,attached) {
 			break;
 	}
 	var td = document.createElement('td');
-	$(td).addClass('vboxHoverLast');
-	td.innerHTML = $('<div />').html(vboxBytesConvert(d.size)).text();
+	$(td).addClass('vboxHoverLast').append($('<div />').html(vboxBytesConvert(d.size)));
 	tr.appendChild(td);
-
-	$(tr).children().click(function(){
-		$(this).parent().siblings().removeClass('vboxListItemSelected').addClass('vboxListItem');
-		$(this).parent().removeClass('vboxListItem').addClass('vboxListItemSelected');
-		$('#vboxVirtualMediaManager').trigger('mediumselect',[$(this).parent()]);
-	});
 
 	/* Show / hide children of this medium */
 	$(tr).bind('showChildren',function(e,first){
@@ -785,7 +813,7 @@ function vboxVMMAddMedium(d,depth,hideDiff,attached) {
 		$(trTarget).siblings('tr.vboxVMMChildOf'+thisid).show().trigger('showChildren',false);
 
 		// Only set by original button click
-		if(first) { vboxColorRows($('#vboxVMMHDList'));}
+		if(first) { vboxColorRows($('#vboxVMMHDList')); vboxVMMTableHeaderSetup($('#vmmDisks')); }
 		
 	}).bind('hideChildren',function(e,first){
 
@@ -794,8 +822,19 @@ function vboxVMMAddMedium(d,depth,hideDiff,attached) {
 		$(this).siblings('tr.vboxVMMChildOf'+$(this).data('id')).hide().trigger('hideChildren',false);
 
 		// Only set by original button click
-		if(first) { vboxColorRows($('#vboxVMMHDList'));}
+		if(first) { vboxColorRows($('#vboxVMMHDList')); vboxVMMTableHeaderSetup($('#vmmDisks'));}
 
+	});
+
+	// Divs get used to hide overflow
+	$(tr).children('td').each(function(){
+		$(this).html($('<div />').append($(this).children()).css({'overflow':'hidden'}));
+	});
+	
+	$(tr).children().click(function(){
+		$(this).parent().siblings().removeClass('vboxListItemSelected').addClass('vboxListItem');
+		$(this).parent().removeClass('vboxListItem').addClass('vboxListItemSelected');
+		$('#vboxVirtualMediaManager').trigger('mediumselect',[$(this).parent()]);
 	});
 
 	$(target).append(tr);
@@ -848,6 +887,10 @@ function vboxVMMFillMediums(sel) {
 			
 	}
 	vboxUnsetLangContext();
+	
+	vboxVMMTableHeaderSetup($('#vmmDisks'));
+	vboxVMMTableHeaderSetup($('#vmmCDs'));
+	vboxVMMTableHeaderSetup($('#vmmFloppys'));
 
 	// Select medium?
 	if(sel) {
@@ -882,15 +925,90 @@ function vboxVMMFillMediums(sel) {
 	vboxColorRows($('#vboxVMMHDList'));
 	vboxColorRows($('#vboxVMMFDList'));
 	vboxColorRows($('#vboxVMMCDList'));
-	
 
 	
 }
 
+/*
+ * 
+ * Resizing and setup
+ *
+ */
+
+function vboxVMMSizeTable(elm) {
+
+	// Media info will scroll
+	if(!$(elm).data('vboxHeightInit')) {
+		$(elm).data('vboxHeightInit',true);
+	}
+
+	// Hide table body
+	var TB = $(elm).find('div.vmmTableBody');
+	
+	TB.css({'display':'none'});
+
+	// Get height
+	var cH = $('#vboxVMMTabs').innerHeight() - $(elm).outerHeight(true);
+	
+	// Apply to difference in height to table body
+	TB.css({'display':'','overflow':'auto'}).height(cH-4);
+	
+	// Set table head width
+	vboxVMMTableHeaderSetup(elm);
+	
+}
+/* Setup tables */
+function vboxVMMTableHeaderSetup(elm) {
+	
+	// Set column width
+	
+	// Get each column width
+	var hCols = $(elm).find('div.vmmTableHead').find('tr:eq(0)').children();
+	var tCols = $(elm).find('div.vmmTableBody').find('tbody tr:eq(0)').children();
+	for(var i = 0; i < tCols.length; i++) {
+		$(hCols[i]).width($(tCols[i]).width());		
+	}
+	
+}
 /* Init virtual media manager */
 function vboxVMMInit(hideDiff,attached,vmPath) {
 
-	$('#vboxVirtualMediaManager').bind('mediumselect',vmmToolbar.update).bind('mediumselect',vboxVMMMediaInfo).bind('mediumselect',vmmMenu.update);
+	// SEVERE hack-fooery ensues..
+	/////////////////////////////////
+	$('#vboxVirtualMediaManager').parent().bind( "dialogresizestart",function(e){
+				
+		$('#vboxVMMTabs').css({'height':'auto'});
+		$('#vboxVMMContainer').css({'height':'auto'});
+		
+	}).bind("dialogresizestop",function(e){
+
+		$('#vmmDisks .vmmTableBody').css({'display':'none'});
+		$('#vmmCDs .vmmTableBody').css({'display':'none'});
+		$('#vmmFloppys .vmmTableBody').css({'display':'none'});
+
+		$('#vboxVMMContainer').height($('#vboxVMMContainer').height());
+		$('#vboxVMMTabs').height($('#vboxVMMContainer').innerHeight());
+		
+		vboxVMMSizeTable($('#vmmDisks'));
+		vboxVMMSizeTable($('#vmmCDs'));
+		vboxVMMSizeTable($('#vmmFloppys'));
+	});
+	
+	$('#vboxVMMTabList').css({'border-bottom':'0px','margin-bottom':'0px','padding-bottom':'0px'}).detach().appendTo($('#vboxVMMContainerTop').attr({'class':$('#vboxVMMTabs').css({'border-top':'0px','margin-top':'0px','padding-top':'0px'}).removeClass('ui-corner-all').attr('class')}));
+	
+	$('#vboxVMMContainer').height($('#vboxVMMContainer').height()).css({'padding':'0px','margin':'0px'});
+	$('#vboxVMMTabs').height($('#vboxVMMContainer').innerHeight()).css({'padding-top':'0px','padding-bottom':'0px','margin-top':'0px','margin-bottom':'0px'});
+
+	// Resize disks table body
+	vboxVMMSizeTable($('#vmmDisks'));
+	
+	
+	$('#vboxVirtualMediaManager').bind('mediumselect',function(e,m){
+		vmmToolbar.update(e,m);
+		vboxVMMMediaInfo(e,m);
+		vmmMenu.update(e,m);
+	});
+	
 	$('#vboxVirtualMediaManager').data('hideDiff', hideDiff);
 	$('#vboxVirtualMediaManager').data('attached', attached);
 	$('#vboxVirtualMediaManager').data('vmPath', vmPath);
