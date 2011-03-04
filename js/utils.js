@@ -345,9 +345,9 @@ function vboxConvertMbytes(str) {
 }
 
 /* Medium Helpers */
-function vboxMediumAttachedTo(m) {
+function vboxMediumAttachedTo(m,nullOnNone) {
 	var s = new Array();
-	if(!m.attachedTo) return '<i>'+trans('Not Attached')+'</i>';
+	if(!m.attachedTo) return (nullOnNone ? null : '<i>'+trans('Not Attached')+'</i>');
 	for(var i = 0; i < m.attachedTo.length; i++) {
 		s[s.length] = m.attachedTo[i].machine + (m.attachedTo[i].snapshots.length ? ' (' + m.attachedTo[i].snapshots.join(trans('LIST_SEP')) + ')' : '');
 	}
@@ -407,9 +407,7 @@ function vboxAjaxError(e) {
  */
 function vboxAlert(msg,xtraOpts) {
 
-	var div = document.createElement('div');
-	$(div).attr({'class':'vboxDialogContent'}).html('<img src="images/50px-Warning_icon.svg.png" style="float: left; padding: 10px;" />').append(msg);
-	$('#vboxIndex').append(div);
+	$('#vboxIndex').append($('<div />').attr({'class':'vboxDialogContent'}).html('<img src="images/50px-Warning_icon.svg.png" style="float: left; padding: 10px;" />').append(msg));
 
 	var buttons = { };
 	buttons[trans('OK')] = function(f) {$(this).trigger('close').empty().remove();};
@@ -501,8 +499,8 @@ function vboxInitDisplay(root) {
 		$(this).slider('value',$(this).slider('value'));
 		
 		// Min / Max labels
-		$(this).parentsUntil('table').parent().find('.vboxSliderMin').html($(this).slider('option','min'));
-		$(this).parentsUntil('table').parent().find('.vboxSliderMax').html($(this).slider('option','max'));
+		$(this).closest('table').find('.vboxSliderMin').html($(this).slider('option','min'));
+		$(this).closest('table').find('.vboxSliderMax').html($(this).slider('option','max'));
 	
 	});
 
@@ -548,7 +546,7 @@ function vboxInitDisplay(root) {
 	
 	$(root).find('input.vboxEnablerCheckbox').click(function(e,first) {
 	
-			var roottbl = $(this).parentsUntil('table');
+			var roottbl = $(this).closest('table');
 			
 			$(roottbl).find('input:not(.vboxEnablerCheckbox)').attr('disabled',(this.checked ? '' : 'disabled'));
 			$(roottbl).find('select').attr('disabled',(this.checked ? '' : 'disabled'));
@@ -651,25 +649,20 @@ function vboxProgress(pid,callback,args,icon,title) {
 	$(tr).append(td);
 	
 	var td = document.createElement('td');
-	
 
-	var divp = document.createElement('div');
-	divp.setAttribute('id','vboxProgressBar');
-	td.appendChild(divp);
+	$(td).append($('<div />').attr({'id':'vboxProgressBar'}));
 	
-	var divpt = document.createElement('div');
-	$(divpt).attr({'id':'vboxProgressText'}).html('<img src="images/spinner.gif" />').appendTo(td);
+	$('<div />').attr({'id':'vboxProgressText'}).html('<img src="images/spinner.gif" />').appendTo(td);
 	
 	// Cancel button
 	var cdiv = document.createElement('div');
-	$(cdiv).attr({'id':'vboxProgressCancel'}).css({'display':'none','padding':'8px'});
+	$('<div />').attr({'id':'vboxProgressCancel'}).css({'display':'none','padding':'8px'}).append(
 
-	var b = document.createElement('input');
-	$(b).attr('type','button').val(trans('Cancel')).data('pid', pid).click(function(){
-		this.disabled = 'disabled';
-		vboxAjaxRequest('cancelProgress',{'progress':$(this).data('pid')},function(d){return;});
-	}).appendTo(cdiv);
-	$(td).append(cdiv);
+		$('<input />').attr('type','button').val(trans('Cancel')).data('pid', pid).click(function(){
+			this.disabled = 'disabled';
+			vboxAjaxRequest('cancelProgress',{'progress':$(this).data('pid')},function(d){return;});
+		})
+	).appendTo(td);
 	
 	$(tr).append(td);
 	$(tbl).append(tr);
@@ -687,6 +680,7 @@ function vboxProgress(pid,callback,args,icon,title) {
 	window.onbeforeunload = vboxOpInProgress;
 	
 	vboxAjaxRequest('getProgress',{'progress':pid},vboxProgressUpdate,{'pid':pid});
+	
 }
 // OnUnload warning
 function vboxOpInProgress() { return trans('Operation in progress');}

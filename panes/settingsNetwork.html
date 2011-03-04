@@ -131,11 +131,11 @@ for(var i = 0; i < document.forms['frmVboxSettings'].vboxSettingsNetAdapter.opti
 /* Network advanced show / hide */
 $('#vboxSettingsTabNetAdapter').find('input.netImgAdvanced').toggle(
 		function() {
-			$(this).parentsUntil('table').parent().find('.vboxSettingsNetToggleAdvanced').css('display','');
+			$(this).closest('table').find('.vboxSettingsNetToggleAdvanced').css('display','');
 			$(this).css('background-image','url(images/downArrow.png)');
 		},
 		function() {
-			$(this).parentsUntil('table').parent().find('.vboxSettingsNetToggleAdvanced').css('display','none');
+			$(this).closest('table').find('.vboxSettingsNetToggleAdvanced').css('display','none');
 			$(this).css('background-image','url(images/rightArrow.png)');
 		}
 );
@@ -264,7 +264,7 @@ netDnAdvImg.src = 'images/downArrow.png';
  */
 function vboxSettingsUpdateNetworkOptions(sel) {
 
-	var ptable = $(sel).parentsUntil('table').parent();
+	var ptable = $(sel).closest('table');
 	var th = $(ptable).find('th.vboxSettingsNetAdapterNamedLabel').first();
 	var nsel = $(ptable).find('.vboxSettingsNetAdapterNamed').first();
 
@@ -350,9 +350,9 @@ $('#vboxSettingsDialog').one('show',function(){
 			$(document.forms['frmVboxSettings'].elements['vboxSettingsNetMAC'+a]).siblings('input').css('display','none');
 			
 			/* Disable these labels */
-			$(document.forms['frmVboxSettings'].elements['vboxSettingsNetEnabled'+a]).parentsUntil('tr').parent().children().addClass('vboxDisabled');
-			$(document.forms['frmVboxSettings'].elements['vboxSettingsNetAdapter'+a]).parentsUntil('tr').parent().children().addClass('vboxDisabled');
-			$(document.forms['frmVboxSettings'].elements['vboxSettingsNetMAC'+a]).parentsUntil('tr').parent().children().addClass('vboxDisabled');
+			$(document.forms['frmVboxSettings'].elements['vboxSettingsNetEnabled'+a]).closest('tr').children().addClass('vboxDisabled');
+			$(document.forms['frmVboxSettings'].elements['vboxSettingsNetAdapter'+a]).closest('tr').children().addClass('vboxDisabled');
+			$(document.forms['frmVboxSettings'].elements['vboxSettingsNetMAC'+a]).closest('tr').children().addClass('vboxDisabled');
 			
 		}
 		// Expand all advanced settings

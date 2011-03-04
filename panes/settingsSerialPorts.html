@@ -169,7 +169,7 @@ function vboxSettingsUpdateSPortOptions(sel) {
  * When serial port mode changes
  */
 function vboxSettingsUpdateSPortMode(sel) {
-	var ptable = $(sel).parentsUntil('table').parent();
+	var ptable = $(sel).closest('table');
 	if(sel.value == 'HostPipe') {
 		ptable.find('input.vboxSettingsSPortCreatePipe').attr({'disabled':''}).siblings().removeClass('vboxDisabled');
 	} else {

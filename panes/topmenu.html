@@ -162,11 +162,7 @@ var menu = {
 			'icon':'help',
 			'click':function(){
         	
-	        	var div = document.createElement('div');
-	        	div.setAttribute('id','vboxAbout');
-	        	div.setAttribute('class','vboxDialogContent');
-	        	div.setAttribute('style','display: none; width: 500px;');
-	        	$('#vboxIndex').append(div);
+	        	$('#vboxIndex').append($('<div />').attr({'id':'vboxAbout','class':'vboxDialogContent','style':'display: none; width: 500px;'}));
 	
 	        	var l = new vboxLoader();
 	        	l.addFile('panes/about.html',function(f){$('#vboxAbout').append(f);});

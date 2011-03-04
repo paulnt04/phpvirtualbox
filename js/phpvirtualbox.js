@@ -634,9 +634,7 @@ function vboxToolbarSmall(buttons) {
 			$(targetElm).append(self.buttonElement(self.buttons[i]));
 			
 			if(self.buttons[i].separator) {
-				var hr = document.createElement('hr');
-				$(hr).attr({'style':'display: inline','class':'vboxToolbarSmall vboxSeperatorLine'});
-				$(targetElm).append(hr);
+				$(targetElm).append($('<hr />').attr({'style':'display: inline','class':'vboxToolbarSmall vboxSeperatorLine'}));
 			}
 				
 		}
@@ -836,11 +834,7 @@ function vboxMediaMenu(type,callback,mediumPath) {
 		var id = self.menu_id();
 		var elm = $('#'+id);
 		if(!elm.attr('id')) {
-			var ul = document.createElement('ul');
-			ul.setAttribute('class','contextMenu');
-			ul.setAttribute('style','display: none');
-			ul.setAttribute('id',id);
-			$('#vboxIndex').append(ul);
+			$('#vboxIndex').append($('<ul />').attr({'id':id,'class':'contextMenu','style':'display: none'}));
 			elm = $('#'+id);
 		} else {
 			elm.children().remove();
@@ -860,8 +854,7 @@ function vboxMediaMenu(type,callback,mediumPath) {
 		var meds = self.storage.mediumsForAttachmentType(self.type);
 		for(var i =0; i < meds.length; i++) {
 			if(!meds[i].hostDrive) continue;
-			var li = document.createElement('li');
-			$(li).html("<a href='#"+meds[i].id+"'>"+self.storage.getMediumName(meds[i])+"</a>").appendTo(ul);
+			$('<li />').html("<a href='#"+meds[i].id+"'>"+self.storage.getMediumName(meds[i])+"</a>").appendTo(ul);
 		}
 		
 	}
@@ -875,35 +868,28 @@ function vboxMediaMenu(type,callback,mediumPath) {
 			// HardDisk defaults
 			case 'HardDisk':
 				
-				var li = document.createElement('li');
-				li.innerHTML = "<a href='#createD' style='background-image: url(images/vbox/hd_new_16px.png);' >"+trans('Create a new hard disk...')+"</a>";
-				$(ul).append(li);
+				$('<li />').html("<a href='#createD' style='background-image: url(images/vbox/hd_new_16px.png);' >"+trans('Create a new hard disk...')+"</a>").appendTo(ul);
 
-				var li = document.createElement('li');
-				$(li).html("<a href='#chooseD' style='background-image: url(images/vbox/select_file_16px.png);' >"+trans('Choose a virtual hard disk file...')+"</a>").appendTo(ul);
+				$('<li />').html("<a href='#chooseD' style='background-image: url(images/vbox/select_file_16px.png);' >"+trans('Choose a virtual hard disk file...')+"</a>").appendTo(ul);
 				
 				// Add VMM?
 				if($('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
-					var li = document.createElement('li');
-					$(li).html("<a href='#vmm' style='background-image: url(images/vbox/diskimage_16px.png);' >"+trans('Virtual Media Manager')+"</a>").appendTo(ul);					
+					$('<li />').html("<a href='#vmm' style='background-image: url(images/vbox/diskimage_16px.png);' >"+trans('Virtual Media Manager')+"</a>").appendTo(ul);					
 				}
 
 				// Hidden elm
-				var li = document.createElement('li');
-				$(li).addClass('vboxMediumRecentBefore').css('display','none').appendTo(ul);
+				$('<li />').addClass('vboxMediumRecentBefore').css('display','none').appendTo(ul);
 				
 				break;
 				
 			// CD/DVD Defaults
 			case 'DVD':
 				
-				var li = document.createElement('li');
-				$(li).html("<a href='#chooseD' style='background-image: url(images/vbox/select_file_16px.png);' >"+trans('Choose a virtual CD/DVD disk file...')+"</a>").appendTo(ul);
+				$('<li />').html("<a href='#chooseD' style='background-image: url(images/vbox/select_file_16px.png);' >"+trans('Choose a virtual CD/DVD disk file...')+"</a>").appendTo(ul);
 
 				// Add VMM?
 				if($('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
-					var li = document.createElement('li');
-					$(li).html("<a href='#vmm' style='background-image: url(images/vbox/diskimage_16px.png);' >"+trans('Virtual Media Manager')+"</a>").appendTo(ul);					
+					$('<li />').html("<a href='#vmm' style='background-image: url(images/vbox/diskimage_16px.png);' >"+trans('Virtual Media Manager')+"</a>").appendTo(ul);					
 				}
 				
 				// Add host drives
@@ -921,13 +907,11 @@ function vboxMediaMenu(type,callback,mediumPath) {
 			// Floppy defaults
 			default:
 				
-				var li = document.createElement('li');
-				$(li).html("<a href='#chooseD' style='background-image: url(images/vbox/select_file_16px.png);' >"+trans('Choose a virtual floppy disk file...')+"</a>").appendTo(ul);
+				$('<li />').html("<a href='#chooseD' style='background-image: url(images/vbox/select_file_16px.png);' >"+trans('Choose a virtual floppy disk file...')+"</a>").appendTo(ul);
 
 				// Add VMM?
 				if($('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
-					var li = document.createElement('li');
-					$(li).html("<a href='#vmm' style='background-image: url(images/vbox/diskimage_16px.png);' >"+trans('Virtual Media Manager')+"</a>").appendTo(ul);					
+					$('<li />').html("<a href='#vmm' style='background-image: url(images/vbox/diskimage_16px.png);' >"+trans('Virtual Media Manager')+"</a>").appendTo(ul);					
 				}
 				
 				// Add host drives
@@ -956,8 +940,7 @@ function vboxMediaMenu(type,callback,mediumPath) {
 		for(var i = 0; i < list.length; i++) {
 			if(!list[i]) continue;
 			if(!self.storage.getMediumByLocation(list[i])) continue;
-			var li = document.createElement('li');
-			$(li).attr({'class':'vboxMediumRecent'}).html("<a href='#path:"+list[i]+"'>"+vboxBasename(list[i])+"</a>").insertBefore(ins);
+			$('<li />').attr({'class':'vboxMediumRecent'}).html("<a href='#path:"+list[i]+"'>"+vboxBasename(list[i])+"</a>").insertBefore(ins);
 		}
 	}
 		
@@ -1192,14 +1175,13 @@ function vboxMenuBar(name) {
 			if(typeof i == 'function') continue;
 			// 16px icon?
 			if(m.menu[i].icon_16) m.menu[i].icon = m.menu[i].icon_16;
-			var li = document.createElement('li');
+				
 			var a = document.createElement('a');
 			$(a).attr({'id':m.menu[i].name,'href':'#'+m.menu[i].name}).html(trans(m.menu[i].label));
 			if(m.menu[i].icon_absolute) a.setAttribute('style','background-image: url('+m.menu[i].icon+')');
 			else a.setAttribute('style','background-image: url(images/vbox/'+m.menu[i].icon+'_16px.png)');
-			if(m.menu[i].separator) $(li).addClass('separator');
-			li.appendChild(a)
-			ul.appendChild(li);
+			
+			$('<li />').addClass((m.menu[i].separator ? 'separator' : '')).append(a).appendTo(ul);
 			
 			this.menuClick[m.menu[i].name] = m.menu[i].click;
 		}
@@ -1215,9 +1197,7 @@ function vboxMenuBar(name) {
 	/* Create and add menu bar */
 	self.addMenuBar = function(id) {
 		
-		var d = document.createElement('div');
-		$(d).attr({'class':'vboxMenuBar','id':self.name+'MenuBar'});
-		$('#'+id).prepend(d);
+		$('#'+id).prepend($('<div />').attr({'class':'vboxMenuBar','id':self.name+'MenuBar'}));
 		
 		for(var i = 0; i < self.menus.length; i++) {
 			$('#'+self.name+'MenuBar').append('<span id="'+self.menus[i].name+'">'+trans(self.menus[i].label)+'</span>');	
@@ -1324,15 +1304,13 @@ function vboxLoader() {
 	
 			var tbl = document.createElement('table');
 			var tr = document.createElement('tr');
-			var td = document.createElement('td');
-			$(td).attr('class', 'vboxLoaderSpinner').html('<img src="images/spinner.gif" />').appendTo(tr);
-			
-			var td = document.createElement('td');
-			$(td).attr('class','vboxLoaderText').html(trans('Loading ...')).appendTo(tr);
 
-			tbl.appendChild(tr);
-			div.appendChild(tbl);
-	
+			$('<td />').attr('class', 'vboxLoaderSpinner').html('<img src="images/spinner.gif" />').appendTo(tr);
+			
+			$('<td />').attr('class','vboxLoaderText').html(trans('Loading ...')).appendTo(tr);
+
+			$(tbl).append(tr).appendTo(div);
+			
 			/* Display loading screen and hide body */
 			$('#vboxIndex').append(div);
 			

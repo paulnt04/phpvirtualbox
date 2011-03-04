@@ -77,9 +77,8 @@ var vboxVMListSettingsMenu = {
 
 /* 'Settings' menu */
 var ul = document.createElement('ul');
-ul.setAttribute('class','contextMenu');
-ul.setAttribute('style','display: none');
-ul.setAttribute('id','vboxVMSettingsMenu');
+$(ul).attr({'class':'contextMenu','style':'display: none','id':'vboxVMSettingsMenu'});
+
 for(var i in vboxVMListSettingsMenu) {
 	
 	// add name
@@ -90,8 +89,7 @@ for(var i in vboxVMListSettingsMenu) {
 	$(li).html("<a href='#" + vboxVMListSettingsMenu[i].name + "' style='background-image: url(images/vbox/" + vboxVMListSettingsMenu[i].icon +"_16px.png);' >"+trans(vboxVMListSettingsMenu[i].label)+"</a>");
 	if(i == 'USB') {
 		/* 'USB' menu */
-		var sl = document.createElement('ul');
-		$(sl).attr({'class':'vboxSettingsUSBAttachmentsMenu contextMenuNoBG','style':'display: none','id':'vboxVMSettingsUSBMenu'}).data({'callback':'vboxVMListToolbarUSBUpdate'}).appendTo(li);		
+		$('<ul />').attr({'class':'vboxSettingsUSBAttachmentsMenu contextMenuNoBG','style':'display: none','id':'vboxVMSettingsUSBMenu'}).data({'callback':'vboxVMListToolbarUSBUpdate'}).appendTo(li);		
 	}
 	if(vboxVMListSettingsMenu[i].separator) $(li).addClass('separator');
 	ul.appendChild(li);
@@ -374,18 +372,14 @@ var vboxVMListStopMenu = {
 
 /* 'Stop' menu */
 var ul = document.createElement('ul');
-ul.setAttribute('class','contextMenu');
-ul.setAttribute('style','display: none');
-ul.setAttribute('id','vboxStopMenu');
+$(ul).attr({'class':'contextMenu','style':'display: none','id':'vboxStopMenu'});
 vboxSetLangContext('vboxVMList');
 for(var i in vboxVMListStopMenu) {
 	
 	// add name
 	vboxVMListStopMenu[i].name = i;
 
-	var li = document.createElement('li');
-	li.innerHTML = "<a href='#" + i + "' style='background-image: url(images/vbox/" + vboxVMListStopMenu[i].icon +"_16px.png);' >"+trans(vboxVMListStopMenu[i].label)+"</a>";
-	ul.appendChild(li);
+	$(ul).append($('<li />').html("<a href='#" + i + "' style='background-image: url(images/vbox/" + vboxVMListStopMenu[i].icon +"_16px.png);' >"+trans(vboxVMListStopMenu[i].label)+"</a>"));
 	
 }
 vboxUnsetLangContext();

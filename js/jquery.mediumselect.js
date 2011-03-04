@@ -88,7 +88,7 @@
 			var list = $('#'+$(sel).attr('id')+'-list');
 			var sTop = $(sel).offset().top + $(sel).outerHeight();
 			var sLeft = $(sel).offset().left;
-			var sWidth = $(sel).outerWidth() + $(sel).parentsUntil('table').parent().find('.vboxMediumSelectImg').outerWidth();
+			var sWidth = $(sel).outerWidth() + $(sel).closest('table').find('.vboxMediumSelectImg').outerWidth();
 						
 			// Hide menu when clicking anywhere else
 			$(document).one('click',function(){$(list).hide();});

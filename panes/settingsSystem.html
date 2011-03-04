@@ -224,8 +224,8 @@ $("#vboxVMBootOrderList").children("li").click(function() {
 	var isLast = ($(this).parent().children().last().attr('id') == $(this).attr('id'));
 	
 	// update buttons
-	$(this).parentsUntil("table").parent().find('input.imgMvUp').css('background-image', 'url(images/vbox/list_moveup' + (isFirst ? '_disabled' : '') + '_16px.png)').attr('disabled', (isFirst ? 'disabled' : ''));
-	$(this).parentsUntil("table").parent().find('input.imgMvDn').css('background-image', 'url(images/vbox/list_movedown' + (isLast ? '_disabled' : '') + '_16px.png)').attr('disabled', (isLast ? 'disabled' : ''));
+	$(this).closest("table").find('input.imgMvUp').css('background-image', 'url(images/vbox/list_moveup' + (isFirst ? '_disabled' : '') + '_16px.png)').attr('disabled', (isFirst ? 'disabled' : ''));
+	$(this).closest("table").find('input.imgMvDn').css('background-image', 'url(images/vbox/list_movedown' + (isLast ? '_disabled' : '') + '_16px.png)').attr('disabled', (isLast ? 'disabled' : ''));
 					
 }).first().trigger('click');
 

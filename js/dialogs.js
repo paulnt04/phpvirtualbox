@@ -188,9 +188,7 @@ function vboxWizardNewVMInit(callback) {
  */
 function vboxShowLogsDialogInit(vm) {
 
-	var d = document.createElement('div');
-	d.setAttribute('id','vboxVMLogsDialog');
-	$('#vboxIndex').append(d);
+	$('#vboxIndex').append($('<div />').attr({'id':'vboxVMLogsDialog'}));
 	
 	var l = new vboxLoader();
 	l.add('VMLogFileNames',function(r){$('#vboxVMLogsDialog').data('logs',r);},{'vm':vm});
@@ -224,9 +222,7 @@ function vboxShowLogsDialogInit(vm) {
 
 function vboxVMMDialogInit(callback,type,hideDiff,attached,vmPath) {
 
-	var d = document.createElement('div');
-	d.setAttribute('id','vboxVMMDialog');
-	$('#vboxIndex').append(d);
+	$('#vboxIndex').append($('<div />').attr({'id':'vboxVMMDialog'}));
 			
 	var l = new vboxLoader();
 	l.add('Config',function(d){$('#vboxIndex').data('vboxConfig',d);});
@@ -248,13 +244,13 @@ function vboxVMMDialogInit(callback,type,hideDiff,attached,vmPath) {
 					default:
 						sel = $('#vboxVMMFDList').find('tr.vboxListItemSelected').first();
 				}
-				if(!$(sel).html()) {
+				if(!$(sel).length) {
 					vboxSetLangContext('vboxVMM');
 					vboxAlert(trans('Please select a medium.'),{'width':'auto','height':'auto'});
 					vboxUnsetLangContext();
 					return;
 				}
-				callback($(sel).data());
+				callback($(sel).data('medium'));
 				$('#vboxVMMDialog').trigger('close').empty().remove();
 			}
 		}
@@ -346,10 +342,7 @@ function vboxGuestNetworkAdaptersDialogInit(vm,nic) {
 	/*
 	 * 	Dialog
 	 */
-	var d = document.createElement('div');
-	d.setAttribute('id','vboxGuestNetworkDialog');
-	d.setAttribute('style','display: none');
-	$('#vboxIndex').append(d);
+	$('#vboxIndex').append($('<div />').attr({'id':'vboxGuestNetworkDialog','style':'display: none'}));
 
 	/*
 	 * Loader
@@ -360,7 +353,7 @@ function vboxGuestNetworkAdaptersDialogInit(vm,nic) {
 		
 		var buttons = {};
 		buttons[trans('Close')] = function() {$('#vboxGuestNetworkDialog').trigger('close').empty().remove();};
-		$(d).dialog({'closeOnEscape':false,'width':500,'height':250,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/nw_16px.png" class="vboxDialogTitleIcon" /> ' + trans('Guest Network Adapters')});
+		$('#vboxGuestNetworkDialog').dialog({'closeOnEscape':false,'width':500,'height':250,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/nw_16px.png" class="vboxDialogTitleIcon" /> ' + trans('Guest Network Adapters')});
 		
 		// defined in pane
 		vboxVMNetAdaptersInit(vm,nic);
@@ -379,10 +372,9 @@ function vboxMountInit(vm,bus,port,device,onmount) {
 	/*
 	 * 	Dialog
 	 */
-	var d = document.createElement('div');
-	d.setAttribute('id','vboxMountDialog');
-	d.setAttribute('style','display: none');
-	$('#vboxIndex').append(d);
+	$('#vboxIndex').append($('<div />').attr({'id':'vboxMountDialog','style':'display: none'}));
+	
+	
 
 	/*
 	 * Loader
@@ -482,7 +474,6 @@ function vboxVMsettingsInit(vm,callback,pane) {
 		{'fn':'HostNetworking','callback':function(d){$('#vboxSettingsDialog').data('vboxHostNetworking',d);}},
 		{'fn':'HostDetails','callback':function(d){$('#vboxSettingsDialog').data('vboxHostDetails',d);}},
 		{'fn':'VMDetails','callback':function(d){$('#vboxSettingsDialog').data('vboxMachineData',d);},'args':{'vm':vm,'force_refresh':$('#vboxIndex').data('vboxConfig').vmConfigRefresh}},
-		{'fn':'HostUSBDevices','callback':function(d){$('#vboxSettingsDialog').data('vboxHostUSBDevices',d);}},
 		{'fn':'EnumNetworkAdapterType','callback':function(d){$('#vboxSettingsDialog').data('vboxNetworkAdapterTypes',d);}},
 		{'fn':'EnumAudioControllerType','callback':function(d){$('#vboxSettingsDialog').data('vboxAudioControllerTypes',d);}},
 		{'fn':'RecentMediums','callback':function(d){$('#vboxIndex').data('vboxRecentMediums',d);}}
@@ -592,47 +583,46 @@ function vboxVMsettingsInitSharedFolders(vm,callback) {
 function vboxSettingsInit(title,panes,data,onsave,pane,icon) {
 	
 	var d = document.createElement('div');
-	d.setAttribute('id','vboxSettingsDialog');
-	d.setAttribute('style','display: none;');
+	$(d).attr({'id':'vboxSettingsDialog','style':'display: none;'});
 	
 	var f = document.createElement('form');
-	f.setAttribute('name','frmVboxSettings');
-	$(f).attr('style','height: 100%')
+	$(f).attr({'name':'frmVboxSettings','style':'height: 100%'});
 	
 	var t = document.createElement('table');
-	t.setAttribute('class','vboxSettingsTable');
-	$(t).attr('style','height: 100%;')
+	$(t).attr({'style':'height: 100%;','class':'vboxSettingsTable'});
 	
 	var tr = document.createElement('tr');
 	
 	var td = document.createElement('td');
 	td.setAttribute('id','vboxSettingsMenu');
 	if(panes.length == 1) td.setAttribute('style','display: none');
-	var ul = document.createElement('ul');
-	ul.setAttribute('id','vboxSettingsMenuList');
-	ul.setAttribute('class','vboxHover');
-	td.appendChild(ul);
-	tr.appendChild(td);
+	$(td).append($('<ul />').attr({'id':'vboxSettingsMenuList','class':'vboxHover'})).appendTo(tr);
 	
 	var td = document.createElement('td');
-	td.setAttribute('id','vboxSettingsPane');
+	$(td).attr({'id':'vboxSettingsPane'}).css({'height':'100%'});
 	
-	var d1 = document.createElement('div')
-	d1.setAttribute('id','vboxSettingsTitle');
-	if(panes.length == 1) d1.setAttribute('style','display: none');
-	td.appendChild(d1);
+	// Settings table contains title and visible settings pane
+	var stbl = document.createElement('table');
+	$(stbl).css({'height':'100%','width':'100%','padding':'0px','margin':'0px','border':'0px','border-spacing':'0px'})
 	
+	// Title
 	var d1 = document.createElement('div');
-	d1.setAttribute('id','vboxSettingsList');
-	td.appendChild(d1);
-	tr.appendChild(td);
+	$(d1).attr({'id':'vboxSettingsTitle'}).html('Padding');
+	if(panes.length == 1) d1.setAttribute('style','display: none');
+	$(stbl).append($('<tr />').append($('<td />').css({'height':'1%','padding':'0px','margin':'0px','border':'0px'}).append(d1)));
 	
-	t.appendChild(tr);
-	f.appendChild(t);
-	d.appendChild(f);
 	
-	$('#vboxIndex').append(d);
-
+	// Settings pane
+	var d1 = document.createElement('div');
+	$(d1).attr({'id':'vboxSettingsList'}).css({'width':'100%'});
+	
+	$(stbl).append($('<tr />').append($('<td />').css({'padding':'0px','margin':'0px','border':'0px'}).append(d1)));
+	
+	
+	$(td).append(stbl).appendTo(tr);
+	
+	$(d).append($(f).append($(t).append(tr))).appendTo('#vboxIndex');
+	
 	/* Load panes and data */
 	var loader = new vboxLoader();
 	
@@ -646,15 +636,14 @@ function vboxSettingsInit(title,panes,data,onsave,pane,icon) {
 		
 		if(panes[i].disabled) continue;
 		
+		// Menu item
 		var li = document.createElement('li');
-		$(li).html('<div><img src="images/vbox/'+panes[i].icon+'_16px.png" /></div> <div>'+trans(panes[i].label)+'</div>').data(panes[i]).click(function(){
+		$('<li />').html('<div><img src="images/vbox/'+panes[i].icon+'_16px.png" /></div> <div>'+trans(panes[i].label)+'</div>').data(panes[i]).click(function(){
 			
 			$('#vboxSettingsTitle').html(trans($(this).data('label')));
 			
-			$(this).siblings().addClass('vboxListItem').removeClass('vboxListItemSelected');
+			$(this).addClass('vboxListItemSelected').siblings().addClass('vboxListItem').removeClass('vboxListItemSelected');
 			
-			$(this).addClass('vboxListItemSelected');
-
 			// jquery apply this css to everything with class .settingsPa..
 			$('#vboxSettingsDialog .vboxSettingsPaneSection').css({'display':'none'});
 			
@@ -667,15 +656,11 @@ function vboxSettingsInit(title,panes,data,onsave,pane,icon) {
 				$('#vboxSettingsPane-' + $(this).data('name')).find('select').trigger('show');
 			}
 
-		}).hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');});
+		}).hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');}).appendTo($('#vboxSettingsMenuList'));
 		
-		$('#vboxSettingsMenuList').append(li);
 		
-		var div = document.createElement('div');
-		div.setAttribute('id','vboxSettingsPane-'+panes[i].name);
-		div.setAttribute('style','display: none; height: 100%;');
-		div.setAttribute('class','vboxSettingsPaneSection ui-corner-all ' + (panes[i].tabbed ? 'vboxTabbed' : 'vboxNonTabbed'));
-		$('#vboxSettingsList').append(div);
+		// Settings pane
+		$('#vboxSettingsList').append($('<div />').attr({'id':'vboxSettingsPane-'+panes[i].name,'style':'display: none;','class':'vboxSettingsPaneSection ui-corner-all ' + (panes[i].tabbed ? 'vboxTabbed' : 'vboxNonTabbed')}));
 		
 		loader.addFile('panes/settings'+panes[i].name+'.html',function(f,i){
 			$('#vboxSettingsPane-'+i.setting).append(f);
@@ -725,8 +710,19 @@ function vboxSettingsInit(title,panes,data,onsave,pane,icon) {
 			$(document).trigger('click');
 		};
 
+		
+		// Show dialog
 	    $('#vboxSettingsDialog').dialog({'closeOnEscape':false,'width':(panes.length > 1 ? 900 : 600),'height':(panes.length > 1 ? 500 : 450),'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxSettingsDialog vboxDialogContent','title':(icon ? '<img src="images/vbox/'+icon+'_16px.png" class="vboxDialogTitleIcon" /> ' : '') + title});
 
+	    // Resize pane
+	    $('#vboxSettingsList').height($('#vboxSettingsList').parent().innerHeight()-8).css({'overflow':'auto','padding':'0px','margin-top':'8px','border':'0px','border-spacing':'0px'});
+	    
+	    // Resizing dialog, resizes this too
+	    $('#vboxSettingsDialog').bind('dialogresizestop',function(){
+	    	var h = $('#vboxSettingsList').css({'display':'none'}).parent().innerHeight()
+	    	$('#vboxSettingsList').height(h-8).css({'display':''});	    	
+	    })
+	    
 	    /* Select first or passed menu item */
 	    var i = 0;
 	    var offset = 0;
@@ -754,7 +750,6 @@ function vboxSettingsInit(title,panes,data,onsave,pane,icon) {
 	    	$('#vboxSettingsDialog').dialog('option','title',(icon ? '<img src="images/vbox/'+icon+'_16px.png" class="vboxDialogTitleIcon" /> ' : '') + title + ' :: ' + trans(panes[0].label));
 	    }
 	    
-		
 		
 	};
 	

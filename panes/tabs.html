@@ -10,9 +10,7 @@
 <script type='text/javascript'>
 
 // Create UL
-var ul = document.createElement('ul');
-ul.setAttribute('id','tablistMain');
-$('#vboxTabsList').append(ul);
+$('#vboxTabsList').append($('<ul />').attr({'id':'tablistMain'}));
 
 var tabs = [
     {'name':'vboxTabVMDetails','content':'tabVMDetails','label':'Details','icon':'settings','enabled':function(){return true;}},
@@ -36,8 +34,7 @@ for(var i = 0; i < tabs.length; i++) {
 		continue;
 
 	// Tab link
-	var li = document.createElement('li');
-	$(li).attr({'class':'ui-corner-all','id':'tabsMain-'+tabs[i].name}).html('<a href="#'+tabs[i].name+'"><span><img style="vertical-align: middle" src="images/vbox/'+tabs[i].icon+'_16px.png" border="0" /> <span id="'+tabs[i].name+'Title">'+trans(tabs[i].label)+'</span></span></a>').appendTo('#tablistMain');
+	$('<li />').attr({'class':'ui-corner-all','id':'tabsMain-'+tabs[i].name}).html('<a href="#'+tabs[i].name+'"><span><img style="vertical-align: middle" src="images/vbox/'+tabs[i].icon+'_16px.png" border="0" /> <span id="'+tabs[i].name+'Title">'+trans(tabs[i].label)+'</span></span></a>').appendTo('#tablistMain');
 	
 	tabLoader.addFile('panes/'+tabs[i].content+'.html',function(f,tname){$('#tabMainContent').append(f);},tabs[i].name);
 	

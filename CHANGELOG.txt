@@ -8,7 +8,17 @@ Fixed translation of 'Log in' in log in dialog.
 Fixed bug that would not allow editing of NAT port forwarding
 http://code.google.com/p/phpvirtualbox/issues/detail?id=215
 
-Virtual Media Manager now has scrolling media list.
+Virtual Media Manager now has scrolling media list and sortable
+columns.
+
+Fixed bug / error in RDP file generation script that occurs when
+the remote console port is configured for a range or list of
+ports.
+
+Storage controller pane now resizes as expected.
+
+Attached USB devices in VM settings is now obtained in real-time
+rather than only when the settings dialog is first opened.
 
 -------------------------------------
 	4.0-4b	2011-3-1

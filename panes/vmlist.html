@@ -73,8 +73,7 @@ function vboxVMList(anchorid) {
 		var ul = document.createElement('ul');
 		$(ul).attr({'id':'vboxServerMenu','style':'display: none','class':'contextMenu'});
 		for(var i = 0; i < servers.length; i++) {
-			var li = document.createElement('li');
-			$(li).html("<a href='#" + $('<div />').html(servers[i].name).text() + "' style='background-image: url(images/vbox/OSE/VirtualBox_16px.png);'>"+$('<div />').html(servers[i].name).text()+"</a>").appendTo(ul);
+			$('<li />').html("<a href='#" + $('<div />').html(servers[i].name).text() + "' style='background-image: url(images/vbox/OSE/VirtualBox_16px.png);'>"+$('<div />').html(servers[i].name).text()+"</a>").appendTo(ul);
 		}
 		$('#vboxIndex').append(ul);
 		
@@ -232,17 +231,14 @@ function vboxVMList(anchorid) {
 		var tbl = document.createElement('table');
 		$(tbl).attr({'id':'vboxVMListItem-'+self.anchorid+'-'+vmn.id,'class':"vboxVMListVM vboxListItem" + (self.vms[vmn.id].selected ? "Selected" : "")}).bind('click',function(){
 			if(vmn.id == 'host' && $('#vboxIndex').data('selectedVM') && $('#vboxIndex').data('selectedVM')['id'] == vmn.id) return;
-			$('#vboxIndex').data('selectedVM',vmn);
-			$('#vboxIndex').trigger('vmselect',[vmn]);
+			$('#vboxIndex').data({'selectedVM':vmn}).trigger('vmselect',[vmn]);
 		}).hover(function(){if(self.dragging)return;$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');}).data('vmid',vmn.id);
 
 		var tr = document.createElement('tr');
 		
 		// VM OS type icon
-		var td = document.createElement('td');
-		$(td).attr({'rowspan':'2'}).html("<img src='images/vbox/" + vboxGuestOSTypeIcon(vmn.OSTypeId) + "' " + (vmn.id == 'host' ? "class='vboxHostIcon'" : "") + " />");
+		$('<td />').attr({'rowspan':'2'}).html("<img src='images/vbox/" + vboxGuestOSTypeIcon(vmn.OSTypeId) + "' " + (vmn.id == 'host' ? "class='vboxHostIcon'" : "") + " />").appendTo(tr);
 		
-		tr.appendChild(td);
 		
 		// VM Name
 		var td = document.createElement('td');
@@ -280,9 +276,8 @@ function vboxVMList(anchorid) {
 			vboxUnsetLangContext();
 		}
 		
-		tr.appendChild(td);
+		$(tr).append(td).appendTo(tbl);
 		
-		tbl.appendChild(tr);
 		
 		var tr = document.createElement('tr');
 		
@@ -294,8 +289,7 @@ function vboxVMList(anchorid) {
 		if(vmn.id == 'host')
 			td.innerHTML += ' - ' + $('#vboxIndex').data('vboxConfig').version.string;
 		
-		tr.appendChild(td);
-		tbl.appendChild(tr);
+		$(tr).append(td).appendTo(tbl);
 		
 		// Context menu?
 		if(self.contextMenuId) {
@@ -347,17 +341,14 @@ function vboxVMList(anchorid) {
 
 		// Subscribe to selected VM changes and refreshes
 		$('#vboxIndex').bind('vmselect',self.selectVM).bind('vmlistreload',function() {
-			$('#vboxIndex').trigger('vmselect',null);
-			$('#vboxIndex').data('selectedVM',null);
+			$('#vboxIndex').data({'selectedVM':null}).trigger('vmselect',null);
 			self.anchor.html("<div id='vboxVMListSpinner' style='text-align: center'><img src='images/spinner.gif' /></div>");
 			self.vms = self.selected = null;
 			self.refresh();
 		}).bind('vmlistrefresh',function(){
 			self.refresh();
 		}).bind('hostChange',function(){
-			
-			$('#vboxIndex').trigger('vmselect',null);
-			$('#vboxIndex').data('selectedVM',null);
+			$('#vboxIndex').data({'selectedVM':null}).trigger('vmselect',null);
 			self.stop();
 			
 		}).bind('hostChanged',function(){self.start();});
@@ -440,7 +431,6 @@ function vboxVMList(anchorid) {
 			var ul = document.createElement('ul');
 			$(ul).attr({'id':self.contextMenuId,'style':'display: none;'});
 			for(var i = 0; i < self.contextMenuItems.length; i++) {
-				var li = document.createElement('li');
 				// Check for 16px icon
 				if(self.contextMenuItems[i].icon_16) self.contextMenuItems[i].icon = self.contextMenuItems[i].icon_16;
 				$('<li />').html("<a href='#" + self.contextMenuItems[i].name + "' style='background-image: url(images/vbox/" + self.contextMenuItems[i].icon +"_16px.png);' >"+trans(self.contextMenuItems[i].label)+"</a>").addClass((self.contextMenuItems[i].separator ? 'separator' : 'noseparator')).appendTo(ul);

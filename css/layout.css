@@ -91,6 +91,11 @@ input.vboxImgButton {
 	background-color:transparent;
 } 
 
+/* Divs as tables */
+#vboxIndex div.vboxDivTable { display: table; }
+#vboxIndex div.vboxDivTableRow { display: table-row; }
+#vboxIndex div.vboxDivTableCell { display: table-cell; }
+                                
 /* bordered item */
 .vboxBordered { border: 2px solid #999; }
 
@@ -233,16 +238,15 @@ div.vboxLoaderDialog div.ui-dialog-buttonpane, div.vboxLoaderDialog div.ui-dialo
 
 
 /* VM Logs and Ajax error text boxes*/
-div.vboxVMLog form, div.vboxAjaxErrorDetails form { height: 99%; margin: 0px; padding: 0px; border: 0px; display: block; }
+div.vboxVMLog form, div.vboxAjaxErrorDetails form { height: 100%; margin: 0px; padding: 0px; border: 0px; display: block; }
 div.vboxVMLog form textarea, div.vboxAjaxErrorDetails form textarea {
 	font-family: courier, monospace;
 	font-size: 12px;
 	background: #fff;
 	margin: 0px;
-	height: 100%;
+	padding: 0px;
 	display: block;
 }
-
 
 /* main toolbar */
 .vboxToolbarGrad {
@@ -269,6 +273,7 @@ div.vboxVMLog form textarea, div.vboxAjaxErrorDetails form textarea {
 #vboxVirtualMediaManager .ui-tabs-panel { background: #fff; }
 .vboxVMMSpacer { width: 12px; height: 1px; margin: 0px; padding: 0px; }
 #vboxVirtualMediaManager table.vboxVMMList { font-size: 0.9em; }
+#vboxVirtualMediaManager tr { vertical-align: middle; }
 #vboxVirtualMediaManager table td input.vboxVMMMediaExpand { background-position:left center;height:16px;width:10px;margin:0px 2px 0px 0px;padding: 0px; border: 0px; }
 #vboxVirtualMediaManager .vboxListTable td,
 	#vboxVirtualMediaManager .vboxListTable th { white-space: nowrap; padding: 2px; }
@@ -280,6 +285,11 @@ div.vboxVMLog form textarea, div.vboxAjaxErrorDetails form textarea {
 #vboxVirtualMediaManager .vboxVMMMediumInfo table { border: 1px solid #000; margin-top: 12px; width: 100%; background: #fafafa; }
 #vboxVirtualMediaManager .vboxVMMMediumInfo th { padding-left: 18px; text-align: right; width: auto; white-space: nowrap; }
 #vboxVirtualMediaManager .vboxVMMMediumInfo td { padding-left: 10px; text-align: left; width: 100%; }
+#vboxVirtualMediaManager .vboxVMMSortImgFaded img {
+	opacity: .30;
+	filter:alpha(opacity=30);
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+}
 
 /* Wizards */
 table.vboxWizard { margin: 0px; padding: 4px; border-spacing: 0px; }
@@ -415,6 +425,7 @@ table.vboxDetailsTableBox tr.vboxDetailsHead th.vboxDetailsSection {
 table.vboxDetailsTableBox tr.vboxDetailsHead th.vboxDetailsSection div {
 	-moz-border-radius-topleft: 4px/*{cornerRadius}*/; -webkit-border-top-left-radius: 4px/*{cornerRadius}*/; border-top-left-radius: 4px/*{cornerRadius}*/; -moz-border-radius-topright: 4px/*{cornerRadius}*/; -webkit-border-top-right-radius: 4px/*{cornerRadius}*/; border-top-right-radius: 4px/*{cornerRadius}*/;
 	background-image: url(../images/header_grad.png);
+	background-color: #cccccc;
 	padding: 3px 3px 3px 6px;
 	margin: 0px;
 	height: 16px;
@@ -485,7 +496,7 @@ div.vboxSettingsDialog div.ui-dialog-buttonpane {
 #vboxSettingsTitle { margin-top: 0px; border: 1px solid #000; background: #fff; display: block; text-align: left; padding: 6px; font-weight: bold; }
 
 /* Settings main section surrounding div */
-#vboxSettingsList { padding: 2px; margin-top: 8px; }
+/*#vboxSettingsList { padding: 2px; margin-top: 8px; }*/
 
 /* Global Network Settings */
 #vboxSettingsGlobalNetList { background: #fff; height: 280px; padding: 0px; overflow: auto; }

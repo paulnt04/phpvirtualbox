@@ -281,7 +281,7 @@ function wizardImportApplianceParsed(d) {
 				$(chk).attr({'type':'checkbox','class':'vboxCheckbox','checked':'checked'});
 				$(chk).css({'margin-right':'5px'});
 				$(chk).click(function(){
-					$(this).parentsUntil('tr').parent().data('propdisabled',!(this.checked));
+					$(this).closest('tr').data('propdisabled',!(this.checked));
 					if(this.checked) {
 						$(this).siblings().removeClass('vboxDisabled');
 					} else {

@@ -6,8 +6,7 @@
 	$Id$
 
 -->
-
-<table style='width: 100%; height: 350px;' id='vboxSettingsStorageTableWrapper'>
+<table style='width: 100%;' id='vboxSettingsStorageTableWrapper'>
 	<tr style='height: 100%'>
 		<td width='50%' style='padding: 6px;'>
 			<div id='vboxStoragePaneLeft'>
@@ -24,7 +23,7 @@
 	
 	
 				<!-- Storage Controllers -->
-				<div id='vboxSettingsStorageTree' style='height: 290px' class='vboxBordered'>
+				<div id='vboxSettingsStorageTree' style='height: 290px;' class='vboxBordered'>
 					<ul class='vboxHover vboxHoverBorderless'>
 						<li>Storage Thingy</li>
 						<li>
@@ -36,8 +35,7 @@
 				</div>
 	
 				<!-- Controller Toolbar -->
-				<div id='vboxSettingsControllersButtons' style='text-align: right'>
-				</div>
+				<div id='vboxSettingsControllersButtons' style='text-align: right'></div>
 	
 	
 			</div>
@@ -481,7 +479,7 @@ function vboxSettingsAddAttachment(d,bus) {
 
     li.appendChild(tbl);
     
-    $(li).tipped({'source':vboxSettingsMediumTip(m),'position':'mouse'});
+    $(li).tipped({'source':vboxSettingsMediumTip(m),'position':'mouse','delay':1000});
     
     $(con).append(li);
 
@@ -644,7 +642,7 @@ function vboxSettingsControllerAttach(m) {
 
 	var tbl = $('#vboxSettingsStorageTree').find('table.vboxListItemSelected');
 	$(tbl).data('attachment').medium = m;
-	$(tbl).parent().tipped({'source':vboxSettingsMediumTip(m),'position':'mouse'});
+	$(tbl).parent().tipped({'source':vboxSettingsMediumTip(m),'position':'mouse','delay':1000});
 	
 	vboxSettingsSelectAttachment(tbl);
 	
@@ -1205,10 +1203,57 @@ $('#vboxSettingsDialog').bind('save',function(){
  */
 $('#vboxSettingsStorageTableWrapper').one('show',function(){
 	
-	// Hide children to get true width
+	
+	// Resize everything on dialog resize
+    $('#vboxSettingsDialog').bind('dialogresizestop',function(){
+
+    	// Hide storage tree
+    	$('#vboxSettingsStorageTree').css({'display':'none'});
+
+    	// Get and set size
+    	$('#vboxStoragePaneLeft').css({'display':'none'});
+    	$('#vboxStoragePaneRight').css({'display':'none'});
+
+    	// Main table height
+    	$('#vboxSettingsStorageTableWrapper').css({'display':'none'});
+    	var h = $('#vboxSettingsStorageTableWrapper').css({'display':'none'}).parent().parent().innerHeight()-4;
+    	
+    	// IE needs to account for bordering
+    	if($.browser.msie) h-= 4;
+    	
+    	// Set height
+    	$('#vboxSettingsStorageTableWrapper').css({'display':''}).height(h);
+    	
+    	// Pane width
+    	var bothWidth = ($('#vboxStoragePaneLeft').parent().innerWidth() + $('#vboxStoragePaneRight').parent().innerWidth() - 24) / 2;
+    	$('#vboxStoragePaneLeft').css({'width':bothWidth+'px','display':''}).parent().css({'width':'auto','padding':'6px'});
+    	$('#vboxStoragePaneRight').css({'width':bothWidth+'px','display':''}).parent().css({'width':'auto','padding':'6px'});
+    	
+    	// Unsnap.. sorry..
+    	$('#vboxStorageResizeBar').data('vboxSnapped',0);
+    	
+    	// Get inner height of storage tree parent - padding
+    	var h = $('#vboxStoragePaneLeft').parent().innerHeight() - 24;
+    	// subtract sibling heights
+    	$('#vboxSettingsStorageTree').siblings().each(function(){
+    		h -= $(this).outerHeight(true);
+    	});
+    	$('#vboxSettingsStorageTree').height(h).css({'display':''});
+    	
+    	
+    });
+
+	// Hide children to get true size
 	$('#vboxStoragePaneLeft').children().css({'display':'none'});
 	$('#vboxStoragePaneRight').children().css({'display':'none'});
 	
+	var h = $('#vboxSettingsStorageTableWrapper').parent().css({'padding':'0px','margin':'0px'}).parent().innerHeight();
+	
+	// IE needs to account for bordering
+	if($.browser.msie) h-= 4;
+	
+	$('#vboxSettingsStorageTableWrapper').height(h-4);
+		
 	// Get and set size
 	var bothWidth = ($('#vboxStoragePaneLeft').parent().innerWidth() + $('#vboxStoragePaneRight').parent().innerWidth() - 24) / 2;
 	$('#vboxStoragePaneLeft').css({'width':bothWidth+'px','overflow':'hidden'}).parent().css({'width':'auto'});
@@ -1221,6 +1266,9 @@ $('#vboxSettingsStorageTableWrapper').one('show',function(){
 	// Re-trigger list selection to show correct info
 	if(!$('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().click().hasClass('vboxListItemSelected'))
 		$('#vboxSettingsStorageTree').trigger('itemselect',null);
+	
+	// Don't allow selection of text in storage tree. This looks funny when dragging the resize bar
+	$('#vboxSettingsStorageTree').disableSelection();
 	
 	// Draggable resize bar
 	$('#vboxStorageResizeBar').draggable({cursor:(jQuery.browser.opera ? 'e-resize' : 'col-resize'),axis:'x',zIndex:99,helper:function(){
@@ -1316,7 +1364,7 @@ $('#vboxSettingsStorageTableWrapper').one('show',function(){
 	},'stop':function(e) {
 		$('body').enableSelection().css({'cursor':'default'});
 		$('#vboxResizeOverlay').remove();
-	}}).css('cursor',(jQuery.browser.opera ? 'e-resize' : 'col-resize')).parent().disableSelection();
+	}}).css({'cursor':(jQuery.browser.opera ? 'e-resize' : 'col-resize'),'height':'98%'}).parent().disableSelection();
 
 	
 });

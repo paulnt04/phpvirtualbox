@@ -170,12 +170,13 @@ if(jQuery)( function() {
 					y = (bottom > windowHeight) ? y - (bottom - windowHeight) : y;
 
 					
+					$(menu).one('menuLoaded',function(){
+						menuItems(menu, srcElement);
+					});
+					
 					// Check for callback if nothing is present
 					if($(menu).children().length == 0 && $(menu).data('callback')) {
 						
-						$(menu).one('menuLoaded',function(){
-							menuItems(menu, srcElement);
-						});
 						
 						var m = window[$(menu).data('callback')](menu);
 						

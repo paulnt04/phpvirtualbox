@@ -7,13 +7,19 @@
  *
  */
 
+# Turn off PHP notices
+error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT);
+
 /*
  * Check for port range or list of ports
  */
 if(preg_match('/[^\d]/',$_GET['port'])) {
 
-	require_once(dirname(__FILE__).'/config.php');
+	require_once(dirname(__FILE__).'/lib/config.php');
+	require_once(dirname(__FILE__).'/lib/utils.php');
 	require_once(dirname(__FILE__).'/lib/vboxconnector.php');
+
+	session_init();
 
 	$vbox = new vboxconnector();
 	$vbox->connect();

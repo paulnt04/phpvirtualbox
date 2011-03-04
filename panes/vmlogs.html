@@ -1,19 +1,22 @@
 <!-- $Id$
 Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
 -->
-<div id='vboxVMLogTabsContainer' style='height: 100%; padding:0px;margin:0px;'></div>
+<table id='vboxVMLogContainer' style='border:0px;margin:0px;padding:0px;width:100%;border-spacing:0px;border-width:0px;height:100%'>
+	<tr style='vertical-align:top'>
+		<td style='height: 1%; margin:0px; padding:0px;' id='vboxVMLogsTabsList'></td>
+	</tr>
+	<tr id='vboxVMLogsTabsRow' style='vertical-align:top'>
+		<td id='vboxVMLogTabsContainer' style='margin:0px;padding:0px;'></td>
+	</tr>
+</table>
 <script type='text/javascript'>
 
 function vboxShowLogsInit(vm) {
 
 	$('#vboxVMLogTabs').empty().remove();
 
-	var ltabs = document.createElement('div');
-	ltabs.setAttribute('id','vboxVMLogTabs');
-	ltabs.setAttribute('style','height: 90%; margin-bottom: 0px; padding-bottom: 0px;');
-	$('#vboxVMLogTabsContainer').append(ltabs);
+	$('<div />').attr({'id':'vboxVMLogTabs','style':'margin: 0px; padding: 0px;'}).appendTo($('#vboxVMLogTabsContainer'));
 	
-
 	var logs = $('#vboxVMLogsDialog').data('logs');
 
 	if(!logs || !logs.length) {
@@ -25,32 +28,29 @@ function vboxShowLogsInit(vm) {
 	var preg = new RegExp('.*'+$('#vboxIndex').data('vboxConfig').DSEP.replace('\\','\\\\'));
 
 	var ul = document.createElement('ul');
+	$(ul).attr('id','vboxVMLogsUL');
 	for(var i = 0; i < logs.length; i++) {
 
 		// Replace path with just file name
 		logs[i] = logs[i].replace(preg,'');
 
 		// Tab link
-		var li = document.createElement('li');
-		li.innerHTML = '<a href="#vboxVMLog'+i+'"><span>'+logs[i]+'</span></a>';
-		$(ul).append(li);					
+		$('<li />').html('<a href="#vboxVMLog'+i+'"><span>'+logs[i]+'</span></a>').appendTo(ul);				
 
-		var dlog = document.createElement('div');
-		$(dlog).css({'height':'100%'});
-		$(dlog).attr('id','vboxVMLog'+i);
-		$(dlog).attr('class','vboxVMLog vboxDialogContent');
-		$(dlog).data('logIndex',i);
-
-		$(dlog).bind('show',function(){
-
-			if($(this).data('load')) return;
-			$(this).data('load', 1);
+		// Tab content
+		$('<div />').css({'padding':'4px','margin':'0px'}).attr({'id':'vboxVMLog'+i,'class':'vboxVMLog vboxDialogContent'}).data('logIndex',i).one('show',function(){
 
 			$(this).html('<img src="images/spinner.gif" />');
-
+			
 			vboxAjaxRequest('getVMLogFile',{'vm':vm,'log':$(this).data('logIndex')},function(d,x){
+				
+				// -8 for padding set above + parent's padding
+				var pHeight = $('#vboxVMLogTabs').innerHeight() - 10;
+				
 				var frm = document.createElement('form');
+				$(frm).height(pHeight);
 				var txt = document.createElement('textarea');
+				$(txt).height(pHeight);
 				txt.setAttribute('id','vboxLogText'+x.logIndex);
 				txt.setAttribute('spellcheck','false');
 				txt.setAttribute('wrap','off');
@@ -64,9 +64,8 @@ function vboxShowLogsInit(vm) {
 
 			
 			
-		});
+		}).appendTo($('#vboxVMLogTabs'));
 			
-		$('#vboxVMLogTabs').append(dlog);
 		
 	}
 	$('#vboxVMLogTabs').prepend(ul);
@@ -74,6 +73,36 @@ function vboxShowLogsInit(vm) {
 	$('#vboxVMLogTabs').tabs({'show':function(e,i){
 		$('#vboxVMLogTabs').children('div:eq('+$('#vboxVMLogTabs').tabs('option','selected')+')').trigger('show');
 	}});
+	
+	// Move tabs to table
+	$('#vboxVMLogsUL').css({'border-bottom':'0px','margin-bottom':'0px','padding-bottom':'0px'}).detach().appendTo($('#vboxVMLogsTabsList').addClass($('#vboxVMLogTabs').css({'border-top':'0px','margin-top':'0px','padding-top':'0px'}).removeClass('ui-corner-all').attr('class')));
+	
+	// Set height
+	$('#vboxVMLogTabs').css({'display':'none'});
+	
+	// -6 to account for padding and leave a small buffer
+	$('#vboxVMLogTabs').css({'padding':'0px 2px 2px 2px','margin':'0px','display':''}).height($('#vboxVMLogTabsContainer').css({'padding':'0px','margin':'0px'}).innerHeight()-6);
+	
+	// Resize dialog resizes these elemtns
+	$('#vboxVMLogContainer').parent().bind("dialogresizestop",function(e){
+
+		// Set height
+		$('#vboxVMLogTabs').css({'display':'none'});
+		
+		var pHeight = $('#vboxVMLogTabsContainer').innerHeight();
+		
+		// -4 to account for padding
+		// -12 to account for vboxVMLogTabs 2px padding and pane's 4px padding (8 + 4)
+		$('#vboxVMLogTabs').css({'display':''}).height(pHeight-4).find('form').height(pHeight-12).find('textarea').height(pHeight-12);
+		
+		
+		
+		
+		
+	});
+	
+	
+	
 	
 }
 </script>
