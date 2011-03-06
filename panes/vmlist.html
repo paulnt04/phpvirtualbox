@@ -70,8 +70,7 @@ function vboxVMList(anchorid) {
 	if($('#vboxIndex').data('vboxConfig').servers.length) {
 
 		var servers = $('#vboxIndex').data('vboxConfig').servers;
-		var ul = document.createElement('ul');
-		$(ul).attr({'id':'vboxServerMenu','style':'display: none','class':'contextMenu'});
+		var ul = $('<ul />').attr({'id':'vboxServerMenu','style':'display: none','class':'contextMenu'});
 		for(var i = 0; i < servers.length; i++) {
 			$('<li />').html("<a href='#" + $('<div />').html(servers[i].name).text() + "' style='background-image: url(images/vbox/OSE/VirtualBox_16px.png);'>"+$('<div />').html(servers[i].name).text()+"</a>").appendTo(ul);
 		}
@@ -228,28 +227,25 @@ function vboxVMList(anchorid) {
 
 	self.vmHTML = function (vmn) {
 		
-		var tbl = document.createElement('table');
-		$(tbl).attr({'id':'vboxVMListItem-'+self.anchorid+'-'+vmn.id,'class':"vboxVMListVM vboxListItem" + (self.vms[vmn.id].selected ? "Selected" : "")}).bind('click',function(){
+		var tbl = $('<table />').attr({'id':'vboxVMListItem-'+self.anchorid+'-'+vmn.id,'class':"vboxVMListVM vboxListItem" + (self.vms[vmn.id].selected ? "Selected" : "")}).bind('click',function(){
 			if(vmn.id == 'host' && $('#vboxIndex').data('selectedVM') && $('#vboxIndex').data('selectedVM')['id'] == vmn.id) return;
 			$('#vboxIndex').data({'selectedVM':vmn}).trigger('vmselect',[vmn]);
 		}).hover(function(){if(self.dragging)return;$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');}).data('vmid',vmn.id);
 
-		var tr = document.createElement('tr');
+		var tr = $('<tr />');
 		
 		// VM OS type icon
 		$('<td />').attr({'rowspan':'2'}).html("<img src='images/vbox/" + vboxGuestOSTypeIcon(vmn.OSTypeId) + "' " + (vmn.id == 'host' ? "class='vboxHostIcon'" : "") + " />").appendTo(tr);
 		
 		
 		// VM Name
-		var td = document.createElement('td');
-		td.setAttribute('class', 'vboxVMTitle');
+		var td = $('<td />').attr({'class':'vboxVMTitle'});
 		
 		// Host can have HTML in name
 		if(vmn.id == 'host') {
 			// Check for multiple server config
 			if($('#vboxIndex').data('vboxConfig').servers.length) {
-				var span = document.createElement('span');
-				$(span).attr({'class':'vboxServerLink'}).text('('+$('#vboxIndex').data('vboxConfig').name+')').contextMenu({
+				var span = $('<span />').attr({'class':'vboxServerLink'}).text('('+$('#vboxIndex').data('vboxConfig').name+')').contextMenu({
 						menu: 'vboxServerMenu',
 						button: 0,
 						mode: 'menu'
@@ -279,15 +275,13 @@ function vboxVMList(anchorid) {
 		$(tr).append(td).appendTo(tbl);
 		
 		
-		var tr = document.createElement('tr');
+		var tr = $('<tr />');
 		
-		var td = document.createElement('td');
-		if(vmn.id != 'host' && vmn.sessionState != 'Unlocked') td.setAttribute('class','vboxVMSessionOpen');
-		td.innerHTML = "<img src='images/vbox/" + vboxMachineStateIcon(vmn.state) +"' /> <span class='vboxVMState'>" + trans(vmn.state) + '</span>';
+		var td = $('<td />').attr({'class':(vmn.id != 'host' && vmn.sessionState != 'Unlocked' ? 'vboxVMSessionOpen' : '')}).html("<img src='images/vbox/" + vboxMachineStateIcon(vmn.state) +"' /> <span class='vboxVMState'>" + trans(vmn.state) + '</span>');
 
 		// Add VirtualBox version if hosting
 		if(vmn.id == 'host')
-			td.innerHTML += ' - ' + $('#vboxIndex').data('vboxConfig').version.string;
+			$(td).append(' - ' + $('#vboxIndex').data('vboxConfig').version.string);
 		
 		$(tr).append(td).appendTo(tbl);
 		
@@ -428,8 +422,7 @@ function vboxVMList(anchorid) {
 		 */
 		if(self.contextMenuItems && self.contextMenuItems.length) {
 			self.contextMenuId = 'vboxVMList-'+self.anchorid+'-contextMenu';
-			var ul = document.createElement('ul');
-			$(ul).attr({'id':self.contextMenuId,'style':'display: none;'});
+			var ul = $('<ul />').attr({'id':self.contextMenuId,'style':'display: none;'});
 			for(var i = 0; i < self.contextMenuItems.length; i++) {
 				// Check for 16px icon
 				if(self.contextMenuItems[i].icon_16) self.contextMenuItems[i].icon = self.contextMenuItems[i].icon_16;

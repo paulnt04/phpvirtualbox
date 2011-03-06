@@ -248,6 +248,8 @@ div.vboxVMLog form textarea, div.vboxAjaxErrorDetails form textarea {
 	display: block;
 }
 
+div.vboxAjaxErrorDetails form textarea { height: 100%; }
+
 /* main toolbar */
 .vboxToolbarGrad {
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#d9d9d9', endColorstr='#e9e9e9'); /* for IE */

@@ -362,20 +362,16 @@ function vboxDetailSettingsLink(section) {
 //Returns table row (tr) element for details header
 function __vboxDetailHeader(icon,name,linkto,vm,boxes) {
 
-	var tr = document.createElement('tr');
-	tr.setAttribute('class','vboxDetailsHead');
-	var th = document.createElement('th');
-	$(th).attr({'class':'vboxDetailsSection','colspan':'2'});
+	var tr = $('<tr />').attr({'class':'vboxDetailsHead'});
+	var th = $('<th />').attr({'class':'vboxDetailsSection','colspan':'2'});
 
 	if(boxes) {
-		var div = document.createElement('div');
-		div.innerHTML = "<img style='float:left; margin-right: 3px; ' src='images/vbox/" + icon + "' /> ";
+		var div = $('<div />').html("<img style='float:left; margin-right: 3px; ' src='images/vbox/" + icon + "' /> ");
 	} else {	
-		th.innerHTML = "<img style='float:left; margin-right: 3px; ' src='images/vbox/" + icon + "' /> ";
+		$(th).html("<img style='float:left; margin-right: 3px; ' src='images/vbox/" + icon + "' /> ");
 	}
 	
-	var sp = document.createElement('span');
-	$(sp).css({'float':'left'}).append(document.createTextNode(trans(name)+' '));
+	var sp = $('<span />').css({'float':'left'}).append(document.createTextNode(trans(name)+' '));
 
 	if(boxes) {
 		$(div).append(sp);
@@ -391,23 +387,20 @@ function __vboxDetailHeader(icon,name,linkto,vm,boxes) {
 //Base function that returns a table row of machine detail data
 //Called from other functions
 function __vboxDetailRowReal(name,value,cssClass,html) {
-	var tr = document.createElement('tr');
-	tr.setAttribute('class','vboxDetailRow');
-	var th = document.createElement('th');
-	if(html)
-		$(th).html(name + (value && value.length && name.length ? ':' : ''));
-	else
-		$(th).append(document.createTextNode(name + (value && value.length && name.length ? ':' : '')));
-	th.setAttribute('class','vboxDetailContent ' + cssClass);
 	
-	var td = document.createElement('td');
-	td.setAttribute('class','vboxDetailsValue');
+	var tr = $('<tr />').attr({'class':'vboxDetailRow'});
+	if(html)
+		var th = $('<th />').html(name + (value && value.length && name.length ? ':' : ''));
+	else
+		var th = $('<th />').append(document.createTextNode(name + (value && value.length && name.length ? ':' : '')));
+	$(th).attr({'class':'vboxDetailContent ' + cssClass}).appendTo(tr);
+	
+	var td = $('<td />').attr({'class':'vboxDetailsValue'});
 	if(html) {
-		td.innerHTML = value;
+		$(td).html(value);
 	} else { 
 		$(td).append(document.createTextNode(value));
 	}
-	$(tr).append(th);
 	$(tr).append(td);
 
 	return tr;
@@ -561,14 +554,11 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		$(targetdiv).html('<div style="width: 50%">'+trans('VM Inaccessible')+'</div>');
 		
 		// Details Table
-		var vboxDetailsTable = document.createElement('table');
-		$(vboxDetailsTable).attr({'style':'width: 50%','class':'vboxDetailsTable vboxDetailsTableError'}).append(__vboxDetailRow(trans("Error"), data.accessError['text'])).append(__vboxDetailRow(trans("Result Code"), data.accessError['resultCode'])).append(__vboxDetailRow(trans("Component"), data.accessError['component'])).appendTo(targetdiv);
+		var vboxDetailsTable = $('<table />').attr({'style':'width: 50%','class':'vboxDetailsTable vboxDetailsTableError'}).append(__vboxDetailRow(trans("Error"), data.accessError['text'])).append(__vboxDetailRow(trans("Result Code"), data.accessError['resultCode'])).append(__vboxDetailRow(trans("Component"), data.accessError['component'])).appendTo(targetdiv);
 
-		var d = document.createElement('div');
-		d.setAttribute('style','width: 50%; padding: 4px;');
+		var d = $('<div />').attr({'style':'width: 50%; padding: 4px;'});
 		
-		var btn = document.createElement('input');
-		$(btn).attr({'type':'button',
+		$('<input />').attr({'type':'button',
 			'value':trans('Refresh'),
 			'style':'background: url(images/vbox/refresh_16px.png) 2px 2px no-repeat; padding: 2px 2px 2px 18px; border: 1px solid #000; background-color: #eee;'
 		}).click(function(){
@@ -601,8 +591,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 				
 	} else {
 		// Enclosing details Table
-		var vboxDetailsTable = document.createElement('table');
-		$(vboxDetailsTable).attr({'class':'vboxDetailsTable'}).append(__vboxDetailHeader("machine_16px.png","General"));
+		var vboxDetailsTable = $('<table />').attr({'class':'vboxDetailsTable'}).append(__vboxDetailHeader("machine_16px.png","General"));
 	}
 
 	$(vboxDetailsTable).append(__vboxDetailRow(trans("Name"), data['name'])).append(__vboxDetailRow(trans("OS Type"), trans(data['OSTypeDesc'])));
@@ -693,10 +682,8 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 				$('#vboxVMDetails').data('vboxPreviewTimer', null);
 			}
 			
-			var divOut1 = document.createElement('div');
-			$(divOut1).attr({'id':'vboxDetailsPreviewVMName','style':'overflow:hidden;position:relative;height:'+height+'px;width:'+width+'px'});
-			var divOut2 = document.createElement('div');
-			$(divOut2).attr('style','position:relative;left:0px;display:table-cell;vertical-align:middle;padding:4px;color:#fff;font-weight:bold;text-align:center;height:'+height+'px;width:'+width+'px');
+			var divOut1 = $('<div />').attr({'id':'vboxDetailsPreviewVMName','style':'overflow:hidden;position:relative;height:'+height+'px;width:'+width+'px'});
+			var divOut2 = $('<div />').attr('style','position:relative;left:0px;display:table-cell;vertical-align:middle;padding:4px;color:#fff;font-weight:bold;text-align:center;height:'+height+'px;width:'+width+'px');
 			if($.browser.msie) {
 				divWrap.css({'background':'#000'});
 				$(divOut2).css({"filter":"progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled='true', src='images/monitor_glossy.png', sizingMethod='scale')"});
@@ -770,10 +757,10 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		if(links) {
 			tr = __vboxDetailRow(trans("Server Port"), data['VRDEServer']['ports']);
 			if(data['state'] == 'Running' || !data['VRDEServer']['ports'].match(/[^\d]/)) {
-				tr.childNodes[1].innerHTML = "<a href='rdp.php?host=" + chost + '&port=' + data['VRDEServer']['ports'] + "&vm=" + encodeURIComponent(data['name']) + "'>" + data['VRDEServer']['ports'] + "</a>";
+				$(tr).children().eq(1).html("<a href='rdp.php?host=" + chost + '&port=' + data['VRDEServer']['ports'] + "&vm=" + encodeURIComponent(data['name']) + "'>" + data['VRDEServer']['ports'] + "</a>");
 			}
 			if(data['state'] == 'Running' && data['consolePort']) {
-				tr.childNodes[1].innerHTML += ' <img src="images/vbox/blank.gif" style="vspace:0px;hspace:0px;height2px;width:10px;" /> (' + chost + ':' + data['consolePort'] + ')';
+				$(tr).children().eq(1).append(' <img src="images/vbox/blank.gif" style="vspace:0px;hspace:0px;height2px;width:10px;" /> (' + chost + ':' + data['consolePort'] + ')');
 			}
 			$(vboxDetailsTable).append(tr);
 		} else {
@@ -1124,10 +1111,8 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		$(vboxDetailsTable).append(__vboxDetailHeader('description_16px.png',"Description"));
 	}
 
-	var dtr = document.createElement('tr');
-	$(dtr).addClass('vboxDetailRow');
-	var dtd = document.createElement('td');
-	$(dtd).attr({'class':'vboxDetailDescriptionCell','colspan':'2'}).html(data.description.length ? $('<div />').html(data.description).text() : '<span class="vboxDetailsNone">'+trans("None")+'</span>').appendTo(dtr);
+	var dtr = $('<tr />').attr({'class':'vboxDetailRow'});
+	var dtd = $('<td />').attr({'class':'vboxDetailDescriptionCell','colspan':'2'}).html(data.description.length ? $('<div />').html(data.description).text() : '<span class="vboxDetailsNone">'+trans("None")+'</span>').appendTo(dtr);
 	$(vboxDetailsTable).append(dtr);
 	
 	// Append Table or show div
@@ -1167,9 +1152,7 @@ function __vboxDisplayHostDetailsData(data) {
 	$('#vboxHostDetails').html('');
 	
 	// Details Table
-	var vboxDetailsTable = document.createElement('table');
-	vboxDetailsTable.setAttribute('class','vboxDetailsTable');
-	vboxDetailsTable.setAttribute('class','vboxDetailsTable vboxDetailsTableBox ui-corner-all');
+	var vboxDetailsTable = $('<table />').attr({'class':'vboxDetailsTable vboxDetailsTableBox ui-corner-all'});
 
 	// General
 	$(vboxDetailsTable).append(__vboxDetailHeader("machine_16px.png",trans("General"),null,null,true));
@@ -1193,8 +1176,7 @@ function __vboxDisplayHostDetailsData(data) {
 	$('#vboxHostDetails').append(vboxDetailsTable);
 	
 	// Network
-	var vboxDetailsTable = document.createElement('table');
-	$(vboxDetailsTable).attr({'class':'vboxDetailsTable vboxDetailsTableBox ui-corner-all'}).append(__vboxDetailHeader("nw_16px.png",trans("Network"),null,null,true));
+	var vboxDetailsTable = $('<table />').attr({'class':'vboxDetailsTable vboxDetailsTableBox ui-corner-all'}).append(__vboxDetailHeader("nw_16px.png",trans("Network"),null,null,true));
 
 	for(var i = 0; i < data['networkInterfaces'].length; i++) {		
 		
@@ -1213,8 +1195,7 @@ function __vboxDisplayHostDetailsData(data) {
 	// CD/DVD Devices
 	if(data['DVDDrives'].length) {
 	
-		var vboxDetailsTable = document.createElement('table');
-		$(vboxDetailsTable).attr({'class':'vboxDetailsTable vboxDetailsTableBox ui-corner-all'}).append(__vboxDetailHeader("cd_16px.png",trans("CD/DVD Devices"),null,null,true));
+		var vboxDetailsTable = $('<table />').attr({'class':'vboxDetailsTable vboxDetailsTableBox ui-corner-all'}).append(__vboxDetailHeader("cd_16px.png",trans("CD/DVD Devices"),null,null,true));
 	
 		for(var i = 0; i < data['DVDDrives'].length; i++) {		
 			
@@ -1231,8 +1212,7 @@ function __vboxDisplayHostDetailsData(data) {
 	// Floppy Devices
 	if(data['floppyDrives'].length) {
 	
-		var vboxDetailsTable = document.createElement('table');
-		$(vboxDetailsTable).attr({'class':'vboxDetailsTable vboxDetailsTableBox ui-corner-all'}).append(__vboxDetailHeader("fd_16px.png",trans("Floppy Devices"),null,null,true));
+		var vboxDetailsTable = $('<table />').attr({'class':'vboxDetailsTable vboxDetailsTableBox ui-corner-all'}).append(__vboxDetailHeader("fd_16px.png",trans("Floppy Devices"),null,null,true));
 	
 		for(var i = 0; i < data['floppyDrives'].length; i++) {		
 			
@@ -1256,8 +1236,7 @@ function __vboxDisplayHostDetailsData(data) {
  * Show / Hide boxes menu
  *
  */
-var ul = document.createElement('ul');
-$(ul).attr({'class':'contextMenu contextMenuNoBG','style':'display: none','id':'vboxDetailsShowMenu'});
+var ul = $('<ul />').attr({'class':'contextMenu contextMenuNoBG','style':'display: none','id':'vboxDetailsShowMenu'});
 var sections = new Array('General','System','Preview','Display','Storage','Audio','Network','Serial Ports','Parallel Ports','USB','Shared Folders','Description');
 for(var i = 0; i < sections.length; i++) {
 
@@ -1271,10 +1250,9 @@ for(var i = 0; i < sections.length; i++) {
 	if($('#vboxIndex').data('vboxCookies')["vboxSectionShow"+sections[i].replace(' ','')] == 0)
 		checked = '';
 	
-	var li = document.createElement('li');
-	$(li).attr('id','vboxDetailsShowMenuItem'+sections[i].replace(' ',''));
-	var cb = document.createElement('input');
-	$(cb).attr({'type':'checkbox','class':'vboxCheckbox','name':sections[i].replace(' ',''),'checked':checked}).click(function(){
+	var li = $('<li />').attr('id','vboxDetailsShowMenuItem'+sections[i].replace(' ',''));
+
+	$('<input />').attr({'type':'checkbox','class':'vboxCheckbox','name':sections[i].replace(' ',''),'checked':checked}).click(function(){
 
 		vboxSetCookie("vboxSectionShow"+$(this).attr('name'),(this.checked ? 1 : 0));
 		$('#vboxDetailsTableBox'+$(this).attr('name')).css('display',(this.checked ? '' : 'none'));
@@ -1295,12 +1273,10 @@ for(var i = 0; i < sections.length; i++) {
 			}				
 		}
 		
-	});
-	$(li).append(cb);
-	var sp = document.createElement('span');
-	$(sp).append(' ' + trans(sections[i]));
-	$(li).append(sp);
-	$(ul).append(li);
+	}).appendTo(li);
+
+	$(li).append($('<span />').html(' ' + trans(sections[i]))).appendTo(ul);
+
 }
 $('#vboxIndex').append(ul);
 $('#vboxDetailsShowMenu').bind('contextmenu', function() { return false; })
@@ -1318,27 +1294,25 @@ if($('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] === undefined) {
 	else
 		$('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] = 3;
 }
-var ul = document.createElement('ul');
-$(ul).attr({'class':'contextMenu contextMenuNoBG','style':'display: none','id':'vboxDetailsPreviewMenu'}).click(function(){$(this).hide();});
-var radio = document.createElement('input');
-$(radio).attr({'class':'vboxRadio','type':'radio','name':'vboxPreviewRadio','value':0}).click(function(){
+var ul = $('<ul />').attr({'class':'contextMenu contextMenuNoBG','style':'display: none','id':'vboxDetailsPreviewMenu'}).click(function(){$(this).hide();});
+var radio = $('<input />').attr({'class':'vboxRadio','type':'radio','name':'vboxPreviewRadio','value':0}).click(function(){
 	$('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] = 0;
 	vboxSetCookie("vboxPreviewUpdate","0");
 });
 if($('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] == 0) {
 	$(radio).attr('checked','checked');
 }
-var li = document.createElement('li');
-$(li).hover(function(){
+
+var li = $('<li />').hover(function(){
 	$(this).addClass('hover');
 },function(){
 	$(this).removeClass('hover');
 }).append(radio);
 
-var sp = document.createElement('span');
-$(sp).html(trans('Update Disabled')).click(function(){$(this).siblings('input').click();});
-$(li).append(sp);
+$(li).append($('<span />').html(trans('Update Disabled')).click(function(){$(this).siblings('input').click();}));
+
 $(ul).append(li);
+
 var ints = [3,5,10,20,30,60];
 // check for update interval
 if($('#vboxIndex').data('vboxConfig').previewUpdateInterval && jQuery.inArray($('#vboxIndex').data('vboxConfig').previewUpdateInterval, ints) < 0) {
@@ -1353,8 +1327,8 @@ ints.sort(function(a,b){
 });
 
 for(var i = 0; i < ints.length; i++) {
-	var radio = document.createElement('input');
-	$(radio).attr({'class':'vboxRadio','type':'radio','name':'vboxPreviewRadio','value':ints[i]}).click(function(){
+	
+	var radio = $('<input />').attr({'class':'vboxRadio','type':'radio','name':'vboxPreviewRadio','value':ints[i]}).click(function(){
 		vboxSetCookie("vboxPreviewUpdate",$(this).val());		
 		$('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] = $(this).val();
 		__vboxDrawPreview(false, $('#vboxIndex').data('selectedVM').state);
@@ -1363,31 +1337,28 @@ for(var i = 0; i < ints.length; i++) {
 	if($('#vboxIndex').data('vboxCookies')["vboxPreviewUpdate"] == ints[i])
 		$(radio).attr('checked','checked');
 	
-	var li = document.createElement('li');
+	var li = $('<li />');
 	if(i==0) $(li).attr('class','separator');
 	$(li).append(radio).hover(function(){
 		$(this).addClass('hover');
 	},function(){
 		$(this).removeClass('hover');
 	});
-	var sp = document.createElement('span');
-	$(sp).html(trans('Every X seconds').replace('%s',ints[i])).click(function(){
+	
+	$('<span />').html(trans('Every X seconds').replace('%s',ints[i])).click(function(){
 		$(this).siblings('input').click();
 	}).appendTo(li);
+
 	$(ul).append(li);
+	
 	if(i == (ints.length - 1)) {
-		var li = document.createElement('li');
-		$(li).attr({'id':'vboxDetailsViewSavedSS','class':'separator','style':'display:none;text-align: center;'}).hover(function(){
+		$('<li />').attr({'id':'vboxDetailsViewSavedSS','class':'separator','style':'display:none;text-align: center;'}).hover(function(){
 			$(this).addClass('hover');
 		},function(){
 			$(this).removeClass('hover');
 		}).click(function(){
 			var newwin = window.open('screen.php?vm='+$('#vboxIndex').data('selectedVM').id+'&full=1','vboxSC','toolbar=1,menubar=0,location=0,directories=0,status=true,resize=true');
-		});
-		var sp = document.createElement('span');
-		$(sp).html(trans('Open in new window'));
-		$(li).append(sp);
-		$(ul).append(li);
+		}).append($('<span />').html(trans('Open in new window'))).appendTo(ul);
 	}
 }
 $('#vboxIndex').append(ul);

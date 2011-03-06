@@ -145,8 +145,7 @@ $('#vboxSettingsSharedFoldersList').bind('select',sfToolbar.update);
 
 function vboxSettingsAddSharedFolder(f, noColor) {
 	
-	var tr = document.createElement('tr');
-	$(tr).attr({'class':'vboxListItem'}).addClass(f.type == 'machine' ? 'vboxSFMachine' : 'vboxSFTransient').bind('refresh',function(){
+	var tr = $('<tr />').attr({'class':'vboxListItem'}).addClass(f.type == 'machine' ? 'vboxSFMachine' : 'vboxSFTransient').bind('refresh',function(){
 		
 		// bind refresh
 		$(this).children('td.vboxSettingsSFNameCell').children('span').first().html($('<div/>').text($(this).data('name')).html());
@@ -164,10 +163,7 @@ function vboxSettingsAddSharedFolder(f, noColor) {
 			vboxColorRows($('#vboxSFMachineBody'));
 			vboxColorRows($('#vboxSFTransientBody'));			
 		}
-	}).hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');}).disableSelection();
-	
-	// Bind data
-	$(tr).data(f);
+	}).hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');}).disableSelection().data(f);
 	
 	// Name
 	$('<td />').attr({'class':'vboxSettingsSFNameCell vboxHoverFirst'}).append($('<img />').attr({'src':'images/vbox/blank.gif','style':'height: 10px; width: 30px;'})).append($('<span />').html($('<div/>').text(f.name).html())).appendTo(tr);
@@ -213,12 +209,9 @@ var sfh = $('#vboxSettingsSharedFoldersList');
   Add 'Machine Folder's
  *
  */ 
-var tb = document.createElement('tbody');
-$(tb).attr({'id':'vboxSFMachineBody'}).addClass('vboxHover');
-var tr = document.createElement('tr');
-$(tr).attr({'class':'vboxListItemDisabled'}).disableSelection();
-var td = document.createElement('td');
-td.setAttribute('class','vboxSettingsSFNameCell');
+var tb = $('<tbody />').attr({'id':'vboxSFMachineBody'}).addClass('vboxHover');
+var tr = $('<tr />').attr({'class':'vboxListItemDisabled'}).disableSelection();
+var td = $('<td />').attr({'class':'vboxSettingsSFNameCell'});
 $('<input />').attr({'type':'button','class':'vboxImgButton','style':'background-image: url(images/vbox/arrow_down_10px.png); width: 12px; height: 12px; margin-right: 4px;'}).toggle(function(){
 		$(this).css({'background-image':'url(images/vbox/arrow_right_10px.png)'});
 		$('#vboxSettingsSharedFoldersList').trigger('select',null);
@@ -239,10 +232,8 @@ $(tb).append($(tr).append($('<td />').attr({'class':'vboxSettingsSFPathCell'})).
  */
  if($('#vboxSettingsDialog').data('vboxMachineData').state == 'Running') {
 
-	 var tb = document.createElement('tbody');
-	 $(tb).attr({'id':'vboxSFTransientBody'}).addClass('vboxHover');
-	 var tr = document.createElement('tr');
-	 $(tr).attr({'class':'vboxListItemDisabled'}).disableSelection();
+	 var tb = $('<tbody />').attr({'id':'vboxSFTransientBody'}).addClass('vboxHover');
+	 var tr = $('<tr />').attr({'class':'vboxListItemDisabled'}).disableSelection();
 
 	 $('<td />').attr({'class':'vboxSettingsSFNameCell'}).append(
 			 $('<input />').attr({'type':'button','class':'vboxImgButton','style':'background-image: url(images/vbox/arrow_down_10px.png); width: 12px; height: 12px; margin-right: 4px;'}).toggle(function(){
@@ -292,11 +283,9 @@ function vboxSettingsSFUpdatePath(f) {
  */
 function vboxSettingsSFEditDialog() {
 	
-	var d = document.createElement('div');
-	$(d).attr({'id':'vboxSettingsSFEdit','class':'vboxNonTabbed vboxDialogContent','style':'display: none;'});
+	var d = $('<div />').attr({'id':'vboxSettingsSFEdit','class':'vboxNonTabbed vboxDialogContent','style':'display: none;'});
 	
-	var tbl = document.createElement('table');
-	$(tbl).attr({'style':'width: 100%','class':'vboxSettingsTable'});
+	var tbl = $('<table />').attr({'style':'width: 100%','class':'vboxSettingsTable'});
 
 	// Path
 	$('<tr />').attr({'style':'vertical-align: middle'}).append($('<th />').attr({'style':'white-space: nowrap'}).html(trans('Path') + ':')).append(
@@ -318,11 +307,7 @@ function vboxSettingsSFEditDialog() {
 		$('<tr />').append($('<th />')).append($('<td />').html('<input type="checkbox" class="vboxCheckbox" id="vboxSettingsSFPerm" /> ' + trans('Make Permanent'))).appendTo(tbl);
 	}
 	
-	d.appendChild(tbl);
-	
-	$('#vboxIndex').append(d);
-	
-	$('#vboxSettingsSFEdit').dialog({'width':800,'modal':true,'autoOpen':false,'stack':true,'dialogClass':'vboxDialogContent vboxNonTabbed','title':'<img src="images/vbox/shared_folder_16px.png" class="vboxDialogTitleIcon" /> '+trans('Shared Folder')});
+	$(d).append(tbl).dialog({'width':800,'modal':true,'autoOpen':false,'stack':true,'dialogClass':'vboxDialogContent vboxNonTabbed','title':'<img src="images/vbox/shared_folder_16px.png" class="vboxDialogTitleIcon" /> '+trans('Shared Folder')});
 
 	return $('#vboxSettingsSFEdit');
 }

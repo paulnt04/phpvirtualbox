@@ -152,27 +152,20 @@ $('#vboxSettingsTabNetAdapter').find('input.vboxSettingsNetMacGen').click(functi
 
 
 /* Network adapter tab links */
-var ul = document.createElement('ul');
+var ul = $('<ul />');
 $(vboxSettingsNetContainer).append(ul);
 
 for(var i = 0; i < parseInt($('#vboxIndex').data('vboxConfig').nicMax); i++) {
 
 	
 	/* tab */
-	var li = document.createElement('li');
-	li.innerHTML = '<a href="#' + vboxSettingsNetTemplate.id + (i + 1) +'"><span>' + trans('Adapter') + ' ' + (i + 1) + '</span></a>';
-	ul.appendChild(li);
+	$(ul).append($('<li />').html('<a href="#' + vboxSettingsNetTemplate.id + (i + 1) +'"><span>' + trans('Adapter') + ' ' + (i + 1) + '</span></a>'));
 
 	/* tab content */
 	var newTab = $("#vboxSettingsTabNetAdapter").clone(true);
-	newTab.attr('id',vboxSettingsNetTemplate.id + (i + 1));
-	newTab.css('display','block');
-
-	// Enable / disable trigger
-	newTab.find('.vboxEnablerTrigger').bind('enable',function(){
+	newTab.attr({'id':vboxSettingsNetTemplate.id + (i + 1)}).css({'display':'block'}).find('.vboxEnablerTrigger').bind('enable',function(){
 		$(this).children('select').first().trigger('change');
 	});
-	
 	newTab.appendTo(vboxSettingsNetContainer);
 
 	/* Form elements must be unique */

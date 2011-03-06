@@ -27,8 +27,7 @@ function vboxShowLogsInit(vm) {
 	// Pattern for regexp replacement
 	var preg = new RegExp('.*'+$('#vboxIndex').data('vboxConfig').DSEP.replace('\\','\\\\'));
 
-	var ul = document.createElement('ul');
-	$(ul).attr('id','vboxVMLogsUL');
+	var ul = $('<ul />').attr({'id':'vboxVMLogsUL'});
 	for(var i = 0; i < logs.length; i++) {
 
 		// Replace path with just file name
@@ -47,16 +46,9 @@ function vboxShowLogsInit(vm) {
 				// -8 for padding set above + parent's padding
 				var pHeight = $('#vboxVMLogTabs').innerHeight() - 10;
 				
-				var frm = document.createElement('form');
+				var frm = $('<form />');
 				$(frm).height(pHeight);
-				var txt = document.createElement('textarea');
-				$(txt).height(pHeight);
-				txt.setAttribute('id','vboxLogText'+x.logIndex);
-				txt.setAttribute('spellcheck','false');
-				txt.setAttribute('wrap','off');
-				$(txt).val(d.log);
-				$(txt).attr('readonly','true');
-				$(frm).append(txt);
+				$('<textarea />').attr({'id':'vboxLogText'+x.logIndex,'spellcheck':'false','wrap':'off','readonly':'true'}).height(pHeight).val(d.log).appendTo(frm);
 				$('#vboxVMLog'+x.logIndex).html('').append(frm);
 				$('#vboxLogText'+x.logIndex).attr('scrollTop',$('#vboxLogText'+x.logIndex).attr('scrollHeight'));
 				

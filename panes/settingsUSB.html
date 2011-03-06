@@ -118,11 +118,9 @@
 		'enabled' : function (item) { return (item && $(item).data('filter') && $(item).data('filter').name); },
 		'click' : function () {
 
-          	var d = document.createElement('div');
-          	$(d).attr({'id':'vboxSettingsUSBFilterEdit','style':'display: none','class':'vboxNonTabbed vboxDialogContent'});
+          	var d = $('<div />').attr({'id':'vboxSettingsUSBFilterEdit','style':'display: none','class':'vboxNonTabbed vboxDialogContent'});
 
-          	var tbl = document.createElement('table');
-          	$(tbl).attr({'style':'width: 100%','class':'vboxSettingsTable'});
+          	var tbl = $('<table />').attr({'style':'width: 100%','class':'vboxSettingsTable'});
           	
 			var vboxSettingsUSBFilterProps = [
 				['Name','name'],['Vendor ID','vendorId'],['Product ID','productId'],
@@ -139,8 +137,7 @@
           	}
           	
           	// Generate select box
-          	var sel = document.createElement('select');
-          	sel.setAttribute('id','vboxSettingsUSBFRemote');
+          	var sel = $('<select />').attr({'id':'vboxSettingsUSBFRemote'});
           	var opts = [['',trans('Any')],['yes',trans('Yes')],['no',trans('No')]];
           	for(var i = 0; i < opts.length; i++) {
               	var o = new Option(opts[i][1],opts[i][0],((filter['remote']||'')==opts[i][0]));
@@ -248,8 +245,7 @@ $('#vboxSettingsUSBFilterList').bind('select',usbToolbar.update);
 /* Adds a USB filter to list */
 function vboxSettingsAddUSBFilter(f,noColor) {
 	
-	var li = document.createElement('li');
-	$(li).data({'filter':f}).click(function(){
+	var li = $('<li />').data({'filter':f}).click(function(){
 		$(this).parent().children().removeClass('vboxListItemSelected');
 		$(this).addClass('vboxListItemSelected');
 		$('#vboxSettingsUSBFilterList').trigger('select',this);

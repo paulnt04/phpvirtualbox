@@ -238,15 +238,11 @@ $('#vboxSettingsUserList').bind('select',userToolbar.update);
  */
 function vboxSettingsGlobalAddUserList(n) {
 
-	var li = document.createElement('li');
-	li.setAttribute('class','vboxListItem');
-	$(li).html($('<div />').html(n.username + (n.admin ? ' ('+trans('Admin User')+')' : ''))).hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');}).data(n).click(function(){
+	$('<li />').attr({'class':'vboxListItem'}).html($('<div />').html(n.username + (n.admin ? ' ('+trans('Admin User')+')' : ''))).hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');}).data(n).click(function(){
 		$(this).parent().children('li.vboxListItemSelected').removeClass('vboxListItemSelected').addClass('vboxListItem');
 		$(this).addClass('vboxListItemSelected').removeClass('vboxListItem');
 		$('#vboxSettingsUserList').trigger('select',this);
-	});
-	
-	$('#vboxSettingsUserList').append(li);
+	}).appendTo($('#vboxSettingsUserList'));
 	
 }
 

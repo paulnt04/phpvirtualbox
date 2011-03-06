@@ -57,26 +57,18 @@ for(var i = 0; i < hostdev.length; i++) {
 	var avail = (capt || (hostdev[i].state != 'NotSupported' && hostdev[i].state != 'Unavailable' && hostdev[i].state != 'Captured'));
 	
 	
-	var tr = document.createElement('tr');
-	if(avail)
-		$(tr).attr('class','vboxListItem');
-	else
-		$(tr).attr('class','vboxListItemDisabled');
-	$(tr).attr('style','vertical-align: middle').data('usbdev', hostdev[i]);	
-	var td = document.createElement('td');
-	$(td).attr('style','text-align: center');
-	var chk = document.createElement('input');
-	$(chk).attr({'type':'checkbox','class':'vboxCheckbox','checked':(capt ? 'checked' : ''),'disabled':(avail ? '' : 'disabled')});
-	$(td).append(chk);
-	$(tr).append(td);
-	var td = document.createElement('td');
-	td.innerHTML = dname;
-	$(tr).append(td);
-	var td = document.createElement('td');
-	$(td).attr('style','text-align: center');
-	td.innerHTML = (avail ? trans('Yes') : trans('No'));
-	$(tr).append(td);
+	var tr = $('<tr />').attr({'class':(avail ? 'vboxListItem' : 'vboxListItemDisabled'),'style':'vertical-align: middle'}).data({'usbdev':hostdev[i]});	
+
+	var td = $('<td />').attr({'style':'text-align: center'});
 	
+	$('<input />').attr({'type':'checkbox','class':'vboxCheckbox','checked':(capt ? 'checked' : ''),'disabled':(avail ? '' : 'disabled')}).appendTo(td);
+	
+	$(tr).append(td);
+
+	$(tr).append($('<td />').html(dname));
+
+	$(tr).append($('<td />').attr({'style':'text-align: center'}).html((avail ? trans('Yes') : trans('No'))));
+		
 	$('#vboxSettingsUSBDevicesList').append(tr);
 	
 }

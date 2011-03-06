@@ -62,8 +62,7 @@ function vboxVMNetAdaptersDisplay(d) {
 	$('#vboxGuestNetAdapters').children().first().remove();
 
 	// Append tab list
-	var adl = document.createElement('div');
-	$(adl).attr({'id':'vboxGuestNetAdapterList','class':'vboxTabbed'});
+	var adl = $('<div />').attr({'id':'vboxGuestNetAdapterList','class':'vboxTabbed'});
 
 	// Check for data
 	if(!data['Count'] || data['Count'] < 1) {
@@ -73,15 +72,13 @@ function vboxVMNetAdaptersDisplay(d) {
 	}
 
 	// Create list
-	var ul = document.createElement('ul');
+	var ul = $('<ul />');
 	
 	// Each net adapter
 	for(var i = 0; i < data['Count']; i++) {
 
 		// Tab link
-		var li = document.createElement('li');
-		li.innerHTML = '<a href="#vboxGuestNetAdapter' + (i + 1) +'"><span>' + trans('Adapter') + ' ' + (i + 1) + '</span></a>';
-		ul.appendChild(li);
+		$(ul).append($('<li />').html('<a href="#vboxGuestNetAdapter' + (i + 1) +'"><span>' + trans('Adapter') + ' ' + (i + 1) + '</span></a>'));
 
 		// Tab content
 		var tmpl = $("#vboxGuestNetAdapterTemplate").clone(true);

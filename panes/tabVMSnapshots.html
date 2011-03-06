@@ -301,10 +301,7 @@ $('#vboxIndex').bind('vmloading',function(){
 	$('#vboxTabVMSnapshotsTitle').html(trans('Snapshots'));
 	
 	// Append spinner
-	var li = document.createElement('li');
-	li.setAttribute('class','last');
-	li.innerHTML = "<div><img src='images/spinner.gif'></div>";
-	$('#vboxSnapshotList').append(li);
+	$('#vboxSnapshotList').append($('<li />').attr({'class':'last'}).html("<div><img src='images/spinner.gif'></div>"));
 	
 /* VM Finished loading */
 }).bind('vmloaded',function(e,vm){
@@ -342,10 +339,7 @@ $('#vboxTabVMSnapshots').bind('show',function(e,vm){
 	}
 
 	// Append spinner
-	var li = document.createElement('li');
-	li.setAttribute('class','last');
-	li.innerHTML = "<div class='vboxTabLoading'><img src='images/spinner.gif'></div>";
-	$('#vboxSnapshotList').append(li);
+	$('#vboxSnapshotList').append($('<li />').attr({'class':'last'}).html("<div><img src='images/spinner.gif'></div>"));
 	
 	// Get snapshots
 	vboxAjaxRequest('getSnapshots',{'vm':vm.id},__vboxTabSnapshotsFill);
@@ -381,9 +375,7 @@ function __vboxTabSnapshotsFill(s) {
 			if($('#'+$('#vboxTabVMSnapshots').data('machine').currentSnapshot.id).children('ul').first().html()) {
 				$('#'+$('#vboxTabVMSnapshots').data('machine').currentSnapshot.id).children('ul').last().append(__vboxTabSnapshotCurrent());
 			} else {
-				var ul = document.createElement('ul');
-				$(ul).append(__vboxTabSnapshotCurrent());
-				$('#'+$('#vboxTabVMSnapshots').data('machine').currentSnapshot.id).append(ul);
+				$('#'+$('#vboxTabVMSnapshots').data('machine').currentSnapshot.id).append($('<ul />').append(__vboxTabSnapshotCurrent()));
 			}
 		}			
 		
@@ -406,8 +398,7 @@ function __vboxTabSnapshotsFill(s) {
 /* Snapshot list item */
 function __vboxTabSnapshot(s) {
 
-	var li = document.createElement('li');
-	$(li).attr('id',s.id);
+	var li = $('<li />').attr({'id':s.id});
 	$(li).data(s);
 	
 	// Use timestamp
@@ -421,7 +412,7 @@ function __vboxTabSnapshot(s) {
 		
 	$(li).html(' <div class="vboxListItem"><img src="images/vbox/'+(s.online ? 'online' : 'offline')+'_snapshot_16px.png" /> ' + $('<div />').text(s.name).html()+' (<span class="timestamp" title="'+s.timeStamp +'">'+t+'</span>)</div>');
 	if(s.children.length) {
-		var ul = document.createElement('ul');
+		var ul = $('<ul />');
 		for(var i = 0; i < s.children.length; i++) {
 			$(ul).append(__vboxTabSnapshot(s.children[i]));
 		}
@@ -436,10 +427,7 @@ function __vboxTabSnapshot(s) {
 function __vboxTabSnapshotCurrent() {
 
 	// Add 'current state'
-	var li = document.createElement('li');
-	$(li).data('state','current');
-	$(li).data('name',trans('Current State'));
-	$(li).html(' <div class="vboxListItem"><img src="images/vbox/'+vboxMachineStateIcon($('#vboxTabVMSnapshots').data('machine').state)+'" /> ' + $('<div />').text(trans('Current State')).html()+'</div>');
+	var li = $('<li />').data({'state':'current','name':trans('Current State')}).html(' <div class="vboxListItem"><img src="images/vbox/'+vboxMachineStateIcon($('#vboxTabVMSnapshots').data('machine').state)+'" /> ' + $('<div />').text(trans('Current State')).html()+'</div>');
 
 	if($('#vboxTabVMSnapshots').data('machine').currentStateModified) {
 		$(li).children().first().append(' (' + trans('changed') +')');

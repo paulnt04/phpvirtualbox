@@ -582,39 +582,28 @@ function vboxVMsettingsInitSharedFolders(vm,callback) {
  */
 function vboxSettingsInit(title,panes,data,onsave,pane,icon) {
 	
-	var d = document.createElement('div');
-	$(d).attr({'id':'vboxSettingsDialog','style':'display: none;'});
+	var d = $('<div />').attr({'id':'vboxSettingsDialog','style':'display: none;'});
 	
-	var f = document.createElement('form');
-	$(f).attr({'name':'frmVboxSettings','style':'height: 100%'});
+	var f = $('<form />').attr({'name':'frmVboxSettings','style':'height: 100%'});
 	
-	var t = document.createElement('table');
-	$(t).attr({'style':'height: 100%;','class':'vboxSettingsTable'});
+	var t = $('<table />').attr({'style':'height: 100%;','class':'vboxSettingsTable'});
 	
-	var tr = document.createElement('tr');
+	var tr = $('<tr />');
 	
-	var td = document.createElement('td');
-	td.setAttribute('id','vboxSettingsMenu');
-	if(panes.length == 1) td.setAttribute('style','display: none');
-	$(td).append($('<ul />').attr({'id':'vboxSettingsMenuList','class':'vboxHover'})).appendTo(tr);
+	$($('<td />').attr({'id':'vboxSettingsMenu','style': (panes.length == 1 ? 'display:none;' : '')})).append($('<ul />').attr({'id':'vboxSettingsMenuList','class':'vboxHover'})).appendTo(tr);
 	
-	var td = document.createElement('td');
-	$(td).attr({'id':'vboxSettingsPane'}).css({'height':'100%'});
+	var td = $('<td />').attr({'id':'vboxSettingsPane'}).css({'height':'100%'});
 	
 	// Settings table contains title and visible settings pane
-	var stbl = document.createElement('table');
-	$(stbl).css({'height':'100%','width':'100%','padding':'0px','margin':'0px','border':'0px','border-spacing':'0px'})
+	var stbl = $('<table />').css({'height':'100%','width':'100%','padding':'0px','margin':'0px','border':'0px','border-spacing':'0px'})
 	
 	// Title
-	var d1 = document.createElement('div');
-	$(d1).attr({'id':'vboxSettingsTitle'}).html('Padding');
-	if(panes.length == 1) d1.setAttribute('style','display: none');
+	var d1 = $('<div />').attr({'id':'vboxSettingsTitle'}).html('Padding').css({'display':(panes.length == 1 ? 'none' : '')});
 	$(stbl).append($('<tr />').append($('<td />').css({'height':'1%','padding':'0px','margin':'0px','border':'0px'}).append(d1)));
 	
 	
 	// Settings pane
-	var d1 = document.createElement('div');
-	$(d1).attr({'id':'vboxSettingsList'}).css({'width':'100%'});
+	var d1 = $('<div />').attr({'id':'vboxSettingsList'}).css({'width':'100%'});
 	
 	$(stbl).append($('<tr />').append($('<td />').css({'padding':'0px','margin':'0px','border':'0px'}).append(d1)));
 	
@@ -637,7 +626,6 @@ function vboxSettingsInit(title,panes,data,onsave,pane,icon) {
 		if(panes[i].disabled) continue;
 		
 		// Menu item
-		var li = document.createElement('li');
 		$('<li />').html('<div><img src="images/vbox/'+panes[i].icon+'_16px.png" /></div> <div>'+trans(panes[i].label)+'</div>').data(panes[i]).click(function(){
 			
 			$('#vboxSettingsTitle').html(trans($(this).data('label')));

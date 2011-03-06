@@ -215,15 +215,11 @@ function vboxSettingsGlobalNetworkAddAdpater(n) {
 
 	if(exists) return;
 	
-	var li = document.createElement('li');
-	li.setAttribute('class','vboxListItem');
-	$(li).html($('<div />').text(n.name).html()).hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');}).data('interface',n).click(function(){
+	$(li).attr({'class':'vboxListItem'}).html($('<div />').text(n.name).html()).hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');}).data('interface',n).click(function(){
 		$(this).parent().children('li.vboxListItemSelected').removeClass('vboxListItemSelected').addClass('vboxListItem');
 		$(this).addClass('vboxListItemSelected').removeClass('vboxListItem');
 		$('#vboxSettingsGlobalNetList').trigger('select',this);
-	});
-	
-	$('#vboxSettingsGlobalNetList').append(li);
+	}).appendTo($('#vboxSettingsGlobalNetList'));
 	
 }
 

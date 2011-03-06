@@ -319,14 +319,13 @@ for(var i=0;i<imgsToLoad.length;i++){
 
 function vboxSettingsAddController(con,list) {
 	
-    var li = document.createElement('li');
-    li.setAttribute('id','vboxSettingsController' + con.bus);
-    li.setAttribute('name', con.bus);
+	var li = $('<li />').attr({'id':'vboxSettingsController' + con.bus,'name':con.bus});
 
-    var tbl = document.createElement('table');
-    tbl.setAttribute('onclick','vboxSettingsSelectController(this);');
-    tbl.setAttribute('class','vboxListItem vboxSettingsController');
-    $(tbl).hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');});
+    var tbl = $('<table />').attr({'class':'vboxListItem vboxSettingsController'}).hover(function(){
+    	$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');
+    }).bind('click',function(){
+    	vboxSettingsSelectController(this);
+    });
 
     // filter out any dummy medium attachments
     var mas = new Array();
@@ -339,16 +338,9 @@ function vboxSettingsAddController(con,list) {
     // Assign data
     $(tbl).data('controller',con);
     
-    var tr = document.createElement('tr');
+    var tr = $('<tr />');
 
-    var td = document.createElement('td');
-    td.setAttribute('class','vboxSettingsStorageTypeIcon vboxSettingsController' + con.bus + 'Expanded');
-    td.setAttribute('style','width: 22px;');
-    td.innerHTML = ' ';
-    tr.appendChild(td);
-
-    /* collapse / expand storage controller */
-    $(td).toggle(
+    $('<td />').attr({'class':'vboxSettingsStorageTypeIcon vboxSettingsController' + con.bus + 'Expanded','style':'width: 22px;'}).html(' ').toggle(
             function() {
                 var n = $(this).parents('li').first();
                 $(n).children('ul').css('display','none');
@@ -359,35 +351,22 @@ function vboxSettingsAddController(con,list) {
                 $(n).children('ul').css('display','');
                 $(this).removeClass($(n).attr('id')).addClass($(n).attr('id')+'Expanded');                  
             }
-    );
-    
-    var td = document.createElement('td');
-    td.innerHTML = '<span class="vboxSettingsControllerTitle">'+$('<div/>').text(con.name).html()+"</span>";
-    tr.appendChild(td);
-    
-    var td = document.createElement('td');
-    td.setAttribute('id','vboxSettingsController' + con.bus + 'BtnCD');
-    td.setAttribute('style','width: 22px;');
-    tr.appendChild(td);
-    
-    var td = document.createElement('td');
-    td.setAttribute('id','vboxSettingsController' + con.bus + 'BtnDrive');
-    td.setAttribute('style','width: 22px;');
-    tr.appendChild(td);
+            
+    ).appendTo(tr);
 
-    tbl.appendChild(tr);
-
-    li.appendChild(tbl);
+    // Controller name
+    $(tr).append($('<td />').html('<span class="vboxSettingsControllerTitle">'+$('<div/>').text(con.name).html()+"</span>"));
+    
+    // Buttons
+    $(tr).append($('<td />').attr({'id':'vboxSettingsController' + con.bus + 'BtnCD','style':'width: 22px;'}));
+    $(tr).append($('<td />').attr({'id':'vboxSettingsController' + con.bus + 'BtnDrive','style':'width: 22px;'}));
+    
+    $(tbl).append(tr).appendTo(li);
 
 	
 	/* Attachments list holder */
-    var ul2 = document.createElement('ul');
-    ul2.setAttribute('id','vboxSettingsController'+con.bus+'Attachments');
-    li.appendChild(ul2);
-
+    $(li).append($('<ul />').attr({'id':'vboxSettingsController'+con.bus+'Attachments'})).appendTo(list);
     
-    $(list).append(li);
-
     /* Generate Toolbars */
     var dtypes = vboxSettingsStorageBusses.storage[con.bus].driveTypes;
     for(var i = 0; i < dtypes.length; i++) {
@@ -440,49 +419,39 @@ function vboxSettingsAddController(con,list) {
  */
 function vboxSettingsAddAttachment(d,bus) {
 
+	// Save bus
+    d.bus = bus;
+
     var con = $('#vboxSettingsController'+bus+'Attachments');
 
     // remove any 'last' classes
     $(con).children().removeClass('last');
     
-    var li = document.createElement('li');
-    li.setAttribute('class','last');
+    var li = $('<li />').attr({'class':'last'});
         
 
-	var tbl = document.createElement('table');
-	tbl.setAttribute('onclick','vboxSettingsSelectAttachment(this);');
-	tbl.setAttribute('class','vboxListItem vboxSettingsStorageAttachment');
-    tbl.setAttribute('id','vboxSettingsStorageAttachment-' + bus + '-' + d.port + '-' + d.device);
-    $(tbl).hover(function(e){
+	var tbl = $('<table />').attr({'class':'vboxListItem vboxSettingsStorageAttachment','id':'vboxSettingsStorageAttachment-' + bus + '-' + d.port + '-' + d.device}).hover(function(e){
     	$(this).addClass('vboxHover');
     },function(e){
     	$(this).removeClass('vboxHover');
+    }).data({'attachment':d}).bind('click',function(){
+    	vboxSettingsSelectAttachment(this);
     });
-    d.bus = bus;
-    $(tbl).data('attachment',d);
             
     var m = vboxSettingsStorageBusses.storage.getMediumById(((d.medium && d.medium.id) ? d.medium.id : null));
     
-    var tr = document.createElement('tr');
+    var tr = $('<tr />');
 
-    var td = document.createElement('td');
-    td.setAttribute('class','vboxSettingsStorageTypeIcon vboxSettingsMediaType' + d.type);
-    td.innerHTML = '<img src="images/vbox/blank.gif" />';
-    tr.appendChild(td);
-
-    var td = document.createElement('td');
-    td.setAttribute('class','vboxSettingsStorageMediumName');
-    td.innerHTML = vboxSettingsStorageBusses.storage.getMediumName(vboxSettingsStorageBusses.storage.getMediumById((m && m.base ? m.base : (m && m.id ? m.id : null))));
-    tr.appendChild(td);
+    // Storage type icon
+    $(tr).append($('<td />').attr({'class':'vboxSettingsStorageTypeIcon vboxSettingsMediaType' + d.type}).html('<img src="images/vbox/blank.gif" />'));
     
-    tbl.appendChild(tr);
-
-    li.appendChild(tbl);
+    // Medium name
+    $(tr).append($('<td />').attr({'class':'vboxSettingsStorageMediumName'}).html(vboxSettingsStorageBusses.storage.getMediumName(vboxSettingsStorageBusses.storage.getMediumById((m && m.base ? m.base : (m && m.id ? m.id : null))))));
     
-    $(li).tipped({'source':vboxSettingsMediumTip(m),'position':'mouse','delay':1000});
+    $(tbl).append(tr).appendTo(li);
     
-    $(con).append(li);
-
+    $(li).tipped({'source':vboxSettingsMediumTip(m),'position':'mouse','delay':1000}).appendTo(con);
+    
 
 }
 
@@ -815,12 +784,6 @@ function vboxSettingsStorageAddMedium(bus, type) {
 	// Disk is unavailable
 	if(!disk || !disk.available) {
 
-		var d = document.createElement('div');
-		d.setAttribute('id','vboxSettingsStorageUnavailable');
-		d.setAttribute('style','display: none');
-		d.innerHTML = '<div><img src="images/50px-Question_icon.svg.png" style="float: left; padding: 10px; " />'+trans('No unused media message 1')+'<p>'+trans('No unused media message 2')+'</p></div>'
-		$('#vboxIndex').append(d);
-		
 		var buttons = {};
 
 		buttons[trans('Create')] = function() {
@@ -855,7 +818,9 @@ function vboxSettingsStorageAddMedium(bus, type) {
 			$('#vboxSettingsStorageUnavailable').remove();
 		};
 
-	    $(d).dialog({'closeOnEscape':false,'width':500,'height':200,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/OSE/about_16px.png" class="vboxDialogTitleIcon" /> phpVirtualBox'});			
+	    $('<div />').attr({'id':'vboxSettingsStorageUnavailable','style':'display: none'}).html(
+	    		'<div><img src="images/50px-Question_icon.svg.png" style="float: left; padding: 10px; " />'+trans('No unused media message 1')+'<p>'+trans('No unused media message 2')+'</p></div>'
+	    ).dialog({'closeOnEscape':false,'width':500,'height':200,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/OSE/about_16px.png" class="vboxDialogTitleIcon" /> phpVirtualBox'});			
 		
 		return;
 	}
@@ -1064,9 +1029,7 @@ $('#vboxSettingsStorageTree').bind('itemselect',function(e,item){
 
  			for(var i in used) {
  	 			
- 	 			var li = document.createElement('li');
- 	 			li.innerHTML = "<a href='#add"+i+"' style='background-image: url(images/vbox/"+(vboxSettingsStorageBusses.storage[i].displayInherit ? vboxSettingsStorageBusses.storage[i].displayInherit.toLowerCase() : i.toLowerCase())+"_add_"+(used[i]?"disabled_":"") + "16px.png);' >"+trans('Add '+i+' Controller')+"</a>";
- 	 			ul.appendChild(li);
+ 				$(ul).append($('<li />').html("<a href='#add"+i+"' style='background-image: url(images/vbox/"+(vboxSettingsStorageBusses.storage[i].displayInherit ? vboxSettingsStorageBusses.storage[i].displayInherit.toLowerCase() : i.toLowerCase())+"_add_"+(used[i]?"disabled_":"") + "16px.png);' >"+trans('Add '+i+' Controller')+"</a>"));
  	 			(used[i]? $('#vboxSettingsAddControllerMenu').disableContextMenuItems('#add'+i) : null); 	 			
  			}
  			return true;
@@ -1101,11 +1064,7 @@ $('#vboxSettingsStorageTree').bind('itemselect',scToolbar.update);
 
 /* Menu for adding controllers */
 if(!$('#vboxSettingsAddControllerMenu').attr('id')) {
-	var ul = document.createElement('ul');
-	ul.setAttribute('class','contextMenu');
-	ul.setAttribute('style','display: none');
-	ul.setAttribute('id','vboxSettingsAddControllerMenu');
-	$('#vboxIndex').append(ul);
+	$('#vboxIndex').append($('<ul />').attr({'id':'vboxSettingsAddControllerMenu','class':'contextMenu','style':'display: none'}));
 }
 
  /* Add controller button menu initialization  */
@@ -1128,18 +1087,12 @@ $("#vboxToolbarButton-vboxSettingsControllersButtons-addcontroller").contextMenu
 
 /* Menu for adding IDE attachment */
 if(!$('#vboxSettingsAddAttachmentsMenu').attr('id')) {
-	var ul = document.createElement('ul');
-	ul.setAttribute('class','contextMenu');
-	ul.setAttribute('style','display: none');
-	ul.setAttribute('id','vboxSettingsAddAttachmentsMenu');
-
-	var li = document.createElement('li');
-	li.innerHTML = "<a href='#addCD' style='background-image: url(images/vbox/cd_add_16px.png);' >"+trans('Add CD/DVD Device')+"</a>";
-	ul.appendChild(li);
 	
-	var li = document.createElement('li');
-	li.innerHTML = "<a href='#addHD' style='background-image: url(images/vbox/hd_add_16px.png);' >"+trans('Add Hard Disk')+"</a>";
-	ul.appendChild(li);
+	var ul = $('<ul />').attr({'id':'vboxSettingsAddAttachmentsMenu','class':'contextMenu','style':'display: none'});
+
+	$(ul).append($('<li />').html("<a href='#addCD' style='background-image: url(images/vbox/cd_add_16px.png);' >"+trans('Add CD/DVD Device')+"</a>"));
+
+	$(ul).append($('<li />').html("<a href='#addHD' style='background-image: url(images/vbox/hd_add_16px.png);' >"+trans('Add Hard Disk')+"</a>"));
 	
 	$('#vboxIndex').append(ul);
 
@@ -1199,50 +1152,63 @@ $('#vboxSettingsDialog').bind('save',function(){
 });
 
 /*
+ * Resize storage
+ */
+function vboxSettingsStorageResize() {
+
+	// Hide storage tree
+	$('#vboxSettingsStorageTree').css({'display':'none'});
+
+	// Get and set size
+	$('#vboxStoragePaneLeft').css({'display':'none'});
+	$('#vboxStoragePaneRight').css({'display':'none'});
+	$('#vboxStorageResizeBar').css({'display':'none'});
+	
+	// Main table height
+	$('#vboxSettingsStorageTableWrapper').css({'display':'none'});
+	var h = $('#vboxSettingsStorageTableWrapper').css({'display':'none'}).parent().parent().innerHeight()-4;
+	
+	// IE needs to account for bordering
+	if($.browser.msie) h-= 4;
+	
+	// Set height
+	$('#vboxSettingsStorageTableWrapper').css({'display':''}).height(h);
+	
+	// Pane width
+	var bothWidth = ($('#vboxStoragePaneLeft').parent().innerWidth() + $('#vboxStoragePaneRight').parent().innerWidth() - 24) / 2;
+	$('#vboxStoragePaneLeft').css({'width':bothWidth+'px','display':''}).parent().css({'width':'auto','padding':'6px'});
+	$('#vboxStoragePaneRight').css({'width':bothWidth+'px','display':''}).parent().css({'width':'auto','padding':'6px'});
+	
+	// Unsnap.. sorry..
+	$('#vboxStorageResizeBar').data('vboxSnapped',0);
+	
+	// Get inner height of storage tree parent - padding
+	var h = $('#vboxStoragePaneLeft').parent().innerHeight() - 24;
+	// subtract sibling heights
+	$('#vboxSettingsStorageTree').siblings().each(function(){
+		h -= $(this).outerHeight(true);
+	});
+	
+	$('#vboxSettingsStorageTree').height(h).css({'display':''});
+	
+	$('#vboxStorageResizeBar').css({'display':'block'});
+
+}
+
+/*
  * Set pane sizes and resize bar
  */
 $('#vboxSettingsStorageTableWrapper').one('show',function(){
-	
-	
+		
+
 	// Resize everything on dialog resize
-    $('#vboxSettingsDialog').bind('dialogresizestop',function(){
-
-    	// Hide storage tree
-    	$('#vboxSettingsStorageTree').css({'display':'none'});
-
-    	// Get and set size
-    	$('#vboxStoragePaneLeft').css({'display':'none'});
-    	$('#vboxStoragePaneRight').css({'display':'none'});
-
-    	// Main table height
-    	$('#vboxSettingsStorageTableWrapper').css({'display':'none'});
-    	var h = $('#vboxSettingsStorageTableWrapper').css({'display':'none'}).parent().parent().innerHeight()-4;
-    	
-    	// IE needs to account for bordering
-    	if($.browser.msie) h-= 4;
-    	
-    	// Set height
-    	$('#vboxSettingsStorageTableWrapper').css({'display':''}).height(h);
-    	
-    	// Pane width
-    	var bothWidth = ($('#vboxStoragePaneLeft').parent().innerWidth() + $('#vboxStoragePaneRight').parent().innerWidth() - 24) / 2;
-    	$('#vboxStoragePaneLeft').css({'width':bothWidth+'px','display':''}).parent().css({'width':'auto','padding':'6px'});
-    	$('#vboxStoragePaneRight').css({'width':bothWidth+'px','display':''}).parent().css({'width':'auto','padding':'6px'});
-    	
-    	// Unsnap.. sorry..
-    	$('#vboxStorageResizeBar').data('vboxSnapped',0);
-    	
-    	// Get inner height of storage tree parent - padding
-    	var h = $('#vboxStoragePaneLeft').parent().innerHeight() - 24;
-    	// subtract sibling heights
-    	$('#vboxSettingsStorageTree').siblings().each(function(){
-    		h -= $(this).outerHeight(true);
-    	});
-    	$('#vboxSettingsStorageTree').height(h).css({'display':''});
-    	
-    	
-    });
-
+	$('#vboxSettingsDialog').bind('dialogresizestop',function(){
+		vboxSettingsStorageResize();
+	});
+	$('#vboxSettingsStorageTableWrapper').bind('show',function(){
+		vboxSettingsStorageResize();
+	});
+	
 	// Hide children to get true size
 	$('#vboxStoragePaneLeft').children().css({'display':'none'});
 	$('#vboxStoragePaneRight').children().css({'display':'none'});
@@ -1364,7 +1330,7 @@ $('#vboxSettingsStorageTableWrapper').one('show',function(){
 	},'stop':function(e) {
 		$('body').enableSelection().css({'cursor':'default'});
 		$('#vboxResizeOverlay').remove();
-	}}).css({'cursor':(jQuery.browser.opera ? 'e-resize' : 'col-resize'),'height':'98%'}).parent().disableSelection();
+	}}).css({'cursor':(jQuery.browser.opera ? 'e-resize' : 'col-resize'),'height':'98%'});
 
 	
 });

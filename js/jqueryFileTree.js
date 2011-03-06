@@ -105,6 +105,8 @@ if(jQuery) (function($){
 				// Get the initial file list
 				showTree( $(this), o.root, true);
 			});
+			
+			return this;
 		}
 	});
 	

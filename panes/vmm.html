@@ -246,24 +246,15 @@ var vmmButtons = new Array(
 		'icon' : 'hd_add',
 		'click' : function () {
 			
-			var d = document.createElement('div');
-			d.setAttribute('id','vboxVMMAddMediumImageDialog');
-			var tbl = document.createElement('table');
-			var tr = document.createElement('tr');
-			var td = document.createElement('td');
-			td.setAttribute('style',"width: 100%; white-space: nowrap;");
-			td.innerHTML = '<input type="text" class="vboxText" id="vboxVMMAddMediumImage" style="width: 100%"/>';
-			tr.appendChild(td);
+			var d = $('<div />').attr({'id':'vboxVMMAddMediumImageDialog'});
+			var tr = $('<tr />');
 			
-			var td = document.createElement('td');
-			td.setAttribute('class','vboxFileFolderInput');
-			td.setAttribute('style','width: auto; white-space: nowrap;');
-			td.innerHTML = '<input type="button" class="vboxImgButton" style="background-image: url(images/vbox/select_file_16px.png); '+($('#vboxIndex').data('vboxConfig').browserDisable ? 'display: none;' : '')+'" onClick="vboxFileBrowser($(\'#vboxIndex\').data(\'vboxSystemProperties\').homeFolder,function(f){if(f) $(\'#vboxVMMAddMediumImage\').val(f);},false);" />';
-			tr.appendChild(td);
-			tbl.appendChild(tr);
+			$('<td />').attr({'style':"width: 100%; white-space: nowrap;"}).html('<input type="text" class="vboxText" id="vboxVMMAddMediumImage" style="width: 100%"/>').appendTo(tr);
+			
+			$('<td />').attr({'class':'vboxFileFolderInput','style':'width: auto; white-space: nowrap;'}).html('<input type="button" class="vboxImgButton" style="background-image: url(images/vbox/select_file_16px.png); '+($('#vboxIndex').data('vboxConfig').browserDisable ? 'display: none;' : '')+'" onClick="vboxFileBrowser($(\'#vboxIndex\').data(\'vboxSystemProperties\').homeFolder,function(f){if(f) $(\'#vboxVMMAddMediumImage\').val(f);},false);" />').appendTo(tr);
 
-			d.appendChild(tbl);
-
+			$('<table />').append(tr).appendTo(d);
+			
 			var buttons = {};
 			buttons[trans('OK')] = function() {
 				if($('#vboxVMMAddMediumImage').val()) {
@@ -320,8 +311,7 @@ var vmmButtons = new Array(
 		'click' : function () {
 
 			
-			var d = document.createElement('div');
-			$(d).attr({'id':'vboxVMMAddMediumImageDialog'});
+			var d = $('<div />').attr({'id':'vboxVMMAddMediumImageDialog'});
 
 			var buttons = {};
 			buttons[trans('OK')] = function() {
@@ -546,37 +536,33 @@ var menu = {
 			'icon':'vdm_add',
 			'click':function(){
 			
-				var d = document.createElement('div');
-				d.setAttribute('id','vboxVMMCloneMediumDialog');
-				var tbl = document.createElement('table');
-				var tr = document.createElement('tr');
-				var td = document.createElement('td');
-				td.setAttribute('style',"width: 100%; white-space: nowrap;");
-				td.innerHTML = '<input type="text" class="vboxText" id="vboxVMMCloneMedium" style="width: 100%"/>';
-				tr.appendChild(td);
+				var d = $('<div />').attr({'id':'vboxVMMCloneMediumDialog'});
 				
-				var td = document.createElement('td');
-				td.setAttribute('class','vboxFileFolderInput');
-				td.setAttribute('style','width: auto; white-space: nowrap;');
-				td.innerHTML = '<input type="button" class="vboxImgButton" style="background-image: url(images/vbox/select_file_16px.png); '+($('#vboxIndex').data('vboxConfig').browserDisable ? 'display: none;' : '')+'" onClick="vboxFileBrowser($(\'#vboxIndex\').data(\'vboxSystemProperties\').homeFolder,function(f){if(f) $(\'#vboxVMMCloneMedium\').val(f);},false);" />';
-				tr.appendChild(td);
-				tbl.appendChild(tr);
+				var tbl = $('<table />');
+				var tr = $('<tr />');
 
-				tr = document.createElement('tr');
-				td = document.createElement('td');
-				$(td).append(trans("Storage Type") + ': ');
+				// path textbox
+				$('<td />').attr({'style':"width: 100%; white-space: nowrap;"}).html('<input type="text" class="vboxText" id="vboxVMMCloneMedium" style="width: 100%"/>').appendTo(tr);
 
-				var s = document.createElement('select');
-				s.setAttribute('id','vboxVMMCloneMediumType');
-				s.options[0] = new Option(trans('Dynamically expanding storage'),'dynamic');
-				s.options[1] = new Option(trans('Fixed-size storage'),'fixed');
-				$(td).append(s);
-				$(tr).append(td);
-				td = document.createElement('td');
-				$(tr).append(td);
+				// select file button
+				$('<td />').attr({'class':'vboxFileFolderInput','style':'width: auto; white-space: nowrap;'}).html('<input type="button" class="vboxImgButton" style="background-image: url(images/vbox/select_file_16px.png); '+($('#vboxIndex').data('vboxConfig').browserDisable ? 'display: none;' : '')+'" onClick="vboxFileBrowser($(\'#vboxIndex\').data(\'vboxSystemProperties\').homeFolder,function(f){if(f) $(\'#vboxVMMCloneMedium\').val(f);},false);" />').appendTo(tr);
+				
 				$(tbl).append(tr);
-	
-				d.appendChild(tbl);
+
+				// type
+				var s = $('<select />').attr({'id':'vboxVMMCloneMediumType'}).append(
+					new Option(trans('Dynamically expanding storage'),'dynamic')
+				).append(
+					new Option(trans('Fixed-size storage'),'fixed')
+				);
+				
+				tr = $('<tr />');
+				
+				$('<td />').append(trans("Storage Type") + ': ').append(s).appendTo(tr);
+				
+				tr.append($('<td />')).appendTo(tbl);
+				
+				d.append(tbl);
 	
 				var buttons = {};
 				buttons[trans('OK')] = function() {
@@ -600,8 +586,6 @@ var menu = {
 				};
 				buttons[trans('Cancel')] = function() { $('#vboxVMMCloneMediumDialog').empty().remove(); };
 	
-				$('#vboxIndex').append(d);
-				
 			    $(d).dialog({'width':600,'height':150,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':trans('Select File')});			
 			
 			},
@@ -746,16 +730,13 @@ function vboxVMMMediaInfo(e,m) {
  */
 function vboxVMMAddMedium(d,depth,hideDiff,attached,topLevelParent) {
 	
-	var tr = document.createElement('tr');
-	$(tr).data({'medium':d}).attr({'id':'vboxVMMMedium'+(d.id),'class':'vboxListItem collapsed','title':d.id}).hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');});
+	var tr = $('<tr />').data({'medium':d}).attr({'id':'vboxVMMMedium'+(d.id),'class':'vboxListItem collapsed','title':d.id}).hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');}).addClass('vboxVMMTopLevel'+(topLevelParent ? topLevelParent : '0')+' vboxVMMChildOf'+(d.parent ? d.parent : '0') +' vboxVMMChildDepth'+depth);
 
-	$(tr).addClass('vboxVMMTopLevel'+(topLevelParent ? topLevelParent : '0')+' vboxVMMChildOf'+(d.parent ? d.parent : '0') +' vboxVMMChildDepth'+depth);
 	if(d.children && d.children.length && !hideDiff) $(tr).addClass('vboxVMMParent');
 	if(d.parent) $(tr).attr('style','display: none');
 
 	/* Expand / collapse button and/or spacers */
-	var td = document.createElement('td');
-	$(td).addClass('vboxHoverFirst');
+	var td = $('<td />').addClass('vboxHoverFirst');
 
 	// Add spacer image to pad for depth
 	if(depth) {
@@ -780,8 +761,7 @@ function vboxVMMAddMedium(d,depth,hideDiff,attached,topLevelParent) {
 	}
 
 	// Title div
-	var span = document.createElement('span');
-	$(span).html($('<div />').html(d.name).text() + (hideDiff === undefined && d.readOnly && d.deviceType == 'HardDisk' ? ' ('+trans('ro')+')' : ''));
+	var span = $('<span />').html($('<div />').html(d.name).text() + (hideDiff === undefined && d.readOnly && d.deviceType == 'HardDisk' ? ' ('+trans('ro')+')' : ''));
 
 	// Add read-only or inaccessible class?
 	if(d.state == 'Inaccessible') {

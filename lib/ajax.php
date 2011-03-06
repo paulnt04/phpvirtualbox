@@ -121,6 +121,7 @@ try {
 				$_SESSION['user'] = $vboxRequest['u'];
 				$_SESSION['admin'] = intval($vbox->vbox->getExtraData('phpvb/users/'.$vboxRequest['u'].'/admin'));
 				$_SESSION['authCheckHeartbeat'] = time();
+				$_SESSION['uHash'] = $p;
 			}
 		
 		/* Get Session Data */
@@ -144,8 +145,10 @@ try {
 			$p = $vbox->vbox->getExtraData('phpvb/users/'.$_SESSION['user'].'/pass');
 			
 			if($p == hash('sha512', $vboxRequest['old'])) {
-				$vbox->vbox->setExtraData('phpvb/users/'.$_SESSION['user'].'/pass', hash('sha512', $vboxRequest['new']));
+				$np = hash('sha512', $vboxRequest['new']);
+				$vbox->vbox->setExtraData('phpvb/users/'.$_SESSION['user'].'/pass', $np);
 				$response['data']['result'] = 1;
+				$_SESSION['uHash'] = $np;
 			}
 			break;
 		
@@ -255,7 +258,7 @@ try {
 				
 				$vbcheck->connect();
 				$p = $vbcheck->vbox->getExtraData('phpvb/users/'.$_SESSION['user'].'/pass');
-				if(!$vbcheck->vbox->getExtraData('phpvb/users/'.$_SESSION['user'].'/pass')) {
+				if(!$p || $_SESSION['uHash'] != $p) {
 					session_destroy();
 					unset($_SESSION['valid']);
 				} else {
@@ -265,7 +268,7 @@ try {
 			}
 			
 			if(!$_SESSION['valid'])
-				throw new Exception(trans('Not logged in.').$p, vboxconnector::PHPVB_ERRNO_FATAL);
+				throw new Exception(trans('Not logged in.'), vboxconnector::PHPVB_ERRNO_FATAL);
 				
 			# fix for allow_call_time_pass_reference = Off setting
 			if(method_exists($vbox,$vboxRequest['fn'])) {

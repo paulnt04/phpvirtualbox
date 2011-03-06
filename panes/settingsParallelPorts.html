@@ -50,7 +50,7 @@ for(var i = 0; i < document.forms['frmVboxSettings'].vboxSettingsPPortNumber.opt
 }
 
 /* Parallel Port tab links */
-var ul = document.createElement('ul');
+var ul = $('<ul />');
 $(vboxSettingsPPortContainer).append(ul);
 
 vboxSetLangContext('vboxParallelPorts');
@@ -58,9 +58,7 @@ for(var i = 0; i < parseInt($('#vboxIndex').data('vboxSystemProperties').paralle
 
 	
 	/* tab */
-	var li = document.createElement('li');
-	li.innerHTML = '<a href="#' + vboxSettingsPPortTemplate.id + (i + 1) +'"><span>' + trans('Port X').replace('%s',i + 1) + '</span></a>';
-	ul.appendChild(li);
+	ul.append($('<li />').html('<a href="#' + vboxSettingsPPortTemplate.id + (i + 1) +'"><span>' + trans('Port X').replace('%s',i + 1) + '</span></a>'));
 
 	/* tab content */
 	var newTab = $("#vboxSettingsTabParallelPort").clone(true);

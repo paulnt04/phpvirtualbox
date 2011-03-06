@@ -73,7 +73,7 @@ for(var i = 0; i < document.forms['frmVboxSettings'].vboxSettingsPortMode.option
 
 
 /* Serial Port tab links */
-var ul = document.createElement('ul');
+var ul = $('<ul />');
 $(vboxSettingsSPortContainer).append(ul);
 
 vboxSetLangContext('vboxSerialPorts');
@@ -81,17 +81,11 @@ for(var i = 0; i < parseInt($('#vboxIndex').data('vboxSystemProperties').serialP
 
 	
 	/* tab */
-	var li = document.createElement('li');
-	li.innerHTML = '<a href="#' + vboxSettingsSPortTemplate.id + (i + 1) +'"><span>' + trans('Port X').replace('%s',i + 1) + '</span></a>';
-	ul.appendChild(li);
+	ul.append($('<li />').html('<a href="#' + vboxSettingsSPortTemplate.id + (i + 1) +'"><span>' + trans('Port X').replace('%s',i + 1) + '</span></a>'));
 
 	/* tab content */
 	var newTab = $("#vboxSettingsTabSerialPort").clone(true);
-	newTab.attr('id',vboxSettingsSPortTemplate.id + (i + 1));
-	newTab.css('display','block');
-
-	// Enable / disable trigger
-	newTab.find('.vboxEnablerTrigger').bind('enable',function(){
+	newTab.attr({'id':vboxSettingsSPortTemplate.id + (i + 1)}).css({'display':'block'}).find('.vboxEnablerTrigger').bind('enable',function(){
 		$(this).children('select').trigger('change');
 	});
 	
