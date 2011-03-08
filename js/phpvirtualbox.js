@@ -140,9 +140,9 @@ var vboxVMActions = {
 						// check for progress operation
 						if(d && d.progress) {
 							vboxProgress(d.progress,function(){$('#vboxIndex').trigger('vmlistreload');},{},'progress_delete_90px.png');
-							return;
+						} else {
+							$('#vboxIndex').trigger('vmlistreload');
 						}
-						$('#vboxIndex').trigger('vmlistreload');
 					});
 				}
 				buttons[trans('Remove only')] = function(){
@@ -151,9 +151,9 @@ var vboxVMActions = {
 						// check for progress operation
 						if(d && d.progress) {
 							vboxProgress(d.progress,function(){$('#vboxIndex').trigger('vmlistreload');});
-							return;
+						} else {
+							$('#vboxIndex').trigger('vmlistreload');
 						}
-						$('#vboxIndex').trigger('vmlistreload');
 					});
 				}
 				
@@ -279,7 +279,7 @@ function vboxWizard(name, title, img, bg, icon) {
 	this.img = img;
 	this.finish = null;
 	this.width = 700;
-	this.height = 400;
+	this.height = 'auto';
 	this.bg = bg;
 	
 	// Initialize / display dialog
@@ -294,7 +294,7 @@ function vboxWizard(name, title, img, bg, icon) {
 		var tr = $('<tr />');
 		
 		if(this.img) {
-			$('<td />').attr('class','vboxWizardImg').html('<img src="' + self.img + '" />').appendTo(tr);
+			$('<td />').css({'background':'url(images/wizard_bg.png)','background-repeat':'repeat-y','padding':'0px','margin':'0px'}).append('<img src="' + self.img + '" style="width: 145px" />').appendTo(tr);
 		}
 		
 		var td = $('<td />').attr({'id':self.name+'Content','class':'vboxWizardContent'});
@@ -349,7 +349,7 @@ function vboxWizard(name, title, img, bg, icon) {
 			vboxInitDisplay(self.name+'Content');
 			vboxUnsetLangContext();
 			
-			$(d).dialog({'closeOnEscape':false,'width':self.width,'height':'auto','buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent vboxWizard','title':(icon ? '<img src="images/vbox/'+icon+'_16px.png" class="vboxDialogTitleIcon" /> ' : '') + self.title});
+			$(d).dialog({'closeOnEscape':false,'width':self.width,'height':self.height,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent vboxWizard','title':(icon ? '<img src="images/vbox/'+icon+'_16px.png" class="vboxDialogTitleIcon" /> ' : '') + self.title});
 
 			self.displayStep(1);
 		};
@@ -1146,6 +1146,7 @@ function vboxDataMediator() {
  * 
  * Top Menu Bar
  * 
+ * Works in harmony with heavily modified contextMenu jquery plugin
  * 
  */
 function vboxMenuBar(name) {
@@ -1198,8 +1199,12 @@ function vboxMenuBar(name) {
 				},
 				self.click
 			).hover(
-				function(){$(this).addClass('vboxBordered');},
-				function(){$(this).removeClass('vboxBordered');}
+				function(){
+					$(this).addClass('vboxBordered');
+				},
+				function(){
+					$(this).removeClass('vboxBordered');
+				}
 			);
 		}
 		self.update();
@@ -1307,7 +1312,7 @@ function vboxLoader() {
 				'dialogClass' : 'vboxLoaderDialog',
 				'width' : 'auto',
 				'height' : 60,
-				'modal' : false,
+				'modal' : true,
 				'resizable' : false,
 				'draggable' : false,
 				'closeOnEscape' : false,

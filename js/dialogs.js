@@ -17,6 +17,8 @@ function vboxImportApplianceDialogInit() {
 
 		var vbw = new vboxWizard('wizardImportAppliance',trans('Appliance Import Wizard'),'images/vbox/vmw_ovf_import.png', 'images/vbox/vmw_ovf_import_bg.png','import');
 		vbw.steps = 2;
+		vbw.width = 900;
+		vbw.height = 500;
 		vbw.onFinish = function(wiz,dialog) {
 		
 			var file = $(document.forms['frmwizardImportAppliance'].elements.wizardImportApplianceLocation).val();
@@ -66,6 +68,7 @@ function vboxExportApplianceDialogInit() {
 
 	var vbw = new vboxWizard('wizardExportAppliance',trans('Appliance Export Wizard'),'images/vbox/vmw_ovf_export.png','images/vbox/vmw_ovf_export_bg.png','export');
 	vbw.steps = 3;
+	vbw.width = 900;
 	vbw.height = 500;
 	vbw.onFinish = function(wiz,dialog) {
 
@@ -88,13 +91,14 @@ function vboxExportApplianceDialogInit() {
 
 		var file = $(document.forms['frmwizardExportAppliance'].elements.wizardExportApplianceLocation).val();
 		var format = (document.forms['frmwizardExportAppliance'].elements.wizardExportApplianceLegacy.checked ? 'ovf-0.9' : '');
+		var manifest = (document.forms['frmwizardExportAppliance'].elements.wizardExportApplianceManifest.checked ? 1 : 0);
 		
 		var l = new vboxLoader();
 		l.mode = 'save';
 		l.add('applianceExport',function(d){
 			if(d && d.progress)
 				vboxProgress(d.progress,function(){return;},{},'progress_export_90px.png',trans('Export Appliance'));
-		},{'format':format,'file':file,'vms':vms});
+		},{'format':format,'file':file,'vms':vms,'manifest':manifest});
 		$(dialog).trigger('close').empty().remove();
 		l.run();
 
@@ -389,7 +393,7 @@ function vboxMountInit(vm,bus,port,device,onmount) {
 		var title = vboxMountPostInit(bus,port,device,onmount);
 		var buttons = {};
 		buttons[trans('Close')] = function() {$('#vboxMountDialog').trigger('close').empty().remove();};
-		$(d).dialog({'closeOnEscape':false,'width':400,'height':160,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':title});
+		$('#vboxMountDialog').dialog({'closeOnEscape':false,'width':400,'height':160,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':title});
 	}
 	l.run();
 

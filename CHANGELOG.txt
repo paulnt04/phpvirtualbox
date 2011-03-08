@@ -20,6 +20,14 @@ Storage controller pane now resizes as expected.
 Attached USB devices in VM settings is now obtained in real-time
 rather than only when the settings dialog is first opened.
 
+Fixed clone medium bug that would always clone a disk as 
+dynamically expanding storage type no matter which option was
+selected.
+
+Fixed bug when removing a VM when using PHP < 5.2.0.
+
+Fixed bug when editing shared folders of a non-running VM.
+
 -------------------------------------
 	4.0-4b	2011-3-1
 -------------------------------------

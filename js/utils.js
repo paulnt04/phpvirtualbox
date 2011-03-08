@@ -610,7 +610,7 @@ function vboxInstallGuestAdditions(vmid) {
  */
 function vboxProgress(pid,callback,args,icon,title) {
 	
-	var div = $('<div />').attr({'id':'vboxProgressDialog','title':(title ? title : 'phpVirtualBox'),'style':'text-align: center'});
+	var div = $('<div />').attr({'id':'vboxProgressDialog','title':(title ? title : 'phpVirtualBox'),'style':'text-align: center'}).data({'defaultTitle':(title ? false : true)});
 	
 	var tbl = $('<table />').css({'width':'100%'});
 	var tr = $('<tr />');
@@ -661,7 +661,11 @@ function vboxProgressUpdate(d,e) {
 
 	// update percent
 	$("#vboxProgressBar").progressbar({ value: d.info.percent });
-	$("#vboxProgressText").html(d.info.percent+'%<p>'+d.info.description+'</p>');
+	$("#vboxProgressText").html(d.info.percent+'%<p>'+d.info.operationDescription+'</p>');
+	
+	if($('#vboxProgressDialog').data('defaultTitle')) {
+		$('#vboxProgressDialog').dialog('option','title',d.info.description);
+	}
 	
 	// Cancelable?
 	if(d.info.cancelable) {

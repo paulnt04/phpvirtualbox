@@ -478,7 +478,7 @@ var vmmButtons = new Array(
 					}
 					var l = new vboxLoader();
 					l.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
-					l.onLoad = vboxVMMFillMediums;
+					l.onLoad = function(){vboxVMMFillMediums(m.id);}
 					$(b).empty().remove();
 					l.run();
 				});

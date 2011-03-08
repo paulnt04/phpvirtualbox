@@ -64,10 +64,11 @@ var sButtons = new Array(
 			buttons[trans('OK')] = function() {
 				if($('#vboxSettingsSFName').val() && $('#vboxSettingsSFPath').val()) {
 					var f = {'name':$('#vboxSettingsSFName').val(),'hostPath':$('#vboxSettingsSFPath').val(),'autoMount':($('#vboxSettingsSFAM').attr('checked')),'writable':!($('#vboxSettingsSFRO').attr('checked'))};
-					if($('#vboxSettingsSFPerm').attr('id'))
+					if($('#vboxSettingsSFPerm').length) {
 						f['type'] = ($('#vboxSettingsSFPerm').attr('checked') ? 'machine' : '');
-					else
+					} else {
 						f['type'] = 'machine';
+					}
 					var row = vboxSettingsAddSharedFolder(f);
 					$(row).children('td').last().trigger('click');
 				}
@@ -99,14 +100,13 @@ var sButtons = new Array(
 			var buttons = { };
 			buttons[trans('OK')] = function() {
 				if($('#vboxSettingsSFName').val() && $('#vboxSettingsSFPath').val()) {
-					// TODO
 					var item = $('#vboxSettingsSharedFoldersList').find('tr.vboxListItemSelected').first();
 					$(item).data({
 						'hostPath' : $('#vboxSettingsSFPath').val(),
 						'name' : $('#vboxSettingsSFName').val(),
 						'autoMount' : ($('#vboxSettingsSFAM').attr('checked')),
 						'writable' : !($('#vboxSettingsSFRO').attr('checked')),
-						'type' : ($('#vboxSettingsSFPerm').attr('id') && $('#vboxSettingsSFPerm').attr('checked') ? 'machine' : '')
+						'type' : ((!$('#vboxSettingsSFPerm').length || $('#vboxSettingsSFPerm').attr('checked')) ? 'machine' : '')
 					}).trigger('refresh');
 				}
 				$(dialog).empty().remove();

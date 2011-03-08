@@ -1088,6 +1088,9 @@ class vboxconnector {
 		$this->vbox->registerMachine($m->handle);
 		
 		$m->releaseRemote();
+		
+		$this->cache->expire('getVMs');
+		
 		return ($response['data']['result'] = 1);
 
 	}
@@ -1189,7 +1192,8 @@ class vboxconnector {
 			$response['data']['info'] = array(
 				'completed' => $progress->completed,
 				'canceled' => $progress->canceled,
-				'description' => $progress->operationDescription,
+				'description' => $progress->description,
+				'operationDescription' => $progress->operationDescription,
 				'timeRemaining' => $this->__splitTime($progress->timeRemaining),
 				'timeElapsed' => $this->__splitTime((time() - $pop['started'])),
 				'percent' => $progress->percent
@@ -1391,7 +1395,7 @@ class vboxconnector {
 		} catch (Exception $null) {}
 
 		// Save progress
-		$this->__storeProgress($progress,'getMediums');
+		$this->__storeProgress($progress,array('getMediums','getVMs'));
 
 		$response['data']['progress'] = $progress->handle;
 
@@ -1517,7 +1521,7 @@ class vboxconnector {
 			$m->releaseRemote();
 		}
 
-		$progress = $app->write(($args['format'] ? $args['format'] : 'ovf-1.0'),true,$args['file']);
+		$progress = $app->write(($args['format'] ? $args['format'] : 'ovf-1.0'),($args['manifest'] ? true : false),$args['file']);
 		$app->releaseRemote();
 
 		// Does an exception exist?
@@ -2197,48 +2201,52 @@ class vboxconnector {
 
 		$machine = $this->vbox->findMachine($args['vm']);
 
-		$cache = array('__consolePort'.$args['vm'],'__getMachine'.$args['vm'],'__getNetworkAdapters'.$args['vm'],'__getStorageControllers'.$args['vm'],
+		$cache = array('__consolePort'.$args['vm'],'__getMachine'.$args['vm'],'__getNetworkAdapters'.$args['vm'],'__getStorageControllers'.$args['vm'], 'getVMs',
 			'__getSharedFolders'.$args['vm'],'__getUSBController'.$args['vm'],'getMediums','__getSerialPorts'.$args['vm'],'__getParallelPorts'.$args['vm']);
 
 		// Only unregister or delete?
-		if($args['unregister']) {
+		if(!$args['delete']) {
 
 			$machine->unregister('Full');
 
 			// Clear caches
 			foreach($cache as $ex) {
-				$this->cache->expire('__'.$ex.$args['vm']);
+				$this->cache->expire($ex);
 			}
 			
 			$machine->releaseRemote();
+			
 			return ($response['data']['result'] = 1);
 
 		} else {
 
+			$hds = array();
 			$delete = $machine->unregister('DetachAllReturnHardDisksOnly');
-			if($args['delete']) {
-				foreach($delete as $hd) $hds[] = $hd->handle;
-			} else {
-				$hds = array();
+			foreach($delete as $hd) {
+				$hds[] = $this->vbox->findMedium($hd->id,'HardDisk')->handle;
 			}
-
-			$progress = $machine->delete($hds);
+			
+			if(count($hds)) $progress = $machine->delete($hds);
+			else $progress = null;
 			
 			$machine->releaseRemote();
 
 			// Does an exception exist?
-			try {
-				if($progress->errorInfo->handle) {
-					$this->errors[] = new Exception($progress->errorInfo->text);
-					$progress->releaseRemote();
-					return false;
-				}
-			} catch (Exception $null) {}
-
-			$this->__storeProgress($progress,$cache);
-
-			$response['data']['progress'] = $progress->handle;
-
+			if($progress) {
+				try {
+					if($progress->errorInfo->handle) {
+						$this->errors[] = new Exception($progress->errorInfo->text);
+						$progress->releaseRemote();
+						return false;
+					}
+				} catch (Exception $null) {}
+	
+				$this->__storeProgress($progress,$cache);
+	
+				$response['data']['progress'] = $progress->handle;
+			
+			}
+			
 			return ($response['data']['result'] = 1);
 
 		}
@@ -3117,7 +3125,9 @@ class vboxconnector {
 		$src = $this->vbox->findMedium($args['id'],'HardDisk');
 
 		$type = ($args['type'] == 'fixed' ? 'Fixed' : 'Standard');
-
+		$mv = new MediumVariant();
+		$type = $mv->ValueMap[$type];
+		
 		$progress = $src->cloneTo($target->handle,$type,null);
 		
 		$src->releaseRemote();

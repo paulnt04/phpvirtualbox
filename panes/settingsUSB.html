@@ -141,7 +141,7 @@
           	var opts = [['',trans('Any')],['yes',trans('Yes')],['no',trans('No')]];
           	for(var i = 0; i < opts.length; i++) {
               	var o = new Option(opts[i][1],opts[i][0],((filter['remote']||'')==opts[i][0]));
-              	sel.options.add(o);
+              	$(sel).attr('options').add(o);
           	}
           	
           	$('<tr />').append($('<th />').attr({'style':'white-space: nowrap; width: auto; text-align: right;'}).html(trans('Remote')+' :')).append($('<td />').attr({'style':'width: 100%'}).append(sel)).appendTo(tbl);

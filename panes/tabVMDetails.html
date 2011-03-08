@@ -363,7 +363,7 @@ function vboxDetailSettingsLink(section) {
 function __vboxDetailHeader(icon,name,linkto,vm,boxes) {
 
 	var tr = $('<tr />').attr({'class':'vboxDetailsHead'});
-	var th = $('<th />').attr({'class':'vboxDetailsSection','colspan':'2'});
+	var th = $('<th />').attr({'class':'vboxDetailsSection','colspan':'2'}).disableSelection();
 
 	if(boxes) {
 		var div = $('<div />').html("<img style='float:left; margin-right: 3px; ' src='images/vbox/" + icon + "' /> ");
