@@ -59,7 +59,7 @@ ul.contextMenuNoBG A {
 	padding-left: 2px;
 }
 
-.contextMenu LI.hover {
+ul.contextMenu LI.hover {
 	background-color: #f0f8ff;
 	border: 1px solid #aaaaaa;
 }

@@ -48,8 +48,8 @@
 
 <!-- Step 3 -->
 <div id='wizardExportApplianceStep3' title='Appliance Export Settings' style='display: none; width: 100%;'>
-	<div class='translate' style='margin-bottom:8px'>appExport Step3 Message1</div>
-	<div class='vboxBordered' id='vboxExportPropsContainer' style='overflow: auto'>
+	<div class='translate' style='margin-bottom:8px; width: 100%'>appExport Step3 Message1</div>
+	<div class='vboxBordered' id='vboxExportPropsContainer' style='overflow: auto' style='width: 100%'>
 		<table class='vboxHorizontal' style='width: 100%;'>
 			<!--
 				<thead>
@@ -204,19 +204,20 @@ $('#wizardExportApplianceStep3').bind('show',function(e,wiz){
 			
 		// VM header row
 		var trparent = $('<tr />').attr({'id':'vboxAppliance-'+vmid}).addClass('vboxAppliance-'+vmid).addClass('vboxTableParent');
-		var td = $('<td />').attr({'colspan':'2'}).append(
+		var td = $('<td />').attr({'colspan':'2','class':'vboxApplianceHeader'}).append(
 			$('<div />').css({'font-weight':'bold','padding-left':'6px'}).append(
-					$('<input />').attr({'type':'button','class':'vboxImgButton','style':'background-image: url(images/vbox/arrow_down_10px.png); margin:0px;margin-right:4px;padding:0px;vspace:0px;hspace:0px;width: 12px; height: 12px;'}).toggle(function(){
-						$(this).css({'background-image':'url(images/vbox/arrow_right_10px.png)'});
+					$('<input />').attr({'type':'button','class':'vboxImgButton','style':'background-image: url(images/downArrow.png); margin:0px;margin-right:4px;padding:0px;vspace:0px;hspace:0px;width: 12px; height: 12px;'}).toggle(function(){
+						$(this).css({'background-image':'url(images/rightArrow.png)'});
 						var tr = $(this).closest('tr');
 						$(tr).siblings('tr.vboxChildOf'+$(tr).data('vboxOrder')).hide();
 					},function(){
-						$(this).css({'background-image':'url(images/vbox/arrow_down_10px.png)'});				
+						$(this).css({'background-image':'url(images/downArrow.png)'});				
 						var tr = $(this).closest('tr');						
 						$(tr).siblings('tr.vboxChildOf'+$(tr).data('vboxOrder')).show();
 					})
 			).append(
-					trans('Virtual System X').replace('%s',(i+1))
+					//trans('Virtual System X').replace('%s',(i+1))
+					$('<div />').text($(vms[i]).data('vm').name).html()
 			)
 		).disableSelection();
 		$(trparent).append(td).data({'vm':$(vms[i]).data('vm'),'vboxOrder':i}).appendTo(tbl);

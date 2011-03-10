@@ -294,7 +294,7 @@ function vboxWizard(name, title, img, bg, icon) {
 		var tr = $('<tr />');
 		
 		if(this.img) {
-			$('<td />').css({'background':'url(images/wizard_bg.png)','background-repeat':'repeat-y','padding':'0px','margin':'0px'}).append('<img src="' + self.img + '" style="width: 145px" />').appendTo(tr);
+			$('<td />').css({'background-image':'url(images/wizard_bg.png)','background-repeat':'repeat-y','padding':'0px','margin':'0px'}).append('<img src="' + self.img + '" style="width: 145px; height: 290px" />').appendTo(tr);
 		}
 		
 		var td = $('<td />').attr({'id':self.name+'Content','class':'vboxWizardContent'});
@@ -368,7 +368,7 @@ function vboxWizard(name, title, img, bg, icon) {
 		}
 		/* update buttons */
 		if(step == 1) {
-			$('#'+self.name+'Dialog').parent().find('span:contains("< '+trans('Back')+'")').parent().addClass('disabled');
+			$('#'+self.name+'Dialog').parent().find('span:contains("< '+trans('Back')+'")').parent().addClass('disabled').blur();
 			$('#'+self.name+'Dialog').parent().find('span:contains("'+trans('Finish')+'")').html($('<div />').text(trans('Next')+' >').html());
 		} else {
 			
@@ -1163,7 +1163,7 @@ function vboxMenuBar(name) {
 		
 		self.menus[self.menus.length] = m;
 		
-		var ul = $('<ul />').attr({'id':m.name+'Menu','class':'vboxMenuBar','style':'display: none;'});
+		var ul = $('<ul />').attr({'id':m.name+'Menu','class':'','style':'display: none;'});
 		
 		for(var i in m.menu) {
 			if(typeof i == 'function') continue;

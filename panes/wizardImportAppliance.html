@@ -250,12 +250,12 @@ function wizardImportApplianceParsed(d) {
 	for(var vm = 0; vm < d.descriptions.length; vm++) {
 
 		var tr = $('<tr />').data({'vmDesc':d.descriptions[vm]});
-		var td = $('<td />').attr({'colspan':'2','class':'vboxHeader'});
-		$('<input />').data({'vboxOrder':vm}).attr({'type':'button','class':'vboxImgButton','style':'background-image: url(images/vbox/arrow_down_10px.png); width: 12px; height: 12px; margin-right: 4px;'}).toggle(function(){
-			$(this).css({'background-image':'url(images/vbox/arrow_right_10px.png)'});
+		var td = $('<td />').attr({'colspan':'2','class':'vboxApplianceHeader'});
+		$('<input />').data({'vboxOrder':vm}).attr({'type':'button','class':'vboxImgButton','style':'background-image: url(images/downArrow.png); width: 12px; height: 12px; margin-right: 4px;'}).toggle(function(){
+			$(this).css({'background-image':'url(images/rightArrow.png)'});
 			$(this).parent().parent().parent().children('tr.vboxChildOf'+$(this).data('vboxOrder')).css('display','none');
 		},function(){
-			$(this).css({'background-image':'url(images/vbox/arrow_down_10px.png)'});
+			$(this).css({'background-image':'url(images/downArrow.png)'});
 			$(this).parent().parent().parent().children('tr.vboxChildOf'+$(this).data('vboxOrder')).css('display','');
 		}).appendTo(td);
 		$(td).append(trans('Virtual System X').replace('%s',(vm+1))).appendTo(tr);

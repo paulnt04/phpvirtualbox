@@ -296,7 +296,7 @@ div.vboxAjaxErrorDetails form textarea { height: 100%; }
 /* Wizards */
 table.vboxWizard { margin: 0px; padding: 4px; border-spacing: 0px; }
 table.vboxWizard tr { vertical-align: top; }
-table td.vboxWizardImg img { border: 1px solid #000; margin: 0px; border: 0px; width: 145px; height: 290px; padding: 0px; }
+table td.vboxWizardImg { border: 1px solid #000; padding: 0px; margin: 0px; }
 td.vboxWizardContent { padding: 0px 8px 0px 8px; }
 div.vboxWizard { border: 0px; padding: 0px; margin: 0px; }
 div.vboxWizard h3 { margin: 2px 0px 18px 0px; font-size: 16px; }
@@ -310,6 +310,9 @@ div.vboxWizard h3 { margin: 2px 0px 18px 0px; font-size: 16px; }
 #vboxImportProps td.vboxHardDiskImage img.vboxSpacer { width: 32px; }
 #vboxImportProps tr,#vboxImportProps td, #vboxImportProps td div { vertical-align: middle; height: 22px; line-height: 22px;} 
 #vboxImportProps td.vboxHideOverflow, #vboxImportProps td.vboxHideOverflow div { text-wrap: unrestricted !important; word-wrap: break-word !important; overflow: hidden !important; white-space: wrap !important;}
+
+table td.vboxApplianceHeader { border-style: solid; border-color: #666; border-width: 1px 0px 1px 0px; background: #f0f0f8; padding: 2px; white-space: nowrap; text-align: left; font-weight: bold; }
+
 
 /* Main Tabs */
 #tabMainContent  {padding-left: 6px; padding-right: 8px;} /* less left to account for resize bar */
