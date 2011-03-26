@@ -129,7 +129,7 @@ function vboxAjaxRequest(fn,params,callback,xtra,run) {
 			if((!etext || !etext.length || etext == 'error') && run < 4) {
 				vboxAjaxRequest(fn,params,callback,xtra,(run+1));
 			} else {
-				alert('ajax error: ' + etext);
+				if(etext != 'error') alert('ajax error: ' + etext);
 				callback(null,xtra);
 			}
 		});
@@ -556,10 +556,14 @@ function vboxInitDisplay(root) {
 }
 
 /* Color VISIBLE children of parent elm */
-function vboxColorRows(elm,startOdd) {
+function vboxColorRows(elm,startOdd,headerClass) {
 	var odd = 0;
 	if(startOdd) odd = 1;
 	$(elm).children().each(function(i){
+		if(headerClass && $(this).hasClass(headerClass)) {
+			odd = (startOdd ? 1 : 0);
+			return;
+		}
 		if($(this).css('display') == 'none' || $(this).hasClass('vboxListItemDisabled')) return;
 		(odd++ % 2 ? $(this).addClass('vboxOddRow') : $(this).removeClass('vboxOddRow'));
 	});
@@ -610,24 +614,24 @@ function vboxInstallGuestAdditions(vmid) {
  */
 function vboxProgress(pid,callback,args,icon,title) {
 	
-	var div = $('<div />').attr({'id':'vboxProgressDialog','title':(title ? title : 'phpVirtualBox'),'style':'text-align: center'}).data({'defaultTitle':(title ? false : true)});
+	var div = $('<div />').attr({'id':'vboxProgressDialog','title':(title ? title : 'phpVirtualBox'),'style':'text-align: center'});
 	
 	var tbl = $('<table />').css({'width':'100%'});
-	var tr = $('<tr />');
-	var td = $('<td />');
+	var tr = $('<tr />').css({'vertical-align':'middle'});
+	var td = $('<td />').css({'padding':'0px','text-align':'left','width':'1px'});
 	if(icon) {
-		$('<img />').attr({'src':'images/vbox/'+icon}).appendTo(td);
+		$('<img />').css({'margin':'4px'}).attr({'src':'images/vbox/'+icon,'height':'90','width':'90'}).appendTo(td);
 	}
 	$(tr).append(td);
 	
-	var td = $('<td />').append($('<div />').attr({'id':'vboxProgressBar'}).progressbar({ value: 1 }));
+	var td = $('<td />').css({'text-align':'center','padding':'4px'}).append($('<div />').attr({'id':'vboxProgressBar','margin':'4px'}).progressbar({ value: 1 }));
 	
 	$('<div />').attr({'id':'vboxProgressText'}).html('<img src="images/spinner.gif" />').appendTo(td);
 	
 	// Cancel button
 	$('<div />').attr({'id':'vboxProgressCancel'}).css({'display':'none','padding':'8px'}).append(
 
-		$('<input />').attr('type','button').val(trans('Cancel')).data('pid', pid).click(function(){
+		$('<input />').attr('type','button').val(trans('Cancel')).data({'pid':pid}).click(function(){
 			this.disabled = 'disabled';
 			vboxAjaxRequest('cancelProgress',{'progress':$(this).data('pid')},function(d){return;});
 		})
@@ -636,7 +640,7 @@ function vboxProgress(pid,callback,args,icon,title) {
 	;
 	$(tbl).append($(tr).append(td)).appendTo(div);
 	
-	$(div).data({'callback':callback,'args':args}).dialog({'closeOnEscape':false,'modal':true,'resizable':false,'draggable':false,'closeOnEscape':false,'buttons':{}});
+	$(div).data({'callback':callback,'args':args}).dialog({'width':400,'height':'auto','closeOnEscape':false,'modal':true,'resizable':false,'draggable':true,'closeOnEscape':false,'buttons':{}});
 	
 	// Don't unload while progress operation is .. in progress
 	window.onbeforeunload = vboxOpInProgress;
@@ -663,10 +667,6 @@ function vboxProgressUpdate(d,e) {
 	$("#vboxProgressBar").progressbar({ value: d.info.percent });
 	$("#vboxProgressText").html(d.info.percent+'%<p>'+d.info.operationDescription+'</p>');
 	
-	if($('#vboxProgressDialog').data('defaultTitle')) {
-		$('#vboxProgressDialog').dialog('option','title',d.info.description);
-	}
-	
 	// Cancelable?
 	if(d.info.cancelable) {
 		$('#vboxProgressCancel').show();
@@ -679,7 +679,7 @@ function vboxProgressUpdate(d,e) {
 /* Position element to mouse event */
 function vboxPositionEvent(elm,e) {
 	
-	var d = {}, posX, posY;
+	var d = {};
 	
 	if( self.innerHeight ) {
 		d.pageYOffset = self.pageYOffset;
@@ -715,6 +715,27 @@ function vboxPositionEvent(elm,e) {
 	y = (bottom > windowHeight) ? y - (bottom - windowHeight) : y;
 	
 	$(elm).css({ top: y, left: x });
+}
+
+/* Position element inside visible window */
+function vboxPositionToWindow(elm) {
+
+	var offset = $(elm).offset();
+	var x = offset.left;
+	var y = offset.top;
+		
+	//adjust to ensure menu is inside viewable screen
+	var right = x + $(elm).outerWidth();
+	var bottom = y + $(elm).outerHeight();
+	
+	var windowWidth = $(window).width() + $(window).scrollLeft();
+	var windowHeight = $(window).height() + $(window).scrollTop();
+	
+	x = (right > windowWidth) ? x - (right - windowWidth) : x;
+	y = (bottom > windowHeight) ? y - (bottom - windowHeight) : y;
+	
+	$(elm).css({'top':y,'left':x});
+
 }
 
 /*

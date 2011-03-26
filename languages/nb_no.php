@@ -58,6 +58,7 @@ public static $trans = array(
 'Select Folder' => 'Velg mappe',
 'Server List' => 'Tjenerliste',
 'Interface Language' => 'Språk i grensesnitt',
+'Language' => 'Språk',
 
 // Users and Login
 'Username' => 'Brukernavn',
@@ -523,8 +524,8 @@ public static $trans = array(
 'appExport Step1 Message2' => 'Bruk Neste for å gå til neste steg i veiviseren og Tilbake for å gå til forrige steg. Du kan også trykk Avbryt for å avslutte veiviseren.',
 'appExport Step1 Message3' => 'Vennligst velg de virtuelle maskinene du vil eksportere, du kan velge mer enn en. Bemerk at maskinene må være slått av for at de skal kunne eksporteres.',
 'Appliance Export Settings' => 'Innstillinger for eksport',
-'appExport Step2 Message1' => 'Her kan du endre innstillingene for den virtuelle maskinen. Du kan endre på de fleste innstillingene ved å dobbeltklikke på dem.',
-'appExport Step3 Message1' => 'Vennligst velg et filnavn du vil eksportere OVFen til.',
+'appExport Step2 Message1' => 'Vennligst angi et filnavn som du vil bruke for OVF/OVA eksporten. Hvis du bruker ova filetternavn vil alle filene kombineres i et arkiv, Open Virtualization Format. Hvis du bruker ovf filetternavn vil flere filer bli laget. Andre filetternavn er ikke tillatt.',
+'appExport Step3 Message1' => 'Her kan du endre innstillingene for de virtuelle maskinene. Du kan endre på de fleste innstillingene ved å dobbeltklikke på dem.',
 'Import Appliance' => 'Importer virtuell maskin',
 'Appliance Import Wizard' => 'Veiviser for import av virtuell maskin',
 'Appliance Import Wizard Welcome' => 'Velkommen til veiviseren for import av virtuell maskin!',
@@ -535,6 +536,7 @@ public static $trans = array(
 'appImport Step2 Message1' => 'Dette er de virtuelle maskinene i filen med foreslåtte innstillinger for de importerte virtuelle maskinene. Du kan endre flere av disse egenskapene ved å dobbeltklikke på elementene og deaktivere andre ved å bruke sjekkboksene under.',
 'appImport Step3 Message1' => 'Vennligst velg et filnavn du vil importere OVF til.',
 'Write legacy OVF' => 'Skriv tradisjonell OVF 0.9',
+'Write Manifest file' => 'Skriv Manifest fil',
 'Virtual System X' => 'Virtuelt system %s', // %s will be replaced with the virtual system number
 'Product' => 'Produkt',
 'Product-URL' => 'Produkt-URL',

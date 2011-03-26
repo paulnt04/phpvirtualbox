@@ -1,7 +1,9 @@
 -------------------------------------
-	4.0-5	
+	4.0-5	2011-3-26
 -------------------------------------
 Added Norwegian translation.
+
+Added Japanese translation.
 
 Fixed translation of 'Log in' in log in dialog.
 
@@ -27,6 +29,16 @@ selected.
 Fixed bug when removing a VM when using PHP < 5.2.0.
 
 Fixed bug when editing shared folders of a non-running VM.
+
+Log in form now submits when pressing enter.
+
+Import / Export Appliances now has scrolling lists.
+
+Fixed bug when PHP does not have session support enabled. This
+incorrectly displays the error 'Not logged in.' each time an
+action is attempted in phpVirtualBox.
+
+Fixed CRLF injection security hole in rdp.php.
 
 -------------------------------------
 	4.0-4b	2011-3-1

@@ -294,7 +294,7 @@ function vboxWizard(name, title, img, bg, icon) {
 		var tr = $('<tr />');
 		
 		if(this.img) {
-			$('<td />').css({'background-image':'url(images/wizard_bg.png)','background-repeat':'repeat-y','padding':'0px','margin':'0px'}).append('<img src="' + self.img + '" style="width: 145px; height: 290px" />').appendTo(tr);
+			$('<td />').attr({'class':'vboxWizardImg'}).css({'background-image':'url(images/wizard_bg.png)','background-repeat':'repeat-y','padding':'0px','margin':'0px'}).append('<img src="' + self.img + '" style="width: 145px; height: 290px" />').appendTo(tr);
 		}
 		
 		var td = $('<td />').attr({'id':self.name+'Content','class':'vboxWizardContent'});

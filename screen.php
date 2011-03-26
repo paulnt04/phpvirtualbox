@@ -17,6 +17,7 @@ Header('ETag: "' . $_REQUEST['vm'].'_'.$_REQUEST['randid'].'"');
 session_cache_limiter('private_no_expire');
 
 // Check for valid session
+global $_SESSION;
 session_init();
 if(!$_SESSION['valid']) return;
 

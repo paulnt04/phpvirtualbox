@@ -83,7 +83,7 @@ the file when prompted.
 #var $browserRestrictFiles = array('.iso','.vdi','.vmdk','.img','.bin','.vhd','.hdd','.ovf','.ova','.xml','.vbox','.cdr','.dmg','.ima','.dsk','.vfd');
 
 // Restrict locations / folders
-#var $browserRestrictFolders = array('D:\\','C:\\Users\\Ian'); // Or something like '/home/vbox','/var/ISOs'
+#var $browserRestrictFolders = array('D:\\','C:\\Users\\Ian'); // Or something like '/home/vbox','/var/ISOs')
 
 // Force use of local, webserver based file browser instead of going through vboxwebsrv
 #var $browserLocal = true;
@@ -159,10 +159,7 @@ Do not change / set unless you have a good reason.
 #var $disableSataPortCount = true;
 
 /* Enable Parallel Port configuration - EXPERIMENTAL
-LPT support may or may not work for you. Conflicting information
-is available regarding VirtualBox's implementation. I cannot
-provide support or instructions for implementing this. I doubt one
-could get support from VirtualBox for it.
+LPT support may or may not work for you. 
 
 !!! VirtualBox LPT support only works in Linux. !!!
 

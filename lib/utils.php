@@ -21,6 +21,7 @@ function session_init() {
 		global $_SESSION;
 		$_SESSION['valid'] = true;
 		$_SESSION['authCheckHeartbeat'] = time();
+		$_SESSION['admin'] = true;
 		return;
 	}
 	ini_set('session.use_trans_sid', 0);

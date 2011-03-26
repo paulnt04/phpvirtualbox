@@ -81,6 +81,7 @@ class vboxconnector {
 		if($this->connected) return true;
 		
 		// Valid session?
+		global $_SESSION;
 		if(!$this->skipSessionCheck && !$_SESSION['valid']) {
 			throw new Exception(trans('Not logged in.'),vboxconnector::PHPVB_ERRNO_FATAL);
 		}
@@ -168,6 +169,7 @@ class vboxconnector {
 	function __call($fn,$args) {
 
 		// Valid session?
+		global $_SESSION;
 		if(!$this->skipSessionCheck && !$_SESSION['valid']) {
 			throw new Exception(trans('Not logged in.'),vboxconnector::PHPVB_ERRNO_FATAL);
 		}

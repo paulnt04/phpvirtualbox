@@ -58,6 +58,7 @@ public static $trans = array(
 'Select Folder' => 'Select Folder',
 'Server List' => 'Server List',
 'Interface Language' => 'Interface Language',
+'Language' => 'Language',
 
 // Users and Login
 'Username' => 'Username',

@@ -221,7 +221,7 @@
 				buttons[trans('Log in')] = function() {
 					var u = $('#vboxLogin').find('input[name=username]').val();
 					var p = $('#vboxLogin').find('input[name=password]').val();
-					$(this).dialog('close');
+					$('#vboxLogin').dialog('close');
 					var trylogin = new vboxLoader();
 					trylogin.add('login',function(d){$('#vboxIndex').data('vboxSession',d);},{'u':u,'p':p});
 					trylogin.onLoad = function() { vboxCheckSession(true);}
@@ -230,7 +230,9 @@
 				}
 				
 				// Create but do not open dialog
-				$('#vboxLogin').dialog({'closeOnEscape':false,'width':300,'height':160,'buttons':buttons,'modal':true,'autoOpen':false,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/OSE/about_16px.png" class="vboxDialogTitleIcon" /> phpVirtualBox :: ' + trans('Log in')});
+				if($.browser.webkit) heightadd = 5;
+				else heightadd = 0;
+				$('#vboxLogin').dialog({'closeOnEscape':false,'width':300,'height':'auto','buttons':buttons,'modal':true,'autoOpen':false,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/OSE/about_16px.png" class="vboxDialogTitleIcon" /> phpVirtualBox :: ' + trans('Log in')});
 				$('#vboxLogin').find('input[name=username]').first().focus();
 				
 				// Trick loader into not showing root pane again

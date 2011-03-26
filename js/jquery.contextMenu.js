@@ -124,7 +124,7 @@ if(jQuery)( function() {
 					
 					
 					// Detect mouse position
-					var d = {}, posX, posY;
+					var d = {};
 					
 					if(mode == 'menu') {
 				 		var x = $(srcElement).offset().left;

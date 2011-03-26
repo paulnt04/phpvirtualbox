@@ -249,7 +249,7 @@ function wizardImportApplianceParsed(d) {
 
 	for(var vm = 0; vm < d.descriptions.length; vm++) {
 
-		var tr = $('<tr />').data({'vmDesc':d.descriptions[vm]});
+		var tr = $('<tr />').data({'vmDesc':d.descriptions[vm]}).attr({'class':'vboxApplianceHeaderRow'});
 		var td = $('<td />').attr({'colspan':'2','class':'vboxApplianceHeader'});
 		$('<input />').data({'vboxOrder':vm}).attr({'type':'button','class':'vboxImgButton','style':'background-image: url(images/downArrow.png); width: 12px; height: 12px; margin-right: 4px;'}).toggle(function(){
 			$(this).css({'background-image':'url(images/rightArrow.png)'});
@@ -345,7 +345,7 @@ function wizardImportApplianceParsed(d) {
 		
 	} // </ foreach vm >
 
-	vboxColorRows(tbl);
+	vboxColorRows(tbl,false,'vboxApplianceHeaderRow');
 	
 	
 	
