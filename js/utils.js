@@ -299,7 +299,9 @@ function vboxFileBrowser(root,fn,foldersonly) {
     	buttons[trans('OK')](f);
     }).appendTo(d1);
 	
-    $(d1).dialog({'closeOnEscape':false,'width':400,'height':600,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/jqueryFileTree/'+(foldersonly ? 'folder_open' : 'file')+'.png" class="vboxDialogTitleIcon" /> ' + trans((foldersonly ? 'Select Folder' : 'Select File'))});			
+    $(d1).dialog({'closeOnEscape':true,'width':400,'height':600,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/jqueryFileTree/'+(foldersonly ? 'folder_open' : 'file')+'.png" class="vboxDialogTitleIcon" /> ' + trans((foldersonly ? 'Select Folder' : 'Select File'))}).bind("dialogbeforeclose",function(){
+    	$(this).parent().find('span:contains("'+trans('Cancel')+'")').trigger('click');
+    });			
 
 }
 

@@ -85,9 +85,9 @@ if($vboxRequest['dir'] != DSEP && count($folders)) {
 		}
 	}
 	if(!$valid) {
-		folder_start();
-		echo('<li>Access denied to '.htmlentities($dir).' (' . htmlentities(urldecode($vboxRequest['dir'])).')</li>');
-		folder_end();
+		#folder_start();
+		#echo('<li>Access denied to '.htmlentities($dir).' (' . htmlentities(urldecode($vboxRequest['dir'])).')</li>');
+		#folder_end();
 		$vboxRequest['dir'] = DSEP;
 	}
 }

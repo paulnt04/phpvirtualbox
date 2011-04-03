@@ -2,7 +2,7 @@
 Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
 -->
 <div id='vboxUserEdit'>
-<form>
+<form onsubmit='return vboxUserFormSubmit()'>
 <table class='vboxVertical'>
 <tr class='addUser'>
 	<th><span class='translate'>Username</span>:</th>
@@ -32,17 +32,26 @@ Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
 	<th><span class='translate'>Retype</span>:</th>
 	<td><input type='password' name='npass2' class='vboxText' /></td>
 </tr>
+<tr id='vboxUserBtnRow' style='display:none;padding:0px;margin:0px;border:0px'>
+	<th style='padding:0px;margin:0px;border:0px'></th>
+	<td style='padding:0px;margin:0px;border:0px'><input type='submit' value='' style='border:0px;margin:0px;display:inline;background:#fff;text:#fff;padding:0px;height:1px;' /></td>
+</tr>
+
 </table>
 </form>
 </div>
 <script type='text/javascript'>
 
-	$('#vboxUserEdit').find(".translate").html(function(i,h){return trans(h);}).removeClass('translate');
-	
-	
-	$('#vboxUserEdit').bind('setMode',function(e,mode) {
+$('#vboxUserEdit').find(".translate").html(function(i,h){return trans(h);}).removeClass('translate');
 		
-		$('#vboxUserEdit').find('table').first().find('tr:not(.'+mode+')').css('display','none');
-		
-	});
+$('#vboxUserEdit').bind('setMode',function(e,mode) {
+	$('#vboxUserEdit').find('table').first().find('tr:not(.'+mode+')').css('display','none');
+});
+
+if($.browser.msie || $.browser.webkit) $('#vboxUserBtnRow').css({'display':''});
+function vboxUserFormSubmit() {
+	$('#vboxUserEdit').parent().find('span:contains("'+trans('OK')+'")').trigger('click');
+	return false;
+}
+
 </script>
