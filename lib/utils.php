@@ -7,6 +7,28 @@
  *
  */
 
+function expand_ipv6($ipv6)
+{
+	$parts = array();
+	$ipv6 = explode(':', $ipv6);
+	while ( count($parts) < 8 )
+	{
+		$part = array_shift($ipv6);
+		if ( empty($part) )
+		{
+			// double colon
+			while ( count($parts) < 8 - count($ipv6) )
+				$parts[] = "0000";
+		}
+		else
+		{
+			while(strlen($part) < 4)
+				$part = "0$part";
+			$parts[] = $part;
+		}
+	}
+	return implode(':', $parts);
+}
 
 /*
  * Initialize session
@@ -17,7 +39,7 @@ function session_init() {
 	$settings = new phpVBoxConfigClass();
 
 	// No session support? No login...
-	if(!function_exists('session_start') || $settings->noAuth) {
+	if(!function_exists('session_start') || ( isset($settings->noAuth) && $settings->noAuth )) {
 		global $_SESSION;
 		$_SESSION['valid'] = true;
 		$_SESSION['authCheckHeartbeat'] = time();
@@ -28,17 +50,27 @@ function session_init() {
 	ini_set('session.use_only_cookies', 1);
 	
 	// Session path
-	if($settings->sessionSavePath) {
+	if(isset($settings->sessionSavePath)) {
 		session_save_path($settings->sessionSavePath);
 	}
 	// Session id calculation
 	if(intval($settings->sessionSecurityLevel) < 0) $settings->sessionSecurityLevel = 2;
-	$remote = explode('.',$_SERVER["REMOTE_ADDR"]);
-	$levels = array($_SERVER["HTTP_USER_AGENT"],$remote[0],$remote[1],$remote[2],$remote[3]);
-	for($i = 0; $i < intval($settings->sessionSecurityLevel) && $i < count($levels); $i++) $sid .= $levels[$i];
-	session_id(md5($sid));
+	$sid = '';
+	if ( strstr($_SERVER['REMOTE_ADDR'], ':') )
+	{
+		$remote = explode(':',expand_ipv6($_SERVER["REMOTE_ADDR"]));
+		$levels = array($_SERVER["HTTP_USER_AGENT"],"{$remote[0]}:{$remote[1]}",$remote[2],$remote[3],"{$remote[4]}:{$remote[5]}:{$remote[6]}:{$remote[7]}");
+		for($i = 0; $i < intval($settings->sessionSecurityLevel) && $i < count($levels); $i++) $sid .= $levels[$i];
+	}
+	else
+	{
+		$remote = explode('.',$_SERVER["REMOTE_ADDR"]);
+		$levels = array($_SERVER["HTTP_USER_AGENT"],$remote[0],$remote[1],$remote[2],$remote[3]);
+		for($i = 0; $i < intval($settings->sessionSecurityLevel) && $i < count($levels); $i++) $sid .= $levels[$i];
+	}
 	
-	session_name(($settings->session_name ? $settings->session_name : md5('phpvbx'.$_SERVER['DOCUMENT_ROOT'])));
+	session_id(md5($sid));
+	session_name((isset($settings->session_name) ? $settings->session_name : md5('phpvbx'.$_SERVER['DOCUMENT_ROOT'])));
 	session_start();
 }
 

@@ -51,76 +51,100 @@ var menu = {
 };
 
 if($('#vboxIndex').data('vboxSession').user) {
-	menu['menu'][menu['menu'].length] = {
-		'name' : 'fileChangePW',
-		'label' : 'Change Password',
-		'icon' : 'register',
-		'click': function() {
-			var l = new vboxLoader();
-			l.addFile('panes/userEdit.html',function(f){$('#vboxIndex').append(f);});
-			l.onLoad = function(){
-				
-				// Set mode
-				$('#vboxUserEdit').trigger('setMode','changePassword');
-				
-				var buttons = {};
-				buttons[trans('OK')] = function() {
-					var o = $('#vboxUserEdit').find('input[name=opass]').first().val();
-					var n1 = $('#vboxUserEdit').find('input[name=npass1]').first().val();
-					var n2 = $('#vboxUserEdit').find('input[name=npass2]').first().val();
-					if(o.length == 0) {
-						vboxAlert(trans('The password you have entered is invalid.'),{'width':'auto'});
-						return;
-					}
-					if(n1.length == 0 || (n1 != n2)) {
-						vboxAlert(trans('The passwords you have entered do not match.'),{'width':'auto'});
-						return;
-					}
-					var dialog = this;
-					var chp = new vboxLoader();
-					chp.mode = 'save';
-					chp.add('changePassword',function(d){
-						if(d) {
-							if(d.result) {
-								vboxAlert(trans('Password changed.'),{'width':'auto'});
-								$(dialog).remove();
-							} else {
-								vboxAlert(trans('The password you have entered is invalid.'),{'width':'auto'});
-							}
-						} else {
-							// unknown error
-							$(dialog).remove();
-						}
-					},{'old':o,'new':n1});
-					chp.run();
-				}
-				buttons[trans('Cancel')] = function(){
-					$(this).remove();
-				}
-				$('#vboxUserEdit').dialog({'closeOnEscape':false,'width':400,'height':200,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/register_16px.png" class="vboxDialogTitleIcon" /> '+trans('Change Password')});
-			}
-			l.run();			
-		},
-		'separator':true
-	};
-	menu['menu'][menu['menu'].length] = {
-			'name' : 'fileLogout',
-			// Pre-translated title to append username
-			'label' : trans('Log out') + ' - ' + $('#vboxIndex').data('vboxSession').user,
-			'icon' : 'exit',
+	if ( $('#vboxIndex').data('vboxConfig').authCapabilities.canChangePassword )
+		menu['menu'][menu['menu'].length] = {
+			'name' : 'fileChangePW',
+			'label' : 'Change Password',
+			'icon' : 'register',
 			'click': function() {
 				var l = new vboxLoader();
-				l.add('logout',function(){
-					location.reload(true);
-				});
+				l.addFile('panes/userEdit.html',function(f){$('#vboxIndex').append(f);});
 				l.onLoad = function(){
-					this.hideRoot = false;
+					
+					// Set mode
+					$('#vboxUserEdit').trigger('setMode','changePassword');
+					
+					var buttons = {};
+					buttons[trans('OK')] = function() {
+						var o = $('#vboxUserEdit').find('input[name=opass]').first().val();
+						var n1 = $('#vboxUserEdit').find('input[name=npass1]').first().val();
+						var n2 = $('#vboxUserEdit').find('input[name=npass2]').first().val();
+						if(o.length == 0) {
+							vboxAlert(trans('The password you have entered is invalid.'),{'width':'auto'});
+							return;
+						}
+						if(n1.length == 0 || (n1 != n2)) {
+							vboxAlert(trans('The passwords you have entered do not match.'),{'width':'auto'});
+							return;
+						}
+						var dialog = this;
+						var chp = new vboxLoader();
+						chp.mode = 'save';
+						chp.add('changePassword',function(d){
+							if(d) {
+								if(d.result) {
+									vboxAlert(trans('Password changed.'),{'width':'auto'});
+									$(dialog).remove();
+								} else {
+									vboxAlert(trans('The password you have entered is invalid.'),{'width':'auto'});
+								}
+							} else {
+								// unknown error
+								$(dialog).remove();
+							}
+						},{'old':o,'new':n1});
+						chp.run();
+					}
+					buttons[trans('Cancel')] = function(){
+						$(this).remove();
+					}
+					$('#vboxUserEdit').dialog({'closeOnEscape':false,'width':400,'height':200,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/register_16px.png" class="vboxDialogTitleIcon" /> '+trans('Change Password')});
 				}
-				l.mode = 'save';
-				l.hideRoot = true;
-				l.run();				
+				l.run();			
+			},
+			'separator':true
+		};
+		
+	if ( $('#vboxIndex').data('vboxConfig').authCapabilities.canLogout )
+	{
+		menu['menu'][menu['menu'].length] = {
+				'name' : 'fileLogout',
+				// Pre-translated title to append username
+				'label' : trans('Log out') + ' - ' + $('#vboxIndex').data('vboxSession').user,
+				'icon' : 'exit',
+				'click': function() {
+					var l = new vboxLoader();
+					l.add('logout',function(r){
+						if ( typeof(r.url) == 'string' )
+						{
+							window.location = r.url;
+						}
+						else
+						{
+							location.reload(true);
+						}
+					});
+					l.onLoad = function(){
+						this.hideRoot = false;
+					}
+					l.mode = 'save';
+					l.hideRoot = true;
+					l.run();				
+				}
+			};
+	}
+	else
+	{
+		menu['menu'][menu['menu'].length] = {
+			'name' : 'fileLogout',
+			// Pre-translated title to append username
+			'label' : trans('Logged in as %s').replace('%s',$('#vboxIndex').data('vboxSession').user),
+			'icon' : 'exit',
+			'click': function() {
+				return false;				
 			}
 		};
+	}
 	
 }
 	

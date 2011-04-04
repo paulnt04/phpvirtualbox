@@ -651,6 +651,17 @@ class vboxconnector {
 		$m = &$this->session->machine;
 
 		// General machine settings
+		if ( $this->settings['enforceVMOwnership'] )
+		{
+			$args['name'] = "{$_SESSION['user']}_" . preg_replace('/^' . preg_quote($_SESSION['user']) . '_/', '', $args['name']);
+		}
+		
+		if ( ($owner = $machine->getExtraData("phpvb/sso/owner")) && $owner !== $_SESSION['user'] && !$_SESSION['admin'] )
+		{
+			// skip this VM as it is not owned by the user we're logged in as
+			throw new Exception("Not authorized to modify this VM");
+		}
+		
 		$m->name = $args['name'];
 		$m->description = $args['description'];
 		$m->OSTypeId = $args['OSTypeId'];
@@ -1417,10 +1428,16 @@ class vboxconnector {
 		$machines = $this->vbox->machines;
 
 		foreach ($machines as $machine) {
-
+			
+			if ( $this->settings['enforceVMOwnership'] && ($owner = $machine->getExtraData("phpvb/sso/owner")) && $owner !== $_SESSION['user'] && !$_SESSION['admin'] )
+			{
+				// skip this VM as it is not owned by the user we're logged in as
+				continue;
+			}
+			
 			try {
 				$response['data'][] = array(
-					'name' => $machine->name,
+					'name' => $this->settings['enforceVMOwnership'] ? preg_replace('/^' . preg_quote($_SESSION['user']) . '_/', '', $machine->name) : $machine->name,
 					'state' => $machine->state->__toString(),
 					'OSTypeId' => $machine->getOSTypeId(),
 					'id' => $machine->id,
@@ -1502,6 +1519,11 @@ class vboxconnector {
 
 		foreach($args['vms'] as $vm) {
 			$m = $this->vbox->findMachine($vm['id']);
+			if ( $this->settings['enforceVMOwnership'] && ($owner = $m->getExtraData("phpvb/sso/owner")) && $owner !== $_SESSION['user'] && !$_SESSION['admin'] )
+			{
+				// skip this VM as it is not owned by the user we're logged in as
+				continue;
+			}
 			$desc = $m->export($app->handle);
 			$props = $desc->getDescription();
 			$ptypes = array();
@@ -1810,6 +1832,12 @@ class vboxconnector {
 		// Machine state
 		$machine = &$this->vbox->findMachine($vm);
 		$mstate = $machine->state->__toString();
+		
+		if ( ($owner = $machine->getExtraData("phpvb/sso/owner")) && $owner !== $_SESSION['user'] && !$_SESSION['admin'] )
+		{
+			// skip this VM as it is not owned by the user we're logged in as
+			throw new Exception("Not authorized to change state of this VM");
+		}
 
 		// If state has an expected result, check
 		// that we are not already in it
@@ -2109,6 +2137,11 @@ class vboxconnector {
 
 		// Basic data
 		$data = $this->__getCachedMachineData('__getMachine',@$args['vm'],$machine,@$args['force_refresh']);
+		
+		if ( $this->settings['enforceVMOwnership'] )
+		{
+			$data['name'] = preg_replace('/^' . preg_quote($_SESSION['user']) . '_/', '', $data['name']);
+		}
 
 		// Network Adapters
 		$data['networkAdapters'] = $this->__getCachedMachineData('__getNetworkAdapters',@$args['vm'],$machine,@$args['force_refresh']);
@@ -2266,8 +2299,34 @@ class vboxconnector {
 
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
+		
+		// quota enforcement
+		if ( isset($_SESSION['user']) )
+		{
+			if ( isset($this->settings['vmQuotaPerUser']) && $this->settings['vmQuotaPerUser'] > 0 && !$_SESSION['admin'] )
+			{
+				$newresp = array('data' => array());
+				$vmlist = $this->getVMsCached(array(), $newresp);
+				if ( count($newresp['data']['vmlist']) >= $this->settings['vmQuotaPerUser'] )
+				{
+					// we're over quota!
+					// delete the disk we just created
+					if ( isset($args['disk']) )
+					{
+						$this->mediumRemove(array(
+								'id' => $args['disk'],
+								'type' => 'HardDisk',
+								'delete' => true
+							), $newresp);
+					}
+					throw new Exception("Sorry, you're over quota. You can only create up to {$this->settings['vmQuotaPerUser']} VMs.");
+				}
+			}
+		}
 
 		// create machine
+		if ( $this->settings['enforceVMOwnership'] )
+			$args['name'] = $_SESSION['user'] . '_' . $args['name'];
 		$m = $this->vbox->createMachine(null,$args['name'],$args['ostype'],null,null);
 
 		// Set memory
@@ -2290,7 +2349,12 @@ class vboxconnector {
 
 			// OS defaults
 			$defaults = $this->vbox->getGuestOSType($args['ostype']);
-
+			
+			// Ownership enforcement
+			if ( isset($_SESSION['user']) )
+			{	
+				$this->session->machine->setExtraData('phpvb/sso/owner', $_SESSION['user']);
+			}
 
 			// Always set
 			$this->session->machine->setExtraData('GUI/SaveMountedAtRuntime', 'yes');
@@ -2473,8 +2537,13 @@ class vboxconnector {
 		foreach ($machines as $machine) {
 
 			try {
+				if ( ($owner = $machine->getExtraData("phpvb/sso/owner")) && $owner !== $_SESSION['user'] && !$_SESSION['admin'] )
+				{
+					// skip this VM as it is not owned by the user we're logged in as
+					continue;
+				}
 				$response['data']['vmlist'][] = array(
-					'name' => $machine->name,
+					'name' => $this->settings['enforceVMOwnership'] ? preg_replace('/^' . preg_quote($_SESSION['user']) . '_/', '', $machine->name) : $machine->name,
 					'state' => $machine->state->__toString(),
 					'OSTypeId' => $machine->getOSTypeId(),
 					'id' => $machine->id,
@@ -2620,7 +2689,7 @@ class vboxconnector {
 	private function __getMachine(&$m) {
 
 		return array(
-			'name' => $m->name,
+			'name' => $this->settings['enforceVMOwnership'] ? preg_replace('/^' . preg_quote($_SESSION['user']) . '_/', '', $m->name) : $m->name,
 			'description' => $m->description,
 			'id' => $m->id,
 			'settingsFilePath' => $m->settingsFilePath,
@@ -3246,7 +3315,21 @@ class vboxconnector {
 
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
-
+		
+		if ( $this->settings['enforceVMOwnership'] )
+		{
+			$dirparts = explode('/', $args['file']);
+			foreach ( $dirparts as $i => &$bit )
+			{
+				if ( $i == count($dirparts) - 2 || $i == count($dirparts) - 1 )
+				{
+					// file or directory name
+					$bit = "{$_SESSION['user']}_" . preg_replace('/^' . preg_quote($_SESSION['user']) . '_/', '', $bit);
+				}
+			}
+			$args['file'] = implode('/', $dirparts);
+		}
+		
 		$format = strtoupper(preg_replace('/.*\./','',$args['file']));
 		if($format != 'VDI' && $format != 'VMDK') $format = 'VDI';
 		$hd = $this->vbox->createHardDisk($format,$args['file']);

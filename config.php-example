@@ -152,6 +152,16 @@ Do not change / set unless you have a good reason.
 */
 #var $vmListSort = 'name';
 
+// Authentication library.
+var $authLib = 'Builtin';
+
+// VM ownership
+var $enforceVMOwnership = false;
+
+// Per-user VM quota
+// var $vmQuotaPerUser = 2;
+
+
 // Allow VDE network configuration. This must be supported by the underlying VirtualBox installation!
 #var $enableVDE = true; 
 

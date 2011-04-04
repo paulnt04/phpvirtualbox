@@ -433,7 +433,7 @@ function vboxPrefsInit() {
 	);	
 	
 	// Check for noAuth setting
-	if($('#vboxIndex').data('vboxConfig').noAuth || !$('#vboxIndex').data('vboxSession').admin) {
+	if($('#vboxIndex').data('vboxConfig').noAuth || !$('#vboxIndex').data('vboxSession').admin || !$('#vboxIndex').data('vboxConfig').authCapabilities.canModifyUsers) {
 		panes.pop();
 		data.pop();
 	}

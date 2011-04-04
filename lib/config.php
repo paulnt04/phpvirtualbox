@@ -103,8 +103,15 @@ function __construct() {
 	// legacy rdpHost setting
 	if(@$this->rdpHost && !@$this->consoleHost)
 		$this->consoleHost = $this->rdpHost;
-
+		
+	// Ensure authlib is set
+	if(!$this->authLib) $this->authLib = 'Builtin';
 	
+	include_once(dirname(__FILE__).'/auth/'.str_replace(array('.','/','\\'),'',$this->authLib).'.php');
+	
+	$alib = "phpvbAuth{$this->authLib}";
+	$this->auth = new $alib(@$this->authConfig);
+	$this->authCapabilities = $this->auth->capabilities;
 }
 
 // Set Server
